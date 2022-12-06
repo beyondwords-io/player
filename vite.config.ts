@@ -10,4 +10,7 @@ export default defineConfig({
       name: "BeyondWords",
     },
   },
+  test: {
+    environment: "jsdom",
+  },
 });
