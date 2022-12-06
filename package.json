@@ -2,6 +2,7 @@
   "name": "@beyondwords/player",
   "version": "0.0.0-alpha1",
   "devDependencies": {
-    "svelte": "^3.53"
+    "svelte": "^3.53",
+    "vite": "^3.2"
   }
 }
