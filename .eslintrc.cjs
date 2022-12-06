@@ -8,19 +8,28 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "overrides": [],
+  "overrides": [
+    {
+      "files": ["**/*.svelte"],
+      "processor": "svelte3/svelte3"
+    }
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "svelte3"
   ],
   "rules": {
     "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "double"],
     "semi": ["error", "always"]
+  },
+  "settings": {
+    "svelte3/typescript": true
   }
 };
