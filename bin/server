@@ -1,0 +1,3 @@
+#!/bin/bash
+
+npx vite dev --host --port 8000 --strictPort --open
