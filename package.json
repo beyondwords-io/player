@@ -2,7 +2,9 @@
   "name": "@beyondwords/player",
   "version": "0.0.0-alpha1",
   "type": "module",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "module": "./dist/player.js",
   "main": "./dist/player.umd.cjs",
   "exports": {
@@ -13,6 +15,9 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.4",
+    "@typescript-eslint/eslint-plugin": "^5.45",
+    "@typescript-eslint/parser": "^5.45",
+    "eslint": "^8.29",
     "svelte": "^3.53",
     "vite": "^3.2"
   }
