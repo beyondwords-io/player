@@ -5,12 +5,12 @@
   "files": [
     "dist"
   ],
-  "module": "./dist/player.js",
-  "main": "./dist/player.umd.cjs",
+  "module": "./dist/es.js",
+  "main": "./dist/umd.js",
   "exports": {
     ".": {
-      "import": "./dist/player.js",
-      "require": "./dist/player.umd.cjs"
+      "import": "./dist/es.js",
+      "require": "./dist/umd.js"
     }
   },
   "devDependencies": {
