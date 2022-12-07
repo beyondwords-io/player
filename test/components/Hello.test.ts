@@ -1,4 +1,4 @@
-import Hello from "../src/Hello.svelte";
+import Hello from "../../src/components/Hello.svelte";
 
 describe("Hello", () => {
   it("works", () => {
