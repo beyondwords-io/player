@@ -14,5 +14,8 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    reporter: "dot",
+    include: ["test/**/*.test*"],
+    exclude: ["test/features"],
   },
 });
