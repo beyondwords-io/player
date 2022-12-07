@@ -1,6 +1,7 @@
 import Hello from "./components/Hello.svelte";
 new Hello({ target: document.body });
+import Player from "./player";
 
-const BeyondWords = {};
+const BeyondWords = { Player };
 
 export default BeyondWords;
