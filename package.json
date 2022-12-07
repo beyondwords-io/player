@@ -14,6 +14,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.28",
     "@sveltejs/vite-plugin-svelte": "^1.4",
     "@typescript-eslint/eslint-plugin": "^5.45",
     "@typescript-eslint/parser": "^5.45",
