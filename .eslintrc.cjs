@@ -27,7 +27,8 @@ module.exports = {
     "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "double"],
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "eqeqeq": ["error", "always"],
   },
   "settings": {
     "svelte3/typescript": true
