@@ -49,4 +49,24 @@ describe("BeyondWords.Player", () => {
       expect(spy).toHaveBeenCalledOnce();
     });
   });
+
+  describe("#target", () => {
+    it("returns the DOM element that mounts the svelte component", () => {
+      const element = document.createElement("div");
+      element.id = "something";
+      document.body.appendChild(element);
+
+      const player = new BeyondWords.Player({ target: "#something" });
+      expect(player.target).toEqual(element);
+    });
+  });
+
+  describe("#target=", () => {
+    it("throws a helpful error with a couple of suggestions", () => {
+      const player = new BeyondWords.Player({});
+
+      expect(() => player.target = "#something").toThrow(/call player.destroy\(\) and initialize a new player/i);
+      expect(() => player.target = "#something").toThrow(/player.showUserInterface = <bool>/);
+    });
+  });
 });

@@ -11,6 +11,8 @@ const throwError = (message, context) => {
     for (const [key, value] of Object.entries(context)) {
       error += `  - ${key}: ${JSON.stringify(value)}\n`;
     }
+  } else {
+    error += "\n";
   }
 
   throw new Error(error);
