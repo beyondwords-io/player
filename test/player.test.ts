@@ -5,13 +5,13 @@ describe("Player", () => {
     Player.destroyAll();
   });
 
-  describe(".all", () => {
+  describe(".instances", () => {
     it("returns all player instances", () => {
       const player1 = new Player({});
-      expect(Player.all()).toEqual([player1]);
+      expect(Player.instances()).toEqual([player1]);
 
       const player2 = new Player({});
-      expect(Player.all()).toEqual([player1, player2]);
+      expect(Player.instances()).toEqual([player1, player2]);
     });
   });
 
@@ -37,7 +37,7 @@ describe("Player", () => {
 
       player1.destroy();
 
-      expect(Player.all()).toEqual([player2]);
+      expect(Player.instances()).toEqual([player2]);
     });
   });
 });

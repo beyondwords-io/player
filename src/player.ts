@@ -1,20 +1,20 @@
 class Player {
-  static #all = [];
+  static #instances = [];
 
   constructor() {
-    Player.#all.push(this);
+    Player.#instances.push(this);
   }
 
-  static all() {
-    return [...Player.#all];
+  static instances() {
+    return [...Player.#instances];
   }
 
   static destroyAll() {
-    Player.#all.forEach(p => p.destroy());
+    Player.#instances.forEach(p => p.destroy());
   }
 
   destroy() {
-    Player.#all = Player.#all.filter(p => p !== this);
+    Player.#instances = Player.#instances.filter(p => p !== this);
   }
 }
 
