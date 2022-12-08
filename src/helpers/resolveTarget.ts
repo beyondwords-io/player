@@ -1,3 +1,5 @@
+import throwError from "./throwError";
+
 const resolveTarget = (target) => {
   if (!target) {
     return { newTarget: document.body, showUserInterface: false };
@@ -42,12 +44,20 @@ const findById = (target) => {
   const id = target.slice(1);
   const element = document.getElementById(id);
 
+  if (!element) {
+    throwError("Failed to initialize player because the target could not be found.", { target, id });
+  }
+
   return element;
 };
 
 const findByClass = (target) => {
   const className = target.slice(1);
   const element = document.getElementsByClassName(className)[0];
+
+  if (!element) {
+    throwError("Failed to initialize player because the target could not be found.", { target, className });
+  }
 
   return element;
 };

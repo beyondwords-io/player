@@ -38,6 +38,10 @@ describe("resolveTarget", () => {
     expect(showUserInterface).toEqual(true);
   });
 
+  it("throws an error if the id selector is for a node that doesn't exist", () => {
+    expect(() => resolveTarget("#missing")).toThrowError(/target could not be found/);
+  });
+
   it("resolves to an element and enables the UI when target is a class selector", () => {
     const element = document.createElement("div");
     element.classList.add("something");
@@ -47,6 +51,10 @@ describe("resolveTarget", () => {
 
     expect(newTarget).toEqual(element);
     expect(showUserInterface).toEqual(true);
+  });
+
+  it("throws an error if the class selector is for a node that doesn't exist", () => {
+    expect(() => resolveTarget(".missing")).toThrowError(/target could not be found/);
   });
 
   it("resolves to the given element and enables the UI when target is a DOM node", () => {
