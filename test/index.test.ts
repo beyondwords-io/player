@@ -31,13 +31,22 @@ describe("BeyondWords.Player", () => {
   });
 
   describe("#destroy", () => {
-    it("removes the player from the static array", () => {
+    it("removes the player from the list of instances", () => {
       const player1 = new BeyondWords.Player({});
       const player2 = new BeyondWords.Player({});
 
       player1.destroy();
 
       expect(BeyondWords.Player.instances()).toEqual([player2]);
+    });
+
+    it("calls #$destroy on the svelte component", () => {
+      const player = new BeyondWords.Player({});
+      const spy = vi.spyOn(player, "$destroy");
+
+      player.destroy();
+
+      expect(spy).toHaveBeenCalledOnce();
     });
   });
 });

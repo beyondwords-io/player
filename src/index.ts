@@ -30,6 +30,7 @@ class Player extends PlayerComponent {
   }
 
   destroy() {
+    this.$destroy();
     Player.#instances = Player.#instances.filter(p => p !== this);
   }
 }
