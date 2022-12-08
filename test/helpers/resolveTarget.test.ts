@@ -17,7 +17,7 @@ describe("resolveTarget", () => {
 
   it("resolves to a new div and enables the UI when target is a script tag", () => {
     const scriptTag = document.createElement("script");
-    document.body.append(scriptTag);
+    document.body.appendChild(scriptTag);
 
     const { newTarget, showUserInterface } = resolveTarget(scriptTag);
 
@@ -30,7 +30,7 @@ describe("resolveTarget", () => {
   it("resolves to an element and enables the UI when target is an id selector", () => {
     const element = document.createElement("div");
     element.id = "something";
-    document.body.append(element);
+    document.body.appendChild(element);
 
     const { newTarget, showUserInterface } = resolveTarget("#something");
 
@@ -45,7 +45,7 @@ describe("resolveTarget", () => {
   it("resolves to an element and enables the UI when target is a class selector", () => {
     const element = document.createElement("div");
     element.classList.add("something");
-    document.body.append(element);
+    document.body.appendChild(element);
 
     const { newTarget, showUserInterface } = resolveTarget(".something");
 
@@ -59,7 +59,7 @@ describe("resolveTarget", () => {
 
   it("resolves to the given element and enables the UI when target is a DOM node", () => {
     const element = document.createElement("div");
-    document.body.append(element);
+    document.body.appendChild(element);
 
     const { newTarget, showUserInterface } = resolveTarget(element);
 
