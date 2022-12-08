@@ -37,4 +37,8 @@ class Player extends PlayerComponent {
 
 const BeyondWords = { Player };
 
+if (typeof window !== "undefined") {
+  window.BeyondWords = BeyondWords;
+}
+
 export default BeyondWords;
