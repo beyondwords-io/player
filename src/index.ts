@@ -1,6 +1,3 @@
-import Hello from "./components/Hello.svelte";
-new Hello({ target: document.body });
-
 import PlayerComponent from "./components/Player.svelte";
 import resolveTarget from "./helpers/resolveTarget";
 import throwError from "./helpers/throwError";

@@ -3,5 +3,5 @@
 </script>
 
 {#if showUserInterface}
-  <!-- TODO -->
+  <p>showing user interface</p>
 {/if}
