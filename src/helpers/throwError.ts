@@ -1,6 +1,8 @@
 import { name } from "../../package.json";
 
 const throwError = (message, context) => {
+  message = [message].flat().join("\n");
+
   let error = `${name}:\n\n${message}`;
 
   if (context) {

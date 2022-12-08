@@ -13,4 +13,8 @@ describe("throwError", () => {
     const context = { target: "#some-id" };
     expect(() => throwError("something", context)).toThrow(/- target: "#some-id"/);
   });
+
+  it("coereces an array of messages into a single message", () => {
+    expect(() => throwError(["line 1", "line 2"])).toThrow(/line 1\nline 2/);
+  });
 });
