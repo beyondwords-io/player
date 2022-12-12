@@ -5,6 +5,7 @@
   import PlaybackRate from "./PlaybackRate.svelte";
   import Logo from "./icons/Logo.svelte";
   import SkipButtons from "./SkipButtons.svelte";
+  import PlaybackTime from "./PlaybackTime.svelte";
 
   export let style = "standard";
 </script>
@@ -18,6 +19,7 @@
   <div class="controls">
     <PlaybackRate />
     <SkipButtons style="segments" />
+    <PlaybackTime />
   </div>
 
   <div class="beyondwords-logo">
@@ -52,6 +54,7 @@
   .controls {
     flex-grow: 1;
     display: flex;
+    align-items: center;
     gap: 0.5rem;
   }
 
