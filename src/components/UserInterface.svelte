@@ -1,5 +1,5 @@
 <script>
-  import "@fontsource/inter";
+  import "@fontsource/inter/variable.css"
 
   import Play from "./icons/Play.svelte";
   import Pause from "./icons/Pause.svelte";
@@ -25,7 +25,7 @@
 
 <style>
   .beyondwords-player :global(*) {
-    font-family: Inter, Arial, sans-serif;
+    font-family: "InterVariable", sans-serif;
     color: #323232;
   }
 
