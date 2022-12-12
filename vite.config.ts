@@ -1,6 +1,7 @@
 import { resolve } from "path"
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import cssInJs from "vite-plugin-css-injected-by-js"
 
 export default defineConfig({
   plugins: [
@@ -9,6 +10,7 @@ export default defineConfig({
         accessors: true,
       },
     }),
+    cssInJs(),
   ],
   build: {
     lib: {
