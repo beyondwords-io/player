@@ -4,6 +4,7 @@
   import Pause from "./icons/Pause.svelte";
   import Logo from "./icons/Logo.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
+  import PlaybackRate from "./PlaybackRate.svelte";
 
   export let style = "standard";
 </script>
@@ -13,9 +14,12 @@
     <Play />
   </div>
 
-  <div class="listen-prompt">
-    <ListenPrompt />
+  <div class="controls">
+    <PlaybackRate />
   </div>
+  <!--<div class="listen-prompt">
+    <ListenPrompt />
+  </div>-->
 
   <div class="beyondwords-logo">
     <Logo />
@@ -46,6 +50,11 @@
 
   .listen-prompt {
     margin-left: 0.5rem;
+    flex-grow: 1;
+  }
+
+  .controls {
+    margin-left: 1rem;
     flex-grow: 1;
   }
 
