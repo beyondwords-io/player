@@ -1,17 +1,9 @@
 <script>
-  import "@fontsource/inter";
+  import UserInterface from "./UserInterface.svelte";
 
   export let showUserInterface;
 </script>
 
 {#if showUserInterface}
-  <div class="beyondwords-player">
-    <p>showing user interface</p>
-  </div>
+  <UserInterface />
 {/if}
-
-<style>
-  .beyondwords-player :global(*) {
-    font-family: Inter;
-  }
-</style>
