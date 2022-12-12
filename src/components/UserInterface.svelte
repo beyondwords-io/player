@@ -1,18 +1,15 @@
 <script>
   import "@fontsource/inter/variable.css";
-  import Play from "./icons/Play.svelte";
-  import Pause from "./icons/Pause.svelte";
-  import Logo from "./icons/Logo.svelte";
+  import PlayPauseButton from "./PlayPauseButton.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackRate from "./PlaybackRate.svelte";
+  import Logo from "./icons/Logo.svelte";
 
   export let style = "standard";
 </script>
 
 <div class="beyondwords-player {style}">
-  <div class="play-pause-button">
-    <Play />
-  </div>
+  <PlayPauseButton />
 
   <div class="controls">
     <PlaybackRate />
@@ -42,10 +39,6 @@
     background: white;
     display: flex;
     align-items: center;
-  }
-
-  .play-pause-button {
-    display: flex;
   }
 
   .listen-prompt {
