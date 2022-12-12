@@ -1,9 +1,9 @@
 <script>
-  import "@fontsource/inter/variable.css"
-
+  import "@fontsource/inter/variable.css";
   import Play from "./icons/Play.svelte";
   import Pause from "./icons/Pause.svelte";
   import Logo from "./icons/Logo.svelte";
+  import ListenPrompt from "./ListenPrompt.svelte";
 
   export let style = "standard";
 </script>
@@ -14,14 +14,14 @@
   </div>
 
   <div class="listen-prompt">
-    <div class="text">Listen to this article</div>
-    <div class="duration">4 min</div>
+    <ListenPrompt />
   </div>
 
   <div class="beyondwords-logo">
     <Logo />
   </div>
 </div>
+
 
 <style>
   .beyondwords-player :global(*) {
@@ -45,22 +45,8 @@
   }
 
   .listen-prompt {
-    height: 80%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
     margin-left: 0.5rem;
     flex-grow: 1;
-  }
-
-  .listen-prompt .text {
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-
-  .listen-prompt .duration {
-    font-size: 0.625rem;
-    font-weight: 300;
   }
 
   .beyondwords-logo {
