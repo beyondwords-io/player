@@ -1,8 +1,8 @@
 <script>
-  export let rate = 1;
+  export let speed = 1;
 </script>
 
-<div>{rate}x</div>
+<div>{speed}x</div>
 
 <style>
   div {

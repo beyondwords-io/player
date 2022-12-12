@@ -2,7 +2,7 @@
   import "@fontsource/inter/variable.css";
   import PlayPauseButton from "./PlayPauseButton.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
-  import PlaybackRate from "./PlaybackRate.svelte";
+  import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import Logo from "./icons/Logo.svelte";
   import SkipButtons from "./SkipButtons.svelte";
   import PlaybackTime from "./PlaybackTime.svelte";
@@ -17,7 +17,7 @@
     <ListenPrompt />
   </div>-->
   <div class="controls">
-    <PlaybackRate />
+    <PlaybackSpeed />
     <SkipButtons style="segments" />
     <PlaybackTime />
   </div>
