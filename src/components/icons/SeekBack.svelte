@@ -4,9 +4,9 @@
   export let seconds = 10;
 </script>
 
-<svg width={22 * scale} height={27 * scale} viewBox="0 0 22 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width={40 * scale} height={40 * scale} viewBox="-4 -4 28.83 35" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path fill={color} d="M11 4.66654V0.946545C11 0.346545 10.28 0.0532112 9.86666 0.479878L4.8 5.53321C4.53333 5.79988 4.53333 6.21321 4.8 6.47988L9.85333 11.5332C10.28 11.9465 11 11.6532 11 11.0532V7.33321C15.9733 7.33321 19.9067 11.8932 18.8133 17.0532C18.1867 20.0799 15.7333 22.5199 12.72 23.1465C7.96 24.1465 3.72 20.8799 3.08 16.4665C2.98666 15.8265 2.42666 15.3332 1.77333 15.3332C0.97333 15.3332 0.33333 16.0399 0.439997 16.8399C1.26666 22.6932 6.84 27.0265 13.1467 25.7999C17.3067 24.9865 20.6533 21.6399 21.4667 17.4799C22.7867 10.6399 17.5867 4.66654 11 4.66654Z" />
-  <text fill={color} x="50%" y="64%" dominant-baseline="middle" text-anchor="middle">{seconds}</text>
+  <text fill={color} x="38%" y="50%" dominant-baseline="middle" text-anchor="middle">{seconds}</text>
 </svg>
 
 <style>
