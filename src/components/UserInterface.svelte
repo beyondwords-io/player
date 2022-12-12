@@ -4,6 +4,7 @@
   import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackRate from "./PlaybackRate.svelte";
   import Logo from "./icons/Logo.svelte";
+  import SkipButtons from "./SkipButtons.svelte";
 
   export let style = "standard";
 </script>
@@ -11,12 +12,13 @@
 <div class="beyondwords-player {style}">
   <PlayPauseButton />
 
-  <div class="controls">
-    <PlaybackRate />
-  </div>
   <!--<div class="listen-prompt">
     <ListenPrompt />
   </div>-->
+  <div class="controls">
+    <PlaybackRate />
+    <SkipButtons style="segments" />
+  </div>
 
   <div class="beyondwords-logo">
     <Logo />
@@ -36,9 +38,10 @@
     padding: 0.25rem;
     box-sizing: border-box;
     border-radius: 1.5625rem;
-    background: white;
+    background: #fafafa;
     display: flex;
     align-items: center;
+    gap: 0.5rem;
   }
 
   .listen-prompt {
@@ -47,8 +50,9 @@
   }
 
   .controls {
-    margin-left: 1rem;
     flex-grow: 1;
+    display: flex;
+    gap: 0.5rem;
   }
 
   .beyondwords-logo {
