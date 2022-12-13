@@ -9,36 +9,27 @@
   import Logo from "./icons/Logo.svelte";
   import AdvertLink from "./AdvertLink.svelte";
   import AdvertButton from "./AdvertButton.svelte";
-  import BurgerMenu from "./icons/BurgerMenu.svelte";
+  import BeyondWords from "./BeyondWords.svelte";
 
   export let style = "standard";
+  export let state = "playing";
 </script>
 
 <div class="beyondwords-player {style}">
-  <PlayPauseButton />
+  <PlayPauseButton isPlaying={state === "playing"} />
 
-  <!--<div class="listen-prompt">
+  {#if state === "stopped" }
     <ListenPrompt />
-  </div>-->
-  <div class="controls">
+  {:else}
     <PlaybackSpeed />
     <SkipButtons style="segments" />
-    <PlaybackTime />
-  </div>
+    <ProgressBar progress={0.33}>
+      <PlaybackTime />
+    </ProgressBar>
+  {/if}
 
-  <div class="progress-bar">
-    <ProgressBar progress={0.33} />
-  </div>
-
-  <BurgerMenu />
-
-  <div class="beyondwords-logo">
-    <Logo />
-  </div>
-  <!--<AdvertLink href="https://deliveroo.com" text="deliveroo.com" />
-  <AdvertButton href="https://deliveroo.com" />-->
+  <BeyondWords />
 </div>
-
 
 <style>
   .beyondwords-player :global(*) {
@@ -47,7 +38,7 @@
   }
 
   .standard {
-    width: 43.75rem;
+    max-width: 43.75rem;
     height: 3rem;
     padding: 0.25rem;
     box-sizing: border-box;
@@ -56,25 +47,5 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-
-  .listen-prompt {
-    margin-left: 0.5rem;
-    flex-grow: 1;
-  }
-
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .progress-bar {
-    flex-grow: 1;
-  }
-
-  .beyondwords-logo {
-    display: flex;
-    margin-right: 0.6875rem;
   }
 </style>
