@@ -38,7 +38,8 @@
   }
 
   .standard {
-    max-width: 43.75rem;
+    min-width: 300px;
+    max-width: 700px;
     height: 3rem;
     padding: 0.25rem;
     box-sizing: border-box;
