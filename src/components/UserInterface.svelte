@@ -11,21 +11,22 @@
   import AdvertButton from "./AdvertButton.svelte";
   import BeyondWords from "./BeyondWords.svelte";
 
-  export let style = "standard";
-  export let state = "playing";
+  export let playerStyle = "standard";
+  export let playbackState = "playing";
+  export let skipButtons = "segments";
 
   let width;
   $: isMobile = width < 375;
 </script>
 
-<div class="beyondwords-player {style}" class:mobile={isMobile} bind:clientWidth={width}>
-  <PlayPauseButton isPlaying={state === "playing"} />
+<div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
+  <PlayPauseButton isPlaying={playbackState === "playing"} />
 
-  {#if state === "stopped" }
+  {#if playbackState === "stopped" }
     <ListenPrompt />
   {:else}
     <PlaybackSpeed />
-    <SkipButtons style="segments" />
+    <SkipButtons style={skipButtons} />
     <ProgressBar progress={0.33} style={isMobile ? "onlyslot" : "oneline"}>
       <PlaybackTime />
     </ProgressBar>
