@@ -3,7 +3,7 @@
   export let href;
 </script>
 
-<a class="advert-link" href={href} target="_blank">
+<a class="advert-link" href={href} target="_blank" rel="noreferrer">
   {text}
 </a>
 
