@@ -29,7 +29,7 @@
   {#if playbackState === "stopped" }
     <ListenPrompt />
   {:else if isAdvert}
-    <ProgressBar progress={0.33} style={isMobile ? "onlyslot" : "oneline"} grow={!isMobile}>
+    <ProgressBar progress={0.33} style={isMobile ? "onlyslot" : "oneline"}>
       <CountdownTime text="Ad" remaining={15} />
     </ProgressBar>
   {:else}
@@ -64,7 +64,6 @@
     background: #fafafa;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 0.5rem;
   }
 

@@ -1,10 +1,9 @@
 <script>
   export let progress = 0;
   export let style = "oneline";
-  export let grow = true;
 </script>
 
-<div class="progress-bar {style}" class:grow={grow}>
+<div class="progress-bar {style}">
   <slot></slot>
 
   <div class="outer">
@@ -14,13 +13,10 @@
 
 <style>
   .progress-bar {
+    flex-grow: 1;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-
-  .grow {
-    flex-grow: 1;
   }
 
   .oneline {
