@@ -14,9 +14,7 @@
   export let playerStyle = "standard";
   export let playbackState = "stopped";
   export let skipButtons = "segments";
-
   export let advertUrl = "https://deliveroo.com";
-  $: isAdvert = advertUrl && playbackState !== "stopped";
 
   let width;
   $: isMobile = width < 375;
@@ -27,22 +25,21 @@
 
   {#if playbackState === "stopped" }
     <ListenPrompt />
-  {:else if isAdvert}
+    <BeyondWords isMobile={isMobile} />
+
+  {:else if advertUrl}
     <ProgressBar progress={0.33} showBar={!isMobile} justify="flex-end">
       <CountdownTime text="Ad" remaining={15} />
     </ProgressBar>
+    <AdvertLink href={advertUrl} />
+    <AdvertButton href={advertUrl} />
+
   {:else}
     <PlaybackSpeed />
     <SkipButtons style={skipButtons} />
     <ProgressBar progress={0.33} showBar={!isMobile} margin={isMobile ? 0 : 0.5}>
       <PlaybackTime />
     </ProgressBar>
-  {/if}
-
-  {#if isAdvert}
-    <AdvertLink href={advertUrl} />
-    <AdvertButton href={advertUrl} />
-  {:else}
     <BeyondWords isMobile={isMobile} />
   {/if}
 </div>
