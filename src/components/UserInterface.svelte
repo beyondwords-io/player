@@ -6,6 +6,7 @@
   import Logo from "./icons/Logo.svelte";
   import SkipButtons from "./SkipButtons.svelte";
   import PlaybackTime from "./PlaybackTime.svelte";
+  import ProgressBar from "./ProgressBar.svelte";
 
   export let style = "standard";
 </script>
@@ -20,6 +21,10 @@
     <PlaybackSpeed />
     <SkipButtons style="segments" />
     <PlaybackTime />
+  </div>
+
+  <div class="progress-bar">
+    <ProgressBar progress={0.33} />
   </div>
 
   <div class="beyondwords-logo">
@@ -52,10 +57,13 @@
   }
 
   .controls {
-    flex-grow: 1;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  .progress-bar {
+    flex-grow: 1;
   }
 
   .beyondwords-logo {
