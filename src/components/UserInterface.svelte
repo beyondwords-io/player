@@ -6,7 +6,6 @@
   import SkipButtons from "./SkipButtons.svelte";
   import PlaybackTime from "./PlaybackTime.svelte";
   import ProgressBar from "./ProgressBar.svelte";
-  import Logo from "./icons/Logo.svelte";
   import AdvertLink from "./AdvertLink.svelte";
   import AdvertButton from "./AdvertButton.svelte";
   import BeyondWords from "./BeyondWords.svelte";
@@ -32,7 +31,7 @@
     </ProgressBar>
   {/if}
 
-  <BeyondWords />
+    <BeyondWords isMobile={isMobile} />
 </div>
 
 <style>
@@ -46,7 +45,6 @@
     max-width: 700px;
     height: 3rem;
     padding: 0.25rem;
-    padding-right: 0.75rem;
     box-sizing: border-box;
     border-radius: 1.5625rem;
     background: #fafafa;
@@ -57,7 +55,5 @@
 
   .standard.mobile {
     flex-direction: row-reverse;
-    padding-left: 0.75rem;
-    padding-right: 0.25rem;
   }
 </style>
