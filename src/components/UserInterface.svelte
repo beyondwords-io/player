@@ -9,6 +9,7 @@
   import Logo from "./icons/Logo.svelte";
   import AdvertLink from "./AdvertLink.svelte";
   import AdvertButton from "./AdvertButton.svelte";
+  import BurgerMenu from "./icons/BurgerMenu.svelte";
 
   export let style = "standard";
 </script>
@@ -29,11 +30,13 @@
     <ProgressBar progress={0.33} />
   </div>
 
-  <!--<div class="beyondwords-logo">
+  <BurgerMenu />
+
+  <div class="beyondwords-logo">
     <Logo />
-  </div>-->
-  <AdvertLink href="https://deliveroo.com" text="deliveroo.com" />
-  <AdvertButton href="https://deliveroo.com" />
+  </div>
+  <!--<AdvertLink href="https://deliveroo.com" text="deliveroo.com" />
+  <AdvertButton href="https://deliveroo.com" />-->
 </div>
 
 
