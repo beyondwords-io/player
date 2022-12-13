@@ -8,11 +8,16 @@
   import ProgressBar from "./ProgressBar.svelte";
   import AdvertLink from "./AdvertLink.svelte";
   import AdvertButton from "./AdvertButton.svelte";
+  import CountdownTime from "./CountdownTime.svelte";
   import BeyondWords from "./BeyondWords.svelte";
 
   export let playerStyle = "standard";
   export let playbackState = "playing";
   export let skipButtons = "segments";
+
+  export let advertText = "deliveroo.com";
+  export let advertUrl = "https://deliveroo.com";
+  $: isAdvert = advertText && advertUrl;
 
   let width;
   $: isMobile = width < 375;
@@ -23,6 +28,10 @@
 
   {#if playbackState === "stopped" }
     <ListenPrompt />
+  {:else if isAdvert}
+    <ProgressBar progress={0.33} style={isMobile ? "onlyslot" : "oneline"} grow={!isMobile}>
+      <CountdownTime text="Ad" remaining={15} />
+    </ProgressBar>
   {:else}
     <PlaybackSpeed />
     <SkipButtons style={skipButtons} />
@@ -31,7 +40,12 @@
     </ProgressBar>
   {/if}
 
+  {#if isAdvert}
+    <AdvertLink href={advertUrl} text={advertText} />
+    <AdvertButton href={advertUrl} />
+  {:else}
     <BeyondWords isMobile={isMobile} />
+  {/if}
 </div>
 
 <style>
@@ -50,6 +64,7 @@
     background: #fafafa;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.5rem;
   }
 
