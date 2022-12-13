@@ -12,6 +12,7 @@
 
 <style>
   .listen-prompt {
+    flex-grow: 1;
     height: 2rem;
     display: flex;
     flex-direction: column;
