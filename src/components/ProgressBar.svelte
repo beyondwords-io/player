@@ -1,12 +1,14 @@
 <script>
   export let progress = 0;
-  export let margin = 0;
 
   export let showBar = true;
   export let multiline = false;
+
+  export let margin = 0;
+  export let justify = "center";
 </script>
 
-<div class="progress-bar" style="margin: 0 {margin}rem" class:multiline>
+<div class="progress-bar" style="margin: 0 {margin}rem; justify-content: {justify}" class:multiline>
   <slot></slot>
 
   {#if showBar}
@@ -21,7 +23,6 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
   }
 

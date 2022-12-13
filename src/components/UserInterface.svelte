@@ -29,7 +29,7 @@
   {#if playbackState === "stopped" }
     <ListenPrompt />
   {:else if isAdvert}
-    <ProgressBar progress={0.33} showBar={!isMobile}>
+    <ProgressBar progress={0.33} showBar={!isMobile} justify="flex-end">
       <CountdownTime text="Ad" remaining={15} />
     </ProgressBar>
   {:else}
