@@ -11,6 +11,5 @@
 <style>
   a {
     display: flex;
-    margin-right: 0.5rem;
   }
 </style>

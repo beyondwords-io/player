@@ -50,6 +50,10 @@
     margin-bottom: 0.25rem;
   }
 
+  .onlyslot {
+    justify-content: center;
+  }
+
   .onlyslot .outer {
     display: none;
   }
