@@ -35,7 +35,7 @@
   {:else}
     <PlaybackSpeed />
     <SkipButtons style={skipButtons} />
-    <ProgressBar progress={0.33} style={isMobile ? "onlyslot" : "oneline"}>
+    <ProgressBar progress={0.33} style={isMobile ? "onlyslot" : "oneline"} margin={isMobile ? 0 : 0.5}>
       <PlaybackTime />
     </ProgressBar>
   {/if}

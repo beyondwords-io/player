@@ -1,9 +1,10 @@
 <script>
   export let progress = 0;
   export let style = "oneline";
+  export let margin = 0;
 </script>
 
-<div class="progress-bar {style}">
+<div class="progress-bar {style}" style="margin: 0 {margin}rem">
   <slot></slot>
 
   <div class="outer">
@@ -17,10 +18,6 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-
-  .oneline {
-    margin: 0 0.5rem;
   }
 
   .multiline {
