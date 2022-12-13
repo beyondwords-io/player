@@ -46,6 +46,7 @@
 
   .backwards, .forwards {
     display: flex;
+    cursor: pointer;
   }
 
   .spacer {

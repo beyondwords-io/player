@@ -16,5 +16,6 @@
 <style>
   div {
     display: flex;
+    cursor: pointer;
   }
 </style>

@@ -29,6 +29,7 @@
     border-radius: 0.25rem;
     background: #d9d9d9;
     display: flex;
+    cursor: pointer;
   }
 
   .inner {
