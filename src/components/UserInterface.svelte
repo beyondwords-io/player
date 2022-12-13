@@ -12,12 +12,12 @@
   import BeyondWords from "./BeyondWords.svelte";
 
   export let playerStyle = "standard";
-  export let playbackState = "playing";
+  export let playbackState = "stopped";
   export let skipButtons = "segments";
 
   export let advertText = "deliveroo.com";
   export let advertUrl = "https://deliveroo.com";
-  $: isAdvert = advertText && advertUrl;
+  $: isAdvert = advertText && advertUrl && playbackState !== "stopped";
 
   let width;
   $: isMobile = width < 375;
