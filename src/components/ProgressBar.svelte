@@ -49,4 +49,8 @@
   .multiline .outer {
     margin-bottom: 0.25rem;
   }
+
+  .onlyslot .outer {
+    display: none;
+  }
 </style>
