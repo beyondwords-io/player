@@ -15,9 +15,8 @@
   export let playbackState = "stopped";
   export let skipButtons = "segments";
 
-  export let advertText = "deliveroo.com";
   export let advertUrl = "https://deliveroo.com";
-  $: isAdvert = advertText && advertUrl && playbackState !== "stopped";
+  $: isAdvert = advertUrl && playbackState !== "stopped";
 
   let width;
   $: isMobile = width < 375;
@@ -41,7 +40,7 @@
   {/if}
 
   {#if isAdvert}
-    <AdvertLink href={advertUrl} text={advertText} />
+    <AdvertLink href={advertUrl} />
     <AdvertButton href={advertUrl} />
   {:else}
     <BeyondWords isMobile={isMobile} />

@@ -1,6 +1,7 @@
 <script>
-  export let text;
   export let href;
+
+  $: text = new URL(href).hostname;
 </script>
 
 <a class="advert-link" href={href} target="_blank" rel="noreferrer">
