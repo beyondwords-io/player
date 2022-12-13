@@ -16,15 +16,29 @@
   .progress-bar {
     display: flex;
     align-items: center;
+    gap: 0.5rem;
   }
 
   .grow {
     flex-grow: 1;
   }
 
+  .oneline {
+    margin: 0 0.5rem;
+  }
+
   .multiline {
     flex-direction: column-reverse;
     align-items: stretch;
+    gap: 0.25rem;
+  }
+
+  .onlyslot {
+    justify-content: center;
+  }
+
+  .onlyslot .outer {
+    display: none;
   }
 
   .outer {
@@ -40,25 +54,5 @@
     height: 0.5rem;
     border-radius: 0.25rem;
     background: #323232;
-  }
-
-  .oneline {
-    margin: 0 0.5rem;
-  }
-
-  .oneline .outer {
-    margin-left: 0.5rem;
-  }
-
-  .multiline .outer {
-    margin-bottom: 0.25rem;
-  }
-
-  .onlyslot {
-    justify-content: center;
-  }
-
-  .onlyslot .outer {
-    display: none;
   }
 </style>

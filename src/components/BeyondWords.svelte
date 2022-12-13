@@ -11,11 +11,11 @@
 <style>
   a {
     display: flex;
-    margin-right: 0.5rem;
+    margin-right: 0.75rem;
   }
 
   .mobile {
     margin-right: 0;
-    margin-left: 0.5rem;
+    margin-left: 0.75rem;
   }
 </style>
