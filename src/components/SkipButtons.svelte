@@ -22,7 +22,9 @@
     {/if}
   </div>
 
-  <!-- TODO: nested content -->
+  <slot>
+    <div class="spacer"></div>
+  </slot>
 
   <div class="forwards">
     {#if style === "segments"}
@@ -46,7 +48,7 @@
     display: flex;
   }
 
-  .forwards {
-    margin-left: 0.5rem;
+  .spacer {
+    width: .5rem;
   }
 </style>
