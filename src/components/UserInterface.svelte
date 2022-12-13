@@ -29,13 +29,13 @@
   {#if playbackState === "stopped" }
     <ListenPrompt />
   {:else if isAdvert}
-    <ProgressBar progress={0.33} style={isMobile ? "onlyslot" : "oneline"}>
+    <ProgressBar progress={0.33} showBar={!isMobile}>
       <CountdownTime text="Ad" remaining={15} />
     </ProgressBar>
   {:else}
     <PlaybackSpeed />
     <SkipButtons style={skipButtons} />
-    <ProgressBar progress={0.33} style={isMobile ? "onlyslot" : "oneline"} margin={isMobile ? 0 : 0.5}>
+    <ProgressBar progress={0.33} showBar={!isMobile} margin={isMobile ? 0 : 0.5}>
       <PlaybackTime />
     </ProgressBar>
   {/if}
