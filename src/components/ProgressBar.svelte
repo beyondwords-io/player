@@ -1,12 +1,12 @@
 <script>
   export let progress = 0;
-  export let style = "oneline";
-
   export let margin = 0;
+
   export let showBar = true;
+  export let multiline = false;
 </script>
 
-<div class="progress-bar {style}" style="margin: 0 {margin}rem">
+<div class="progress-bar" style="margin: 0 {margin}rem" class:multiline>
   <slot></slot>
 
   {#if showBar}
