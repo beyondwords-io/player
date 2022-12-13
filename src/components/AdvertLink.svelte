@@ -14,6 +14,5 @@
     text-decoration: none;
     color: #00cdbc;
     border-bottom: 1px solid #00cdbc;
-    margin-right: 1rem;
   }
 </style>
