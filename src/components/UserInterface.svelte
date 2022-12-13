@@ -3,10 +3,11 @@
   import PlayPauseButton from "./PlayPauseButton.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
-  import Logo from "./icons/Logo.svelte";
   import SkipButtons from "./SkipButtons.svelte";
   import PlaybackTime from "./PlaybackTime.svelte";
   import ProgressBar from "./ProgressBar.svelte";
+  import Logo from "./icons/Logo.svelte";
+  import AdvertLink from "./AdvertLink.svelte";
 
   export let style = "standard";
 </script>
@@ -27,9 +28,10 @@
     <ProgressBar progress={0.33} />
   </div>
 
-  <div class="beyondwords-logo">
+  <!--<div class="beyondwords-logo">
     <Logo />
-  </div>
+  </div>-->
+  <AdvertLink text="deliveroo.com" href="https://deliveroo.co.uk" />
 </div>
 
 
