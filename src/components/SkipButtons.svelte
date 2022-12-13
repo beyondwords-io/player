@@ -9,14 +9,15 @@
   import NextTrack from "./icons/NextTrack.svelte";
 
   export let style = "segments";
+  $: seconds = style.split("-")[1] || 10;
 </script>
 
 <div class="skip-buttons">
   <div class="backwards">
     {#if style === "segments"}
       <Up />
-    {:else if style === "seconds"}
-      <SeekBack />
+    {:else if style.startsWith("seconds")}
+      <SeekBack seconds={seconds} />
     {:else if style === "tracks"}
       <PrevTrack />
     {/if}
@@ -29,8 +30,8 @@
   <div class="forwards">
     {#if style === "segments"}
       <Down />
-    {:else if style === "seconds"}
-      <SeekAhead />
+    {:else if style.startsWith("seconds")}
+      <SeekAhead seconds={seconds} />
     {:else if style === "tracks"}
       <NextTrack />
     {/if}
