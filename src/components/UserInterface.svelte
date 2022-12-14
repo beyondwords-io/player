@@ -53,7 +53,10 @@
       </ProgressBar>
 
       {#if advertUrl}
-        <AdvertLink href={advertUrl} />
+        {#if playerStyle !== "podcast"}
+          <AdvertLink href={advertUrl} />
+        {/if}
+
         <AdvertButton href={advertUrl} />
       {/if}
     {/if}
