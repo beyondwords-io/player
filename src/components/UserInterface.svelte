@@ -30,21 +30,27 @@
 
   {#if playbackState === "stopped" }
     <ListenPrompt />
-    <BeyondWords isMobile={isMobile} />
-
-  {:else if advertUrl}
-    <ProgressBar progress={0.33} showBar={!isMobile} justify="flex-end">
-      <CountdownTime text="Ad" remaining={15} />
-    </ProgressBar>
-    <AdvertLink href={advertUrl} />
-    <AdvertButton href={advertUrl} />
-
   {:else}
-    <PlaybackSpeed />
-    <SkipButtons style={skipButtons} />
-    <ProgressBar progress={0.33} showBar={!isMobile} margin={isMobile ? 0 : 0.5}>
-      <PlaybackTime />
+    {#if !advertUrl}
+      <PlaybackSpeed />
+      <SkipButtons style={skipButtons} />
+    {/if}
+
+    <ProgressBar progress={0.33} showBar={!isMobile} justify={advertUrl ? "flex-end" : "center"} margin={isMobile || advertUrl ? 0 : 0.5}>
+      {#if advertUrl}
+        <CountdownTime text="Ad" remaining={15} />
+      {:else}
+        <PlaybackTime />
+      {/if}
     </ProgressBar>
+
+    {#if advertUrl}
+      <AdvertLink href={advertUrl} />
+      <AdvertButton href={advertUrl} />
+    {/if}
+  {/if}
+
+  {#if playbackState === "stopped" || !advertUrl}
     <BeyondWords isMobile={isMobile} />
   {/if}
 </div>
