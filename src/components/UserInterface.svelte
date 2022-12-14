@@ -50,10 +50,10 @@
         <PlayButton />
       {/if}
 
-      {#if playbackState === "stopped" }
+      {#if playbackState === "stopped" && playerStyle !== "podcast" }
         <ListenPrompt />
       {:else}
-        {#if !advertUrl}
+        {#if playbackState !== "stopped" && !advertUrl}
           <PlaybackSpeed />
           <SkipButtons style={skipButtons} />
         {/if}
