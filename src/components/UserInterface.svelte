@@ -37,7 +37,7 @@
   {#if playerStyle === "podcast"}
     <LargeImage src={isAdvert ? advertImage : podcastImage} />
 
-    <SummaryText text={summaryText}>
+    <SummaryText text={summaryText} isMobile={isMobile}>
       {#if isAdvert}
         <AdvertLink href={advertUrl} />
       {:else}

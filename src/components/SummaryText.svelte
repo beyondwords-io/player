@@ -1,8 +1,9 @@
 <script>
   export let text;
+  export let isMobile;
 </script>
 
-<div class="summary-text">
+<div class="summary-text" class:mobile={isMobile}>
   <div class="title"><slot></slot></div>
   <div class="text">{text}</div>
 </div>
@@ -25,5 +26,15 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  .mobile .text {
+    white-space: normal;
+    max-height: 2.25rem;
+    display: -webkit-box;
+
+            line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
   }
 </style>
