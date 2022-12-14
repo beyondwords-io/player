@@ -57,11 +57,11 @@
         <AdvertButton href={advertUrl} />
       {/if}
     {/if}
-
-    {#if playbackState === "stopped" || !advertUrl}
-      <BeyondWords margin={playerStyle === "podcast" ? 0 : 0.75} marginSide={isMobile ? "left" : "right"} />
-    {/if}
   </div>
+
+  {#if playbackState === "stopped" || !advertUrl}
+    <BeyondWords margin={playerStyle === "podcast" ? 0 : 0.75} marginSide={isMobile ? "left" : "right"} />
+  {/if}
 </div>
 
 <style>
@@ -73,6 +73,7 @@
   .beyondwords-player {
     box-sizing: border-box;
     background: #fafafa;
+    display: flex;
   }
 
   .standard {
@@ -80,6 +81,7 @@
     max-width: 700px;
     height: 3rem;
     padding: 0.25rem;
+    align-items: center;
     border-radius: 1.5625rem;
   }
 
@@ -89,12 +91,12 @@
     height: 6rem;
     padding: 0.5rem;
     border-radius: 0.375rem;
-    display: flex;
     align-items: flex-start;
     gap: 0.5rem;
   }
 
   .playback-controls {
+    align-self: flex-end;
     flex-grow: 1;
     display: flex;
     align-items: center;
