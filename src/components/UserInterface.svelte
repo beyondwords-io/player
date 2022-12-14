@@ -1,6 +1,7 @@
 <script>
   import "@fontsource/inter/variable.css";
-  import PlayPauseButton from "./PlayPauseButton.svelte";
+  import PlayButton from "./PlayButton.svelte";
+  import PauseButton from "./PauseButton.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import SkipButtons from "./SkipButtons.svelte";
@@ -21,7 +22,11 @@
 </script>
 
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
-  <PlayPauseButton isPlaying={playbackState === "playing"} />
+  {#if playbackState === "paused"}
+    <PlayButton />
+  {:else}
+    <PauseButton />
+  {/if}
 
   {#if playbackState === "stopped" }
     <ListenPrompt />
