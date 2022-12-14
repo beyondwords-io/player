@@ -26,6 +26,10 @@
     gap: 0.5rem;
   }
 
+  .progress-bar:nth-child(2) {
+    margin-left: 0 !important;
+  }
+
   .multiline {
     align-self: flex-end;
     flex-direction: column-reverse;
