@@ -108,10 +108,11 @@
   }
 
   .main-content {
+    height: 100%;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    justify-content: space-between;
   }
 
   .playback-controls {
@@ -119,6 +120,10 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  .podcast .playback-controls {
+    align-items: flex-end;
   }
 
   .mobile .playback-controls {
