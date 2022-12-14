@@ -11,5 +11,6 @@
     height: 5rem;
     background: white;
     border-radius: 0.375rem;
+    grid-row: 1 / span 2;
   }
 </style>

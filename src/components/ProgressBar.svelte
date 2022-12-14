@@ -23,7 +23,7 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    column-gap: 0.5rem;
   }
 
   .progress-bar:nth-child(2) {
@@ -34,7 +34,7 @@
     align-self: flex-end;
     flex-direction: column-reverse;
     align-items: stretch;
-    gap: 0.25rem;
+    row-gap: 0.25rem;
   }
 
   .outer {

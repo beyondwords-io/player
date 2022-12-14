@@ -15,7 +15,7 @@
   import CountdownTime from "./CountdownTime.svelte";
   import BeyondWords from "./BeyondWords.svelte";
 
-  export let playerStyle = "podcast";
+  export let playerStyle = "standard";
   export let playbackState = "playing";
   export let skipButtons = "segments";
   export let advertUrl = undefined;
@@ -36,53 +36,49 @@
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
   {#if playerStyle === "podcast"}
     <LargeImage src={isAdvert ? advertImage : podcastImage} />
+
+    <SummaryText text={summaryText}>
+      {#if isAdvert}
+        <AdvertLink href={advertUrl} />
+      {:else}
+        {summaryTitle}
+      {/if}
+    </SummaryText>
   {/if}
 
-  <div class="main-content">
-    {#if playerStyle === "podcast"}
-      <SummaryText text={summaryText}>
-        {#if isAdvert}
-          <AdvertLink href={advertUrl} />
-        {:else}
-          {summaryTitle}
-        {/if}
-      </SummaryText>
+  <div class="playback-controls">
+    {#if playbackState === "playing"}
+      <PauseButton />
+    {:else}
+      <PlayButton />
     {/if}
 
-    <div class="playback-controls">
-      {#if playbackState === "playing"}
-        <PauseButton />
-      {:else}
-        <PlayButton />
+    {#if playbackState === "stopped" && playerStyle !== "podcast" }
+      <ListenPrompt duration={duration} />
+    {:else}
+      {#if playbackState !== "stopped" && !isAdvert}
+        <PlaybackSpeed />
+        <SkipButtons style={skipButtons} />
       {/if}
 
-      {#if playbackState === "stopped" && playerStyle !== "podcast" }
-        <ListenPrompt duration={duration} />
-      {:else}
-        {#if playbackState !== "stopped" && !isAdvert}
-          <PlaybackSpeed />
-          <SkipButtons style={skipButtons} />
-        {/if}
-
-        <ProgressBar progress={playbackState === "stopped" ? 0 : currentTime / duration} showBar={!isMobile} multiline={playerStyle === "podcast"} justify={isAdvert ? "flex-end" : "center"} margin={isMobile || isAdvert ? 0 : 0.5}>
-          {#if isAdvert}
-            <CountdownTime text="Ad" remaining={15} />
-          {:else if playbackState === "stopped"}
-            <Duration duration={duration} />
-          {:else}
-            <PlaybackTime currentTime={currentTime} duration={duration} />
-          {/if}
-        </ProgressBar>
-
+      <ProgressBar progress={playbackState === "stopped" ? 0 : currentTime / duration} showBar={!isMobile} multiline={playerStyle === "podcast"} justify={isAdvert ? "flex-end" : "center"} margin={isMobile || isAdvert ? 0 : 0.5}>
         {#if isAdvert}
-          {#if playerStyle !== "podcast"}
-            <AdvertLink href={advertUrl} />
-          {/if}
-
-          <AdvertButton href={advertUrl} />
+          <CountdownTime text="Ad" remaining={15} />
+        {:else if playbackState === "stopped"}
+          <Duration duration={duration} />
+        {:else}
+          <PlaybackTime currentTime={currentTime} duration={duration} />
         {/if}
+      </ProgressBar>
+
+      {#if isAdvert}
+        {#if playerStyle !== "podcast"}
+          <AdvertLink href={advertUrl} />
+        {/if}
+
+        <AdvertButton href={advertUrl} />
       {/if}
-    </div>
+    {/if}
   </div>
 
   {#if !isAdvert}
@@ -99,8 +95,7 @@
   .beyondwords-player {
     box-sizing: border-box;
     background: #fafafa;
-    display: flex;
-    gap: 0.5rem;
+    column-gap: 0.5rem;
   }
 
   .standard {
@@ -108,8 +103,9 @@
     max-width: 700px;
     height: 3rem;
     padding: 0.25rem;
-    align-items: center;
     border-radius: 1.5625rem;
+    display: flex;
+    align-items: center;
   }
 
   .podcast {
@@ -118,35 +114,35 @@
     height: 6rem;
     padding: 0.5rem;
     border-radius: 0.375rem;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .main-content {
-    height: 100%;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
   }
 
   .playback-controls {
+    align-self: flex-end;
     flex-grow: 1;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    column-gap: 0.5rem;
+    grid-row: 2;
+    grid-column: 2;
   }
 
-  .podcast .playback-controls {
-    align-items: flex-end;
-  }
-
-  .mobile.beyondwords-player {
+  .mobile.standard {
     flex-direction: row-reverse;
+  }
+
+  .mobile.podcast {
+    height: 9rem;
   }
 
   .mobile .playback-controls {
     flex-direction: row-reverse;
+  }
+
+  .mobile.podcast .playback-controls {
+    grid-row: 3;
+    grid-column: 1 / span 3;
   }
 </style>
