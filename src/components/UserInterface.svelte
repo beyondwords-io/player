@@ -22,37 +22,39 @@
 </script>
 
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
-  {#if playbackState === "paused"}
-    <PlayButton />
-  {:else}
-    <PauseButton />
-  {/if}
-
-  {#if playbackState === "stopped" }
-    <ListenPrompt />
-  {:else}
-    {#if !advertUrl}
-      <PlaybackSpeed />
-      <SkipButtons style={skipButtons} />
+  <div class="playback-controls">
+    {#if playbackState === "paused"}
+      <PlayButton />
+    {:else}
+      <PauseButton />
     {/if}
 
-    <ProgressBar progress={0.33} showBar={!isMobile} justify={advertUrl ? "flex-end" : "center"} margin={isMobile || advertUrl ? 0 : 0.5}>
-      {#if advertUrl}
-        <CountdownTime text="Ad" remaining={15} />
-      {:else}
-        <PlaybackTime />
+    {#if playbackState === "stopped" }
+      <ListenPrompt />
+    {:else}
+      {#if !advertUrl}
+        <PlaybackSpeed />
+        <SkipButtons style={skipButtons} />
       {/if}
-    </ProgressBar>
 
-    {#if advertUrl}
-      <AdvertLink href={advertUrl} />
-      <AdvertButton href={advertUrl} />
+      <ProgressBar progress={0.33} showBar={!isMobile} justify={advertUrl ? "flex-end" : "center"} margin={isMobile || advertUrl ? 0 : 0.5}>
+        {#if advertUrl}
+          <CountdownTime text="Ad" remaining={15} />
+        {:else}
+          <PlaybackTime />
+        {/if}
+      </ProgressBar>
+
+      {#if advertUrl}
+        <AdvertLink href={advertUrl} />
+        <AdvertButton href={advertUrl} />
+      {/if}
     {/if}
-  {/if}
 
-  {#if playbackState === "stopped" || !advertUrl}
-    <BeyondWords isMobile={isMobile} />
-  {/if}
+    {#if playbackState === "stopped" || !advertUrl}
+      <BeyondWords isMobile={isMobile} />
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -69,12 +71,16 @@
     box-sizing: border-box;
     border-radius: 1.5625rem;
     background: #fafafa;
+  }
+
+  .playback-controls {
+    flex-grow: 1;
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
-  .standard.mobile {
+  .mobile .playback-controls {
     flex-direction: row-reverse;
   }
 </style>
