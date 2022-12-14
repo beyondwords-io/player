@@ -30,10 +30,10 @@
   {/if}
 
   <div class="playback-controls">
-    {#if playbackState === "paused"}
-      <PlayButton />
-    {:else}
+    {#if playbackState === "playing"}
       <PauseButton />
+    {:else}
+      <PlayButton />
     {/if}
 
     {#if playbackState === "stopped" }
