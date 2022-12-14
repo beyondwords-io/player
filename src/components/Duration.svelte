@@ -1,8 +1,10 @@
 <script>
-  export let text;
+  export let duration = 0;
+
+  $: minutes = Math.round(duration / 60);
 </script>
 
-<div>{text}</div>
+<div>{minutes} min</div>
 
 <style>
   div {

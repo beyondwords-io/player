@@ -1,6 +1,6 @@
 <script>
-  export let currentTime = 160;
-  export let duration = 260;
+  export let currentTime = 0;
+  export let duration = 0;
 
   const format = (time) => {
     let minutes = Math.floor(time / 60).toString();
