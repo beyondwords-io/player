@@ -62,13 +62,15 @@
       {/if}
 
       <ProgressBar progress={playbackState === "stopped" ? 0 : currentTime / duration} showBar={!isMobile} multiline={playerStyle === "podcast"} justify={isAdvert ? "flex-end" : "center"} margin={isMobile || isAdvert ? 0 : 0.5}>
-        {#if isAdvert}
-          <CountdownTime text="Ad" remaining={15} />
-        {:else if playbackState === "stopped"}
-          <Duration duration={duration} />
-        {:else}
-          <PlaybackTime currentTime={currentTime} duration={duration} />
-        {/if}
+        <div class="progress-bar-time">
+          {#if isAdvert}
+            <CountdownTime text="Ad" remaining={15} />
+          {:else if playbackState === "stopped"}
+            <Duration duration={duration} />
+          {:else}
+            <PlaybackTime currentTime={currentTime} duration={duration} />
+          {/if}
+        </div>
       </ProgressBar>
 
       {#if isAdvert}
@@ -123,10 +125,13 @@
     align-self: flex-end;
     flex-grow: 1;
     display: flex;
-    align-items: center;
     column-gap: 0.5rem;
     grid-row: 2;
     grid-column: 2;
+  }
+
+  .progress-bar-time {
+    display: flex;
   }
 
   .mobile.standard {
@@ -144,5 +149,11 @@
   .mobile.podcast .playback-controls {
     grid-row: 3;
     grid-column: 1 / span 3;
+  }
+
+  .mobile.podcast .progress-bar-time {
+    position: absolute;
+    top: 4.375rem;
+    left: 6rem;
   }
 </style>
