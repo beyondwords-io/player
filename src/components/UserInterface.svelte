@@ -53,7 +53,7 @@
     {/if}
 
     {#if playbackState === "stopped" || !advertUrl}
-      <BeyondWords isMobile={isMobile} />
+      <BeyondWords marginSide={isMobile ? "left" : "right"} />
     {/if}
   </div>
 </div>
