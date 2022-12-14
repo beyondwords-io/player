@@ -12,6 +12,7 @@
     font-size: 0.75rem;
     font-weight: 500;
     margin-bottom: 0.3125rem;
+    line-height: 1.25;
   }
 
   .text {
