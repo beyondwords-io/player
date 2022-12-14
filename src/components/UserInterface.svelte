@@ -86,6 +86,7 @@
     box-sizing: border-box;
     background: #fafafa;
     display: flex;
+    gap: 0.5rem;
   }
 
   .standard {
@@ -124,6 +125,10 @@
 
   .podcast .playback-controls {
     align-items: flex-end;
+  }
+
+  .mobile.beyondwords-player {
+    flex-direction: row-reverse;
   }
 
   .mobile .playback-controls {
