@@ -2,8 +2,9 @@
   import UserInterface from "./UserInterface.svelte";
 
   export let showUserInterface;
+  export let userInterface;
 </script>
 
 {#if showUserInterface}
-  <UserInterface />
+  <UserInterface bind:this={userInterface} />
 {/if}
