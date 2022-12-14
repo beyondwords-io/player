@@ -24,6 +24,8 @@
   export let summaryTitle = "Goldman Sachs";
   export let summaryText = "The UK is Expected to Slide into a More ‘Significant’ Recession";
 
+  $: isAdvert = advertUrl && playbackState !== "stopped";
+
   let width;
   $: isMobile = width < 375;
 </script>
@@ -36,7 +38,7 @@
   <div class="main-content">
     {#if playerStyle === "podcast"}
       <SummaryText text={summaryText}>
-        {#if advertUrl}
+        {#if isAdvert}
           <AdvertLink href={advertUrl} />
         {:else}
           {summaryTitle}
@@ -54,20 +56,20 @@
       {#if playbackState === "stopped" && playerStyle !== "podcast" }
         <ListenPrompt />
       {:else}
-        {#if playbackState !== "stopped" && !advertUrl}
+        {#if playbackState !== "stopped" && !isAdvert}
           <PlaybackSpeed />
           <SkipButtons style={skipButtons} />
         {/if}
 
-        <ProgressBar progress={0.33} showBar={!isMobile} multiline={playerStyle === "podcast"} justify={advertUrl ? "flex-end" : "center"} margin={isMobile || advertUrl ? 0 : 0.5}>
-          {#if advertUrl}
+        <ProgressBar progress={0.33} showBar={!isMobile} multiline={playerStyle === "podcast"} justify={isAdvert ? "flex-end" : "center"} margin={isMobile || isAdvert ? 0 : 0.5}>
+          {#if isAdvert}
             <CountdownTime text="Ad" remaining={15} />
           {:else}
             <PlaybackTime />
           {/if}
         </ProgressBar>
 
-        {#if advertUrl}
+        {#if isAdvert}
           {#if playerStyle !== "podcast"}
             <AdvertLink href={advertUrl} />
           {/if}
@@ -78,7 +80,7 @@
     </div>
   </div>
 
-  {#if playbackState === "stopped" || !advertUrl}
+  {#if !isAdvert}
     <BeyondWords margin={playerStyle === "podcast" ? 0 : 0.75} marginSide={isMobile ? "left" : "right"} />
   {/if}
 </div>
