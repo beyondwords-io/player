@@ -1,10 +1,9 @@
 <script>
-  export let title;
   export let text;
 </script>
 
 <div class="summary-text">
-  <div class="title">{title}</div>
+  <div class="title"><slot></slot></div>
   <div class="text">{text}</div>
 </div>
 

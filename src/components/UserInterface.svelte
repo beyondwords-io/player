@@ -34,7 +34,13 @@
 
   <div class="main-content">
     {#if playerStyle === "podcast"}
-      <SummaryText title={summaryTitle} text={summaryText} />
+      <SummaryText text={summaryText}>
+        {#if advertUrl}
+          <AdvertLink href={advertUrl} />
+        {:else}
+          {summaryTitle}
+        {/if}
+      </SummaryText>
     {/if}
 
     <div class="playback-controls">
