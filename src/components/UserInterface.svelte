@@ -44,7 +44,7 @@
         <SkipButtons style={skipButtons} />
       {/if}
 
-      <ProgressBar progress={0.33} showBar={!isMobile} justify={advertUrl ? "flex-end" : "center"} margin={isMobile || advertUrl ? 0 : 0.5}>
+      <ProgressBar progress={0.33} showBar={!isMobile} multiline={playerStyle === "podcast"} justify={advertUrl ? "flex-end" : "center"} margin={isMobile || advertUrl ? 0 : 0.5}>
         {#if advertUrl}
           <CountdownTime text="Ad" remaining={15} />
         {:else}

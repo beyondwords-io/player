@@ -27,6 +27,7 @@
   }
 
   .multiline {
+    align-self: flex-end;
     flex-direction: column-reverse;
     align-items: stretch;
     gap: 0.25rem;
