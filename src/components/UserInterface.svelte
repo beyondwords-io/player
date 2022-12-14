@@ -12,10 +12,11 @@
   import CountdownTime from "./CountdownTime.svelte";
   import BeyondWords from "./BeyondWords.svelte";
 
-  export let playerStyle = "standard";
-  export let playbackState = "stopped";
+  export let playerStyle = "podcast";
+  export let playbackState = "playing";
   export let skipButtons = "segments";
-  export let advertUrl = "https://deliveroo.com";
+  export let advertUrl = undefined;
+  //export let advertUrl = "https://deliveroo.com";
 
   let width;
   $: isMobile = width < 375;
@@ -63,14 +64,27 @@
     color: #323232;
   }
 
+  .beyondwords-player {
+    box-sizing: border-box;
+    background: #fafafa;
+  }
+
   .standard {
     min-width: 300px;
     max-width: 700px;
     height: 3rem;
     padding: 0.25rem;
-    box-sizing: border-box;
     border-radius: 1.5625rem;
-    background: #fafafa;
+  }
+
+  .podcast {
+    min-width: 300px;
+    max-width: 700px;
+    height: 6rem;
+    padding: 0.25rem;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: flex-end;
   }
 
   .playback-controls {
