@@ -1,5 +1,6 @@
 <script>
   import "@fontsource/inter/variable.css";
+  import LargeImage from "./LargeImage.svelte";
   import PlayButton from "./PlayButton.svelte";
   import PauseButton from "./PauseButton.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
@@ -17,12 +18,17 @@
   export let skipButtons = "segments";
   export let advertUrl = undefined;
   //export let advertUrl = "https://deliveroo.com";
+  export let imageSrc = "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
 
   let width;
   $: isMobile = width < 375;
 </script>
 
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
+  {#if playerStyle === "podcast"}
+    <LargeImage src={imageSrc} />
+  {/if}
+
   <div class="playback-controls">
     {#if playbackState === "paused"}
       <PlayButton />
@@ -81,10 +87,11 @@
     min-width: 300px;
     max-width: 700px;
     height: 6rem;
-    padding: 0.25rem;
+    padding: 0.5rem;
     border-radius: 0.375rem;
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 
   .playback-controls {
