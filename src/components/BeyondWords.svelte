@@ -1,23 +1,16 @@
 <script>
   import Logo from "./icons/Logo.svelte";
 
+  export let margin;
   export let marginSide;
 </script>
 
-<a href="https://beyondwords.io/" target="_blank" rel="noreferrer" class="{marginSide}-margin">
+<a href="https://beyondwords.io/" target="_blank" rel="noreferrer" style="margin-{marginSide}: {margin}rem">
   <Logo />
 </a>
 
 <style>
   a {
     display: flex;
-  }
-
-  .left-margin {
-    margin-left: 0.75rem;
-  }
-
-  .right-margin {
-    margin-right: 0.75rem;
   }
 </style>
