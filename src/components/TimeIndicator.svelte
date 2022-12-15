@@ -46,16 +46,16 @@
     margin-left: 0 !important;
   }
 
-  .stopped {
-    flex-grow: 0;
-    margin-left: -0.5rem !important;
-  }
-
   .podcast {
     height: 2.5rem;
     margin-left: 0 !important;
-    margin-right: -0.5rem;
     position: relative;
+  }
+
+  .stopped,
+  .podcast.advert {
+    flex-grow: 0;
+    margin-left: -0.5rem !important;
   }
 
   .podcast.mobile {
@@ -81,7 +81,7 @@
 
   .podcast .inner {
     position: absolute;
-    left: 0;
+    left: 0.5rem;
     bottom: 0;
   }
 
