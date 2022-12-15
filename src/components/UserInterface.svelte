@@ -36,7 +36,7 @@
   export let duration = isAdvert ? 15 : 260;
 
   let width;
-  $: isMobile = width < 375 && !isIcon;
+  $: isMobile = width < 380 && !isIcon;
 </script>
 
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
