@@ -56,7 +56,7 @@
     {/if}
 
     {#if isStopped && !isPodcast}
-      <ListenPrompt duration={duration} />
+      <ListenPrompt />
     {/if}
 
     {#if !isStopped && !isAdvert}

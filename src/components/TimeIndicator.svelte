@@ -14,7 +14,7 @@
   export let isStopped;
 </script>
 
-<div class="time-indicator" class:mobile={isMobile} class:advert={isAdvert} class:podcast={isPodcast}>
+<div class="time-indicator" class:mobile={isMobile} class:advert={isAdvert} class:podcast={isPodcast} class:stopped={isStopped}>
   <div class="inner">
     {#if isAdvert}
       <CountdownTime {text} remaining={remaining} />
@@ -47,6 +47,11 @@
     margin-left: 0 !important;
   }
 
+  .stopped {
+    flex-grow: 0;
+    margin-left: -0.5rem !important;
+  }
+
   .podcast {
     height: 2.5rem;
     margin-left: 0 !important;
@@ -54,7 +59,7 @@
     position: relative;
   }
 
-  .mobile.podcast {
+  .podcast.mobile {
     position: static;
   }
 
@@ -63,13 +68,26 @@
     white-space: nowrap;
   }
 
+  .stopped .inner {
+    position: absolute;
+    left: 3.25rem;
+    top: 1.75rem;
+  }
+
+  .stopped.mobile .inner {
+    position: absolute;
+    left: 2.5rem;
+    top: 1.75rem;
+  }
+
   .podcast .inner {
     position: absolute;
     left: 0;
     bottom: 0;
   }
 
-  .mobile.podcast .inner {
+  .podcast.mobile .inner {
+    position: absolute;
     left: 6rem;
     top: 4.75rem;
   }
