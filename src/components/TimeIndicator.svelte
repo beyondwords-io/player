@@ -1,9 +1,9 @@
 <script>
   import CountdownTime from "./CountdownTime.svelte";
   import Duration from "./Duration.svelte";
+  import MinsRemaining from "./MinsRemaining.svelte";
   import PlaybackTime from "./PlaybackTime.svelte";
 
-  export let text = "Ad";
   export let duration = 0;
   export let currentTime = 0;
   $: remaining = Math.max(0, duration - currentTime);
@@ -17,9 +17,11 @@
 <div class="time-indicator {playerStyle}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped}>
   <div class="inner">
     {#if isAdvert}
-      <CountdownTime {text} remaining={remaining} />
+      <CountdownTime text="Ad" remaining={remaining} />
     {:else if isStopped}
       <Duration {duration} />
+    {:else if playerStyle === "icon"}
+      <MinsRemaining remaining={remaining} />
     {:else}
       <PlaybackTime {duration} {currentTime} />
     {/if}
