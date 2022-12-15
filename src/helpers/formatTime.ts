@@ -1,5 +1,5 @@
 const formatTime = (time) => {
-  let hours = Math.floor(time / 3600).toString();
+  const hours = Math.floor(time / 3600).toString();
   let minutes = Math.floor((time % 3600) / 60).toString();
   let seconds = Math.floor(time % 60).toString();
 
