@@ -16,6 +16,7 @@
     text-decoration: none;
     color: #00cdbc;
     border-bottom: 1px solid #00cdbc;
+    white-space: nowrap;
   }
 
   .podcast {
