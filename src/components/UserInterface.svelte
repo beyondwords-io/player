@@ -5,15 +5,13 @@
   import PlayButton from "./PlayButton.svelte";
   import PauseButton from "./PauseButton.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
-  import Duration from "./Duration.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import SkipButtons from "./SkipButtons.svelte";
-  import PlaybackTime from "./PlaybackTime.svelte";
   import ProgressBar from "./ProgressBar.svelte";
   import AdvertLink from "./AdvertLink.svelte";
   import AdvertButton from "./AdvertButton.svelte";
-  import CountdownTime from "./CountdownTime.svelte";
   import BeyondWords from "./BeyondWords.svelte";
+  import TimeIndicator from "./TimeIndicator.svelte";
 
   export let playerStyle = "standard";
   export let playbackState = "playing";
@@ -24,10 +22,11 @@
   export let advertImage = "https://s3-alpha-sig.figma.com/img/5961/0ae1/ad61ca37487eda4edd52891557abbc02?Expires=1672012800&Signature=n8~Lv2SrnAFbm8OKWFYKDHaKI~qc~1aWdR3cE~WjoxNaR6SCJpgosQKinU0XEP6VlDiPYSzUnHcdghmbKloZUTZahZHwJdIPRx8cA5RgkR6NiCPiFVTVrq4iLY6bE7pYDe39jsetJaGYwz5ZXX~F9RcXWntUaeIOy7jYKCIlWH4~bYdZfWSJd-NNCTESWOxTenjPwq5s6UGdtcqH9fNzLCri-3lpXtfNcgnEDWz-zIm02ykjAv2RNgIKGKiP4OkKTLV6~c8dzk7A~fWQ-eQTF13qbnilVEAsVv~2LO870T3DvefGIxriYuKRHsCchdbFP97iT2cjTnXv8Yw-hZev5w__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
   export let summaryTitle = "Goldman Sachs";
   export let summaryText = "The UK is Expected to Slide into a More ‘Significant’ Recession";
-  export let currentTime = 160;
-  export let duration = 260;
 
   $: isAdvert = advertUrl && playbackState !== "stopped";
+
+  export let currentTime = isAdvert ? 0 : 160;
+  export let duration = isAdvert ? 15 : 260;
 
   let width;
   $: isMobile = width < 375;
@@ -61,17 +60,7 @@
         <SkipButtons style={skipButtons} />
       {/if}
 
-      <div class="time" style="justify-content: {isAdvert ? "flex-end" : "center"}">
-        <div class="time-inner">
-          {#if isAdvert}
-            <CountdownTime text="Ad" remaining={15} />
-          {:else if playbackState === "stopped"}
-            <Duration duration={duration} />
-          {:else}
-            <PlaybackTime currentTime={currentTime} duration={duration} />
-          {/if}
-        </div>
-      </div>
+      <TimeIndicator {currentTime} {duration} {isAdvert} {isMobile} isPodcast={playerStyle === "podcast"} isStopped={playbackState === "stopped"} />
 
       {#if !isMobile}
         <ProgressBar progress={playbackState === "stopped" ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
@@ -135,33 +124,6 @@
     grid-column: 2;
   }
 
-  .time {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-  }
-
-  .time:nth-child(4) {
-    margin-left: 0.5rem;
-  }
-
-  .mobile .time {
-    flex-grow: 1;
-    margin-left: 0;
-  }
-
-  .podcast .time {
-    margin-left: 0;
-    margin-right: -0.5rem;
-    height: 2.5rem;
-  }
-
-  .time-inner {
-    display: flex;
-    white-space: nowrap;
-  }
-
   .mobile.standard {
     flex-direction: row-reverse;
   }
@@ -177,20 +139,5 @@
   .mobile.podcast .playback-controls {
     grid-row: 3;
     grid-column: 1 / span 3;
-  }
-
-  .mobile.podcast .time {
-    position: static;
-  }
-
-  .podcast .time-inner {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-  }
-
-  .mobile.podcast .time-inner {
-    top: 4.75rem;
-    left: 6rem;
   }
 </style>
