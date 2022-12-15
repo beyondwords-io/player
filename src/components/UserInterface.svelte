@@ -23,7 +23,10 @@
   export let summaryTitle = "Goldman Sachs";
   export let summaryText = "The UK is Expected to Slide into a More ‘Significant’ Recession";
 
-  $: isAdvert = advertUrl && playbackState !== "stopped";
+  $: isPodcast = playerStyle === "podcast";
+  $: isPlaying = playbackState === "playing";
+  $: isStopped = playbackState === "stopped";
+  $: isAdvert = advertUrl && !isStopped;
 
   export let currentTime = isAdvert ? 0 : 160;
   export let duration = isAdvert ? 15 : 260;
@@ -33,7 +36,7 @@
 </script>
 
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
-  {#if playerStyle === "podcast"}
+  {#if isPodcast}
     <LargeImage src={isAdvert ? advertImage : podcastImage} />
 
     <SummaryText text={summaryText} isMobile={isMobile}>
@@ -46,24 +49,24 @@
   {/if}
 
   <div class="playback-controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
-    {#if playbackState === "playing"}
+    {#if isPlaying}
       <PauseButton />
     {:else}
       <PlayButton />
     {/if}
 
-    {#if playbackState === "stopped" && playerStyle !== "podcast" }
+    {#if isStopped && !isPodcast}
       <ListenPrompt duration={duration} />
     {:else}
-      {#if playbackState !== "stopped" && !isAdvert}
+      {#if !isStopped && !isAdvert}
         <PlaybackSpeed />
         <SkipButtons style={skipButtons} />
       {/if}
 
-      <TimeIndicator {currentTime} {duration} {isAdvert} {isMobile} isPodcast={playerStyle === "podcast"} isStopped={playbackState === "stopped"} />
+      <TimeIndicator {currentTime} {duration} {isAdvert} {isMobile} {isPodcast} {isStopped} />
 
       {#if !isMobile}
-        <ProgressBar progress={playbackState === "stopped" ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
+        <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
       {/if}
 
       {#if isAdvert}
@@ -77,7 +80,7 @@
   </div>
 
   {#if !isAdvert}
-    <BeyondWords margin={playerStyle === "podcast" ? 0 : 0.75} marginSide={isMobile ? "left" : "right"} />
+    <BeyondWords margin={isPodcast ? 0 : 0.75} marginSide={isMobile ? "left" : "right"} />
   {/if}
 </div>
 
