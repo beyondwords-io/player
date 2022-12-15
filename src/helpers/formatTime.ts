@@ -1,4 +1,6 @@
 const formatTime = (time) => {
+  if (time < 0) { time = Math.max(0, time); }
+
   const hours = Math.floor(time / 3600).toString();
   let minutes = Math.floor((time % 3600) / 60).toString();
   let seconds = Math.floor(time % 60).toString();
