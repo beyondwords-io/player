@@ -20,6 +20,7 @@
 
   .podcast {
     position: absolute;
+    left: 6rem;
     top: 0.5rem;
   }
 
