@@ -1,11 +1,11 @@
 <script>
   export let href;
-  export let isPodcast;
+  export let playerStyle;
 
   $: text = new URL(href).hostname;
 </script>
 
-<a class="advert-link" href={href} target="_blank" rel="noreferrer" class:podcast={isPodcast}>
+<a class="advert-link {playerStyle}" href={href} target="_blank" rel="noreferrer">
   {text}
 </a>
 
@@ -21,5 +21,11 @@
   .podcast {
     position: absolute;
     top: 0.5rem;
+  }
+
+  .icon {
+    position: absolute;
+    top: 0.25rem;
+    left: 2.75rem;
   }
 </style>

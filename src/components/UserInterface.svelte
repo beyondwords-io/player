@@ -52,7 +52,7 @@
       <PlayButton scale={isIcon ? 0.8 : 1} />
     {/if}
 
-    {#if isIcon || isStandard && isStopped}
+    {#if isStandard && isStopped || (isIcon && !isAdvert)}
       <ListenPrompt />
     {/if}
 
@@ -68,8 +68,8 @@
     {/if}
 
     {#if isAdvert && !isStopped}
-      <AdvertLink href={advertUrl} isPodcast={isPodcast} />
-      <AdvertButton href={advertUrl} />
+      <AdvertLink href={advertUrl} playerStyle={playerStyle} />
+      <AdvertButton href={advertUrl} scale={isIcon ? 0.8 : 1} />
     {/if}
   </div>
 
