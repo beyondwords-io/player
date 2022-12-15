@@ -92,7 +92,6 @@
 
   .standard {
     min-width: 300px;
-    max-width: 700px;
     height: 3rem;
     padding: 0.25rem;
     border-radius: 1.5625rem;
@@ -102,7 +101,6 @@
 
   .podcast {
     min-width: 300px;
-    max-width: 700px;
     height: 6rem;
     padding: 0.5rem;
     border-radius: 0.375rem;
