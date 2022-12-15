@@ -29,8 +29,8 @@
   export let skipButtons = "segments";
   export let podcastImage = "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
   export let advertImage = "https://s3-alpha-sig.figma.com/img/5961/0ae1/ad61ca37487eda4edd52891557abbc02?Expires=1672012800&Signature=n8~Lv2SrnAFbm8OKWFYKDHaKI~qc~1aWdR3cE~WjoxNaR6SCJpgosQKinU0XEP6VlDiPYSzUnHcdghmbKloZUTZahZHwJdIPRx8cA5RgkR6NiCPiFVTVrq4iLY6bE7pYDe39jsetJaGYwz5ZXX~F9RcXWntUaeIOy7jYKCIlWH4~bYdZfWSJd-NNCTESWOxTenjPwq5s6UGdtcqH9fNzLCri-3lpXtfNcgnEDWz-zIm02ykjAv2RNgIKGKiP4OkKTLV6~c8dzk7A~fWQ-eQTF13qbnilVEAsVv~2LO870T3DvefGIxriYuKRHsCchdbFP97iT2cjTnXv8Yw-hZev5w__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
-  export let summaryTitle = "Goldman Sachs";
-  export let summaryText = "The UK is Expected to Slide into a More ‘Significant’ Recession";
+  export let title = "Goldman Sachs";
+  export let body = "The UK is Expected to Slide into a More ‘Significant’ Recession";
 
   export let currentTime = isAdvert ? 0 : 160;
   export let duration = isAdvert ? 15 : 260;
@@ -42,14 +42,7 @@
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
   {#if isPodcast}
     <LargeImage src={isAdvert ? advertImage : podcastImage} />
-
-    <SummaryText text={summaryText} isMobile={isMobile}>
-      {#if isAdvert}
-        <AdvertLink href={advertUrl} />
-      {:else}
-        {summaryTitle}
-      {/if}
-    </SummaryText>
+    <SummaryText title={isAdvert ? "" : title} body={body} isMobile={isMobile} />
   {/if}
 
   <div class="playback-controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
@@ -74,11 +67,8 @@
       <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
     {/if}
 
-    {#if isAdvert && !isStopped && !isPodcast}
-      <AdvertLink href={advertUrl} />
-    {/if}
-
     {#if isAdvert && !isStopped}
+      <AdvertLink href={advertUrl} isPodcast={isPodcast} />
       <AdvertButton href={advertUrl} />
     {/if}
   </div>
