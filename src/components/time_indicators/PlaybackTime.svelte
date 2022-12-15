@@ -1,19 +1,11 @@
 <script>
+  import formatTime from "../../helpers/formatTime";
+
   export let currentTime = 0;
   export let duration = 0;
-
-  const format = (time) => {
-    let minutes = Math.floor(time / 60).toString();
-    let seconds = Math.round(time % 60).toString();
-
-    if (minutes.length < 2) { minutes = `0${minutes}`; }
-    if (seconds.length < 2) { seconds = `0${seconds}`; }
-
-    return `${minutes}:${seconds}`;
-  };
 </script>
 
-<span>{format(currentTime)} / {format(duration)}</span>
+<span>{formatTime(currentTime)} / {formatTime(duration)}</span>
 
 <style>
   span {
