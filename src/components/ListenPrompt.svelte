@@ -18,5 +18,6 @@
   .text {
     font-size: 0.75rem;
     font-weight: 500;
+    white-space: nowrap;
   }
 </style>

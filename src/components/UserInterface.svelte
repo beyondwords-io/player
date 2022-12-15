@@ -59,18 +59,18 @@
       <PlayButton scale={isIcon ? 0.8 : 1} />
     {/if}
 
-    {#if isStopped && !isPodcast}
+    {#if isIcon || isStandard && isStopped}
       <ListenPrompt />
     {/if}
 
-    {#if !isStopped && !isAdvert}
+    {#if !isIcon && !isStopped && !isAdvert}
       <PlaybackSpeed />
       <SkipButtons style={skipButtons} />
     {/if}
 
     <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} />
 
-    {#if !isMobile && (!isStopped || isPodcast)}
+    {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
       <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
     {/if}
 
