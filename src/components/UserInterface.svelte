@@ -79,15 +79,16 @@
 </div>
 
 <style>
-  .beyondwords-player :global(*) {
-    font-family: "InterVariable", sans-serif;
-    color: #323232;
-  }
-
   .beyondwords-player {
     box-sizing: border-box;
     background: #fafafa;
     column-gap: 0.5rem;
+    overflow: hidden;
+  }
+
+  .beyondwords-player :global(*) {
+    font-family: "InterVariable", sans-serif;
+    color: #323232;
   }
 
   .standard {
