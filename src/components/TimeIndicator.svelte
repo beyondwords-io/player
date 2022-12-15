@@ -8,13 +8,13 @@
   export let currentTime = 0;
   $: remaining = Math.max(0, duration - currentTime);
 
+  export let playerStyle;
   export let isMobile;
   export let isAdvert;
-  export let isPodcast;
   export let isStopped;
 </script>
 
-<div class="time-indicator" class:mobile={isMobile} class:advert={isAdvert} class:podcast={isPodcast} class:stopped={isStopped}>
+<div class="time-indicator {playerStyle}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped}>
   <div class="inner">
     {#if isAdvert}
       <CountdownTime {text} remaining={remaining} />
@@ -90,5 +90,11 @@
     position: absolute;
     left: 6rem;
     top: 4.75rem;
+  }
+
+  .icon .inner {
+    position: absolute;
+    left: 2.75rem;
+    top: 1.5rem;
   }
 </style>

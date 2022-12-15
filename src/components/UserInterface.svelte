@@ -13,26 +13,30 @@
   import BeyondWords from "./BeyondWords.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
 
-  export let playerStyle = "standard";
+  export let playerStyle = "icon";
+  $: isStandard = playerStyle === "standard";
+  $: isPodcast = playerStyle === "podcast";
+  $: isIcon = playerStyle === "icon";
+
   export let playbackState = "stopped";
-  export let skipButtons = "segments";
+  $: isPlaying = playbackState === "playing";
+  $: isStopped = playbackState === "stopped";
+
   export let advertUrl = undefined;
   //export let advertUrl = "https://deliveroo.com";
+  $: isAdvert = advertUrl && !isStopped;
+
+  export let skipButtons = "segments";
   export let podcastImage = "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
   export let advertImage = "https://s3-alpha-sig.figma.com/img/5961/0ae1/ad61ca37487eda4edd52891557abbc02?Expires=1672012800&Signature=n8~Lv2SrnAFbm8OKWFYKDHaKI~qc~1aWdR3cE~WjoxNaR6SCJpgosQKinU0XEP6VlDiPYSzUnHcdghmbKloZUTZahZHwJdIPRx8cA5RgkR6NiCPiFVTVrq4iLY6bE7pYDe39jsetJaGYwz5ZXX~F9RcXWntUaeIOy7jYKCIlWH4~bYdZfWSJd-NNCTESWOxTenjPwq5s6UGdtcqH9fNzLCri-3lpXtfNcgnEDWz-zIm02ykjAv2RNgIKGKiP4OkKTLV6~c8dzk7A~fWQ-eQTF13qbnilVEAsVv~2LO870T3DvefGIxriYuKRHsCchdbFP97iT2cjTnXv8Yw-hZev5w__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
   export let summaryTitle = "Goldman Sachs";
   export let summaryText = "The UK is Expected to Slide into a More ‘Significant’ Recession";
 
-  $: isPodcast = playerStyle === "podcast";
-  $: isPlaying = playbackState === "playing";
-  $: isStopped = playbackState === "stopped";
-  $: isAdvert = advertUrl && !isStopped;
-
   export let currentTime = isAdvert ? 0 : 160;
   export let duration = isAdvert ? 15 : 260;
 
   let width;
-  $: isMobile = width < 375;
+  $: isMobile = width < 375 && !isIcon;
 </script>
 
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
@@ -50,9 +54,9 @@
 
   <div class="playback-controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
     {#if isPlaying}
-      <PauseButton />
+      <PauseButton scale={isIcon ? 0.8 : 1} />
     {:else}
-      <PlayButton />
+      <PlayButton scale={isIcon ? 0.8 : 1} />
     {/if}
 
     {#if isStopped && !isPodcast}
@@ -64,7 +68,7 @@
       <SkipButtons style={skipButtons} />
     {/if}
 
-    <TimeIndicator {currentTime} {duration} {isAdvert} {isMobile} {isPodcast} {isStopped} />
+    <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} />
 
     {#if !isMobile && (!isStopped || isPodcast)}
       <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
@@ -80,7 +84,7 @@
   </div>
 
   {#if !isAdvert}
-    <BeyondWords margin={isPodcast ? 0 : 0.75} marginSide={isMobile ? "left" : "right"} />
+    <BeyondWords margin={isStandard ? 0.75 : isIcon ? 0.5 : 0} marginSide={isStandard && isMobile ? "left" : "right"} />
   {/if}
 </div>
 
@@ -117,6 +121,16 @@
     grid-template-rows: auto auto;
   }
 
+  .icon {
+    min-width: 200px;
+    max-width: 200px;
+    height: 2.5rem;
+    padding: 0.25rem;
+    border-radius: 1.25rem;
+    display: flex;
+    align-items: center;
+  }
+
   .playback-controls {
     align-self: flex-end;
     flex-grow: 1;
@@ -135,7 +149,8 @@
     height: 9rem;
   }
 
-  .mobile .playback-controls {
+  .mobile.standard .playback-controls,
+  .mobile.podcast .playback-controls {
     flex-direction: row-reverse;
   }
 

@@ -1,9 +1,11 @@
 <script>
   import Pause from "./icons/Pause.svelte";
+
+  export let scale = 1;
 </script>
 
 <div>
-  <Pause />
+  <Pause scale={scale} />
 </div>
 
 <style>
