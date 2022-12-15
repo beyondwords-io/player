@@ -64,7 +64,7 @@
     <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} />
 
     {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
-      <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
+      <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
     {/if}
 
     {#if isAdvert && !isStopped}
