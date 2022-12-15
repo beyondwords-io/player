@@ -1,7 +1,6 @@
 <script>
   import CountdownTime from "./time_indicators/CountdownTime.svelte";
   import Duration from "./time_indicators/Duration.svelte";
-  import MinsRemaining from "./time_indicators/MinsRemaining.svelte";
   import PlaybackTime from "./time_indicators/PlaybackTime.svelte";
 
   export let duration = 0;
@@ -20,8 +19,6 @@
       <CountdownTime text="Ad" remaining={remaining} />
     {:else if isStopped}
       <Duration {duration} />
-    {:else if playerStyle === "icon"}
-      <MinsRemaining remaining={remaining} />
     {:else}
       <PlaybackTime {duration} {currentTime} />
     {/if}
