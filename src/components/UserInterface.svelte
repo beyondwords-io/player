@@ -14,7 +14,7 @@
   import TimeIndicator from "./TimeIndicator.svelte";
 
   export let playerStyle = "standard";
-  export let playbackState = "playing";
+  export let playbackState = "stopped";
   export let skipButtons = "segments";
   export let advertUrl = undefined;
   //export let advertUrl = "https://deliveroo.com";
@@ -57,25 +57,25 @@
 
     {#if isStopped && !isPodcast}
       <ListenPrompt duration={duration} />
-    {:else}
-      {#if !isStopped && !isAdvert}
-        <PlaybackSpeed />
-        <SkipButtons style={skipButtons} />
-      {/if}
+    {/if}
 
-      <TimeIndicator {currentTime} {duration} {isAdvert} {isMobile} {isPodcast} {isStopped} />
+    {#if !isStopped && !isAdvert}
+      <PlaybackSpeed />
+      <SkipButtons style={skipButtons} />
+    {/if}
 
-      {#if !isMobile}
-        <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
-      {/if}
+    <TimeIndicator {currentTime} {duration} {isAdvert} {isMobile} {isPodcast} {isStopped} />
 
-      {#if isAdvert}
-        {#if playerStyle !== "podcast"}
-          <AdvertLink href={advertUrl} />
-        {/if}
+    {#if !isMobile && (!isStopped || isPodcast)}
+      <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
+    {/if}
 
-        <AdvertButton href={advertUrl} />
-      {/if}
+    {#if isAdvert && !isStopped && !isPodcast}
+      <AdvertLink href={advertUrl} />
+    {/if}
+
+    {#if isAdvert && !isStopped}
+      <AdvertButton href={advertUrl} />
     {/if}
   </div>
 
