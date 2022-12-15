@@ -1,43 +1,14 @@
 <script>
   export let progress = 0;
-
-  export let showBar = true;
-  export let multiline = false;
-
-  export let margin = 0;
-  export let justify = "center";
+  export let marginRight = 0;
 </script>
 
-<div class="progress-bar" style="margin: 0 {margin}rem; justify-content: {justify}" class:multiline>
-  <slot></slot>
-
-  {#if showBar}
-    <div class="outer">
-      <div class="inner" style="width: {progress * 100}%"></div>
-    </div>
-  {/if}
+<div class="progress-bar" style="margin-right: {marginRight}rem">
+  <div class="progress" style="width: {progress * 100}%"></div>
 </div>
 
 <style>
   .progress-bar {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    column-gap: 0.5rem;
-  }
-
-  .progress-bar:nth-child(2) {
-    margin-left: 0 !important;
-  }
-
-  .multiline {
-    align-self: flex-end;
-    flex-direction: column-reverse;
-    align-items: stretch;
-    row-gap: 0.25rem;
-  }
-
-  .outer {
     flex-grow: 1;
     height: 0.5rem;
     border-radius: 0.25rem;
@@ -46,7 +17,7 @@
     cursor: pointer;
   }
 
-  .inner {
+  .progress {
     height: 0.5rem;
     border-radius: 0.25rem;
     background: #323232;

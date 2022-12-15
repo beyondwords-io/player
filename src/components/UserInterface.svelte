@@ -46,7 +46,7 @@
     </SummaryText>
   {/if}
 
-  <div class="playback-controls">
+  <div class="playback-controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
     {#if playbackState === "playing"}
       <PauseButton />
     {:else}
@@ -61,8 +61,8 @@
         <SkipButtons style={skipButtons} />
       {/if}
 
-      <ProgressBar progress={playbackState === "stopped" ? 0 : currentTime / duration} showBar={!isMobile} multiline={playerStyle === "podcast"} justify={isAdvert ? "flex-end" : "center"} margin={isMobile || isAdvert ? 0 : 0.5}>
-        <div class="progress-bar-time">
+      <div class="time" style="justify-content: {isAdvert ? "flex-end" : "center"}">
+        <div class="time-inner">
           {#if isAdvert}
             <CountdownTime text="Ad" remaining={15} />
           {:else if playbackState === "stopped"}
@@ -71,7 +71,11 @@
             <PlaybackTime currentTime={currentTime} duration={duration} />
           {/if}
         </div>
-      </ProgressBar>
+      </div>
+
+      {#if !isMobile}
+        <ProgressBar progress={playbackState === "stopped" ? 0 : currentTime / duration} marginRight={isAdvert ? 0 : 0.5} />
+      {/if}
 
       {#if isAdvert}
         {#if playerStyle !== "podcast"}
@@ -125,13 +129,37 @@
     align-self: flex-end;
     flex-grow: 1;
     display: flex;
+    align-items: center;
     column-gap: 0.5rem;
     grid-row: 2;
     grid-column: 2;
   }
 
-  .progress-bar-time {
+  .time {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .time:nth-child(4) {
+    margin-left: 0.5rem;
+  }
+
+  .mobile .time {
+    flex-grow: 1;
+    margin-left: 0;
+  }
+
+  .podcast .time {
+    margin-left: 0;
+    margin-right: -0.5rem;
+    height: 2.5rem;
+  }
+
+  .time-inner {
+    display: flex;
+    white-space: nowrap;
   }
 
   .mobile.standard {
@@ -151,9 +179,18 @@
     grid-column: 1 / span 3;
   }
 
-  .mobile.podcast .progress-bar-time {
+  .mobile.podcast .time {
+    position: static;
+  }
+
+  .podcast .time-inner {
     position: absolute;
-    top: 4.375rem;
+    bottom: 0;
+    left: 0;
+  }
+
+  .mobile.podcast .time-inner {
+    top: 4.75rem;
     left: 6rem;
   }
 </style>
