@@ -36,6 +36,7 @@ const isClassSelector = (target) => {
 
 const addDivAfter = (target) => {
   const div = document.createElement("div");
+  div.classList.add("beyondwords-player");
   target.parentNode.insertBefore(div, target.nextSibling);
   return div;
 };
