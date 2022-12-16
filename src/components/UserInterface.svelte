@@ -33,9 +33,6 @@
   export let index = 1;
   export let time = advert ? 0 : 160;
 
-  $: active = advert || podcasts[index] || {};
-  $: body = active.body || (podcasts[index] || {}).body;
-
   $: isStandard = style === "standard";
   $: isPodcast = style === "podcast";
   $: isIcon = style === "icon";
@@ -47,13 +44,16 @@
   $: isMobile = width < 380 && !isIcon;
   $: isAdvert = advert && !isStopped;
   $: iconScale = isIcon ? 0.8 : 1;
+
+  $: podcast = podcasts[index] || {};
+  $: duration = isAdvert ? advert.duration : podcast.duration;
 </script>
 
 <div class="user-interface {style}" class:mobile={isMobile} bind:clientWidth={width}>
   <div class="main">
     {#if isPodcast}
-      <LargeImage src={active.image} />
-      <SummaryText title={active.title || ""} body={body} isMobile={isMobile} />
+      <LargeImage src={isAdvert ? (advert.image || podcast.image) : podcast.image} />
+      <SummaryText title={isAdvert ? "" : podcast.title} body={podcast.body} isMobile={isMobile} />
     {/if}
 
     <div class="controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
@@ -72,15 +72,15 @@
         <SkipButtons style={skip} />
       {/if}
 
-      <TimeIndicator currentTime={time} duration={active.duration} playerStyle={style} {isAdvert} {isMobile} {isStopped} />
+      <TimeIndicator currentTime={time} {duration} playerStyle={style} {isAdvert} {isMobile} {isStopped} />
 
       {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
-        <ProgressBar progress={isStopped ? 0 : time / active.duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
+        <ProgressBar progress={isStopped ? 0 : time / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
       {#if isAdvert}
-        <AdvertLink href={active.url} playerStyle={style} />
-        <AdvertButton href={active.url} scale={iconScale} />
+        <AdvertLink href={advert.url} playerStyle={style} />
+        <AdvertButton href={advert.url} scale={iconScale} />
       {/if}
     </div>
 
