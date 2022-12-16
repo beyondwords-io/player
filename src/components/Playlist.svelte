@@ -2,23 +2,23 @@
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
 
-  export let items = [];
+  export let podcasts = [];
   export let index = 0;
   export let isMobile;
 </script>
 
 <div class="playlist" class:mobile={isMobile}>
-  {#each items as item, i}
-    <div class="item" class:active={i === index}>
+  {#each podcasts as podcast, i}
+    <div class="podcast" class:active={i === index}>
       {#if i === index}
         <span class="speaker"><VolumeUp /></span>
       {:else}
         <span class="number">{i + 1}</span>
       {/if}
 
-      <span class="title">{item.body}</span>
+      <span class="title">{podcast.body}</span>
       <span class="duration">
-        <DurationInMins duration={item.duration} bold={i === index} />
+        <DurationInMins duration={podcast.duration} bold={i === index} />
       </span>
     </div>
   {/each}
@@ -51,7 +51,7 @@
     border: 0.125rem solid #fafafa;
   }
 
-  .item {
+  .podcast {
     height: 2.5rem;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -64,7 +64,7 @@
     line-height: 1.2;
   }
 
-  .mobile .item {
+  .mobile .podcast {
     height: 5rem;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;
