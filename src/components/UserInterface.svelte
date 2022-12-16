@@ -40,49 +40,48 @@
 </script>
 
 <div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
-  {#if isPodcast}
-    <LargeImage src={isAdvert ? advertImage : podcastImage} />
-    <SummaryText title={isAdvert ? "" : title} body={body} isMobile={isMobile} />
-  {/if}
-
-  <div class="playback-controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
-    {#if isPlaying}
-      <PauseButton scale={isIcon ? 0.8 : 1} />
-    {:else}
-      <PlayButton scale={isIcon ? 0.8 : 1} />
+  <div class="main">
+    {#if isPodcast}
+      <LargeImage src={isAdvert ? advertImage : podcastImage} />
+      <SummaryText title={isAdvert ? "" : title} body={body} isMobile={isMobile} />
     {/if}
 
-    {#if isStandard && isStopped || (isIcon && !isAdvert)}
-      <ListenPrompt />
-    {/if}
+    <div class="playback-controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
+      {#if isPlaying}
+        <PauseButton scale={isIcon ? 0.8 : 1} />
+      {:else}
+        <PlayButton scale={isIcon ? 0.8 : 1} />
+      {/if}
 
-    {#if !isIcon && !isStopped && !isAdvert}
-      <PlaybackSpeed />
-      <SkipButtons style={skipButtons} />
-    {/if}
+      {#if isStandard && isStopped || (isIcon && !isAdvert)}
+        <ListenPrompt />
+      {/if}
 
-    <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} />
+      {#if !isIcon && !isStopped && !isAdvert}
+        <PlaybackSpeed />
+        <SkipButtons style={skipButtons} />
+      {/if}
 
-    {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
-      <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
-    {/if}
+      <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} />
 
-    {#if isAdvert && !isStopped}
-      <AdvertLink href={advertUrl} playerStyle={playerStyle} />
-      <AdvertButton href={advertUrl} scale={isIcon ? 0.8 : 1} />
+      {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
+        <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
+      {/if}
+
+      {#if isAdvert && !isStopped}
+        <AdvertLink href={advertUrl} playerStyle={playerStyle} />
+        <AdvertButton href={advertUrl} scale={isIcon ? 0.8 : 1} />
+      {/if}
+    </div>
+
+    {#if !isAdvert}
+      <BeyondWords margin={isStandard ? 0.75 : isIcon ? 0.5 : 0} marginSide={isStandard && isMobile ? "left" : "right"} />
     {/if}
   </div>
-
-  {#if !isAdvert}
-    <BeyondWords margin={isStandard ? 0.75 : isIcon ? 0.5 : 0} marginSide={isStandard && isMobile ? "left" : "right"} />
-  {/if}
 </div>
 
 <style>
   .beyondwords-player {
-    box-sizing: border-box;
-    background: #fafafa;
-    column-gap: 0.5rem;
     overflow: hidden;
   }
 
@@ -91,33 +90,10 @@
     color: #323232;
   }
 
-  .standard {
-    min-width: 300px;
-    height: 3rem;
-    padding: 0.25rem;
-    border-radius: 1.5625rem;
-    display: flex;
-    align-items: center;
-  }
-
-  .podcast {
-    min-width: 300px;
-    height: 6rem;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-rows: auto auto;
-  }
-
-  .icon {
-    min-width: 200px;
-    max-width: 200px;
-    height: 2.5rem;
-    padding: 0.25rem;
-    border-radius: 1.25rem;
-    display: flex;
-    align-items: center;
+  .main {
+    box-sizing: border-box;
+    background: #fafafa;
+    column-gap: 0.5rem;
   }
 
   .playback-controls {
@@ -130,21 +106,59 @@
     grid-column: 2;
   }
 
-  .mobile.standard {
+  .standard {
+    min-width: 300px;
+  }
+
+  .standard .main {
+    height: 3rem;
+    padding: 0.25rem;
+    border-radius: 1.5625rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .standard.mobile .main {
     flex-direction: row-reverse;
   }
 
-  .mobile.podcast {
+  .standard.mobile .playback-controls {
+    flex-direction: row-reverse;
+  }
+
+  .podcast {
+    min-width: 300px;
+  }
+
+  .podcast .main {
+    height: 6rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+  }
+
+  .podcast.mobile .main {
     height: 9rem;
   }
 
-  .mobile.standard .playback-controls,
-  .mobile.podcast .playback-controls {
+  .podcast.mobile .playback-controls {
     flex-direction: row-reverse;
-  }
-
-  .mobile.podcast .playback-controls {
     grid-row: 3;
     grid-column: 1 / span 3;
+  }
+
+  .icon {
+    min-width: 200px;
+    max-width: 200px;
+  }
+
+  .icon .main {
+    height: 2.5rem;
+    padding: 0.25rem;
+    border-radius: 1.25rem;
+    display: flex;
+    align-items: center;
   }
 </style>
