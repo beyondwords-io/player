@@ -78,6 +78,33 @@
       <BeyondWords margin={isStandard ? 0.75 : isIcon ? 0.5 : 0} marginSide={isStandard && isMobile ? "left" : "right"} />
     {/if}
   </div>
+
+  <div class="playlist">
+    <div class="item">
+      <span class="title">Why the CHIPS Act Is Unlikely to Reduce US Reliance on Asia</span>
+      <span class="duration">2 min</span>
+    </div>
+
+    <div class="item">
+      <span class="title">The UK is Expected to Slide into a More ‘Significant’ Recession</span>
+      <span class="duration">4 min</span>
+    </div>
+
+    <div class="item">
+      <span class="title">Why Home Prices are Poised to Fall</span>
+      <span class="duration">5 min</span>
+    </div>
+
+    <div class="item">
+      <span class="title">The Invasion of Zombie Companies that Wasn’t</span>
+      <span class="duration">8 min</span>
+    </div>
+
+    <div class="item">
+      <span class="title">Is the US Dollar Too Strong?</span>
+      <span class="duration">3 min</span>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -160,5 +187,42 @@
     border-radius: 1.25rem;
     display: flex;
     align-items: center;
+  }
+
+  .playlist {
+    margin-top: 1rem;
+    background: #fafafa;
+    border-radius: 0.25rem;
+    padding-left: 0.25rem;
+    padding-right: 0.625rem;
+    counter-reset: item-number 0;
+  }
+
+  .item {
+    counter-increment: item-number 1;
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+
+    font-size: 0.625rem;
+    font-weight: 300;
+    line-height: 1.2;
+    min-height: 2.5rem;
+  }
+
+  .item:before {
+    content: counter(item-number);
+    width: 2.5rem;
+    text-align: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .title {
+    flex-grow: 1;
+  }
+
+  .duration {
+    white-space: nowrap;
   }
 </style>
