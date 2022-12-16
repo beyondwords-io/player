@@ -12,6 +12,7 @@
   import AdvertButton from "./AdvertButton.svelte";
   import BeyondWords from "./BeyondWords.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
+  import DurationInMins from "./time_indicators/DurationInMins.svelte";
 
   export let style = "standard";
   export let state = "playing";
@@ -22,13 +23,14 @@
     { title: "Goldman Sachs", body: "Why Home Prices are Poised to Fall", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 300 },
     { title: "Goldman Sachs", body: "The Invasion of Zombie Companies that Wasn’t", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 480 },
     { title: "Goldman Sachs", body: "Is the US Dollar Too Strong?", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 180 },
+    { title: "Goldman Sachs", body: "Why the CHIPS Act Is Unlikely to Reduce US Reliance on Asia", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 120 },
   ];
   export let advert = undefined;
   //export let advert = { url: "https://deliveroo.com", image: "https://s3-alpha-sig.figma.com/img/5961/0ae1/ad61ca37487eda4edd52891557abbc02?Expires=1672012800&Signature=n8~Lv2SrnAFbm8OKWFYKDHaKI~qc~1aWdR3cE~WjoxNaR6SCJpgosQKinU0XEP6VlDiPYSzUnHcdghmbKloZUTZahZHwJdIPRx8cA5RgkR6NiCPiFVTVrq4iLY6bE7pYDe39jsetJaGYwz5ZXX~F9RcXWntUaeIOy7jYKCIlWH4~bYdZfWSJd-NNCTESWOxTenjPwq5s6UGdtcqH9fNzLCri-3lpXtfNcgnEDWz-zIm02ykjAv2RNgIKGKiP4OkKTLV6~c8dzk7A~fWQ-eQTF13qbnilVEAsVv~2LO870T3DvefGIxriYuKRHsCchdbFP97iT2cjTnXv8Yw-hZev5w__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 15 };
   export let index = 1;
   export let time = advert ? 0 : 160;
 
-  $: active = advert || playlist[index];
+  $: active = advert || playlist[index] || {};
 
   $: isStandard = style === "standard";
   $: isPodcast = style === "podcast";
@@ -82,57 +84,19 @@
     {/if}
   </div>
 
-  <div class="playlist">
-    <div class="item">
-      <span class="title">Why the CHIPS Act Is Unlikely to Reduce US Reliance on Asia</span>
-      <span class="duration">2 min</span>
+  {#if playlist.length > 1 && !isIcon}
+    <div class="playlist">
+      {#each playlist as item, i}
+        <div class="item" class:active={i === index}>
+          <span class="number">{i + 1}</span>
+          <span class="title">{item.body}</span>
+          <span class="duration">
+            <DurationInMins duration={item.duration} bold={i === index} />
+          </span>
+        </div>
+      {/each}
     </div>
-
-    <div class="item">
-      <span class="title">The UK is Expected to Slide into a More ‘Significant’ Recession</span>
-      <span class="duration">4 min</span>
-    </div>
-
-    <div class="item">
-      <span class="title">Why Home Prices are Poised to Fall</span>
-      <span class="duration">5 min</span>
-    </div>
-
-    <div class="item">
-      <span class="title">The Invasion of Zombie Companies that Wasn’t</span>
-      <span class="duration">8 min</span>
-    </div>
-
-    <div class="item">
-      <span class="title">Is the US Dollar Too Strong?</span>
-      <span class="duration">3 min</span>
-    </div>
-
-    <div class="item">
-      <span class="title">Why the CHIPS Act Is Unlikely to Reduce US Reliance on Asia</span>
-      <span class="duration">2 min</span>
-    </div>
-
-    <div class="item">
-      <span class="title">The UK is Expected to Slide into a More ‘Significant’ Recession</span>
-      <span class="duration">4 min</span>
-    </div>
-
-    <div class="item">
-      <span class="title">Why Home Prices are Poised to Fall</span>
-      <span class="duration">5 min</span>
-    </div>
-
-    <div class="item">
-      <span class="title">The Invasion of Zombie Companies that Wasn’t</span>
-      <span class="duration">8 min</span>
-    </div>
-
-    <div class="item">
-      <span class="title">Is the US Dollar Too Strong?</span>
-      <span class="duration">3 min</span>
-    </div>
-  </div>
+  {/if}
 </div>
 
 <style>
@@ -221,7 +185,6 @@
     margin-top: 1rem;
     background: #fafafa;
     border-radius: 0.25rem;
-    counter-reset: item-number 0;
     padding-left: 0.25rem;
     padding-right: 0.625rem;
     max-height: 12.5rem;
@@ -255,7 +218,6 @@
     font-size: 0.625rem;
     font-weight: 300;
     line-height: 1.2;
-    counter-increment: item-number 1;
   }
 
   .mobile .item {
@@ -264,16 +226,19 @@
     grid-template-rows: auto auto;
   }
 
-  .item:before {
-    content: counter(item-number);
+  .number {
     width: 2.5rem;
     text-align: center;
     font-weight: 700;
     flex-shrink: 0;
   }
 
-  .mobile .item:before {
+  .mobile .number {
     grid-row: 1 / span 2;
+  }
+
+  .active .title {
+    font-weight: 700;
   }
 
   .title {
