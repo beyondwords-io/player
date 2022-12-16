@@ -1,5 +1,5 @@
 <script>
-  import VolumeUp from "./icons/VolumeUp.svelte";
+  import VolumeUp from "./svg_icons/VolumeUp.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
 
   export let items = [];

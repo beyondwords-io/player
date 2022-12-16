@@ -1,5 +1,5 @@
 <script>
-  import Pause from "../icons/Pause.svelte";
+  import Pause from "../svg_icons/Pause.svelte";
 
   export let scale = 1;
 </script>

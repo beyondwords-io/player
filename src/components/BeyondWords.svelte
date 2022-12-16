@@ -1,5 +1,5 @@
 <script>
-  import Logo from "./icons/Logo.svelte";
+  import Logo from "./svg_icons/Logo.svelte";
 
   export let margin;
   export let marginSide;

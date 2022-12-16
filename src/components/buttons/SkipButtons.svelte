@@ -1,12 +1,12 @@
 <script>
-  import Up from "../icons/Up.svelte";
-  import Down from "../icons/Down.svelte";
+  import Up from "../svg_icons/Up.svelte";
+  import Down from "../svg_icons/Down.svelte";
 
-  import SeekBack from "../icons/SeekBack.svelte";
-  import SeekAhead from "../icons/SeekAhead.svelte";
+  import SeekBack from "../svg_icons/SeekBack.svelte";
+  import SeekAhead from "../svg_icons/SeekAhead.svelte";
 
-  import PrevTrack from "../icons/PrevTrack.svelte";
-  import NextTrack from "../icons/NextTrack.svelte";
+  import PrevTrack from "../svg_icons/PrevTrack.svelte";
+  import NextTrack from "../svg_icons/NextTrack.svelte";
 
   export let style = "segments";
 

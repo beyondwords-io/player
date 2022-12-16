@@ -1,5 +1,5 @@
 <script>
-  import OpenNewTab from "../icons/OpenNewTab.svelte";
+  import OpenNewTab from "../svg_icons/OpenNewTab.svelte";
 
   export let href;
   export let scale = 1;
