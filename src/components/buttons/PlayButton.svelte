@@ -1,5 +1,5 @@
 <script>
-  import Play from "./icons/Play.svelte";
+  import Play from "../icons/Play.svelte";
 
   export let scale = 1;
 </script>

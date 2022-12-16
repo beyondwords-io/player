@@ -1,15 +1,17 @@
 <script>
   import "@fontsource/inter/variable.css";
+
+  import PlayButton from "./buttons/PlayButton.svelte";
+  import PauseButton from "./buttons/PauseButton.svelte";
+  import SkipButtons from "./buttons/SkipButtons.svelte";
+  import AdvertButton from "./buttons/AdvertButton.svelte";
+
   import LargeImage from "./LargeImage.svelte";
   import SummaryText from "./SummaryText.svelte";
-  import PlayButton from "./PlayButton.svelte";
-  import PauseButton from "./PauseButton.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
-  import SkipButtons from "./SkipButtons.svelte";
   import ProgressBar from "./ProgressBar.svelte";
   import AdvertLink from "./AdvertLink.svelte";
-  import AdvertButton from "./AdvertButton.svelte";
   import BeyondWords from "./BeyondWords.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
