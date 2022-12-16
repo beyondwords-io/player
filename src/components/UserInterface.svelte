@@ -11,6 +11,7 @@
 
   import LargeImage from "./LargeImage.svelte";
   import SummaryText from "./SummaryText.svelte";
+  import PlayerTitle from "./PlayerTitle.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import ProgressBar from "./ProgressBar.svelte";
@@ -54,7 +55,11 @@
   <div class="main">
     {#if isPodcast}
       <LargeImage src={isAdvert ? (advert.image || podcast.image) : podcast.image} />
-      <SummaryText title={isAdvert ? "" : title} body={podcast.title} isMobile={isMobile} />
+
+      <div class="summary-text">
+        <PlayerTitle title={isAdvert ? "" : title} />
+        <SummaryText body={podcast.title} isMobile={isMobile} />
+      </div>
     {/if}
 
     <div class="controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
