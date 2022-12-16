@@ -44,6 +44,7 @@
   let width;
   $: isMobile = width < 380 && !isIcon;
   $: isAdvert = advert && !isStopped;
+  $: iconScale = isIcon ? 0.8 : 1;
 </script>
 
 <div class="user-interface {style}" class:mobile={isMobile} bind:clientWidth={width}>
@@ -55,9 +56,9 @@
 
     <div class="controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
       {#if isPlaying}
-        <PauseButton scale={isIcon ? 0.8 : 1} />
+        <PauseButton scale={iconScale} />
       {:else}
-        <PlayButton scale={isIcon ? 0.8 : 1} />
+        <PlayButton scale={iconScale} />
       {/if}
 
       {#if isStandard && isStopped || (isIcon && !isAdvert)}
@@ -77,7 +78,7 @@
 
       {#if isAdvert && !isStopped}
         <AdvertLink href={active.url} playerStyle={style} />
-        <AdvertButton href={active.url} scale={isIcon ? 0.8 : 1} />
+        <AdvertButton href={active.url} scale={iconScale} />
       {/if}
     </div>
 
