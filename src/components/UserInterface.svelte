@@ -13,6 +13,7 @@
   import BeyondWords from "./BeyondWords.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
+  import VolumeUp from "./icons/VolumeUp.svelte";
 
   export let style = "standard";
   export let state = "playing";
@@ -88,7 +89,12 @@
     <div class="playlist">
       {#each playlist as item, i}
         <div class="item" class:active={i === index}>
-          <span class="number">{i + 1}</span>
+          {#if i === index}
+            <span class="speaker"><VolumeUp /></span>
+          {:else}
+            <span class="number">{i + 1}</span>
+          {/if}
+
           <span class="title">{item.body}</span>
           <span class="duration">
             <DurationInMins duration={item.duration} bold={i === index} />
@@ -226,14 +232,16 @@
     grid-template-rows: auto auto;
   }
 
-  .number {
+  .number,
+  .speaker {
     width: 2.5rem;
     text-align: center;
     font-weight: 700;
     flex-shrink: 0;
   }
 
-  .mobile .number {
+  .mobile .number,
+  .mobile .speaker {
     grid-row: 1 / span 2;
   }
 
