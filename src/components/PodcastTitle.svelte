@@ -1,26 +1,24 @@
 <script>
-  export let body;
+  export let title;
   export let isMobile;
 </script>
 
-<div class="summary-text" class:mobile={isMobile}>
-  <div class="body">{body}</div>
-</div>
+<div class="podcast-title">{title}</div>
 
 <style>
-  .body {
+  .podcast-title {
     font-size: 0.625rem;
     font-weight: 300;
     line-height: 1.2;
   }
 
-  .body {
+  .podcast-title {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
   }
 
-  .mobile .body {
+  .mobile .podcast-title {
     white-space: normal;
     max-height: 2.25rem;
     display: -webkit-box;

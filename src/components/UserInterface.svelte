@@ -10,8 +10,8 @@
   import BeyondWords from "./external_links/BeyondWords.svelte";
 
   import LargeImage from "./LargeImage.svelte";
-  import SummaryText from "./SummaryText.svelte";
   import PlayerTitle from "./PlayerTitle.svelte";
+  import PodcastTitle from "./PodcastTitle.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import ProgressBar from "./ProgressBar.svelte";
@@ -56,9 +56,9 @@
     {#if isPodcast}
       <LargeImage src={isAdvert ? (advert.image || podcast.image) : podcast.image} />
 
-      <div class="summary-text">
+      <div>
         <PlayerTitle title={isAdvert ? "" : title} />
-        <SummaryText body={podcast.title} isMobile={isMobile} />
+        <PodcastTitle title={podcast.title} isMobile={isMobile} />
       </div>
     {/if}
 
