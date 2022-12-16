@@ -1,30 +1,31 @@
 <script>
   export let title;
-  export let isMobile;
+  export let maxLines = 1;
 </script>
 
-<div class="podcast-title">{title}</div>
+<div class="podcast-title" class:one-line={maxLines === 1} class:n-lines={maxLines > 1} style="--n: {maxLines}">
+  {title}
+</div>
 
 <style>
   .podcast-title {
     font-size: 0.625rem;
     font-weight: 300;
     line-height: 1.2;
-  }
-
-  .podcast-title {
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+
+  .one-line {
     white-space: nowrap;
   }
 
-  .mobile .podcast-title {
-    white-space: normal;
-    max-height: 2.25rem;
+  .n-lines {
+    max-height: calc(0.625rem * 1.2 * var(--n));
     display: -webkit-box;
 
-            line-clamp: 3;
-    -webkit-line-clamp: 3;
+            line-clamp: var(--n);
+    -webkit-line-clamp: var(--n);
     -webkit-box-orient: vertical;
   }
 </style>

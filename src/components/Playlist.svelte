@@ -1,5 +1,6 @@
 <script>
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
+  import PodcastTitle from "./PodcastTitle.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
 
   export let podcasts = [];
@@ -16,9 +17,12 @@
         <span class="number">{i + 1}</span>
       {/if}
 
-      <span class="title">{title}</span>
+      <span class="title">
+        <PodcastTitle {title} maxLines={isMobile ? 3 : 2} />
+      </span>
+
       <span class="duration">
-        <DurationInMins duration={duration} bold={i === index} />
+        <DurationInMins {duration} bold={i === index} />
       </span>
     </div>
   {/each}

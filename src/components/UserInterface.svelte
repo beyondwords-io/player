@@ -58,7 +58,7 @@
 
       <div>
         <PlayerTitle title={isAdvert ? "" : title} />
-        <PodcastTitle title={podcast.title} isMobile={isMobile} />
+        <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} />
       </div>
     {/if}
 
