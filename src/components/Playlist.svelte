@@ -8,7 +8,7 @@
 </script>
 
 <div class="playlist" class:mobile={isMobile}>
-  {#each podcasts as podcast, i}
+  {#each podcasts as { title, duration }, i}
     <div class="podcast" class:active={i === index}>
       {#if i === index}
         <span class="speaker"><VolumeUp /></span>
@@ -16,9 +16,9 @@
         <span class="number">{i + 1}</span>
       {/if}
 
-      <span class="title">{podcast.body}</span>
+      <span class="title">{title}</span>
       <span class="duration">
-        <DurationInMins duration={podcast.duration} bold={i === index} />
+        <DurationInMins duration={duration} bold={i === index} />
       </span>
     </div>
   {/each}
