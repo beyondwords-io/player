@@ -6,13 +6,14 @@
   import SkipButtons from "./buttons/SkipButtons.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
 
+  import AdvertLink from "./external_links/AdvertLink.svelte";
+  import BeyondWords from "./external_links/BeyondWords.svelte";
+
   import LargeImage from "./LargeImage.svelte";
   import SummaryText from "./SummaryText.svelte";
   import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import ProgressBar from "./ProgressBar.svelte";
-  import AdvertLink from "./AdvertLink.svelte";
-  import BeyondWords from "./BeyondWords.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
 
