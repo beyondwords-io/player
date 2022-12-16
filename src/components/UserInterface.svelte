@@ -104,6 +104,31 @@
       <span class="title">Is the US Dollar Too Strong?</span>
       <span class="duration">3 min</span>
     </div>
+
+    <div class="item">
+      <span class="title">Why the CHIPS Act Is Unlikely to Reduce US Reliance on Asia</span>
+      <span class="duration">2 min</span>
+    </div>
+
+    <div class="item">
+      <span class="title">The UK is Expected to Slide into a More ‘Significant’ Recession</span>
+      <span class="duration">4 min</span>
+    </div>
+
+    <div class="item">
+      <span class="title">Why Home Prices are Poised to Fall</span>
+      <span class="duration">5 min</span>
+    </div>
+
+    <div class="item">
+      <span class="title">The Invasion of Zombie Companies that Wasn’t</span>
+      <span class="duration">8 min</span>
+    </div>
+
+    <div class="item">
+      <span class="title">Is the US Dollar Too Strong?</span>
+      <span class="duration">3 min</span>
+    </div>
   </div>
 </div>
 
@@ -194,13 +219,30 @@
     background: #fafafa;
     border-radius: 0.25rem;
     counter-reset: item-number 0;
+    padding-left: 0.25rem;
+    padding-right: 0.625rem;
+    max-height: 12.5rem;
+    overflow-y: scroll;
+  }
+
+  .mobile .playlist {
+    padding-left: 0;
+    padding-right: 1rem;
+    max-height: 25rem;
+  }
+
+  .playlist::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  .playlist::-webkit-scrollbar-thumb {
+    background: #323232;
+    border-radius: 1rem;
+    border: 0.125rem solid #fafafa;
   }
 
   .item {
     height: 2.5rem;
-    padding-left: 0.25rem;
-    padding-right: 0.625rem;
-
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-rows: auto;
@@ -217,8 +259,6 @@
     height: 5rem;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;
-    padding-left: 0;
-    padding-right: 1rem;
   }
 
   .item:before {
