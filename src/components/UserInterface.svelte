@@ -78,7 +78,7 @@
         <ProgressBar progress={isStopped ? 0 : time / active.duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
-      {#if isAdvert && !isStopped}
+      {#if isAdvert}
         <AdvertLink href={active.url} playerStyle={style} />
         <AdvertButton href={active.url} scale={iconScale} />
       {/if}
