@@ -34,6 +34,7 @@
   export let time = advert ? 0 : 160;
 
   $: active = advert || playlist[index] || {};
+  $: body = active.body || (playlist[index] || {}).body;
 
   $: isStandard = style === "standard";
   $: isPodcast = style === "podcast";
@@ -52,7 +53,7 @@
   <div class="main">
     {#if isPodcast}
       <LargeImage src={active.image} />
-      <SummaryText title={active.title} body={active.body} isMobile={isMobile} />
+      <SummaryText title={active.title || ""} body={body} isMobile={isMobile} />
     {/if}
 
     <div class="controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
