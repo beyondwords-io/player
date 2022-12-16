@@ -13,17 +13,17 @@
   import BeyondWords from "./BeyondWords.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
 
-  export let playerStyle = "icon";
+  export let playerStyle = "standard";
   $: isStandard = playerStyle === "standard";
   $: isPodcast = playerStyle === "podcast";
   $: isIcon = playerStyle === "icon";
 
-  export let playbackState = "stopped";
+  export let playbackState = "playing";
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
 
-  export let advertUrl = undefined;
-  //export let advertUrl = "https://deliveroo.com";
+  //export let advertUrl = undefined;
+  export let advertUrl = "https://deliveroo.com";
   $: isAdvert = advertUrl && !isStopped;
 
   export let skipButtons = "segments";
@@ -193,21 +193,32 @@
     margin-top: 1rem;
     background: #fafafa;
     border-radius: 0.25rem;
-    padding-left: 0.25rem;
-    padding-right: 0.625rem;
     counter-reset: item-number 0;
   }
 
   .item {
-    counter-increment: item-number 1;
-    display: flex;
+    height: 2.5rem;
+    padding-left: 0.25rem;
+    padding-right: 0.625rem;
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto;
     align-items: center;
     column-gap: 0.5rem;
 
     font-size: 0.625rem;
     font-weight: 300;
     line-height: 1.2;
-    min-height: 2.5rem;
+    counter-increment: item-number 1;
+  }
+
+  .mobile .item {
+    height: 5rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    padding-left: 0;
+    padding-right: 1rem;
   }
 
   .item:before {
@@ -218,11 +229,24 @@
     flex-shrink: 0;
   }
 
+  .mobile .item:before {
+    grid-row: 1 / span 2;
+  }
+
   .title {
     flex-grow: 1;
   }
 
+  .mobile .title {
+    align-self: flex-end;
+  }
+
   .duration {
+    margin: 0.25rem 0;
     white-space: nowrap;
+  }
+
+  .mobile .duration {
+    align-self: flex-start;
   }
 </style>
