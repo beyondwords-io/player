@@ -13,40 +13,43 @@
   import BeyondWords from "./BeyondWords.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
 
-  export let playerStyle = "standard";
-  $: isStandard = playerStyle === "standard";
-  $: isPodcast = playerStyle === "podcast";
-  $: isIcon = playerStyle === "icon";
+  export let style = "standard";
+  export let state = "playing";
+  export let skip = "segments";
+  export let playlist = [
+    { title: "Goldman Sachs", body: "Why the CHIPS Act Is Unlikely to Reduce US Reliance on Asia", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 120 },
+    { title: "Goldman Sachs", body: "The UK is Expected to Slide into a More ‘Significant’ Recession", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 260 },
+    { title: "Goldman Sachs", body: "Why Home Prices are Poised to Fall", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 300 },
+    { title: "Goldman Sachs", body: "The Invasion of Zombie Companies that Wasn’t", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 480 },
+    { title: "Goldman Sachs", body: "Is the US Dollar Too Strong?", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 180 },
+  ];
+  export let advert = undefined;
+  //export let advert = { url: "https://deliveroo.com", image: "https://s3-alpha-sig.figma.com/img/5961/0ae1/ad61ca37487eda4edd52891557abbc02?Expires=1672012800&Signature=n8~Lv2SrnAFbm8OKWFYKDHaKI~qc~1aWdR3cE~WjoxNaR6SCJpgosQKinU0XEP6VlDiPYSzUnHcdghmbKloZUTZahZHwJdIPRx8cA5RgkR6NiCPiFVTVrq4iLY6bE7pYDe39jsetJaGYwz5ZXX~F9RcXWntUaeIOy7jYKCIlWH4~bYdZfWSJd-NNCTESWOxTenjPwq5s6UGdtcqH9fNzLCri-3lpXtfNcgnEDWz-zIm02ykjAv2RNgIKGKiP4OkKTLV6~c8dzk7A~fWQ-eQTF13qbnilVEAsVv~2LO870T3DvefGIxriYuKRHsCchdbFP97iT2cjTnXv8Yw-hZev5w__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 15 };
+  export let index = 1;
+  export let time = advert ? 0 : 160;
 
-  export let playbackState = "playing";
-  $: isPlaying = playbackState === "playing";
-  $: isStopped = playbackState === "stopped";
+  $: active = advert || playlist[index];
 
-  //export let advertUrl = undefined;
-  export let advertUrl = "https://deliveroo.com";
-  $: isAdvert = advertUrl && !isStopped;
+  $: isStandard = style === "standard";
+  $: isPodcast = style === "podcast";
+  $: isIcon = style === "icon";
 
-  export let skipButtons = "segments";
-  export let podcastImage = "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
-  export let advertImage = "https://s3-alpha-sig.figma.com/img/5961/0ae1/ad61ca37487eda4edd52891557abbc02?Expires=1672012800&Signature=n8~Lv2SrnAFbm8OKWFYKDHaKI~qc~1aWdR3cE~WjoxNaR6SCJpgosQKinU0XEP6VlDiPYSzUnHcdghmbKloZUTZahZHwJdIPRx8cA5RgkR6NiCPiFVTVrq4iLY6bE7pYDe39jsetJaGYwz5ZXX~F9RcXWntUaeIOy7jYKCIlWH4~bYdZfWSJd-NNCTESWOxTenjPwq5s6UGdtcqH9fNzLCri-3lpXtfNcgnEDWz-zIm02ykjAv2RNgIKGKiP4OkKTLV6~c8dzk7A~fWQ-eQTF13qbnilVEAsVv~2LO870T3DvefGIxriYuKRHsCchdbFP97iT2cjTnXv8Yw-hZev5w__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4";
-  export let title = "Goldman Sachs";
-  export let body = "The UK is Expected to Slide into a More ‘Significant’ Recession";
-
-  export let currentTime = isAdvert ? 0 : 160;
-  export let duration = isAdvert ? 15 : 260;
+  $: isPlaying = state === "playing";
+  $: isStopped = state === "stopped";
 
   let width;
   $: isMobile = width < 380 && !isIcon;
+  $: isAdvert = advert && !isStopped;
 </script>
 
-<div class="beyondwords-player {playerStyle}" class:mobile={isMobile} bind:clientWidth={width}>
+<div class="user-interface {style}" class:mobile={isMobile} bind:clientWidth={width}>
   <div class="main">
     {#if isPodcast}
-      <LargeImage src={isAdvert ? advertImage : podcastImage} />
-      <SummaryText title={isAdvert ? "" : title} body={body} isMobile={isMobile} />
+      <LargeImage src={active.image} />
+      <SummaryText title={active.title} body={active.body} isMobile={isMobile} />
     {/if}
 
-    <div class="playback-controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
+    <div class="controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
       {#if isPlaying}
         <PauseButton scale={isIcon ? 0.8 : 1} />
       {:else}
@@ -59,18 +62,18 @@
 
       {#if !isIcon && !isStopped && !isAdvert}
         <PlaybackSpeed />
-        <SkipButtons style={skipButtons} />
+        <SkipButtons style={skip} />
       {/if}
 
-      <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} />
+      <TimeIndicator currentTime={time} duration={active.duration} playerStyle={style} {isAdvert} {isMobile} {isStopped} />
 
       {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
-        <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
+        <ProgressBar progress={isStopped ? 0 : time / active.duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
       {#if isAdvert && !isStopped}
-        <AdvertLink href={advertUrl} playerStyle={playerStyle} />
-        <AdvertButton href={advertUrl} scale={isIcon ? 0.8 : 1} />
+        <AdvertLink href={active.url} playerStyle={style} />
+        <AdvertButton href={active.url} scale={isIcon ? 0.8 : 1} />
       {/if}
     </div>
 
@@ -133,11 +136,11 @@
 </div>
 
 <style>
-  .beyondwords-player {
+  .user-interface {
     overflow: hidden;
   }
 
-  .beyondwords-player :global(*) {
+  .user-interface :global(*) {
     font-family: "InterVariable", sans-serif;
     color: #323232;
   }
@@ -148,7 +151,7 @@
     column-gap: 0.5rem;
   }
 
-  .playback-controls {
+  .controls {
     align-self: flex-end;
     flex-grow: 1;
     display: flex;
@@ -174,7 +177,7 @@
     flex-direction: row-reverse;
   }
 
-  .standard.mobile .playback-controls {
+  .standard.mobile .controls {
     flex-direction: row-reverse;
   }
 
@@ -195,7 +198,7 @@
     height: 9rem;
   }
 
-  .podcast.mobile .playback-controls {
+  .podcast.mobile .controls {
     flex-direction: row-reverse;
     grid-row: 3;
     grid-column: 1 / span 3;
