@@ -28,6 +28,11 @@
   export let playbackState = "stopped";
   export let currentAdvert = undefined;
 
+  export let isVisible = undefined;
+  export let relativeY = undefined;
+  export let absoluteY = undefined;
+  export let onVisibilityChange = undefined;
+
   let width;
 
   $: isStandard = interfaceStyle === "standard";
@@ -59,7 +64,7 @@
     {/if}
 
     <div class="controls">
-      <Visibility onChange={console.log}>
+      <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
         {#if isPlaying}
           <PauseButton scale={iconScale} />
         {:else}

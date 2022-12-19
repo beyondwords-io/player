@@ -2,17 +2,23 @@
   import { onMount } from "svelte";
 
   let element;
+
   export let onChange = undefined;
+  export let isVisible = undefined;
+
+  export let relativeY = undefined;
+  export let absoluteY = undefined;
 
   const callback = ([entry]) => {
-    const isVisible = entry.isIntersecting;
-    const absoluteY = entry.boundingClientRect.y + window.scrollY;
+    isVisible = entry.isIntersecting;
+    relativeY = entry.boundingClientRect.y;
+    absoluteY = relativeY + window.scrollY;
 
-    onChange(isVisible, absoluteY);
+    onChange();
   };
 
   onMount(() => {
-    if (!onChange) { return; }
+    if (!onChange || typeof IntersectionObserver === "undefined") { return; }
 
     const observer = new IntersectionObserver(callback, { threshold: 0.5 });
     observer.observe(element);

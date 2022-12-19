@@ -1,10 +1,12 @@
 <script>
   import UserInterface from "./UserInterface.svelte";
+  import chooseWidget from "../helpers/chooseWidget";
 
   export let PlayerClass = undefined;
   export let playerInstance = undefined;
 
   export let showUserInterface = false;
+  export let userInterface = undefined;
   export let interfaceStyle = "standard";
   export let skipButtonsStyle = "segments";
   export let playlistStyle = "auto-5-4";
@@ -34,7 +36,7 @@
 </script>
 
 {#if showUserInterface}
-  <UserInterface {...userInterfaceProps} />
+  <UserInterface {...userInterfaceProps} bind:this={userInterface} onVisibilityChange={() => chooseWidget(PlayerClass)} />
 {/if}
 
 {#if showWidgetAtBottom}
