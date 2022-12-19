@@ -1,6 +1,9 @@
 <script>
   import UserInterface from "./UserInterface.svelte";
 
+  export let PlayerClass = undefined;
+  export let playerInstance = undefined;
+
   export let showUserInterface = false;
   export let interfaceStyle = "standard";
   export let skipButtonsStyle = "segments";

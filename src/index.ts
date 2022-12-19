@@ -11,11 +11,13 @@ class Player extends PlayerComponent {
     super({
       target: newTarget,
       props: {
+        PlayerClass: Player,
         showUserInterface,
         ...props,
       }
     });
 
+    this.playerInstance = this;
     Player.#instances.push(this);
   }
 
