@@ -14,6 +14,7 @@
   import ProgressBar from "./ProgressBar.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
+  import Visibility from "./Visibility.svelte";
 
   export let interfaceStyle = "standard";
   export let skipButtonsStyle = "segments";
@@ -58,11 +59,13 @@
     {/if}
 
     <div class="controls">
-      {#if isPlaying}
-        <PauseButton scale={iconScale} />
-      {:else}
-        <PlayButton scale={iconScale} />
-      {/if}
+      <Visibility onChange={console.log}>
+        {#if isPlaying}
+          <PauseButton scale={iconScale} />
+        {:else}
+          <PlayButton scale={iconScale} />
+        {/if}
+      </Visibility>
 
       {#if isStandard && isStopped || (isIcon && !isAdvert)}
         <ListenPrompt />
@@ -226,5 +229,4 @@
   .fixed-right {
     right: 1rem;
   }
-
 </style>
