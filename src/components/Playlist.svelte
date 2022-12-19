@@ -14,7 +14,7 @@
   $: desktopRows = desktopRows || 5;
 </script>
 
-{#if mode === "open" || mode === "auto" && podcasts.length > 1}
+{#if mode === "show" || mode === "auto" && podcasts.length > 1}
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     {#each podcasts as { title, duration }, i}
       <div class="podcast" class:active={i === index}>
