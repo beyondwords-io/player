@@ -83,7 +83,9 @@
     </div>
 
     {#if !isAdvert}
-      <BeyondWords margin={isStandard ? 0.75 : isIcon ? 0.5 : 0} marginSide={isStandard && isMobile ? "left" : "right"} />
+      <div class="end">
+        <BeyondWords />
+      </div>
     {/if}
   </div>
 
@@ -129,12 +131,21 @@
     align-items: center;
   }
 
+  .standard .end {
+    margin-right: 0.75rem;
+  }
+
   .standard.mobile .main {
     flex-direction: row-reverse;
   }
 
   .standard.mobile .controls {
     flex-direction: row-reverse;
+  }
+
+  .standard.mobile .end {
+    margin-right: 0;
+    margin-left: 0.75rem;
   }
 
   .podcast {
@@ -170,5 +181,9 @@
     border-radius: 1.25rem;
     display: flex;
     align-items: center;
+  }
+
+  .icon .end {
+    margin-right: 0.5rem;
   }
 </style>

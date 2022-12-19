@@ -1,11 +1,8 @@
 <script>
   import Logo from "../svg_icons/Logo.svelte";
-
-  export let margin;
-  export let marginSide;
 </script>
 
-<a href="https://beyondwords.io/" target="_blank" rel="noreferrer" style="margin-{marginSide}: {margin}rem">
+<a href="https://beyondwords.io/" target="_blank" rel="noreferrer">
   <Logo />
 </a>
 
