@@ -1,14 +1,11 @@
 <script>
   import "@fontsource/inter/variable.css";
-
   import PlayButton from "./buttons/PlayButton.svelte";
   import PauseButton from "./buttons/PauseButton.svelte";
   import SkipButtons from "./buttons/SkipButtons.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
-
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
-
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./PlayerTitle.svelte";
   import PodcastTitle from "./PodcastTitle.svelte";
@@ -18,47 +15,41 @@
   import TimeIndicator from "./TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
 
-  export let style = "podcast";
-  export let state = "playing";
-  export let skip = "segments";
-  export let title = "Goldman Sachs";
-  export let playlist = "auto-5-4";
-  export let podcasts = [
-    { title: "Why the CHIPS Act Is Unlikely to Reduce US Reliance on Asia", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 120 },
-    { title: "The UK is Expected to Slide into a More ‘Significant’ Recession", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 260 },
-    { title: "Why Home Prices are Poised to Fall", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 300 },
-    { title: "The Invasion of Zombie Companies that Wasn’t", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 480 },
-    { title: "Is the US Dollar Too Strong?", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 180 },
-    { title: "Why the CHIPS Act Is Unlikely to Reduce US Reliance on Asia", image: "https://s3-alpha-sig.figma.com/img/54e1/386e/7684c4c867c6edfa10d410f2472d2bb5?Expires=1672012800&Signature=obeEwi9yepTTgo6OTrbHYQWopU5EgGuvacGRlAIXnrlodntsfkkD~9YySFnG0EBHMrwWxSS5wodSTsX~DQ4rBNLFBQwiHqbnjjsD7HPlV5CEp0GhZOf2mCBmLlOlO8KvfezcqCqqF2FRDbKie1xaGbej9oIMZcbexAmIAzi8fFzNtAUBKRIScsjzbtHsQ7zkW9L6G-5nIM4qLOwl9CGk3XIWwnCbt0Us6khzHhKBAtwnr77pDmDkrNOKKY963CVVosmGqBIUPRG1IRi6AmgWUU1Dvt8x6CfIV~rRWcEZKvBhSdp8~4U8omBgvDZnxdtXaXdgVj-RzywvJ4Cz-pCOYA__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 120 },
-  ];
-  export let advert = undefined;
-  //export let advert = { url: "https://deliveroo.com", image: "https://s3-alpha-sig.figma.com/img/5961/0ae1/ad61ca37487eda4edd52891557abbc02?Expires=1672012800&Signature=n8~Lv2SrnAFbm8OKWFYKDHaKI~qc~1aWdR3cE~WjoxNaR6SCJpgosQKinU0XEP6VlDiPYSzUnHcdghmbKloZUTZahZHwJdIPRx8cA5RgkR6NiCPiFVTVrq4iLY6bE7pYDe39jsetJaGYwz5ZXX~F9RcXWntUaeIOy7jYKCIlWH4~bYdZfWSJd-NNCTESWOxTenjPwq5s6UGdtcqH9fNzLCri-3lpXtfNcgnEDWz-zIm02ykjAv2RNgIKGKiP4OkKTLV6~c8dzk7A~fWQ-eQTF13qbnilVEAsVv~2LO870T3DvefGIxriYuKRHsCchdbFP97iT2cjTnXv8Yw-hZev5w__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4", duration: 15 };
-  export let index = 1;
-  export let time = advert ? 0 : 160;
+  export let interfaceStyle = "standard";
+  export let skipButtonsStyle = "segments";
+  export let playlistStyle = "auto-5-4";
+  export let playerTitle = undefined;
 
-  $: isStandard = style === "standard";
-  $: isPodcast = style === "podcast";
-  $: isIcon = style === "icon";
-
-  $: isPlaying = state === "playing";
-  $: isStopped = state === "stopped";
+  export let podcasts = [];
+  export let podcastIndex = 0;
+  export let currentTime = 0;
+  export let playbackState = "stopped";
+  export let currentAdvert = undefined;
 
   let width;
+
+  $: isStandard = interfaceStyle === "standard";
+  $: isPodcast = interfaceStyle === "podcast";
+  $: isIcon = interfaceStyle === "icon";
+
+  $: isPlaying = playbackState === "playing";
+  $: isStopped = playbackState === "stopped";
+
   $: isMobile = width < 380 && !isIcon;
-  $: isAdvert = advert && !isStopped;
+  $: isAdvert = currentAdvert && !isStopped;
   $: iconScale = isIcon ? 0.8 : 1;
 
-  $: podcast = podcasts[index] || {};
-  $: duration = isAdvert ? advert.duration : podcast.duration;
+  $: podcast = podcasts[podcastIndex] || {};
+  $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
 </script>
 
-<div class="user-interface {style}" class:mobile={isMobile} bind:clientWidth={width}>
+<div class="user-interface {interfaceStyle}" class:mobile={isMobile} bind:clientWidth={width}>
   <div class="main">
     {#if isPodcast}
-      <LargeImage src={isAdvert ? (advert.image || podcast.image) : podcast.image} />
+      <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} />
 
       <div>
-        <PlayerTitle title={isAdvert ? "" : title} />
+        <PlayerTitle title={isAdvert ? "" : playerTitle} />
         <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} />
       </div>
     {/if}
@@ -76,18 +67,18 @@
 
       {#if !isIcon && !isStopped && !isAdvert}
         <PlaybackSpeed />
-        <SkipButtons style={skip} />
+        <SkipButtons style={skipButtonsStyle} />
       {/if}
 
-      <TimeIndicator currentTime={time} {duration} playerStyle={style} {isAdvert} {isMobile} {isStopped} />
+      <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} />
 
       {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
-        <ProgressBar progress={isStopped ? 0 : time / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
+        <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
       {#if isAdvert}
-        <AdvertLink href={advert.url} playerStyle={style} />
-        <AdvertButton href={advert.url} scale={iconScale} />
+        <AdvertLink href={currentAdvert.url} {interfaceStyle} />
+        <AdvertButton href={currentAdvert.url} scale={iconScale} />
       {/if}
     </div>
 
@@ -97,7 +88,7 @@
   </div>
 
   {#if !isIcon}
-    <Playlist style={playlist} podcasts={podcasts} index={index} isMobile={isMobile} />
+    <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
   {/if}
 </div>
 

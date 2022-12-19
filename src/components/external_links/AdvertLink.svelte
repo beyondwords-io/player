@@ -1,11 +1,11 @@
 <script>
   export let href;
-  export let playerStyle;
+  export let interfaceStyle;
 
   $: text = new URL(href).hostname;
 </script>
 
-<a class="advert-link {playerStyle}" href={href} target="_blank" rel="noreferrer">
+<a class="advert-link {interfaceStyle}" href={href} target="_blank" rel="noreferrer">
   {text}
 </a>
 
