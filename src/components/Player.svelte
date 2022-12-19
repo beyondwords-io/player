@@ -12,18 +12,28 @@
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let currentAdvert = undefined;
+
+  export let showWidgetAtBottom = false;
+  export let widgetStyle = "standard";
+  export let widgetPosition = "center";
+
+  $: userInterfaceProps = {
+      interfaceStyle,
+      skipButtonsStyle,
+      playlistStyle,
+      playerTitle,
+      podcasts,
+      podcastIndex,
+      currentTime,
+      playbackState,
+      currentAdvert,
+  };
 </script>
 
 {#if showUserInterface}
-  <UserInterface
-      {interfaceStyle}
-      {skipButtonsStyle}
-      {playlistStyle}
-      {playerTitle}
-      {podcasts}
-      {podcastIndex}
-      {currentTime}
-      {playbackState}
-      {currentAdvert}
-  />
+  <UserInterface {...userInterfaceProps} />
+{/if}
+
+{#if showWidgetAtBottom}
+  <UserInterface {...userInterfaceProps} interfaceStyle={widgetStyle} fixedPosition={widgetPosition} playlistStyle="hide" />
 {/if}

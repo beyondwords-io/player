@@ -19,6 +19,7 @@
   export let skipButtonsStyle = "segments";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
+  export let fixedPosition = undefined;
 
   export let podcasts = [];
   export let podcastIndex = 0;
@@ -41,9 +42,11 @@
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
+
+  $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
 </script>
 
-<div class="user-interface {interfaceStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
+<div class="user-interface {interfaceStyle} {position}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
     {#if isPodcast}
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} />
@@ -205,4 +208,23 @@
   .icon .end {
     margin-right: 0.5rem;
   }
+
+  .fixed-left, .fixed-center, .fixed-right {
+    position: fixed;
+    bottom: 1rem;
+  }
+
+  .fixed-left {
+    left: 1rem;
+  }
+
+  .fixed-center {
+    left: 1rem;
+    width: calc(100% - 2rem);
+  }
+
+  .fixed-right {
+    right: 1rem;
+  }
+
 </style>
