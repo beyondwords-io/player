@@ -118,13 +118,12 @@
   }
 
   .controls {
-    align-self: flex-end;
     flex-grow: 1;
     display: flex;
     align-items: center;
     column-gap: 0.5rem;
     grid-row: 2;
-    grid-column: 2;
+    grid-column: 2 / span 2;
   }
 
   .standard {
@@ -157,7 +156,6 @@
     border-radius: 0.375rem;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-rows: auto auto;
   }
 
   .podcast.mobile .main {
