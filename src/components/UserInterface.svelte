@@ -43,7 +43,7 @@
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
 </script>
 
-<div class="user-interface {interfaceStyle}" class:mobile={isMobile} bind:clientWidth={width}>
+<div class="user-interface {interfaceStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
     {#if isPodcast}
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} />
@@ -54,7 +54,7 @@
       </div>
     {/if}
 
-    <div class="controls" style="justify-content: {isAdvert ? "space-between" : "flex-start"}">
+    <div class="controls">
       {#if isPlaying}
         <PauseButton scale={iconScale} />
       {:else}
@@ -73,7 +73,9 @@
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} />
 
       {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
-        <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
+        <div class="progress-bar">
+          <ProgressBar progress={isStopped ? 0 : currentTime / duration} />
+        </div>
       {/if}
 
       {#if isAdvert}
@@ -114,9 +116,18 @@
     flex-grow: 1;
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     column-gap: 0.5rem;
     grid-row: 2;
     grid-column: 2 / span 2;
+  }
+
+  .progress-bar {
+    flex-grow: 1;
+  }
+
+  .advert .controls {
+    justify-content: space-between;
   }
 
   .standard {
@@ -129,6 +140,14 @@
     border-radius: 1.5625rem;
     display: flex;
     align-items: center;
+  }
+
+  .standard .progress-bar {
+    margin-right: 0.5rem;
+  }
+
+  .standard.advert .progress-bar {
+    margin-right: 0;
   }
 
   .standard .end {
