@@ -1,9 +1,10 @@
 <script>
   export let title;
+  export let larger = false;
   export let maxLines = 1;
 </script>
 
-<div class="podcast-title" class:one-line={maxLines === 1} class:n-lines={maxLines > 1} style="--n: {maxLines}">
+<div class="podcast-title" class:larger class:one-line={maxLines === 1} class:n-lines={maxLines > 1} style="--n: {maxLines}">
   {title}
 </div>
 
@@ -27,5 +28,10 @@
             line-clamp: var(--n);
     -webkit-line-clamp: var(--n);
     -webkit-box-orient: vertical;
+  }
+
+  .larger {
+    font-size: 0.75rem;
+    font-weight: 500;
   }
 </style>

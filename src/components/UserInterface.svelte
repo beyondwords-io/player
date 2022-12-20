@@ -76,6 +76,12 @@
         <PlayerTitle title="Listen to this article" {interfaceStyle} />
       {/if}
 
+      {#if isStandard && !isStopped && !isAdvert && width > 700}
+        <div class="podcast-title">
+          <PodcastTitle title={podcast.title} maxLines={1} larger={true} />
+        </div>
+      {/if}
+
       {#if !isIcon && !isStopped && !isAdvert}
         <SpeedButton />
         <SkipButtons style={skipButtonsStyle} />
@@ -153,6 +159,7 @@
     column-gap: 0.5rem;
     grid-row: 2;
     grid-column: 2 / span 2;
+    overflow: hidden;
   }
 
   .progress-bar {
@@ -173,6 +180,12 @@
     border-radius: 1.5625rem;
     display: flex;
     align-items: center;
+  }
+
+  .standard .podcast-title {
+    flex: 0.52;
+    min-width: 0;
+    max-width: fit-content;
   }
 
   .standard .progress-bar {
