@@ -21,6 +21,7 @@
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
+  export let fixedWidth = "auto";
 
   export let podcasts = [];
   export let podcastIndex = 0;
@@ -50,9 +51,10 @@
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
 
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
+  $: style = fixedWidth && fixedWidth !== "auto" ? `width: ${fixedWidth}` : "";
 </script>
 
-<div class="user-interface {interfaceStyle} {position}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
+<div class="user-interface {interfaceStyle} {position}" {style} class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
     {#if isPodcast}
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} />
@@ -129,20 +131,24 @@
 
   .fixed-left, .fixed-center, .fixed-right {
     position: fixed;
-    bottom: 1rem;
+    bottom: 0;
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
   }
 
   .fixed-left {
-    left: 1rem;
+    left: 0;
   }
 
   .fixed-center {
-    left: 1rem;
-    width: calc(100% - 2rem);
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .fixed-right {
-    right: 1rem;
+    right: 0;
   }
 
   .main {
@@ -243,8 +249,7 @@
   }
 
   .icon {
-    min-width: 200px;
-    max-width: 200px;
+    min-width: 40px;
   }
 
   .icon .main {
@@ -266,5 +271,9 @@
 
   .icon.fixed-right .main {
     padding-left: 0.5rem;
+  }
+
+  .icon.fixed-left .main {
+    padding-right: 0.5rem;
   }
 </style>

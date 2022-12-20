@@ -20,6 +20,7 @@
   export let showWidgetAtBottom = false;
   export let widgetStyle = "standard";
   export let widgetPosition = "center";
+  export let widgetWidth = "auto";
 
   $: userInterfaceProps = {
     interfaceStyle,
@@ -39,5 +40,5 @@
 {/if}
 
 {#if showWidgetAtBottom}
-  <UserInterface {...userInterfaceProps} interfaceStyle={widgetStyle} fixedPosition={widgetPosition} playlistStyle="hide" />
+  <UserInterface {...userInterfaceProps} interfaceStyle={widgetStyle} fixedPosition={widgetPosition} fixedWidth={widgetWidth} playlistStyle="hide" />
 {/if}
