@@ -14,7 +14,7 @@
   import ProgressBar from "./ProgressBar.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
-  import Visibility from "./Visibility.svelte";
+  import Visibility from "./helpers/Visibility.svelte";
 
   export let interfaceStyle = "standard";
   export let skipButtonsStyle = "segments";
