@@ -72,4 +72,16 @@ describe("chooseWidget", () => {
     expect(mock2.showWidgetAtBottom).toEqual(false);
     expect(mock3.showWidgetAtBottom).toEqual(true);
   });
+
+  it("does not choose a player if any are visible and all above are stopped", () => {
+    const mock1 = { playbackState: "stopped", userInterface: { isVisible: false, relativeY: -1, absoluteY: 0 } };
+    const mock2 = { playbackState: "stopped", userInterface: { isVisible: true, relativeY: -1, absoluteY: 300 } };
+    const mock3 = { playbackState: "playing", userInterface: { isVisible: false, relativeY: 1000, absoluteY: 1300 } };
+
+    chooseWidget({ instances: () => [mock1, mock2, mock3] });
+
+    expect(mock1.showWidgetAtBottom).toEqual(false);
+    expect(mock2.showWidgetAtBottom).toEqual(false);
+    expect(mock3.showWidgetAtBottom).toEqual(false);
+  });
 });

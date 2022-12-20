@@ -1,4 +1,6 @@
 const chooseWidget = (Player) => {
+  let somePlayerIsVisible = false;
+
   let bestSoFar;
   let bestState = -Infinity;
   let bestY = -Infinity;
@@ -7,7 +9,7 @@ const chooseWidget = (Player) => {
     if (!player.userInterface) { continue; }
 
     const withinViewport = player.userInterface.isVisible;
-    if (withinViewport) { continue; }
+    if (withinViewport) { somePlayerIsVisible = true; continue; }
 
     const aboveViewport = player.userInterface.relativeY < 0;
     if (!aboveViewport) { continue; }
@@ -21,6 +23,10 @@ const chooseWidget = (Player) => {
     bestSoFar = player;
     bestState = thisState;
     bestY = thisY;
+  }
+
+  if (somePlayerIsVisible && bestState === 0) {
+    bestSoFar = null;
   }
 
   for (let player of Player.instances()) {
