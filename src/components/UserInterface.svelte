@@ -72,7 +72,7 @@
         {/if}
       </Visibility>
 
-      {#if isStandard && isStopped || (isIcon && !isAdvert)}
+      {#if isStandard && isStopped || isIcon && !isAdvert}
         <ListenPrompt />
       {/if}
 
