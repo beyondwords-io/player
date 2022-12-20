@@ -2,6 +2,7 @@
   import "@fontsource/inter/variable.css";
   import PlayButton from "./buttons/PlayButton.svelte";
   import PauseButton from "./buttons/PauseButton.svelte";
+  import PlaybackSpeed from "./buttons/PlaybackSpeed.svelte";
   import SkipButtons from "./buttons/SkipButtons.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
@@ -10,7 +11,6 @@
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./PlayerTitle.svelte";
   import PodcastTitle from "./PodcastTitle.svelte";
-  import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import ProgressBar from "./ProgressBar.svelte";
   import TimeIndicator from "./time_indicators/TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
