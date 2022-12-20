@@ -51,10 +51,10 @@
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
 
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
-  $: style = fixedWidth && fixedWidth !== "auto" ? `width: ${fixedWidth}` : "";
+  $: widthStyle = fixedWidth == "auto" && isIcon ? "fit-content" : fixedWidth;
 </script>
 
-<div class="user-interface {interfaceStyle} {position}" {style} class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
+<div class="user-interface {interfaceStyle} {position}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
     {#if isPodcast}
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} />
