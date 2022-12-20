@@ -28,6 +28,5 @@
     flex-grow: 1;
     height: 2rem;
     display: flex;
-    align-items: center;
   }
 </style>
