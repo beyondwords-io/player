@@ -17,7 +17,6 @@ class Player extends PlayerComponent {
       }
     });
 
-    this.playerInstance = this;
     Player.#instances.push(this);
   }
 

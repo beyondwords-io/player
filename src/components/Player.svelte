@@ -3,7 +3,6 @@
   import chooseWidget from "../helpers/chooseWidget";
 
   export let PlayerClass = undefined;
-  export let playerInstance = undefined;
 
   export let showUserInterface = false;
   export let userInterface = undefined;
@@ -23,15 +22,15 @@
   export let widgetPosition = "center";
 
   $: userInterfaceProps = {
-      interfaceStyle,
-      skipButtonsStyle,
-      playlistStyle,
-      playerTitle,
-      podcasts,
-      podcastIndex,
-      currentTime,
-      playbackState,
-      currentAdvert,
+    interfaceStyle,
+    skipButtonsStyle,
+    playlistStyle,
+    playerTitle,
+    podcasts,
+    podcastIndex,
+    currentTime,
+    playbackState,
+    currentAdvert,
   };
 </script>
 

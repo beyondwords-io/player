@@ -5,7 +5,7 @@ const chooseWidget = (Player) => {
   let bestState = -Infinity;
   let bestY = -Infinity;
 
-  for (let player of Player.instances()) {
+  for (const player of Player.instances()) {
     if (!player.userInterface) { continue; }
 
     const withinViewport = player.userInterface.isVisible;
@@ -29,7 +29,7 @@ const chooseWidget = (Player) => {
     bestSoFar = null;
   }
 
-  for (let player of Player.instances()) {
+  for (const player of Player.instances()) {
     player.showWidgetAtBottom = player === bestSoFar;
   }
 };
