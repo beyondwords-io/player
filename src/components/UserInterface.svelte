@@ -78,15 +78,15 @@
         <PlayerTitle title="Listen to this article" {interfaceStyle} />
       {/if}
 
+      {#if !isIcon && !isStopped && !isAdvert}
+        <SpeedButton />
+        <SkipButtons style={skipButtonsStyle} />
+      {/if}
+
       {#if isStandard && !isStopped && !isAdvert && width > 700}
         <div class="podcast-title">
           <PodcastTitle title={podcast.title} maxLines={1} larger={true} />
         </div>
-      {/if}
-
-      {#if !isIcon && !isStopped && !isAdvert}
-        <SpeedButton />
-        <SkipButtons style={skipButtonsStyle} />
       {/if}
 
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
