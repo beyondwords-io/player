@@ -1,6 +1,6 @@
 <script>
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
-  import PodcastTitle from "./PodcastTitle.svelte";
+  import PodcastTitle from "./titles/PodcastTitle.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
 
   export let style = "auto";

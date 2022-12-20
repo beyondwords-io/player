@@ -9,8 +9,8 @@
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
   import LargeImage from "./LargeImage.svelte";
-  import PlayerTitle from "./PlayerTitle.svelte";
-  import PodcastTitle from "./PodcastTitle.svelte";
+  import PlayerTitle from "./titles/PlayerTitle.svelte";
+  import PodcastTitle from "./titles/PodcastTitle.svelte";
   import ProgressBar from "./ProgressBar.svelte";
   import TimeIndicator from "./time_indicators/TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
