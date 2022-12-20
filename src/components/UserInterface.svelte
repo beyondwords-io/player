@@ -2,7 +2,7 @@
   import "@fontsource/inter/variable.css";
   import PlayButton from "./buttons/PlayButton.svelte";
   import PauseButton from "./buttons/PauseButton.svelte";
-  import PlaybackSpeed from "./buttons/PlaybackSpeed.svelte";
+  import SpeedButton from "./buttons/SpeedButton.svelte";
   import SkipButtons from "./buttons/SkipButtons.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
@@ -77,7 +77,7 @@
       {/if}
 
       {#if !isIcon && !isStopped && !isAdvert}
-        <PlaybackSpeed />
+        <SpeedButton />
         <SkipButtons style={skipButtonsStyle} />
       {/if}
 
