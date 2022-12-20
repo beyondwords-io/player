@@ -4,6 +4,7 @@
   import PauseButton from "./buttons/PauseButton.svelte";
   import SkipButtons from "./buttons/SkipButtons.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
+  import CloseButton from "./buttons/CloseButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
   import LargeImage from "./LargeImage.svelte";
@@ -97,7 +98,11 @@
 
     {#if !isAdvert}
       <div class="end">
-        <BeyondWords />
+        {#if fixedPosition}
+          <CloseButton />
+        {:else}
+          <BeyondWords />
+        {/if}
       </div>
     {/if}
   </div>
