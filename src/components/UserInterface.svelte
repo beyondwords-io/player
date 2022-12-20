@@ -122,6 +122,24 @@
     color: #323232;
   }
 
+  .fixed-left, .fixed-center, .fixed-right {
+    position: fixed;
+    bottom: 1rem;
+  }
+
+  .fixed-left {
+    left: 1rem;
+  }
+
+  .fixed-center {
+    left: 1rem;
+    width: calc(100% - 2rem);
+  }
+
+  .fixed-right {
+    right: 1rem;
+  }
+
   .main {
     box-sizing: border-box;
     background: #fafafa;
@@ -170,17 +188,24 @@
     margin-right: 0.75rem;
   }
 
-  .standard.mobile .main {
-    flex-direction: row-reverse;
-  }
-
+  .standard.mobile .main,
   .standard.mobile .controls {
     flex-direction: row-reverse;
   }
 
+  .standard.fixed-left .main,
+  .standard.fixed-left .controls {
+    flex-direction: row;
+  }
+
   .standard.mobile .end {
-    margin-right: 0;
     margin-left: 0.75rem;
+    margin-right: 0;
+  }
+
+  .standard.fixed-left .end {
+    margin-left: 0;
+    margin-right: 0.75rem;
   }
 
   .podcast {
@@ -218,25 +243,17 @@
     align-items: center;
   }
 
+  .icon.fixed-right .main,
+  .icon.fixed-right .controls {
+    flex-direction: row-reverse;
+  }
+
   .icon .end {
     margin-right: 0.5rem;
   }
 
-  .fixed-left, .fixed-center, .fixed-right {
-    position: fixed;
-    bottom: 1rem;
-  }
-
-  .fixed-left {
-    left: 1rem;
-  }
-
-  .fixed-center {
-    left: 1rem;
-    width: calc(100% - 2rem);
-  }
-
-  .fixed-right {
-    right: 1rem;
+  .icon.fixed-right .end {
+    margin-left: 0.5rem;
+    margin-right: 0;
   }
 </style>
