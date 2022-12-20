@@ -10,7 +10,6 @@
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./PlayerTitle.svelte";
   import PodcastTitle from "./PodcastTitle.svelte";
-  import ListenPrompt from "./ListenPrompt.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import ProgressBar from "./ProgressBar.svelte";
   import TimeIndicator from "./TimeIndicator.svelte";
@@ -59,7 +58,7 @@
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} />
 
       <div>
-        <PlayerTitle title={isAdvert ? "" : playerTitle} />
+        <PlayerTitle title={isAdvert ? "" : playerTitle} {interfaceStyle} />
         <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} />
       </div>
     {/if}
@@ -74,7 +73,7 @@
       </Visibility>
 
       {#if isStandard && isStopped || isIcon && !isAdvert}
-        <ListenPrompt />
+        <PlayerTitle title="Listen to this article" {interfaceStyle} />
       {/if}
 
       {#if !isIcon && !isStopped && !isAdvert}

@@ -1,19 +1,31 @@
 <script>
   export let title;
+  export let interfaceStyle;
 </script>
 
-<div class="player-title">{title}</div>
+<div class="player-title {interfaceStyle}">
+  {title}
+</div>
 
 <style>
   .player-title {
-    height: 0.9375rem;
     font-size: 0.75rem;
     font-weight: 500;
     line-height: 1.25;
-    margin-bottom: 0.3125rem;
 
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  .podcast {
+    height: 0.9375rem;
+    margin-bottom: 0.3125rem;
+  }
+
+  .standard,
+  .icon {
+    flex-grow: 1;
+    height: 2rem;
   }
 </style>
