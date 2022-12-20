@@ -87,7 +87,7 @@
         <SkipButtons style={skipButtonsStyle} />
       {/if}
 
-      <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} />
+      <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
 
       {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
         <div class="progress-bar">
@@ -101,7 +101,7 @@
       {/if}
     </div>
 
-    {#if !isAdvert}
+    {#if !isAdvert && !(isIcon && fixedPosition)}
       <div class="end">
         {#if fixedPosition}
           <CloseButton />
@@ -264,8 +264,7 @@
     margin-right: 0.5rem;
   }
 
-  .icon.fixed-right .end {
-    margin-left: 0.5rem;
-    margin-right: 0;
+  .icon.fixed-right .main {
+    padding-left: 0.5rem;
   }
 </style>
