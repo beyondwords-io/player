@@ -12,7 +12,7 @@
   import PodcastTitle from "./PodcastTitle.svelte";
   import PlaybackSpeed from "./PlaybackSpeed.svelte";
   import ProgressBar from "./ProgressBar.svelte";
-  import TimeIndicator from "./TimeIndicator.svelte";
+  import TimeIndicator from "./time_indicators/TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
   import Visibility from "./helpers/Visibility.svelte";
 

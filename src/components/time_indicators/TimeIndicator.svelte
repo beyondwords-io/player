@@ -1,7 +1,7 @@
 <script>
-  import CountdownTime from "./time_indicators/CountdownTime.svelte";
-  import DurationInMins from "./time_indicators/DurationInMins.svelte";
-  import PlaybackTime from "./time_indicators/PlaybackTime.svelte";
+  import CountdownTime from "./CountdownTime.svelte";
+  import DurationInMins from "./DurationInMins.svelte";
+  import PlaybackTime from "./PlaybackTime.svelte";
 
   export let duration = 0;
   export let currentTime = 0;
