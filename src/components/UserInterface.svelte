@@ -50,6 +50,7 @@
 
   $: externalUrl = isAdvert ? currentAdvert.url : isUrl ? podcast.externalUrl : "";
   $: buttonScale = isIcon ? 0.8 : isUrl ? 2 : 1;
+  $: playPauseScale = isUrl ? 3 : buttonScale;
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
@@ -72,11 +73,11 @@
 
     <div class="controls">
       <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
-        <ProgressCircle enabled={isUrl} {progress} scale={buttonScale} color={isAdvert ? "#00cdbc" : "#323232"}>
+        <ProgressCircle enabled={isUrl} {progress} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
           {#if isPlaying}
-            <PauseButton scale={buttonScale} />
+            <PauseButton scale={playPauseScale} />
           {:else}
-            <PlayButton scale={buttonScale} />
+            <PlayButton scale={playPauseScale} />
           {/if}
         </ProgressCircle>
       </Visibility>
