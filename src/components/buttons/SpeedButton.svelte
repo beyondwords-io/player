@@ -2,10 +2,12 @@
   export let speed = 1;
 </script>
 
-<div>{speed}x</div>
+<div class="speed-button">
+  {speed}x
+</div>
 
 <style>
-  div {
+  .speed-button {
     width: 2.5rem;
     height: 2.5rem;
     cursor: pointer;

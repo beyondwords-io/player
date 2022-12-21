@@ -5,10 +5,12 @@
   export let remaining;
 </script>
 
-<span>{text} • {formatTime(remaining)}</span>
+<span class="countdown-time">
+  {text} • {formatTime(remaining)}
+</span>
 
 <style>
-  span {
+  .countdown-time {
     font-size: 0.625rem;
     font-weight: 300;
   }

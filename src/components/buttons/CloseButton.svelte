@@ -4,12 +4,12 @@
   export let scale = 1;
 </script>
 
-<div>
+<div class="close-button">
   <Close scale={scale} />
 </div>
 
 <style>
-  div {
+  .close-button {
     display: flex;
     cursor: pointer;
   }

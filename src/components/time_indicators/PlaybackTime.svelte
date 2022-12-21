@@ -5,10 +5,12 @@
   export let duration = 0;
 </script>
 
-<span>{formatTime(currentTime)} / {formatTime(duration)}</span>
+<span class="playback-time">
+  {formatTime(currentTime)} / {formatTime(duration)}
+</span>
 
 <style>
-  span {
+  .playback-time {
     font-size: 0.625rem;
     font-weight: 300;
     white-space: nowrap;

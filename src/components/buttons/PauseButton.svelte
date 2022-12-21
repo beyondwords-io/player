@@ -4,12 +4,12 @@
   export let scale = 1;
 </script>
 
-<div>
+<div class="pause-button">
   <Pause scale={scale} />
 </div>
 
 <style>
-  div {
+  .pause-button {
     display: flex;
     cursor: pointer;
   }

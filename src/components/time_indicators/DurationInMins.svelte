@@ -5,10 +5,12 @@
   $: minutes = Math.round(duration / 60);
 </script>
 
-<div class:bold={bold}>{minutes} min</div>
+<div class="duration-in-mins" class:bold={bold}>
+  {minutes} min
+</div>
 
 <style>
-  div {
+  .duration-in-mins {
     font-size: 0.625rem;
     font-weight: 300;
   }

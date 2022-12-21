@@ -3,10 +3,10 @@
   export let alt;
 </script>
 
-<img src={src} alt={alt} />
+<img class="large-image" src={src} alt={alt} />
 
 <style>
-  img {
+  .large-image {
     width: 5rem;
     height: 5rem;
     background: white;

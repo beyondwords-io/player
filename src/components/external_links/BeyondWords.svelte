@@ -2,12 +2,12 @@
   import Logo from "../svg_icons/Logo.svelte";
 </script>
 
-<a href="https://beyondwords.io/" target="_blank" rel="noreferrer">
+<a class="beyond-words" href="https://beyondwords.io/" target="_blank" rel="noreferrer">
   <Logo />
 </a>
 
 <style>
-  a {
+  .beyond-words {
     display: flex;
   }
 </style>

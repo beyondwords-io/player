@@ -4,12 +4,12 @@
   export let scale = 1;
 </script>
 
-<div>
+<div class="play-button">
   <Play scale={scale} />
 </div>
 
 <style>
-  div {
+  .play-button {
     display: flex;
     cursor: pointer;
   }

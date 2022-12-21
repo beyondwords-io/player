@@ -5,12 +5,12 @@
   export let scale = 1;
 </script>
 
-<a href={href} target="_blank" rel="noreferrer">
+<a class="advert-button" href={href} target="_blank" rel="noreferrer">
   <OpenNewTab color="#00cdbc" scale={scale} />
 </a>
 
 <style>
-  a {
+  .advert-button {
     display: flex;
   }
 </style>

@@ -26,12 +26,12 @@
   });
 </script>
 
-<div bind:this={element}>
+<div class="visibility" bind:this={element}>
   <slot></slot>
 </div>
 
 <style>
-  div {
+  .visibility {
     display: flex;
   }
 </style>
