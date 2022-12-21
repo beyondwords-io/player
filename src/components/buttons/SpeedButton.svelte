@@ -3,7 +3,7 @@
   export let scale = 1;
 
   $: size = `${2.5 * scale}rem`;
-  $: fontSize = `{0.75 * scale}rem`;
+  $: fontSize = `${0.75 * scale}rem`;
 </script>
 
 <div class="speed-button" style="width: {size}; height: {size}; font-size: {fontSize}">
