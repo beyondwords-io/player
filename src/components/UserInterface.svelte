@@ -12,6 +12,7 @@
   import PlayerTitle from "./titles/PlayerTitle.svelte";
   import PodcastTitle from "./titles/PodcastTitle.svelte";
   import ProgressBar from "./ProgressBar.svelte";
+  import ProgressCircle from "./ProgressCircle.svelte";
   import TimeIndicator from "./time_indicators/TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
   import Visibility from "./helpers/Visibility.svelte";
@@ -52,6 +53,7 @@
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
+  $: progress = isStopped ? 0 : currentTime / duration
 
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
   $: widthStyle = fixedWidth == "auto" && isIcon ? "fit-content" : fixedWidth;
@@ -70,11 +72,13 @@
 
     <div class="controls">
       <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
-        {#if isPlaying}
-          <PauseButton scale={buttonScale} />
-        {:else}
-          <PlayButton scale={buttonScale} />
-        {/if}
+        <ProgressCircle {progress} scale={buttonScale} color={isAdvert ? "#00cdbc" : "#323232"}>
+          {#if isPlaying}
+            <PauseButton scale={buttonScale} />
+          {:else}
+            <PlayButton scale={buttonScale} />
+          {/if}
+        </ProgressCircle>
       </Visibility>
 
       {#if isStandard && isStopped || isIcon && !isAdvert}
@@ -93,7 +97,7 @@
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
 
       {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
-        <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
+        <ProgressBar {progress} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
       {#if isAdvert}
