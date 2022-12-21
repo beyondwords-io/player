@@ -4,7 +4,7 @@
   import PauseButton from "./buttons/PauseButton.svelte";
   import SpeedButton from "./buttons/SpeedButton.svelte";
   import SkipButtons from "./buttons/SkipButtons.svelte";
-  import AdvertButton from "./buttons/AdvertButton.svelte";
+  import NewTabButton from "./buttons/NewTabButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
@@ -96,7 +96,10 @@
 
       {#if isAdvert}
         <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isUrl ? 2 : 1} />
-        <AdvertButton href={currentAdvert.url} scale={buttonScale} />
+      {/if}
+
+      {#if isAdvert}
+        <NewTabButton href={currentAdvert.url} scale={buttonScale} color="#00cdbc" />
       {/if}
     </div>
 

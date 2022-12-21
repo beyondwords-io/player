@@ -3,14 +3,15 @@
 
   export let href;
   export let scale = 1;
+  export let color = "#323232";
 </script>
 
-<a class="advert-button" href={href} target="_blank" rel="noreferrer">
-  <OpenNewTab color="#00cdbc" scale={scale} />
+<a class="new-tab-button" href={href} target="_blank" rel="noreferrer">
+  <OpenNewTab {color} scale={scale} />
 </a>
 
 <style>
-  .advert-button {
+  .new-tab-button {
     display: flex;
   }
 </style>
