@@ -1,15 +1,15 @@
 <script>
   export let title;
   export let interfaceStyle;
+  export let scale = 1;
 </script>
 
-<div class="player-title {interfaceStyle}">
+<div class="player-title {interfaceStyle}" style="font-size: {0.75 * scale}rem">
   {title}
 </div>
 
 <style>
   .player-title {
-    font-size: 0.75rem;
     font-weight: 500;
     line-height: 1.25;
 
@@ -28,5 +28,11 @@
     flex-grow: 1;
     height: 2rem;
     display: flex;
+  }
+
+  .url {
+    height: 1.875rem;
+    position: relative;
+    bottom: 1.25rem;
   }
 </style>

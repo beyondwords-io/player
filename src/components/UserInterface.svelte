@@ -61,7 +61,7 @@
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isUrl ? 1.5 : 1} />
 
       <div>
-        <PlayerTitle title={isAdvert || isUrl ? "" : playerTitle} {interfaceStyle} />
+        <PlayerTitle title={isAdvert || isUrl ? "" : playerTitle} {interfaceStyle} scale={isUrl ? 2 : 1} />
         <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} scale={isUrl ? 2 : 1} />
       </div>
     {/if}
@@ -276,6 +276,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
     row-gap: 2.5rem;
     padding: 2.5rem;
   }
