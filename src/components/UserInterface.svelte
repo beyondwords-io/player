@@ -90,9 +90,7 @@
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
 
       {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
-        <div class="progress-bar">
-          <ProgressBar progress={isStopped ? 0 : currentTime / duration} />
-        </div>
+        <ProgressBar progress={isStopped ? 0 : currentTime / duration} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
       {#if isAdvert}
@@ -167,10 +165,6 @@
     overflow: hidden;
   }
 
-  .progress-bar {
-    flex-grow: 1;
-  }
-
   .advert .controls {
     justify-content: space-between;
   }
@@ -185,14 +179,6 @@
     border-radius: 1.5625rem;
     display: flex;
     align-items: center;
-  }
-
-  .standard .progress-bar {
-    margin-right: 0.5rem;
-  }
-
-  .standard.advert .progress-bar {
-    margin-right: 0;
   }
 
   .standard .end {
