@@ -84,9 +84,7 @@
       {/if}
 
       {#if isStandard && !isStopped && !isAdvert && width > 700}
-        <div class="podcast-title">
-          <PodcastTitle title={podcast.title} maxLines={1} larger={true} />
-        </div>
+        <PodcastTitle title={podcast.title} maxLines={1} larger={true} flex={0.52} />
       {/if}
 
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
@@ -187,12 +185,6 @@
     border-radius: 1.5625rem;
     display: flex;
     align-items: center;
-  }
-
-  .standard .podcast-title {
-    flex: 0.52;
-    min-width: 0;
-    max-width: fit-content;
   }
 
   .standard .progress-bar {

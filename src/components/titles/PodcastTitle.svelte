@@ -2,9 +2,10 @@
   export let title;
   export let larger = false;
   export let maxLines = 1;
+  export let flex = "0 1 auto";
 </script>
 
-<div class="podcast-title" class:larger class:one-line={maxLines === 1} class:n-lines={maxLines > 1} style="--n: {maxLines}">
+<div class="podcast-title" class:larger class:one-line={maxLines === 1} class:n-lines={maxLines > 1} style="--n: {maxLines}; flex: {flex}">
   {title}
 </div>
 
@@ -15,6 +16,8 @@
     line-height: 1.2;
     text-overflow: ellipsis;
     overflow: hidden;
+    min-width: 0;
+    max-width: fit-content;
   }
 
   .one-line {
