@@ -8,8 +8,9 @@
   $: remaining = Math.max(0, duration - currentTime);
 
   export let interfaceStyle;
-  export let position;
+  $: scale = interfaceStyle === "url" ? 3 : 1;
 
+  export let position;
   export let isMobile;
   export let isAdvert;
   export let isStopped;
@@ -18,11 +19,11 @@
 <div class="time-indicator {interfaceStyle} {position}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped}>
   <div class="inner">
     {#if isAdvert}
-      <CountdownTime text="Ad" remaining={remaining} />
+      <CountdownTime text="Ad" remaining={remaining} {scale} />
     {:else if isStopped}
-      <DurationInMins {duration} />
+      <DurationInMins {duration} {scale} />
     {:else}
-      <PlaybackTime {duration} {currentTime} />
+      <PlaybackTime {duration} {currentTime} {scale} />
     {/if}
   </div>
 </div>
