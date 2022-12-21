@@ -30,4 +30,11 @@
     top: 0.25rem;
     left: 2.75rem;
   }
+
+  .url {
+    position: absolute;
+    top: 17.125rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 </style>
