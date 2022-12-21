@@ -234,6 +234,10 @@
     min-width: 40px;
   }
 
+  .icon.advert {
+    min-width: 200px;
+  }
+
   .icon .main {
     height: 2.5rem;
     padding: 0.25rem;
@@ -257,5 +261,13 @@
 
   .icon.fixed-left .main {
     padding-right: 0.5rem;
+  }
+
+  .icon.fixed-right.advert .main {
+    padding-left: 0.25rem;
+  }
+
+  .icon.fixed-left.advert .main {
+    padding-right: 0.25rem;
   }
 </style>

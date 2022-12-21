@@ -117,4 +117,10 @@
     left: 1rem;
     top: 1.5rem;
   }
+
+  .icon.fixed-right.advert .inner {
+    position: absolute;
+    left: 2.75rem;
+    top: 1.5rem;
+  }
 </style>
