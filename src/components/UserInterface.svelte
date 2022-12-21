@@ -46,6 +46,8 @@
 
   $: isMobile = width < 380 && !isIcon;
   $: isAdvert = currentAdvert && !isStopped;
+
+  $: externalUrl = isAdvert ? currentAdvert.url : podcast.externalUrl;
   $: buttonScale = isIcon ? 0.8 : isUrl ? 2 : 1;
 
   $: podcast = podcasts[podcastIndex] || {};
@@ -98,8 +100,8 @@
         <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isUrl ? 2 : 1} />
       {/if}
 
-      {#if isAdvert}
-        <NewTabButton href={currentAdvert.url} scale={buttonScale} color="#00cdbc" />
+      {#if externalUrl}
+        <NewTabButton href={externalUrl} {interfaceStyle} scale={buttonScale} color={isAdvert ? "#00cdbc" : "#323232"} />
       {/if}
     </div>
 
@@ -282,6 +284,11 @@
     text-align: center;
     row-gap: 2.5rem;
     padding: 2.5rem;
+    height: 756px;
+  }
+
+  .url .controls {
+    flex-grow: 0;
   }
 
   .url .end {
