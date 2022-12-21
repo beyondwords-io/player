@@ -100,7 +100,7 @@
       {/if}
     </div>
 
-    {#if !isAdvert && !(isIcon && fixedPosition)}
+    {#if !isAdvert && !(isIcon && fixedPosition) || isUrl}
       <div class="end">
         {#if fixedPosition}
           <CloseButton scale={isUrl ? 3.375 : 1} />
