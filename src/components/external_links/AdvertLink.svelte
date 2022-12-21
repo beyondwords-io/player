@@ -1,17 +1,17 @@
 <script>
   export let href;
   export let interfaceStyle;
+  export let scale = 1;
 
   $: text = new URL(href).hostname;
 </script>
 
-<a class="advert-link {interfaceStyle}" href={href} target="_blank" rel="noreferrer">
+<a class="advert-link {interfaceStyle}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem">
   {text}
 </a>
 
 <style>
   a.advert-link {
-    font-size: 0.75rem;
     font-weight: 500;
     text-decoration: none;
     color: #00cdbc;

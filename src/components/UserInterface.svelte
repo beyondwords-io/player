@@ -95,7 +95,7 @@
       {/if}
 
       {#if isAdvert}
-        <AdvertLink href={currentAdvert.url} {interfaceStyle} />
+        <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isUrl ? 2 : 1} />
         <AdvertButton href={currentAdvert.url} scale={buttonScale} />
       {/if}
     </div>
