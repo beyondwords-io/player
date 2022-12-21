@@ -186,7 +186,9 @@
   }
 
   .standard.mobile .main,
-  .standard.mobile .controls {
+  .standard.mobile .controls,
+  .standard.fixed-right .main,
+  .standard.fixed-right .controls {
     flex-direction: row-reverse;
   }
 
@@ -195,7 +197,8 @@
     flex-direction: row;
   }
 
-  .standard.mobile .end {
+  .standard.mobile .end,
+  .standard.fixed-right .end {
     margin-left: 0.75rem;
     margin-right: 0;
   }

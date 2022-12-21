@@ -54,7 +54,8 @@
     position: relative;
   }
 
-  .stopped,
+  .standard.stopped,
+  .podcast.stopped,
   .podcast.advert {
     flex-grow: 0;
     margin-left: -0.5rem !important;
@@ -78,6 +79,18 @@
   .stopped.mobile .inner {
     position: absolute;
     left: 2.5rem;
+    top: 1.75rem;
+  }
+
+  .standard.stopped.fixed-right .inner {
+    position: absolute;
+    left: 2.25rem;
+    top: 1.75rem;
+  }
+
+  .standard.stopped.fixed-left .inner {
+    position: absolute;
+    left: 3.25rem;
     top: 1.75rem;
   }
 
