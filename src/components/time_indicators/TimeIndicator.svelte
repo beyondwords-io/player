@@ -124,4 +124,14 @@
     left: 2.75rem;
     top: 1.5rem;
   }
+
+  .url {
+    position: absolute;
+    bottom: 13rem;
+    display: flex;
+  }
+
+  .url .inner {
+    position: static;
+  }
 </style>
