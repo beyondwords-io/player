@@ -39,13 +39,14 @@
   $: isStandard = interfaceStyle === "standard";
   $: isPodcast = interfaceStyle === "podcast";
   $: isIcon = interfaceStyle === "icon";
+  $: isUrl = interfaceStyle === "url";
 
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
 
   $: isMobile = width < 380 && !isIcon;
   $: isAdvert = currentAdvert && !isStopped;
-  $: iconScale = isIcon ? 0.8 : 1;
+  $: iconScale = isIcon ? 0.8 : isUrl ? 2 : 1;
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
@@ -56,11 +57,11 @@
 
 <div class="user-interface {interfaceStyle} {position}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
-    {#if isPodcast}
-      <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} />
+    {#if isPodcast || isUrl}
+      <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isUrl ? 1.5 : 1} />
 
       <div>
-        <PlayerTitle title={isAdvert ? "" : playerTitle} {interfaceStyle} />
+        <PlayerTitle title={isAdvert || isUrl ? "" : playerTitle} {interfaceStyle} />
         <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} />
       </div>
     {/if}
@@ -102,15 +103,15 @@
     {#if !isAdvert && !(isIcon && fixedPosition)}
       <div class="end">
         {#if fixedPosition}
-          <CloseButton />
+          <CloseButton scale={isUrl ? 3.375 : 1} />
         {:else}
-          <BeyondWords />
+          <BeyondWords scale={isUrl ? 3.375 : 1} />
         {/if}
       </div>
     {/if}
   </div>
 
-  {#if !isIcon}
+  {#if !isIcon && !isUrl}
     <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
   {/if}
 </div>
@@ -269,5 +270,18 @@
 
   .icon.fixed-left.advert .main {
     padding-right: 0.25rem;
+  }
+
+  .url .main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 2.5rem;
+    padding: 2.5rem;
+  }
+
+  .url .end {
+    order: -1;
+    align-self: flex-end;
   }
 </style>
