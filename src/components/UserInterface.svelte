@@ -62,7 +62,7 @@
 
       <div>
         <PlayerTitle title={isAdvert || isUrl ? "" : playerTitle} {interfaceStyle} />
-        <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} />
+        <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} scale={isUrl ? 2 : 1} />
       </div>
     {/if}
 
@@ -81,7 +81,7 @@
 
       {#if !isIcon && !isStopped && !isAdvert}
         <SpeedButton />
-        <SkipButtons style={skipButtonsStyle} />
+        <SkipButtons style={skipButtonsStyle} scale={iconScale} />
       {/if}
 
       {#if isStandard && !isStopped && !isAdvert && width > 700}

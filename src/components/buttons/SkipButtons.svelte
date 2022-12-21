@@ -9,6 +9,7 @@
   import NextTrack from "../svg_icons/NextTrack.svelte";
 
   export let style = "segments";
+  export let scale = 1;
 
   $: backwardsSeconds = style.split("-")[1] || 10;
   $: forwardsSeconds = style.split("-")[2] || backwardsSeconds;
@@ -17,11 +18,11 @@
 <div class="skip-buttons">
   <div class="backwards">
     {#if style === "segments"}
-      <Up />
+      <Up {scale} />
     {:else if style.startsWith("seconds")}
-      <SeekBack seconds={backwardsSeconds} />
+      <SeekBack seconds={backwardsSeconds} {scale} />
     {:else if style === "tracks"}
-      <PrevTrack />
+      <PrevTrack {scale} />
     {/if}
   </div>
 
@@ -31,11 +32,11 @@
 
   <div class="forwards">
     {#if style === "segments"}
-      <Down />
+      <Down {scale} />
     {:else if style.startsWith("seconds")}
-      <SeekAhead seconds={forwardsSeconds} />
+      <SeekAhead seconds={forwardsSeconds} {scale} />
     {:else if style === "tracks"}
-      <NextTrack />
+      <NextTrack {scale} />
     {/if}
   </div>
 </div>
