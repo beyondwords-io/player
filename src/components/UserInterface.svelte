@@ -54,10 +54,10 @@
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
-  $: progress = isStopped ? 0 : currentTime / duration
+  $: progress = isStopped ? 0 : currentTime / duration;
 
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
-  $: widthStyle = fixedWidth == "auto" && isIcon ? "fit-content" : fixedWidth;
+  $: widthStyle = fixedWidth === "auto" && isIcon ? "fit-content" : fixedWidth;
 </script>
 
 <div class="user-interface {interfaceStyle} {position}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
