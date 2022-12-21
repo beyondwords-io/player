@@ -226,6 +226,10 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
+  .podcast .controls {
+    align-self: flex-end;
+  }
+
   .podcast.mobile .main {
     height: 9rem;
   }
