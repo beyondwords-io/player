@@ -289,6 +289,7 @@
 
   .url .controls {
     flex-grow: 0;
+    justify-content: center;
   }
 
   .url .end {

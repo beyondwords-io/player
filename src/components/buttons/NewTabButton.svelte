@@ -19,7 +19,5 @@
   .url {
     position: absolute;
     bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
   }
 </style>
