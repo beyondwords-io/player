@@ -1,22 +1,21 @@
 <script>
   export let speed = 1;
+  export let scale = 1;
+
+  $: size = `${2.5 * scale}rem`;
+  $: fontSize = `{0.75 * scale}rem`;
 </script>
 
-<div class="speed-button">
+<div class="speed-button" style="width: {size}; height: {size}; font-size: {fontSize}">
   {speed}x
 </div>
 
 <style>
   .speed-button {
-    width: 2.5rem;
-    height: 2.5rem;
-    cursor: pointer;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
-    font-size: 0.75rem;
     font-weight: 600;
+    cursor: pointer;
   }
 </style>

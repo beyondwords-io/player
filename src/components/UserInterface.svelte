@@ -80,7 +80,7 @@
       {/if}
 
       {#if !isIcon && !isStopped && !isAdvert}
-        <SpeedButton />
+        <SpeedButton scale={iconScale} />
         <SkipButtons style={skipButtonsStyle} scale={iconScale} />
       {/if}
 
