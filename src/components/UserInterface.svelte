@@ -304,5 +304,6 @@
   .url .end {
     order: -1;
     align-self: flex-end;
+    margin-bottom: -2rem;
   }
 </style>

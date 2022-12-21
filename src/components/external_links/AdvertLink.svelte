@@ -33,6 +33,6 @@
 
   .url {
     position: absolute;
-    top: 17.125rem;
+    top: 15.125rem;
   }
 </style>
