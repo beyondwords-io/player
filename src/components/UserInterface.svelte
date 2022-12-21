@@ -72,7 +72,7 @@
 
     <div class="controls">
       <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
-        <ProgressCircle {progress} scale={buttonScale} color={isAdvert ? "#00cdbc" : "#323232"}>
+        <ProgressCircle enabled={isUrl} {progress} scale={buttonScale} color={isAdvert ? "#00cdbc" : "#323232"}>
           {#if isPlaying}
             <PauseButton scale={buttonScale} />
           {:else}

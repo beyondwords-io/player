@@ -2,6 +2,7 @@
   export let progress = 0;
   export let scale = 1;
   export let color = "#323232";
+  export let enabled = true;
 
   $: strokeWidth = 2.5 * scale;
 
@@ -13,19 +14,23 @@
   $: dashOffset = circumference * (1 - clamped);
 </script>
 
-<div class="progress-circle" style="width: {size}px; height: {size}px">
-  <svg fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50%"
-            cy="50%"
-            r={radius}
-            stroke={color}
-            stroke-width={strokeWidth}
-            stroke-dasharray="{circumference} {circumference}"
-            stroke-dashoffset={dashOffset} />
-  </svg>
+{#if enabled}
+  <div class="progress-circle" style="width: {size}px; height: {size}px">
+    <svg fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50%"
+              cy="50%"
+              r={radius}
+              stroke={color}
+              stroke-width={strokeWidth}
+              stroke-dasharray="{circumference} {circumference}"
+              stroke-dashoffset={dashOffset} />
+    </svg>
 
+    <slot></slot>
+  </div>
+{:else}
   <slot></slot>
-</div>
+{/if}
 
 <style>
   .progress-circle {
