@@ -103,7 +103,7 @@
     {#if !isAdvert && !(isIcon && fixedPosition) || isUrl}
       <div class="end">
         {#if fixedPosition}
-          <CloseButton scale={isUrl ? 3.375 : 1} />
+          <CloseButton scale={isUrl ? 2.5 : 1} margin={isUrl ? "0.75rem 0" : "auto"} />
         {:else}
           <BeyondWords scale={isUrl ? 3.375 : 1} />
         {/if}

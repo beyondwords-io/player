@@ -2,9 +2,10 @@
   import Close from "../svg_icons/Close.svelte";
 
   export let scale = 1;
+  export let margin = "auto";
 </script>
 
-<div class="close-button">
+<div class="close-button" style="margin: {margin}">
   <Close scale={scale} />
 </div>
 
