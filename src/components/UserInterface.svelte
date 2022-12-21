@@ -46,7 +46,7 @@
 
   $: isMobile = width < 380 && !isIcon;
   $: isAdvert = currentAdvert && !isStopped;
-  $: iconScale = isIcon ? 0.8 : isUrl ? 2 : 1;
+  $: buttonScale = isIcon ? 0.8 : isUrl ? 2 : 1;
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
@@ -69,9 +69,9 @@
     <div class="controls">
       <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
         {#if isPlaying}
-          <PauseButton scale={iconScale} />
+          <PauseButton scale={buttonScale} />
         {:else}
-          <PlayButton scale={iconScale} />
+          <PlayButton scale={buttonScale} />
         {/if}
       </Visibility>
 
@@ -80,8 +80,8 @@
       {/if}
 
       {#if !isIcon && !isStopped && !isAdvert}
-        <SpeedButton scale={iconScale} />
-        <SkipButtons style={skipButtonsStyle} scale={iconScale} />
+        <SpeedButton scale={buttonScale} />
+        <SkipButtons style={skipButtonsStyle} scale={buttonScale} />
       {/if}
 
       {#if isStandard && !isStopped && !isAdvert && width > 700}
@@ -96,7 +96,7 @@
 
       {#if isAdvert}
         <AdvertLink href={currentAdvert.url} {interfaceStyle} />
-        <AdvertButton href={currentAdvert.url} scale={iconScale} />
+        <AdvertButton href={currentAdvert.url} scale={buttonScale} />
       {/if}
     </div>
 
