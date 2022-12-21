@@ -47,7 +47,7 @@
   $: isMobile = width < 380 && !isIcon;
   $: isAdvert = currentAdvert && !isStopped;
 
-  $: externalUrl = isAdvert ? currentAdvert.url : podcast.externalUrl;
+  $: externalUrl = isAdvert ? currentAdvert.url : isUrl ? podcast.externalUrl : "";
   $: buttonScale = isIcon ? 0.8 : isUrl ? 2 : 1;
 
   $: podcast = podcasts[podcastIndex] || {};
