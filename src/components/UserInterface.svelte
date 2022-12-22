@@ -39,7 +39,7 @@
   let width;
 
   $: isStandard = interfaceStyle === "standard";
-  $: isPodcast = interfaceStyle === "podcast";
+  $: isLarge = interfaceStyle === "large";
   $: isSmall = interfaceStyle === "small";
   $: isUrl = interfaceStyle === "url";
 
@@ -62,7 +62,7 @@
 
 <div class="user-interface {interfaceStyle} {position}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
-    {#if isPodcast || isUrl}
+    {#if isLarge || isUrl}
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isUrl ? 1.5 : 1} />
 
       <div>
@@ -98,7 +98,7 @@
 
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
 
-      {#if !isSmall && !isMobile && (!isStopped || isPodcast)}
+      {#if !isSmall && !isMobile && (!isStopped || isLarge)}
         <ProgressBar {progress} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
@@ -216,11 +216,11 @@
     margin-right: 0.75rem;
   }
 
-  .podcast {
+  .large {
     min-width: 300px;
   }
 
-  .podcast .main {
+  .large .main {
     height: 6rem;
     padding: 0.5rem;
     border-radius: 0.375rem;
@@ -228,15 +228,15 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
-  .podcast .controls {
+  .large .controls {
     align-self: flex-end;
   }
 
-  .podcast.mobile .main {
+  .large.mobile .main {
     height: 9rem;
   }
 
-  .podcast.mobile .controls {
+  .large.mobile .controls {
     flex-direction: row-reverse;
     grid-row: 3;
     grid-column: 1 / span 3;

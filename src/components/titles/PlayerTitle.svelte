@@ -18,7 +18,7 @@
     white-space: nowrap;
   }
 
-  .podcast {
+  .large {
     height: 0.9375rem;
     margin-bottom: 0.3125rem;
   }

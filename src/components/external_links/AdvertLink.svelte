@@ -19,16 +19,16 @@
     white-space: nowrap;
   }
 
-  .podcast {
-    position: absolute;
-    left: 6rem;
-    top: 0.5rem;
-  }
-
   .small {
     position: absolute;
     top: 0.25rem;
     left: 2.75rem;
+  }
+
+  .large {
+    position: absolute;
+    left: 6rem;
+    top: 0.5rem;
   }
 
   .url {
