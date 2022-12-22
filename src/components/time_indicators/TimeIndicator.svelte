@@ -131,7 +131,7 @@
 
   .screen {
     position: absolute;
-    top: 31.75rem;
+    top: 31.375rem;
     display: flex;
   }
 

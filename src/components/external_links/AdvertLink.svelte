@@ -33,6 +33,6 @@
 
   .screen {
     position: absolute;
-    top: 15.125rem;
+    top: 14.75rem;
   }
 </style>

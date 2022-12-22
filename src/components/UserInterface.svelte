@@ -128,7 +128,7 @@
         {#if fixedPosition}
           <CloseButton scale={isScreen ? 2.5 : 1} margin={isScreen ? "0.75rem 0" : "auto"} />
         {:else}
-          <BeyondWords scale={isScreen ? 3.375 : 1} />
+          <BeyondWords scale={isScreen ? 3 : 1} />
         {/if}
       </div>
     {/if}
@@ -295,7 +295,7 @@
     text-align: center;
     row-gap: 2.5rem;
     padding: 2.5rem;
-    height: 748px;
+    height: 742px;
   }
 
   .screen .controls {
