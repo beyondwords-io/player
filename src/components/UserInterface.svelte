@@ -38,10 +38,10 @@
 
   let width;
 
+  $: isSmall = interfaceStyle === "small";
   $: isStandard = interfaceStyle === "standard";
   $: isLarge = interfaceStyle === "large";
-  $: isSmall = interfaceStyle === "small";
-  $: isUrl = interfaceStyle === "url";
+  $: isScreen = interfaceStyle === "screen";
 
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
@@ -49,8 +49,8 @@
   $: isMobile = width < 380 && !isSmall;
   $: isAdvert = currentAdvert && !isStopped;
 
-  $: buttonScale = isSmall ? 0.8 : isUrl ? 2 : 1;
-  $: playPauseScale = isUrl ? 3 : buttonScale;
+  $: buttonScale = isSmall ? 0.8 : isScreen ? 2 : 1;
+  $: playPauseScale = isScreen ? 3 : buttonScale;
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
@@ -62,18 +62,18 @@
 
 <div class="user-interface {interfaceStyle} {position}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
-    {#if isLarge || isUrl}
-      <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isUrl ? 1.5 : 1} />
+    {#if isLarge || isScreen}
+      <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen ? 1.5 : 1} />
 
       <div>
-        <PlayerTitle title={isAdvert || isUrl ? "" : playerTitle} {interfaceStyle} scale={isUrl ? 2 : 1} />
-        <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} scale={isUrl ? 2 : 1} />
+        <PlayerTitle title={isAdvert || isScreen ? "" : playerTitle} {interfaceStyle} scale={isScreen ? 2 : 1} />
+        <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} scale={isScreen ? 2 : 1} />
       </div>
     {/if}
 
     <div class="controls">
       <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
-        <ProgressCircle enabled={isUrl} {progress} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
+        <ProgressCircle enabled={isScreen} {progress} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
           {#if isPlaying}
             <PauseButton scale={playPauseScale} />
           {:else}
@@ -86,7 +86,7 @@
         <PlayerTitle title="Listen to this article" {interfaceStyle} />
       {/if}
 
-      {#if !isSmall && !isStopped && !isAdvert || (isUrl && isAdvert)}
+      {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
         <SpeedButton scale={buttonScale} />
         <PrevButton style={skipButtonStyle} scale={buttonScale} />
         <NextButton style={skipButtonStyle} scale={buttonScale} />
@@ -103,23 +103,23 @@
       {/if}
 
       {#if isAdvert}
-        <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isUrl ? 2 : 1} />
+        <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} />
         <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} />
       {/if}
     </div>
 
-    {#if !isAdvert && !(isSmall && fixedPosition) || isUrl}
+    {#if !isAdvert && !(isSmall && fixedPosition) || isScreen}
       <div class="end">
         {#if fixedPosition}
-          <CloseButton scale={isUrl ? 2.5 : 1} margin={isUrl ? "0.75rem 0" : "auto"} />
+          <CloseButton scale={isScreen ? 2.5 : 1} margin={isScreen ? "0.75rem 0" : "auto"} />
         {:else}
-          <BeyondWords scale={isUrl ? 3.375 : 1} />
+          <BeyondWords scale={isScreen ? 3.375 : 1} />
         {/if}
       </div>
     {/if}
   </div>
 
-  {#if !isSmall && !isUrl}
+  {#if !isSmall && !isScreen}
     <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
   {/if}
 </div>
@@ -283,7 +283,7 @@
     padding-right: 0.25rem;
   }
 
-  .url .main {
+  .screen .main {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -293,13 +293,13 @@
     height: 748px;
   }
 
-  .url .controls {
+  .screen .controls {
     flex-grow: 0;
     justify-content: center;
     column-gap: 2.5rem;
   }
 
-  .url .end {
+  .screen .end {
     order: -1;
     align-self: flex-end;
     margin-bottom: -2rem;

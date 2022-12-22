@@ -30,7 +30,7 @@
     display: flex;
   }
 
-  .url {
+  .screen {
     height: 1.875rem;
     position: relative;
     bottom: 1.25rem;

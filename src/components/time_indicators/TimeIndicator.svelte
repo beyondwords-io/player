@@ -8,7 +8,7 @@
   $: remaining = Math.max(0, duration - currentTime);
 
   export let interfaceStyle;
-  $: scale = interfaceStyle === "url" ? 3 : 1;
+  $: scale = interfaceStyle === "screen" ? 3 : 1;
 
   export let position;
   export let isMobile;
@@ -55,7 +55,7 @@
     position: relative;
   }
 
-  .url {
+  .screen {
     margin-left: 0 !important;
   }
 
@@ -129,13 +129,13 @@
     top: 1.5rem;
   }
 
-  .url {
+  .screen {
     position: absolute;
     top: 31.75rem;
     display: flex;
   }
 
-  .url .inner {
+  .screen .inner {
     position: static;
   }
 </style>

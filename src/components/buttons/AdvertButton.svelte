@@ -15,7 +15,7 @@
     display: flex;
   }
 
-  .url {
+  .screen {
     position: absolute;
     top: 39.25rem;
   }

@@ -31,7 +31,7 @@
     top: 0.5rem;
   }
 
-  .url {
+  .screen {
     position: absolute;
     top: 15.125rem;
   }
