@@ -108,8 +108,12 @@
 
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
 
-      {#if !isSmall && !isMobile && (!isStopped || isLarge)}
+      {#if !isSmall && !isMobile && (!isStopped || isLarge) && !isScreen}
         <ProgressBar {progress} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
+      {/if}
+
+      {#if isScreen}
+        <div class="secondary-button" style="width: 80px; height: 80px; background: yellow"></div>
       {/if}
 
       {#if isAdvert}
@@ -186,6 +190,12 @@
   .right-to-left .controls {
     flex-direction: row-reverse;
   }
+
+  .symmetrical .controls :global(.prev-button)      { order: 1; }
+  .symmetrical .controls :global(.speed-button)     { order: 2; }
+  .symmetrical .controls :global(.visibility)       { order: 3; }
+  .symmetrical .controls :global(.secondary-button) { order: 4; }
+  .symmetrical .controls :global(.next-button)      { order: 5; }
 
   .advert .controls {
     justify-content: space-between;
