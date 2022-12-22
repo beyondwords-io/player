@@ -35,10 +35,6 @@
     justify-content: center;
   }
 
-  .advert {
-    justify-content: flex-end;
-  }
-
   /* When next to skip buttons */
   .time-indicator:nth-child(5) {
     margin-left: 0.5rem;
@@ -64,6 +60,14 @@
   .large.advert {
     flex-grow: 0;
     margin-left: -0.5rem !important;
+  }
+
+  .standard.advert {
+    justify-content: flex-end;
+  }
+
+  .standard.fixed-left.advert {
+    justify-content: flex-start;
   }
 
   .large.mobile {
