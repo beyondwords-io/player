@@ -19,7 +19,7 @@
   import Visibility from "./helpers/Visibility.svelte";
 
   export let interfaceStyle = "standard";
-  export let skipButtonsStyle = "segments";
+  export let skipButtonStyle = "segments";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
@@ -88,8 +88,8 @@
 
       {#if !isIcon && !isStopped && !isAdvert || (isUrl && isAdvert)}
         <SpeedButton scale={buttonScale} />
-        <PrevButton style={skipButtonsStyle} scale={buttonScale} />
-        <NextButton style={skipButtonsStyle} scale={buttonScale} />
+        <PrevButton style={skipButtonStyle} scale={buttonScale} />
+        <NextButton style={skipButtonStyle} scale={buttonScale} />
       {/if}
 
       {#if isStandard && !isStopped && !isAdvert && width > 700}

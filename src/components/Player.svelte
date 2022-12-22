@@ -7,7 +7,7 @@
   export let showUserInterface = false;
   export let userInterface = undefined;
   export let interfaceStyle = "standard";
-  export let skipButtonsStyle = "segments";
+  export let skipButtonStyle = "segments";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
 
@@ -24,7 +24,7 @@
 
   $: userInterfaceProps = {
     interfaceStyle,
-    skipButtonsStyle,
+    skipButtonStyle,
     playlistStyle,
     playerTitle,
     podcasts,
