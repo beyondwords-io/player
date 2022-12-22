@@ -85,7 +85,7 @@
         <PlayerTitle title="Listen to this article" {interfaceStyle} />
       {/if}
 
-      {#if !isIcon && !isStopped && !isAdvert}
+      {#if !isIcon && !isStopped && !isAdvert || (isUrl && isAdvert)}
         <SpeedButton scale={buttonScale} />
         <SkipButtons style={skipButtonsStyle} scale={buttonScale} />
       {/if}
