@@ -183,6 +183,10 @@
     grid-column: 2 / span 2;
   }
 
+  .right-to-left .controls {
+    flex-direction: row-reverse;
+  }
+
   .advert .controls {
     justify-content: space-between;
   }
@@ -199,31 +203,17 @@
     align-items: center;
   }
 
+  .standard.right-to-left .main {
+    flex-direction: row-reverse;
+  }
+
   .standard .end {
     margin-right: 0.75rem;
   }
 
-  .standard.mobile .main,
-  .standard.mobile .controls,
-  .standard.fixed-right .main,
-  .standard.fixed-right .controls {
-    flex-direction: row-reverse;
-  }
-
-  .standard.fixed-left .main,
-  .standard.fixed-left .controls {
-    flex-direction: row;
-  }
-
-  .standard.mobile .end,
-  .standard.fixed-right .end {
+  .standard.right-to-left .end {
     margin-left: 0.75rem;
     margin-right: 0;
-  }
-
-  .standard.fixed-left .end {
-    margin-left: 0;
-    margin-right: 0.75rem;
   }
 
   .large {
@@ -247,7 +237,6 @@
   }
 
   .large.mobile .controls {
-    flex-direction: row-reverse;
     grid-row: 3;
     grid-column: 1 / span 3;
   }
@@ -268,29 +257,24 @@
     align-items: center;
   }
 
-  .small.fixed-right .main,
-  .small.fixed-right .controls {
-    flex-direction: row-reverse;
-  }
-
   .small .end {
-    margin-right: 0.5rem;
+    margin-right: 0.25rem;
   }
 
-  .small.fixed-right .main {
-    padding-left: 0.5rem;
-  }
-
-  .small.fixed-left .main {
+  .small.left-to-right .main {
     padding-right: 0.5rem;
   }
 
-  .small.fixed-right.advert .main {
-    padding-left: 0.25rem;
+  .small.right-to-left .main {
+    padding-left: 0.5rem;
   }
 
-  .small.fixed-left.advert .main {
+  .small.left-to-right.advert .main {
     padding-right: 0.25rem;
+  }
+
+  .small.right-to-left.advert .main {
+    padding-left: 0.25rem;
   }
 
   .screen .main {
