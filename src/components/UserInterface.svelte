@@ -294,6 +294,7 @@
   .url .controls {
     flex-grow: 0;
     justify-content: center;
+    column-gap: 2.5rem;
   }
 
   .url .end {
