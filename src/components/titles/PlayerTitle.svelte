@@ -24,7 +24,7 @@
   }
 
   .standard,
-  .icon {
+  .small {
     flex-grow: 1;
     height: 2rem;
     display: flex;

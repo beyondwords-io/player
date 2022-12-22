@@ -5,7 +5,7 @@ test("example", async ({ page }) => {
 
   const bounds = await page.evaluate(async () => {
     player = BeyondWords.Player.instances()[0];
-    player.interfaceStyle = "icon";
+    player.interfaceStyle = "small";
     return player.target.getBoundingClientRect();
   });
 

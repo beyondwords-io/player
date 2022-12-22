@@ -111,19 +111,19 @@
     top: 4.75rem;
   }
 
-  .icon .inner {
+  .small .inner {
     position: absolute;
     left: 2.75rem;
     top: 1.5rem;
   }
 
-  .icon.fixed-right .inner {
+  .small.fixed-right .inner {
     position: absolute;
     left: 1rem;
     top: 1.5rem;
   }
 
-  .icon.fixed-right.advert .inner {
+  .small.fixed-right.advert .inner {
     position: absolute;
     left: 2.75rem;
     top: 1.5rem;

@@ -40,16 +40,16 @@
 
   $: isStandard = interfaceStyle === "standard";
   $: isPodcast = interfaceStyle === "podcast";
-  $: isIcon = interfaceStyle === "icon";
+  $: isSmall = interfaceStyle === "small";
   $: isUrl = interfaceStyle === "url";
 
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
 
-  $: isMobile = width < 380 && !isIcon;
+  $: isMobile = width < 380 && !isSmall;
   $: isAdvert = currentAdvert && !isStopped;
 
-  $: buttonScale = isIcon ? 0.8 : isUrl ? 2 : 1;
+  $: buttonScale = isSmall ? 0.8 : isUrl ? 2 : 1;
   $: playPauseScale = isUrl ? 3 : buttonScale;
 
   $: podcast = podcasts[podcastIndex] || {};
@@ -57,7 +57,7 @@
   $: progress = isStopped ? 0 : currentTime / duration;
 
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
-  $: widthStyle = fixedWidth === "auto" && isIcon ? "fit-content" : fixedWidth;
+  $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
 </script>
 
 <div class="user-interface {interfaceStyle} {position}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
@@ -82,11 +82,11 @@
         </ProgressCircle>
       </Visibility>
 
-      {#if isStandard && isStopped || isIcon && !isAdvert}
+      {#if isStandard && isStopped || isSmall && !isAdvert}
         <PlayerTitle title="Listen to this article" {interfaceStyle} />
       {/if}
 
-      {#if !isIcon && !isStopped && !isAdvert || (isUrl && isAdvert)}
+      {#if !isSmall && !isStopped && !isAdvert || (isUrl && isAdvert)}
         <SpeedButton scale={buttonScale} />
         <PrevButton style={skipButtonStyle} scale={buttonScale} />
         <NextButton style={skipButtonStyle} scale={buttonScale} />
@@ -98,7 +98,7 @@
 
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
 
-      {#if !isIcon && !isMobile && (!isStopped || isPodcast)}
+      {#if !isSmall && !isMobile && (!isStopped || isPodcast)}
         <ProgressBar {progress} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
@@ -108,7 +108,7 @@
       {/if}
     </div>
 
-    {#if !isAdvert && !(isIcon && fixedPosition) || isUrl}
+    {#if !isAdvert && !(isSmall && fixedPosition) || isUrl}
       <div class="end">
         {#if fixedPosition}
           <CloseButton scale={isUrl ? 2.5 : 1} margin={isUrl ? "0.75rem 0" : "auto"} />
@@ -119,7 +119,7 @@
     {/if}
   </div>
 
-  {#if !isIcon && !isUrl}
+  {#if !isSmall && !isUrl}
     <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
   {/if}
 </div>
@@ -242,15 +242,15 @@
     grid-column: 1 / span 3;
   }
 
-  .icon {
+  .small {
     min-width: 40px;
   }
 
-  .icon.advert {
+  .small.advert {
     min-width: 200px;
   }
 
-  .icon .main {
+  .small .main {
     height: 2.5rem;
     padding: 0.25rem;
     border-radius: 1.25rem;
@@ -258,28 +258,28 @@
     align-items: center;
   }
 
-  .icon.fixed-right .main,
-  .icon.fixed-right .controls {
+  .small.fixed-right .main,
+  .small.fixed-right .controls {
     flex-direction: row-reverse;
   }
 
-  .icon .end {
+  .small .end {
     margin-right: 0.5rem;
   }
 
-  .icon.fixed-right .main {
+  .small.fixed-right .main {
     padding-left: 0.5rem;
   }
 
-  .icon.fixed-left .main {
+  .small.fixed-left .main {
     padding-right: 0.5rem;
   }
 
-  .icon.fixed-right.advert .main {
+  .small.fixed-right.advert .main {
     padding-left: 0.25rem;
   }
 
-  .icon.fixed-left.advert .main {
+  .small.fixed-left.advert .main {
     padding-right: 0.25rem;
   }
 

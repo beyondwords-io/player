@@ -25,7 +25,7 @@
     top: 0.5rem;
   }
 
-  .icon {
+  .small {
     position: absolute;
     top: 0.25rem;
     left: 2.75rem;
