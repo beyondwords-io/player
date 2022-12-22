@@ -3,7 +3,8 @@
   import PlayButton from "./buttons/PlayButton.svelte";
   import PauseButton from "./buttons/PauseButton.svelte";
   import SpeedButton from "./buttons/SpeedButton.svelte";
-  import SkipButtons from "./buttons/SkipButtons.svelte";
+  import PrevButton from "./buttons/PrevButton.svelte";
+  import NextButton from "./buttons/NextButton.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
@@ -87,7 +88,8 @@
 
       {#if !isIcon && !isStopped && !isAdvert || (isUrl && isAdvert)}
         <SpeedButton scale={buttonScale} />
-        <SkipButtons style={skipButtonsStyle} scale={buttonScale} />
+        <PrevButton style={skipButtonsStyle} scale={buttonScale} />
+        <NextButton style={skipButtonsStyle} scale={buttonScale} />
       {/if}
 
       {#if isStandard && !isStopped && !isAdvert && width > 700}

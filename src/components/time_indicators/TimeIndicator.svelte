@@ -40,7 +40,7 @@
   }
 
   /* When next to skip buttons */
-  .time-indicator:nth-child(4) {
+  .time-indicator:nth-child(5) {
     margin-left: 0.5rem;
   }
 
