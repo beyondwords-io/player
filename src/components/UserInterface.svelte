@@ -288,7 +288,7 @@
     text-align: center;
     row-gap: 2.5rem;
     padding: 2.5rem;
-    height: 756px;
+    height: 748px;
   }
 
   .url .controls {

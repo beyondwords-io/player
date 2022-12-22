@@ -127,7 +127,7 @@
 
   .url {
     position: absolute;
-    bottom: 13rem;
+    top: 31.75rem;
     display: flex;
   }
 

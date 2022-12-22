@@ -17,6 +17,6 @@
 
   .url {
     position: absolute;
-    bottom: 2.5rem;
+    top: 39.25rem;
   }
 </style>
