@@ -15,8 +15,8 @@
 </script>
 
 {#if enabled}
-  <div class="progress-circle" style="width: {size}px; height: {size}px">
-    <svg fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div class="progress-circle" style="width: {scale * 40}px; height: {scale * 40}px">
+    <svg fill="none" width={size} height={size} xmlns="http://www.w3.org/2000/svg">
       <circle cx="50%"
               cy="50%"
               r={radius}
@@ -42,10 +42,6 @@
 
   .progress-circle svg {
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
     transform: rotate(-90deg);
     transform-origin: 50% 50%,
   }

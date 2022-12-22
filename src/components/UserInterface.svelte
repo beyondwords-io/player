@@ -169,7 +169,6 @@
     column-gap: 0.5rem;
     grid-row: 2;
     grid-column: 2 / span 2;
-    overflow: hidden;
   }
 
   .advert .controls {
