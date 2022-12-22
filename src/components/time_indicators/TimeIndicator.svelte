@@ -55,6 +55,10 @@
     position: relative;
   }
 
+  .url {
+    margin-left: 0 !important;
+  }
+
   .standard.stopped,
   .podcast.stopped,
   .podcast.advert {
