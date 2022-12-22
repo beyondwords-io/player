@@ -4,7 +4,7 @@
   import PauseButton from "./buttons/PauseButton.svelte";
   import SpeedButton from "./buttons/SpeedButton.svelte";
   import SkipButtons from "./buttons/SkipButtons.svelte";
-  import NewTabButton from "./buttons/NewTabButton.svelte";
+  import AdvertButton from "./buttons/AdvertButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
@@ -48,7 +48,6 @@
   $: isMobile = width < 380 && !isIcon;
   $: isAdvert = currentAdvert && !isStopped;
 
-  $: externalUrl = isAdvert ? currentAdvert.url : isUrl ? podcast.externalUrl : "";
   $: buttonScale = isIcon ? 0.8 : isUrl ? 2 : 1;
   $: playPauseScale = isUrl ? 3 : buttonScale;
 
@@ -103,10 +102,7 @@
 
       {#if isAdvert}
         <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isUrl ? 2 : 1} />
-      {/if}
-
-      {#if externalUrl}
-        <NewTabButton href={externalUrl} {interfaceStyle} scale={buttonScale} color={isAdvert ? "#00cdbc" : "#323232"} />
+        <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} />
       {/if}
     </div>
 
