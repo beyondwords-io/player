@@ -46,6 +46,9 @@
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
 
+  $: isLeft = fixedPosition === "left";
+  $: isRight = fixedPosition === "right";
+
   $: isMobile = width < 380 && !isSmall;
   $: isAdvert = currentAdvert && !isStopped;
 
@@ -58,9 +61,16 @@
 
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
+
+  $: controlsOrder = isScreen               ? "symmetrical"
+                   : isLarge && isMobile    ? "right-to-left" // TODO: symmetrical
+                   : isLeft && !isLarge     ? "left-to-right"
+                   : isRight && !isLarge    ? "right-to-left"
+                   : isStandard && isMobile ? "right-to-left"
+                   :                          "left-to-right";
 </script>
 
-<div class="user-interface {interfaceStyle} {position}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
+<div class="user-interface {interfaceStyle} {position} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
     {#if isLarge || isScreen}
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen ? 1.5 : 1} />
