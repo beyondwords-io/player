@@ -3,6 +3,8 @@ import { devices } from "@playwright/test";
 
 const config: PlaywrightTestConfig = {
   testDir: "test/features",
+  snapshotPathTemplate: "test/screenshots/{arg}-{projectName}{ext}",
+  outputDir: "test/results",
   reporter: "dot",
 
   timeout: 30000,
@@ -10,12 +12,12 @@ const config: PlaywrightTestConfig = {
   use: { actionTimeout: 5000 },
 
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "chrome", use: { ...devices["Desktop Chrome"] } },
     { name: "firefox", use: { ...devices["Desktop Firefox"] } },
-    { name: "webkit", use: { ...devices["Desktop Safari"] } },
-    { name: "Microsoft Edge", use: { channel: "msedge", } },
-    { name: "Mobile Chrome", use: { ...devices["Pixel 5"] } },
-    { name: "Mobile Safari", use: { ...devices["iPhone 12"] } },
+    { name: "safari", use: { ...devices["Desktop Safari"] } },
+    { name: "edge", use: { channel: "msedge", } },
+    { name: "android", use: { ...devices["Pixel 5"] } },
+    { name: "ios", use: { ...devices["iPhone 12"] } },
   ],
 
   webServer: {
