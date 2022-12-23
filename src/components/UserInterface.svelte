@@ -1,5 +1,6 @@
 <script>
   import "@fontsource/inter/variable.css";
+  import { fly } from "svelte/transition";
   import PlayButton from "./buttons/PlayButton.svelte";
   import PauseButton from "./buttons/PauseButton.svelte";
   import SpeedButton from "./buttons/SpeedButton.svelte";
@@ -73,9 +74,11 @@
                    : isSmall && isLeft                 ? "left-to-right"
                    : isSmall && isRight                ? "right-to-left"
                    :                                     "left-to-right";
+
+  $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 </script>
 
-<div class="user-interface {interfaceStyle} {position} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
+<div class="user-interface {interfaceStyle} {position} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width} transition:flyWidget>
   <div class="main">
     {#if isLarge || isScreen}
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
