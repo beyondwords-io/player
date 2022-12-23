@@ -43,18 +43,12 @@
   $: isStandard = interfaceStyle === "standard";
   $: isLarge = interfaceStyle === "large";
   $: isScreen = interfaceStyle === "screen";
-
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
-
   $: isLeft = fixedPosition === "left";
   $: isRight = fixedPosition === "right";
-
   $: isMobile = !isSmall && width < 380 || isScreen && width < 640;
   $: isAdvert = currentAdvert && !isStopped;
-
-  $: buttonScale = isSmall ? 0.8 : isScreen && !isMobile ? 2 : 1;
-  $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
@@ -62,6 +56,9 @@
 
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
+
+  $: buttonScale = isSmall ? 0.8 : isScreen && !isMobile ? 2 : 1;
+  $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
 
   $: controlsOrder = isScreen                          ? "symmetrical"
                    : isLarge && isMobile               ? "right-to-left" // TODO: symmetrical
