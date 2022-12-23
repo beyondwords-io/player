@@ -295,13 +295,13 @@
     text-align: center;
     row-gap: 2.5rem;
     padding: 2.5rem;
-    height: 742px;
   }
 
   .screen .controls {
     flex-grow: 0;
     justify-content: center;
     column-gap: 2.5rem;
+    margin-bottom: 14.5rem;
   }
 
   .screen .end {

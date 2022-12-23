@@ -17,6 +17,6 @@
 
   .screen {
     position: absolute;
-    top: 38.875rem;
+    bottom: 2.5rem;
   }
 </style>
