@@ -4,9 +4,9 @@
   export let color = "#323232";
   export let enabled = true;
 
-  $: strokeWidth = 2.5 * scale;
+  $: strokeWidth = 1.667 * scale;
 
-  $: radius = 20 * scale + strokeWidth;
+  $: radius = 20 * scale + strokeWidth * 1.5;
   $: size = 2 * radius + strokeWidth;
 
   $: circumference = radius * 2 * Math.PI;
