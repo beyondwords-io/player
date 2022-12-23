@@ -1,12 +1,13 @@
 <script>
   export let progress = 0;
+  export let enabled = true;
+  export let bold;
   export let scale = 1;
   export let color = "#323232";
-  export let enabled = true;
 
-  $: strokeWidth = 1.667 * scale;
+  $: strokeWidth = scale * (bold ? 2.5 : 1.667);
 
-  $: radius = 20 * scale + strokeWidth * 1.5;
+  $: radius = 20 * scale + strokeWidth * (bold ? 1 : 1.5);
   $: size = 2 * radius + strokeWidth;
 
   $: circumference = radius * 2 * Math.PI;
