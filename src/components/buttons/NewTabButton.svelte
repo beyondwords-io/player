@@ -5,7 +5,7 @@
   export let scale = 1;
 </script>
 
-<a class="new-tab-button" href={href} target="_blank" rel="noreferrer" style="margin: 0 {0.8125 * scale}rem">
+<a class="new-tab-button" href={href} target="_blank" rel="noreferrer">
   <OpenNewTab scale={scale} circular={false} />
 </a>
 

@@ -5,6 +5,8 @@
   import SpeedButton from "./buttons/SpeedButton.svelte";
   import PrevButton from "./buttons/PrevButton.svelte";
   import NextButton from "./buttons/NextButton.svelte";
+  import PlaylistButton from "./buttons/PlaylistButton.svelte";
+  import SecondaryButton from "./buttons/SecondaryButton.svelte";
   import NewTabButton from "./buttons/NewTabButton.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
@@ -103,7 +105,7 @@
         <NextButton style={skipButtonStyle} scale={buttonScale} />
       {/if}
 
-      {#if isStandard && !isStopped && !isAdvert && width > 700 && controlsOrder !== "left-to-right-but-swap-ends"}
+      {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
         <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
       {/if}
 
@@ -113,9 +115,13 @@
         <ProgressBar {progress} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
-      {#if !isStopped && (isScreen || isLarge && isMobile)}
-        <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
-      {/if}
+      <SecondaryButton {interfaceStyle} {isMobile} scale={buttonScale}>
+        {#if isScreen && podcast.externalUrl}
+          <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
+        {:else if podcasts.length > 1}
+          <PlaylistButton scale={buttonScale} />
+        {/if}
+      </SecondaryButton>
 
       {#if isAdvert}
         <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} />
@@ -197,11 +203,11 @@
   .right-to-left .controls :global(.speed-button)   { order: 7; }
   .right-to-left .controls :global(.visibility)     { order: 8; }
 
-  .symmetrical .controls :global(.prev-button)    { order: 1; }
-  .symmetrical .controls :global(.speed-button)   { order: 2; }
-  .symmetrical .controls :global(.visibility)     { order: 3; }
-  .symmetrical .controls :global(.new-tab-button) { order: 4; }
-  .symmetrical .controls :global(.next-button)    { order: 5; }
+  .symmetrical .controls :global(.prev-button)      { order: 1; }
+  .symmetrical .controls :global(.speed-button)     { order: 2; }
+  .symmetrical .controls :global(.visibility)       { order: 3; }
+  .symmetrical .controls :global(.secondary-button) { order: 4; }
+  .symmetrical .controls :global(.next-button)      { order: 5; }
 
   .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }
 
