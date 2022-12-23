@@ -62,6 +62,7 @@
 
   $: controlsOrder = isScreen                          ? "symmetrical"
                    : isLarge && isMobile               ? "right-to-left" // TODO: symmetrical
+                   : isStandard && isLeft              ? "left-to-right"
                    : isStandard && isMobile            ? "right-to-left"
                    : isStandard && isRight && isAdvert ? "right-to-left"
                    : isStandard && isRight             ? "left-to-right-but-swap-ends"
@@ -285,7 +286,7 @@
   }
 
   .small.right-to-left .main {
-    padding-left: 0.5rem;
+    padding-left: 1rem;
   }
 
   .small.left-to-right.advert .main {

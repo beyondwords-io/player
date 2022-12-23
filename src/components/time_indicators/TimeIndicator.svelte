@@ -37,11 +37,11 @@
   }
 
   /* When next to skip buttons */
-  .time-indicator:nth-child(5) {
+  .standard:nth-child(5) {
     margin-left: 0.5rem;
   }
 
-  .time-indicator.mobile:nth-child(5) {
+  .standard.mobile:nth-child(5) {
     margin-left: 0;
   }
 
@@ -56,19 +56,13 @@
 
   .large {
     height: 2.5rem;
-    margin-left: 0 !important;
     position: relative;
   }
 
-  .screen {
-    margin-left: 0 !important;
-  }
-
-  .standard.stopped,
   .large.stopped,
   .large.advert {
     flex-grow: 0;
-    margin-left: -0.5rem !important;
+    margin-left: -0.5rem;
   }
 
   .standard.advert {
