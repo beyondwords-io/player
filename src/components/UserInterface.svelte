@@ -188,9 +188,11 @@
     grid-column: 2 / span 2;
   }
 
-  .right-to-left .controls {
-    flex-direction: row-reverse;
-  }
+  .right-to-left .controls :global(.time-indicator) { order: 1; }
+  .right-to-left .controls :global(.prev-button)    { order: 2; }
+  .right-to-left .controls :global(.next-button)    { order: 3; }
+  .right-to-left .controls :global(.speed-button)   { order: 4; }
+  .right-to-left .controls :global(.visibility)     { order: 5; }
 
   .symmetrical .controls :global(.prev-button)    { order: 1; }
   .symmetrical .controls :global(.speed-button)   { order: 2; }
