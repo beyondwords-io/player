@@ -1,11 +1,45 @@
 <script>
   export let interfaceStyle;
+  export let isMobile;
+  export let isAdvert;
+  export let scale;
 </script>
 
-<div class="secondary-button {interfaceStyle}">
+<div class="secondary-button {interfaceStyle}" class:mobile={isMobile} class:advert={isAdvert} style="--scale: {scale}">
   <slot></slot>
 </div>
 
 <style>
+  .secondary-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
 
+  .advert {
+    display: none;
+  }
+
+  .small {
+    display: none;
+  }
+
+  .standard.mobile {
+    display: none;
+  }
+
+  .large.mobile {
+    width: calc(2.5rem * var(--scale));
+    height: calc(2.5rem * var(--scale));
+  }
+
+  .screen {
+    width: calc(2.5rem * var(--scale));
+    height: calc(2.5rem * var(--scale));
+  }
+
+  .screen.advert {
+    display: flex;
+  }
 </style>

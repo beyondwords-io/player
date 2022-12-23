@@ -112,16 +112,18 @@
       <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
 
       {#if !isSmall && !isMobile && (!isStopped || isLarge) && !isScreen}
-        <ProgressBar {progress} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
+        <ProgressBar {progress} />
       {/if}
 
-      <SecondaryButton {interfaceStyle} {isMobile} scale={buttonScale}>
-        {#if isScreen && podcast.externalUrl}
-          <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
-        {:else if podcasts.length > 1}
-          <PlaylistButton scale={buttonScale} />
-        {/if}
-      </SecondaryButton>
+      {#if !isStopped}
+        <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
+          {#if isScreen && podcast.externalUrl}
+            <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
+          {:else if podcasts.length > 1 && !fixedPosition}
+            <PlaylistButton scale={buttonScale} />
+          {/if}
+        </SecondaryButton>
+      {/if}
 
       {#if isAdvert}
         <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} />
@@ -211,12 +213,12 @@
 
   .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }
 
-  .symmetrical .controls {
-    justify-content: center;
-  }
-
   .advert .controls {
     justify-content: space-between;
+  }
+
+  .symmetrical .controls {
+    justify-content: center;
   }
 
   .standard {
@@ -256,6 +258,10 @@
     border-radius: 0.375rem;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .large.advert .controls {
+    justify-content: space-between;
   }
 
   .large .controls {
