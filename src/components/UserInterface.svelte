@@ -61,7 +61,7 @@
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
 
   $: controlsOrder = isScreen                          ? "symmetrical"
-                   : isLarge && isMobile               ? "right-to-left" // TODO: symmetrical
+                   : isLarge && isMobile               ? "symmetrical"
                    : isStandard && isLeft              ? "left-to-right"
                    : isStandard && isMobile            ? "right-to-left"
                    : isStandard && isRight && isAdvert ? "right-to-left"
@@ -113,7 +113,7 @@
         <ProgressBar {progress} marginRight={isStandard && !isAdvert ? 0.5 : 0} />
       {/if}
 
-      {#if isScreen && !isStopped}
+      {#if !isStopped && (isScreen || isLarge && isMobile)}
         <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
       {/if}
 
@@ -204,6 +204,10 @@
   .symmetrical .controls :global(.next-button)    { order: 5; }
 
   .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }
+
+  .symmetrical .controls {
+    justify-content: center;
+  }
 
   .advert .controls {
     justify-content: space-between;
@@ -316,7 +320,6 @@
 
   .screen .controls {
     flex-grow: 0;
-    justify-content: center;
     column-gap: 2.5rem;
     margin-bottom: 14.5rem;
   }

@@ -73,10 +73,6 @@
     justify-content: flex-start;
   }
 
-  .large.mobile {
-    position: static;
-  }
-
   .stopped .inner {
     position: absolute;
     left: 3.25rem;
@@ -108,10 +104,15 @@
     bottom: 0;
   }
 
-  .large.mobile .inner {
+  .large.mobile {
     position: absolute;
     left: 6rem;
-    top: 4.75rem;
+    top: 3.875rem;
+    margin-left: 0;
+  }
+
+  .large.mobile .inner {
+    position: static;
   }
 
   .small .inner {
