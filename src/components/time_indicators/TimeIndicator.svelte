@@ -8,12 +8,13 @@
   $: remaining = Math.max(0, duration - currentTime);
 
   export let interfaceStyle;
-  $: scale = interfaceStyle === "screen" ? 3 : 1;
-
   export let position;
   export let isMobile;
   export let isAdvert;
   export let isStopped;
+
+  $: isScreen = interfaceStyle === "screen";
+  $: scale = isScreen && !isMobile ? 3 : isScreen ? 2 : 1;
 </script>
 
 <div class="time-indicator {interfaceStyle} {position}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped}>
@@ -40,9 +41,17 @@
     margin-left: 0.5rem;
   }
 
+  .time-indicator.mobile:nth-child(5) {
+    margin-left: 0;
+  }
+
+  .inner {
+    display: flex;
+    white-space: nowrap;
+  }
+
   .mobile {
     flex-grow: 1;
-    margin-left: 0 !important;
   }
 
   .large {
@@ -74,18 +83,14 @@
     position: static;
   }
 
-  .inner {
-    display: flex;
-    white-space: nowrap;
-  }
-
   .stopped .inner {
     position: absolute;
     left: 3.25rem;
     top: 1.75rem;
   }
 
-  .stopped.mobile .inner {
+  .small.stopped.mobile .inner,
+  .standard.stopped.mobile .inner {
     position: absolute;
     left: 2.5rem;
     top: 1.75rem;
@@ -136,6 +141,12 @@
   .screen {
     position: absolute;
     bottom: 12.25rem;
+    display: flex;
+  }
+
+  .screen.mobile {
+    position: absolute;
+    bottom: 8rem;
     display: flex;
   }
 

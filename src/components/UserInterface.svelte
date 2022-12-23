@@ -50,11 +50,11 @@
   $: isLeft = fixedPosition === "left";
   $: isRight = fixedPosition === "right";
 
-  $: isMobile = width < 380 && !isSmall;
+  $: isMobile = !isSmall && width < 380 || isScreen && width < 640;
   $: isAdvert = currentAdvert && !isStopped;
 
-  $: buttonScale = isSmall ? 0.8 : isScreen ? 2 : 1;
-  $: playPauseScale = isScreen ? 3 : buttonScale;
+  $: buttonScale = isSmall ? 0.8 : isScreen && !isMobile ? 2 : 1;
+  $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
@@ -74,11 +74,11 @@
 <div class="user-interface {interfaceStyle} {position} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
   <div class="main">
     {#if isLarge || isScreen}
-      <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen ? 1.5 : 1} />
+      <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
 
       <div>
         <PlayerTitle title={isAdvert || isScreen ? "" : playerTitle} {interfaceStyle} scale={isScreen ? 2 : 1} />
-        <PodcastTitle title={podcast.title} maxLines={isMobile ? 3 : 1} scale={isScreen ? 2 : 1} />
+        <PodcastTitle title={podcast.title} maxLines={isMobile || isScreen ? 3 : 1} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} />
       </div>
     {/if}
 
@@ -126,9 +126,9 @@
     {#if !isAdvert && !(isSmall && fixedPosition) || isScreen}
       <div class="end">
         {#if fixedPosition}
-          <CloseButton scale={isScreen ? 2.5 : 1} margin={isScreen ? "0.75rem 0" : "auto"} />
+          <CloseButton scale={isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : 1} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
         {:else}
-          <BeyondWords scale={isScreen ? 3 : 1} />
+          <BeyondWords scale={isScreen && !isMobile ? 3 : isScreen ? 2 : 1} />
         {/if}
       </div>
     {/if}
@@ -288,6 +288,10 @@
     padding-left: 0.25rem;
   }
 
+  .screen {
+    min-width: 300px;
+  }
+
   .screen .main {
     display: flex;
     flex-direction: column;
@@ -297,6 +301,10 @@
     padding: 2.5rem;
   }
 
+  .screen.mobile .main {
+    padding: 2rem;
+  }
+
   .screen .controls {
     flex-grow: 0;
     justify-content: center;
@@ -304,9 +312,19 @@
     margin-bottom: 14.5rem;
   }
 
+  .screen.mobile .controls {
+    column-gap: 0.5rem;
+    margin-top: -0.5rem;
+    margin-bottom: 9.25rem;
+  }
+
   .screen .end {
     order: -1;
     align-self: flex-end;
     margin-bottom: -2rem;
+  }
+
+  .screen.mobile .end {
+    margin-bottom: 2rem;
   }
 </style>
