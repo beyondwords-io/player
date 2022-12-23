@@ -22,7 +22,7 @@
   import Visibility from "./helpers/Visibility.svelte";
 
   export let interfaceStyle = "standard";
-  export let skipButtonStyle = "segments";
+  export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
@@ -53,12 +53,14 @@
   $: isAdvert = currentAdvert && !isStopped;
 
   $: podcast = podcasts[podcastIndex] || {};
+  $: isPlaylist = podcasts.length > 1;
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
   $: progress = isStopped ? 0 : currentTime / duration;
 
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
 
+  $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
   $: buttonScale = isSmall ? 0.8 : isScreen && !isMobile ? 2 : 1;
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
 
@@ -101,8 +103,8 @@
 
       {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
         <SpeedButton scale={buttonScale} />
-        <PrevButton style={skipButtonStyle} scale={buttonScale} />
-        <NextButton style={skipButtonStyle} scale={buttonScale} />
+        <PrevButton style={skipStyle} scale={buttonScale} />
+        <NextButton style={skipStyle} scale={buttonScale} />
       {/if}
 
       {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
@@ -119,7 +121,7 @@
         <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
           {#if isScreen && podcast.externalUrl}
             <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
-          {:else if podcasts.length > 1 && !fixedPosition}
+          {:else if isPlaylist && !fixedPosition}
             <PlaylistButton scale={buttonScale} />
           {/if}
         </SecondaryButton>

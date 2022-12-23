@@ -7,7 +7,7 @@
   export let showUserInterface = false;
   export let userInterface = undefined;
   export let interfaceStyle = "standard";
-  export let skipButtonStyle = "segments";
+  export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
 
