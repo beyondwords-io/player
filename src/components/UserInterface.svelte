@@ -63,12 +63,14 @@
   $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
 
-  $: controlsOrder = isScreen               ? "symmetrical"
-                   : isLarge && isMobile    ? "right-to-left" // TODO: symmetrical
-                   : isLeft && !isLarge     ? "left-to-right"
-                   : isRight && !isLarge    ? "right-to-left"
-                   : isStandard && isMobile ? "right-to-left"
-                   :                          "left-to-right";
+  $: controlsOrder = isScreen                          ? "symmetrical"
+                   : isLarge && isMobile               ? "right-to-left" // TODO: symmetrical
+                   : isStandard && isMobile            ? "right-to-left"
+                   : isStandard && isRight && isAdvert ? "right-to-left"
+                   : isStandard && isRight             ? "left-to-right-but-swap-ends"
+                   : isSmall && isLeft                 ? "left-to-right"
+                   : isSmall && isRight                ? "right-to-left"
+                   :                                     "left-to-right";
 </script>
 
 <div class="user-interface {interfaceStyle} {position} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width}>
@@ -103,7 +105,7 @@
         <NextButton style={skipButtonStyle} scale={buttonScale} />
       {/if}
 
-      {#if isStandard && !isStopped && !isAdvert && width > 700}
+      {#if isStandard && !isStopped && !isAdvert && width > 700 && controlsOrder !== "left-to-right-but-swap-ends"}
         <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
       {/if}
 
@@ -188,17 +190,22 @@
     grid-column: 2 / span 2;
   }
 
-  .right-to-left .controls :global(.time-indicator) { order: 1; }
-  .right-to-left .controls :global(.prev-button)    { order: 2; }
-  .right-to-left .controls :global(.next-button)    { order: 3; }
-  .right-to-left .controls :global(.speed-button)   { order: 4; }
-  .right-to-left .controls :global(.visibility)     { order: 5; }
+  .right-to-left .controls :global(.advert-button)  { order: 1; }
+  .right-to-left .controls :global(.advert-link)    { order: 2; }
+  .right-to-left .controls :global(.progress-bar)   { order: 3; }
+  .right-to-left .controls :global(.time-indicator) { order: 4; }
+  .right-to-left .controls :global(.prev-button)    { order: 5; }
+  .right-to-left .controls :global(.next-button)    { order: 6; }
+  .right-to-left .controls :global(.speed-button)   { order: 7; }
+  .right-to-left .controls :global(.visibility)     { order: 8; }
 
   .symmetrical .controls :global(.prev-button)    { order: 1; }
   .symmetrical .controls :global(.speed-button)   { order: 2; }
   .symmetrical .controls :global(.visibility)     { order: 3; }
   .symmetrical .controls :global(.new-tab-button) { order: 4; }
   .symmetrical .controls :global(.next-button)    { order: 5; }
+
+  .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }
 
   .advert .controls {
     justify-content: space-between;
@@ -216,7 +223,8 @@
     align-items: center;
   }
 
-  .standard.right-to-left .main {
+  .standard.right-to-left .main,
+  .standard.left-to-right-but-swap-ends .main {
     flex-direction: row-reverse;
   }
 
@@ -224,7 +232,8 @@
     margin-right: 0.75rem;
   }
 
-  .standard.right-to-left .end {
+  .standard.right-to-left .end,
+  .standard.left-to-right-but-swap-ends .end {
     margin-left: 0.75rem;
     margin-right: 0;
   }
