@@ -199,6 +199,7 @@
     column-gap: 0.5rem;
     grid-row: 2;
     grid-column: 2 / span 2;
+    min-width: 0;
   }
 
   .right-to-left .controls :global(.advert-button)  { order: 1; }
