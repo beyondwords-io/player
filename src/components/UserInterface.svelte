@@ -76,9 +76,14 @@
                    :                                     "left-to-right";
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
+
+  let collapsed = false;
+  setInterval(() => {
+    $: collapsed = !collapsed;
+  }, 2000);
 </script>
 
-<div class="user-interface {interfaceStyle} {position} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} bind:clientWidth={width} transition:flyWidget>
+<div class="user-interface {interfaceStyle} {position} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
   <div class="main">
     {#if isLarge || isScreen}
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
@@ -101,7 +106,7 @@
       </Visibility>
 
       {#if isStandard && isStopped || isSmall}
-        <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} />
+        <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} {collapsed} />
       {/if}
 
       {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
@@ -189,6 +194,7 @@
     box-sizing: border-box;
     background: #fafafa;
     column-gap: 0.5rem;
+    transition: padding 0.5s;
   }
 
   .controls {
@@ -200,6 +206,11 @@
     grid-row: 2;
     grid-column: 2 / span 2;
     min-width: 0;
+    transition: column-gap 0.5s;
+  }
+
+  .collapsed .controls {
+    column-gap: 0;
   }
 
   .right-to-left .controls :global(.advert-button)  { order: 1; }
@@ -304,6 +315,10 @@
     padding-right: 0.5rem;
   }
 
+  .small.collapsed.left-to-right .main {
+    padding-right: 0;
+  }
+
   .small.right-to-left .main {
     padding-left: 1rem;
   }
@@ -314,6 +329,10 @@
 
   .small.right-to-left.advert .main {
     padding-left: 0.25rem;
+  }
+
+  .small.collapsed.right-to-left .main {
+    padding-left: 0;
   }
 
   .screen {
