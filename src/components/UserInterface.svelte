@@ -206,11 +206,11 @@
     grid-row: 2;
     grid-column: 2 / span 2;
     min-width: 0;
-    transition: column-gap 0.5s;
   }
 
   .collapsed .controls {
     column-gap: 0;
+    transition: column-gap 1.25s;
   }
 
   .right-to-left .controls :global(.advert-button)  { order: 1; }
