@@ -59,8 +59,9 @@
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
   $: progress = isStopped ? 0 : currentTime / duration;
 
-  $: position = fixedPosition ? `fixed-${fixedPosition}` : "";
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
+  $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
+  $: positionClass = position ? `fixed-${position}` : "";
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
   $: buttonScale = isSmall ? 0.8 : isScreen && !isMobile ? 2 : 1;
@@ -80,7 +81,7 @@
   $: collapsed = isSmall && fixedPosition && !isAdvert && !isStopped && !isHovering;
 </script>
 
-<div class="user-interface {interfaceStyle} {position} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
+<div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
   <Hoverable bind:isHovering graceTime={500} enabled={isSmall && fixedPosition}>
     <div class="main">
       {#if isLarge || isScreen}
@@ -117,7 +118,7 @@
           <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
         {/if}
 
-        <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} {collapsed} />
+        <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} />
 
         {#if !isSmall && !isMobile && (!isStopped || isLarge) && !isScreen}
           <ProgressBar {progress} />

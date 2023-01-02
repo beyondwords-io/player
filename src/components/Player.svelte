@@ -19,7 +19,7 @@
 
   export let showWidgetAtBottom = false;
   export let widgetStyle = "standard";
-  export let widgetPosition = "center";
+  export let widgetPosition = "auto";
   export let widgetWidth = "auto";
 
   $: userInterfaceProps = {
