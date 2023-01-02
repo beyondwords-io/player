@@ -2,9 +2,10 @@
   export let title;
   export let interfaceStyle;
   export let scale = 1;
+  export let visible = true;
 </script>
 
-<div class="player-title {interfaceStyle}" style="font-size: {0.75 * scale}rem">
+<div class="player-title {interfaceStyle}" style="font-size: {0.75 * scale}rem; visibility: {visible ? "visible" : "hidden"}">
   {title}
 </div>
 

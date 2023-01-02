@@ -84,7 +84,7 @@
       <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
 
       <div>
-        <PlayerTitle title={isAdvert || isScreen ? "" : playerTitle} {interfaceStyle} scale={isScreen ? 2 : 1} />
+        <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {interfaceStyle} scale={isScreen ? 2 : 1} />
         <PodcastTitle title={podcast.title} maxLines={isMobile || isScreen ? 3 : 1} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} />
       </div>
     {/if}
@@ -100,8 +100,8 @@
         </ProgressCircle>
       </Visibility>
 
-      {#if isStandard && isStopped || isSmall && !isAdvert}
-        <PlayerTitle title="Listen to this article" {interfaceStyle} />
+      {#if isStandard && isStopped || isSmall}
+        <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} />
       {/if}
 
       {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
@@ -205,11 +205,12 @@
   .right-to-left .controls :global(.advert-button)  { order: 1; }
   .right-to-left .controls :global(.advert-link)    { order: 2; }
   .right-to-left .controls :global(.progress-bar)   { order: 3; }
-  .right-to-left .controls :global(.time-indicator) { order: 4; }
-  .right-to-left .controls :global(.prev-button)    { order: 5; }
-  .right-to-left .controls :global(.next-button)    { order: 6; }
-  .right-to-left .controls :global(.speed-button)   { order: 7; }
-  .right-to-left .controls :global(.visibility)     { order: 8; }
+  .right-to-left .controls :global(.player-title)   { order: 4; }
+  .right-to-left .controls :global(.time-indicator) { order: 5; }
+  .right-to-left .controls :global(.prev-button)    { order: 6; }
+  .right-to-left .controls :global(.next-button)    { order: 7; }
+  .right-to-left .controls :global(.speed-button)   { order: 8; }
+  .right-to-left .controls :global(.visibility)     { order: 9; }
 
   .symmetrical .controls :global(.prev-button)      { order: 1; }
   .symmetrical .controls :global(.speed-button)     { order: 2; }
@@ -285,10 +286,6 @@
 
   .small {
     min-width: 40px;
-  }
-
-  .small.advert {
-    min-width: 200px;
   }
 
   .small .main {
