@@ -49,8 +49,6 @@
   $: isScreen = interfaceStyle === "screen";
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
-  $: isLeft = fixedPosition === "left";
-  $: isRight = fixedPosition === "right";
   $: isMobile = !isSmall && width < 380 || isScreen && width < 640;
   $: isAdvert = currentAdvert && !isStopped;
 
@@ -61,7 +59,9 @@
 
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
   $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
-  $: positionClass = position ? `fixed-${position}` : "";
+  $: positionClass = fixedPosition ? `fixed-${position}` : "";
+  $: isLeft = position === "left";
+  $: isRight = position === "right";
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
   $: buttonScale = isSmall ? 0.8 : isScreen && !isMobile ? 2 : 1;
