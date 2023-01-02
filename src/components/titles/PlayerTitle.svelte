@@ -12,8 +12,9 @@
 
   $: visibility = visible ? "visible" : "hidden";
   $: width = !initialWidth ? "auto" : collapsed ? 0 : `${initialWidth}px`;
+  $: opacity = collapsed ? 0 : 1;
 
-  $: style = `font-size: ${0.75 * scale}rem; visibility: ${visibility}; width: ${width}`;
+  $: style = `font-size: ${0.75 * scale}rem; visibility: ${visibility}; width: ${width}; opacity: ${opacity}`;
 </script>
 
 <div class="player-title {interfaceStyle}" {style} bind:this={element}>
@@ -29,7 +30,7 @@
     overflow: hidden;
     white-space: nowrap;
 
-    transition: width 0.5s;
+    transition: width 0.5s, opacity 0.25s;
   }
 
   .large {

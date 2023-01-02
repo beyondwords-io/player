@@ -119,7 +119,7 @@
         <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
       {/if}
 
-      <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} />
+      <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {position} {collapsed} />
 
       {#if !isSmall && !isMobile && (!isStopped || isLarge) && !isScreen}
         <ProgressBar {progress} />

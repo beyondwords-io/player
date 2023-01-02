@@ -12,12 +12,14 @@
   export let isMobile;
   export let isAdvert;
   export let isStopped;
+  export let collapsed;
 
   $: isScreen = interfaceStyle === "screen";
   $: scale = isScreen && !isMobile ? 3 : isScreen ? 2 : 1;
+  $: opacity = collapsed ? 0 : 1;
 </script>
 
-<div class="time-indicator {interfaceStyle} {position}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped}>
+<div class="time-indicator {interfaceStyle} {position}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} style="opacity: {opacity}">
   <div class="inner">
     {#if isAdvert}
       <CountdownTime text="Ad" remaining={remaining} {scale} />
@@ -34,6 +36,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity 0.25s;
   }
 
   /* When next to skip buttons */
