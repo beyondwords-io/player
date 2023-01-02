@@ -78,7 +78,7 @@
                    :                                     "left-to-right";
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
-  $: collapsed = isSmall && fixedPosition && !isAdvert && !isStopped && !isHovering;
+  $: collapsed = isSmall && fixedPosition && fixedWidth === "auto" && !isAdvert && !isStopped && !isHovering;
 </script>
 
 <div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
