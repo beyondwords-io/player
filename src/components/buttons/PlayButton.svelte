@@ -12,5 +12,6 @@
   .play-button {
     display: flex;
     cursor: pointer;
+    position: relative;
   }
 </style>
