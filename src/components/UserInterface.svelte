@@ -81,81 +81,83 @@
   $: collapsed = isSmall && fixedPosition && fixedWidth === "auto" && !isAdvert && !isStopped && !isHovering;
 </script>
 
-<div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
-  <Hoverable bind:isHovering graceTime={500} enabled={isSmall && fixedPosition}>
-    <div class="main">
-      {#if isLarge || isScreen}
-        <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
+{#if isSmall || isStandard || isLarge || isScreen}
+  <div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
+    <Hoverable bind:isHovering graceTime={500} enabled={isSmall && fixedPosition}>
+      <div class="main">
+        {#if isLarge || isScreen}
+          <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
 
-        <div>
-          <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {interfaceStyle} scale={isScreen ? 2 : 1} />
-          <PodcastTitle title={podcast.title} maxLines={isMobile || isScreen ? 3 : 1} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} />
-        </div>
-      {/if}
-
-      <div class="controls">
-        <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
-          <ProgressCircle {progress} enabled={isScreen || isSmall && fixedPosition} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
-            {#if isPlaying}
-              <PauseButton scale={playPauseScale} />
-            {:else}
-              <PlayButton scale={playPauseScale} />
-            {/if}
-          </ProgressCircle>
-        </Visibility>
-
-        {#if isStandard && isStopped || isSmall}
-          <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} {collapsed} />
+          <div>
+            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {interfaceStyle} scale={isScreen ? 2 : 1} />
+            <PodcastTitle title={podcast.title} maxLines={isMobile || isScreen ? 3 : 1} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} />
+          </div>
         {/if}
 
-        {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-          <SpeedButton scale={buttonScale} />
-          <PrevButton style={skipStyle} scale={buttonScale} />
-          <NextButton style={skipStyle} scale={buttonScale} />
-        {/if}
+        <div class="controls">
+          <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
+            <ProgressCircle {progress} enabled={isScreen || isSmall && fixedPosition} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
+              {#if isPlaying}
+                <PauseButton scale={playPauseScale} />
+              {:else}
+                <PlayButton scale={playPauseScale} />
+              {/if}
+            </ProgressCircle>
+          </Visibility>
 
-        {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
-          <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
-        {/if}
+          {#if isStandard && isStopped || isSmall}
+            <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} {collapsed} />
+          {/if}
 
-        <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} />
+          {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
+            <SpeedButton scale={buttonScale} />
+            <PrevButton style={skipStyle} scale={buttonScale} />
+            <NextButton style={skipStyle} scale={buttonScale} />
+          {/if}
 
-        {#if !isSmall && !isMobile && (!isStopped || isLarge) && !isScreen}
-          <ProgressBar {progress} />
-        {/if}
+          {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
+            <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
+          {/if}
 
-        {#if !isStopped}
-          <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
-            {#if isScreen && podcast.externalUrl}
-              <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
-            {:else if isPlaylist && !fixedPosition}
-              <PlaylistButton scale={buttonScale} />
-            {/if}
-          </SecondaryButton>
-        {/if}
+          <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} />
 
-        {#if isAdvert}
-          <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} />
-          <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} />
-        {/if}
-      </div>
+          {#if !isSmall && !isMobile && (!isStopped || isLarge) && !isScreen}
+            <ProgressBar {progress} />
+          {/if}
 
-      {#if !isAdvert && !(isSmall && fixedPosition) || isScreen}
-        <div class="end">
-          {#if fixedPosition}
-            <CloseButton scale={isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : 1} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
-          {:else}
-            <BeyondWords scale={isScreen && !isMobile ? 3 : isScreen ? 2 : 1} />
+          {#if !isStopped}
+            <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
+              {#if isScreen && podcast.externalUrl}
+                <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
+              {:else if isPlaylist && !fixedPosition}
+                <PlaylistButton scale={buttonScale} />
+              {/if}
+            </SecondaryButton>
+          {/if}
+
+          {#if isAdvert}
+            <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} />
+            <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} />
           {/if}
         </div>
-      {/if}
-    </div>
-  </Hoverable>
 
-  {#if !isSmall && !isScreen}
-    <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
-  {/if}
-</div>
+        {#if !isAdvert && !(isSmall && fixedPosition) || isScreen}
+          <div class="end">
+            {#if fixedPosition}
+              <CloseButton scale={isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : 1} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
+            {:else}
+              <BeyondWords scale={isScreen && !isMobile ? 3 : isScreen ? 2 : 1} />
+            {/if}
+          </div>
+        {/if}
+      </div>
+    </Hoverable>
+
+    {#if !isSmall && !isScreen}
+      <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
+    {/if}
+  </div>
+{/if}
 
 <style>
   .user-interface {
