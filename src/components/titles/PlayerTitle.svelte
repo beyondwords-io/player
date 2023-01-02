@@ -1,11 +1,23 @@
 <script>
+  import { onMount } from "svelte";
+
   export let title;
   export let interfaceStyle;
   export let scale = 1;
   export let visible = true;
+
+  let element;
+  let initialWidth;
+
+  onMount(() => initialWidth = element.getBoundingClientRect().width);
+
+  $: visibility = visible ? "visible" : "hidden";
+  $: width = initialWidth ? `${initialWidth}px` : "auto";
+
+  $: style = `font-size: ${0.75 * scale}rem; visibility: ${visibility}; width: ${width}`;
 </script>
 
-<div class="player-title {interfaceStyle}" style="font-size: {0.75 * scale}rem; visibility: {visible ? "visible" : "hidden"}">
+<div class="player-title {interfaceStyle}" {style} bind:this={element}>
   {title}
 </div>
 
