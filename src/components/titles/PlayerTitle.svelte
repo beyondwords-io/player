@@ -1,6 +1,4 @@
 <script>
-  import { onMount } from "svelte";
-
   export let title;
   export let interfaceStyle;
   export let scale = 1;
@@ -9,7 +7,7 @@
   let element;
   let initialWidth;
 
-  onMount(() => initialWidth = element.getBoundingClientRect().width);
+  setTimeout(() => initialWidth = element.getBoundingClientRect().width, 0);
 
   $: visibility = visible ? "visible" : "hidden";
   $: width = initialWidth ? `${initialWidth}px` : "auto";
