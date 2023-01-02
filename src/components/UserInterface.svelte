@@ -78,12 +78,12 @@
                    :                                     "left-to-right";
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
-  $: collapsed = isSmall && fixedPosition && fixedWidth === "auto" && !isAdvert && !isStopped && !isHovering;
+  $: collapsed = isSmall && fixedPosition && (fixedWidth === 0 || fixedWidth === "auto" && !isAdvert && !isStopped && !isHovering);
 </script>
 
 {#if isSmall || isStandard || isLarge || isScreen}
   <div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
-    <Hoverable bind:isHovering graceTime={500} enabled={isSmall && fixedPosition}>
+    <Hoverable bind:isHovering graceTime={500} enabled={isSmall && fixedPosition && fixedWidth !== 0}>
       <div class="main">
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
