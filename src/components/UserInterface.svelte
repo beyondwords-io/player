@@ -412,8 +412,8 @@
     height: 100%;
     background: transparent;
     display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto;
   }
 
   .video .summary {
