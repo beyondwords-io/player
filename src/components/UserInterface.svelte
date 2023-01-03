@@ -97,7 +97,7 @@
         {#if isLarge || isScreen || isVideo}
           <div class="summary">
             <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {interfaceStyle} scale={isScreen ? 2 : 1} />
-            <PodcastTitle title={podcast.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo ? 1.6 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
+            <PodcastTitle title={podcast.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
           </div>
         {/if}
 
