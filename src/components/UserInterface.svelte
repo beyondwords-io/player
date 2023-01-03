@@ -436,14 +436,14 @@
 
   .video .end {
     grid-row: 1;
-    grid-column: 2;
+    grid-column: 3;
     margin: 1rem;
     margin-left: auto;
   }
 
   .video .controls {
     grid-row: 3;
-    grid-column: 1 / span 2;
+    grid-column: 1 / span 3;
     padding-bottom: 0.5rem;
     position: relative;
     padding: 0.5rem 1rem;
@@ -457,6 +457,10 @@
     padding: 1rem;
   }
 
+  .video.stopped.right-to-left .controls {
+    flex-direction: row-reverse;
+  }
+
   .video.paused,
   .video.hovering {
     background: rgba(0, 0, 0, 0.2);
@@ -466,6 +470,11 @@
   .video.hovering .controls {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .video.stopped .controls {
+    opacity: 1;
+    pointer-events: none;
   }
 
   .video.mobile .summary {
