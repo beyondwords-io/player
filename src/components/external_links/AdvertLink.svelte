@@ -1,12 +1,13 @@
 <script>
   export let href;
   export let interfaceStyle;
+  export let controlsOrder;
   export let scale = 1;
 
   $: text = new URL(href).hostname;
 </script>
 
-<a class="advert-link {interfaceStyle}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem">
+<a class="advert-link {interfaceStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem">
   {text}
 </a>
 
@@ -40,5 +41,10 @@
     margin-left: auto;
     color: rgba(250, 250, 250, 0.8);
     border-color: rgba(250, 250, 250, 0.8);
+  }
+
+  a.video.right-to-left {
+    margin-left: 0;
+    margin-right: auto;
   }
 </style>

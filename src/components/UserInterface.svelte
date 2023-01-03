@@ -79,6 +79,9 @@
                    : isStandard && isRight             ? "left-to-right-but-swap-ends"
                    : isSmall && isLeft                 ? "left-to-right"
                    : isSmall && isRight                ? "right-to-left"
+                   : isVideo && isLeft                 ? "left-to-right"
+                   : isVideo && isMobile               ? "right-to-left"
+                   : isVideo && isRight                ? "right-to-left"
                    :                                     "left-to-right";
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
@@ -145,7 +148,7 @@
           {/if}
 
           {#if isAdvert}
-            <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} />
+            <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
             <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} color={buttonColor} />
           {/if}
         </div>
