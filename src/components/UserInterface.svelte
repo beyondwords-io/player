@@ -398,6 +398,8 @@
   .video {
     min-width: 360px;
     max-width: 720px;
+    border-radius: 0.5rem;
+    transition: background-color 0.25s;
   }
 
   .video :global(.hoverable) {
@@ -449,6 +451,11 @@
     transition: opacity 0.25s;
     pointer-events: none;
     cursor: auto;
+  }
+
+  .video.paused,
+  .video.hovering {
+    background: rgba(0, 0, 0, 0.2);
   }
 
   .video.paused .controls,
