@@ -4,9 +4,10 @@
   export let text;
   export let remaining;
   export let scale = 1;
+  export let color = "#323232";
 </script>
 
-<span class="countdown-time" style="font-size: {0.625 * scale}rem">
+<span class="countdown-time" style="font-size: {0.625 * scale}rem; color: {color}">
   {text} • {formatTime(remaining)}
 </span>
 

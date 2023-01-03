@@ -7,7 +7,7 @@
 </script>
 
 <a class="advert-button {interfaceStyle}" href={href} target="_blank" rel="noreferrer">
-  <OpenNewTab color="#00cdbc" scale={scale} />
+  <OpenNewTab color="#00cdbc" {scale} />
 </a>
 
 <style>

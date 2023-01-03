@@ -13,6 +13,7 @@
   export let isAdvert;
   export let isStopped;
   export let collapsed;
+  export let color = "323232";
 
   $: isScreen = interfaceStyle === "screen";
   $: scale = isScreen && !isMobile ? 3 : isScreen ? 2 : 1;
@@ -22,11 +23,11 @@
 <div class="time-indicator {interfaceStyle} {positionClass}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} style="opacity: {opacity}">
   <div class="inner">
     {#if isAdvert}
-      <CountdownTime text="Ad" remaining={remaining} {scale} />
+      <CountdownTime text="Ad" remaining={remaining} {scale} {color} />
     {:else if isStopped}
-      <DurationInMins {duration} {scale} />
+      <DurationInMins {duration} {scale} {color} />
     {:else}
-      <PlaybackTime {duration} {currentTime} {scale} />
+      <PlaybackTime {duration} {currentTime} {scale} {color} />
     {/if}
   </div>
 </div>

@@ -68,6 +68,7 @@
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
   $: buttonScale = isSmall ? 0.8 : isScreen && !isMobile ? 2 : 1;
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
+  $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
 
   $: controlsOrder = isScreen                          ? "symmetrical"
                    : isLarge && isMobile               ? "symmetrical"
@@ -100,9 +101,9 @@
           <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
             <ProgressCircle {progress} enabled={isScreen || isSmall && fixedPosition} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
               {#if isPlaying}
-                <PauseButton scale={playPauseScale} />
+                <PauseButton scale={playPauseScale} color={buttonColor} />
               {:else}
-                <PlayButton scale={playPauseScale} />
+                <PlayButton scale={playPauseScale} color={buttonColor} />
               {/if}
             </ProgressCircle>
           </Visibility>
@@ -112,16 +113,16 @@
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-            <SpeedButton scale={buttonScale} />
-            <PrevButton style={skipStyle} scale={buttonScale} />
-            <NextButton style={skipStyle} scale={buttonScale} />
+            <SpeedButton scale={buttonScale} color={buttonColor} />
+            <PrevButton style={skipStyle} scale={buttonScale} color={buttonColor} />
+            <NextButton style={skipStyle} scale={buttonScale} color={buttonColor} />
           {/if}
 
           {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
             <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
           {/if}
 
-          <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} />
+          <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} color={buttonColor} />
 
           {#if !isSmall && !isMobile && (!isStopped || isLarge) && !isScreen}
             <ProgressBar {progress} />
@@ -130,18 +131,18 @@
           {#if !isStopped}
             <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo}
-                <MaximizeButton scale={buttonScale} />
+                <MaximizeButton scale={buttonScale} color={buttonColor} />
               {:else if isScreen && podcast.externalUrl}
-                <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
+                <NewTabButton scale={buttonScale} href={podcast.externalUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
-                <PlaylistButton scale={buttonScale} />
+                <PlaylistButton scale={buttonScale} color={buttonColor} />
               {/if}
             </SecondaryButton>
           {/if}
 
           {#if isAdvert}
             <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} />
-            <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} />
+            <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} color={buttonColor} />
           {/if}
         </div>
 

@@ -5,6 +5,7 @@
 
   export let style = "segments";
   export let scale = 1;
+  export let color = "#323232";
 
   $: backwardsSeconds = style.split("-")[1] || 10;
   $: forwardsSeconds = style.split("-")[2] || backwardsSeconds;
@@ -12,11 +13,11 @@
 
 <div class="prev-button">
   {#if style === "segments"}
-    <Up {scale} />
+    <Up {scale} {color} />
   {:else if style.startsWith("seconds")}
-    <SeekBack seconds={backwardsSeconds} {scale} />
+    <SeekBack seconds={backwardsSeconds} {scale} {color} />
   {:else if style === "tracks"}
-    <PrevTrack {scale} />
+    <PrevTrack {scale} {color} />
   {/if}
 </div>
 

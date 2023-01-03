@@ -2,10 +2,11 @@
   import Pause from "../svg_icons/Pause.svelte";
 
   export let scale = 1;
+  export let color = "#323232";
 </script>
 
 <div class="pause-button">
-  <Pause scale={scale} />
+  <Pause {scale} {color} />
 </div>
 
 <style>
