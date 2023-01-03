@@ -6,12 +6,13 @@
   export let bold = false;
   export let flex = "0 1 auto";
   export let scale = 1;
+  export let color = "#323232";
 
   $: fontSize = `${0.625 * scale}rem`;
   $: maxHeight = `${0.625 * scale * 1.2 * maxLines}`;
   $: maxWidthCss = maxWidth ? `max-width: ${maxWidth}rem` : "";
 
-  $: style = `--n: ${maxLines}; font-size: ${fontSize}; max-height: ${maxHeight}; flex: ${flex}; ${maxWidthCss}`;
+  $: style = `--n: ${maxLines}; font-size: ${fontSize}; max-height: ${maxHeight}; flex: ${flex}; ${maxWidthCss}; color: ${color}`;
 </script>
 
 <div class="podcast-title" class:bold class:one-line={maxLines === 1} class:n-lines={maxLines > 1} {style}>

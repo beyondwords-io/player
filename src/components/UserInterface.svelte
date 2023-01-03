@@ -86,14 +86,16 @@
 
 {#if isSmall || isStandard || isLarge || isScreen || isVideo}
   <div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
-    <Hoverable bind:isHovering graceTime={500} enabled={isSmall && fixedPosition && fixedWidth !== 0}>
+    <Hoverable bind:isHovering graceTime={500} enabled={isVideo || isSmall && fixedPosition && fixedWidth !== 0}>
       <div class="main">
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
+        {/if}
 
+        {#if isLarge || isScreen || isVideo}
           <div>
             <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {interfaceStyle} scale={isScreen ? 2 : 1} />
-            <PodcastTitle title={podcast.title} maxLines={isMobile || isScreen ? 3 : 1} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} />
+            <PodcastTitle title={podcast.title} maxLines={isMobile || isScreen ? 3 : 1} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
           </div>
         {/if}
 
@@ -151,11 +153,15 @@
             {#if fixedPosition}
               <CloseButton scale={isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : 1} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
             {:else}
-              <BeyondWords scale={isScreen && !isMobile ? 3 : isScreen ? 2 : 1} />
+              <BeyondWords scale={isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1} />
             {/if}
           </div>
         {/if}
       </div>
+
+      {#if isVideo}
+        <video></video>
+      {/if}
     </Hoverable>
 
     {#if !isSmall && !isScreen && !isVideo}
@@ -381,7 +387,45 @@
     margin-bottom: 2rem;
   }
 
-  .video .main {
+  .video {
+    min-width: 250px;
+    max-width: 720px;
+  }
+
+  .video :global(.hoverable) {
+    position: relative;
+    padding-bottom: 56.25%;
+  }
+
+  .video video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     background: black;
+    border-radius: 0.5rem;
+    z-index: -1;
+  }
+
+  .video .main {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    padding-bottom: 0;
+    background: transparent;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 1fr auto;
+  }
+
+  .video .end {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .video .controls {
+    grid-row: 2;
+    grid-column: 1 / span 2;
+    padding-bottom: 0.5rem;
   }
 </style>

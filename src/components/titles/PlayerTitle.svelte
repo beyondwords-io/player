@@ -50,4 +50,8 @@
     position: relative;
     bottom: 1.25rem;
   }
+
+  .video {
+    display: none;
+  }
 </style>
