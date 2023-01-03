@@ -10,6 +10,7 @@
   import SecondaryButton from "./buttons/SecondaryButton.svelte";
   import NewTabButton from "./buttons/NewTabButton.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
+  import MaximizeButton from "./buttons/MaximizeButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
@@ -128,7 +129,9 @@
 
           {#if !isStopped}
             <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
-              {#if isScreen && podcast.externalUrl}
+              {#if isVideo}
+                <MaximizeButton scale={buttonScale} />
+              {:else if isScreen && podcast.externalUrl}
                 <NewTabButton scale={buttonScale} href={podcast.externalUrl} />
               {:else if isPlaylist && !fixedPosition}
                 <PlaylistButton scale={buttonScale} />
