@@ -160,7 +160,7 @@
       </div>
 
       {#if isVideo}
-        <video></video>
+        <video poster={isStopped ? podcast.image : ""}></video>
       {/if}
     </Hoverable>
 
