@@ -1,9 +1,10 @@
 <script>
   export let progress = 0;
   export let fullWidth = false;
+  export let hidden = false;
 </script>
 
-<div class="progress-bar" class:full-width={fullWidth}>
+<div class="progress-bar" class:full-width={fullWidth} class:hidden>
   <div class="progress" style="width: {progress * 100}%"></div>
 </div>
 
@@ -15,6 +16,7 @@
     background: #d9d9d9;
     display: flex;
     cursor: pointer;
+    transition: opacity 0.5s;
   }
 
   .progress {
@@ -34,5 +36,10 @@
   .full-width .progress {
     border-radius: 0;
     background: linear-gradient(to right, #943bfc, #fc3a41);
+  }
+
+  .hidden {
+    opacity: 0;
+    pointer-events: none;
   }
 </style>

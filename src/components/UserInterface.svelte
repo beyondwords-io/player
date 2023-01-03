@@ -50,6 +50,7 @@
   $: isScreen = interfaceStyle === "screen";
   $: isVideo = interfaceStyle === "video";
   $: isPlaying = playbackState === "playing";
+  $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
   $: isMobile = !isSmall && width < 380 || isScreen && width < 640;
   $: isAdvert = currentAdvert && !isStopped;
@@ -82,10 +83,11 @@
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
   $: collapsed = isSmall && fixedPosition && (fixedWidth === 0 || fixedWidth === "auto" && !isAdvert && !isStopped && !isHovering);
+  $: classes = `user-interface ${interfaceStyle} ${playbackState} ${positionClass} ${controlsOrder}`;
 </script>
 
 {#if isSmall || isStandard || isLarge || isScreen || isVideo}
-  <div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
+  <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering graceTime={500} enabled={isVideo || isSmall && fixedPosition && fixedWidth !== 0}>
       <div class="main">
         {#if isLarge || isScreen}
@@ -126,8 +128,8 @@
 
           <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} color={buttonColor} />
 
-          {#if !isSmall && !isMobile && (!isStopped || isLarge) && !isScreen}
-            <ProgressBar {progress} fullWidth={isVideo} />
+          {#if (isStandard && !isMobile) || isLarge || (isScreen && !isStopped) || isVideo}
+            <ProgressBar {progress} fullWidth={isVideo} hidden={isVideo && isMobile && (isHovering || isPaused)} />
           {/if}
 
           {#if !isStopped}
@@ -437,6 +439,7 @@
     transition: bottom 0.5s;
   }
 
+  .video.paused .controls,
   .video.hovering .controls {
     bottom: 0;
   }
