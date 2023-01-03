@@ -33,5 +33,6 @@
 
   .full-width .progress {
     border-radius: 0;
+    background: linear-gradient(to right, #943bfc, #fc3a41);
   }
 </style>
