@@ -67,7 +67,7 @@
   $: isRight = position === "right";
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
-  $: buttonScale = isSmall ? 0.8 : isScreen && !isMobile ? 2 : 1;
+  $: buttonScale = isSmall ? 0.8 : (isScreen || isVideo && isStopped) && !isMobile ? 2 : 1;
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
 
@@ -451,6 +451,10 @@
     transition: opacity 0.25s;
     pointer-events: none;
     cursor: auto;
+  }
+
+  .video.stopped .controls {
+    padding: 1rem;
   }
 
   .video.paused,
