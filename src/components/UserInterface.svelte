@@ -443,4 +443,16 @@
   .video.hovering .controls {
     bottom: 0;
   }
+
+  .video.mobile .summary {
+    margin: 0.5rem;
+  }
+
+  .video.mobile .end {
+    margin: 0.5rem;
+  }
+
+  .video.mobile .controls {
+    padding: 0.5rem;
+  }
 </style>
