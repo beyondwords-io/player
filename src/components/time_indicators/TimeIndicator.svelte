@@ -46,8 +46,7 @@
     margin-left: 0.5rem;
   }
 
-  .standard.mobile:nth-child(5),
-  .video.mobile:nth-child(5) {
+  .standard.mobile:nth-child(5) {
     margin-left: 0;
   }
 
@@ -157,5 +156,9 @@
 
   .video.advert {
     flex-grow: 0;
+  }
+
+  .video.mobile {
+    justify-content: flex-start;
   }
 </style>
