@@ -41,11 +41,13 @@
   }
 
   /* When next to skip buttons */
-  .standard:nth-child(5) {
+  .standard:nth-child(5),
+  .video:nth-child(5) {
     margin-left: 0.5rem;
   }
 
-  .standard.mobile:nth-child(5) {
+  .standard.mobile:nth-child(5),
+  .video.mobile:nth-child(5) {
     margin-left: 0;
   }
 

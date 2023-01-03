@@ -42,4 +42,8 @@
   .screen.advert {
     display: flex;
   }
+
+  .video {
+    margin-left: auto;
+  }
 </style>
