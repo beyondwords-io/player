@@ -418,22 +418,26 @@
     height: 100%;
     background: transparent;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    cursor: pointer;
   }
 
   .video .summary {
     margin: 1rem;
+    cursor: auto;
+    display: flex;
   }
 
   .video .end {
     grid-row: 1;
     grid-column: 2;
     margin: 1rem;
+    margin-left: auto;
   }
 
   .video .controls {
-    grid-row: 2;
+    grid-row: 3;
     grid-column: 1 / span 2;
     padding-bottom: 0.5rem;
     position: relative;
@@ -441,6 +445,7 @@
     opacity: 0;
     transition: opacity 0.25s;
     pointer-events: none;
+    cursor: auto;
   }
 
   .video.paused .controls,
