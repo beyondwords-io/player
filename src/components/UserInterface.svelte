@@ -91,7 +91,7 @@
 
 {#if isSmall || isStandard || isLarge || isScreen || isVideo}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
-    <Hoverable bind:isHovering graceTime={500} enabled={isVideo || isSmall && fixedPosition && fixedWidth !== 0}>
+    <Hoverable bind:isHovering graceTime={isSmall ? 500 : 0} enabled={isVideo || isSmall && fixedPosition && fixedWidth !== 0}>
       <div class="main">
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
@@ -119,7 +119,7 @@
             <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} {collapsed} />
           {/if}
 
-          {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert) || (isVideo && isAdvert && !isMobile)}
+          {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
             <SpeedButton scale={buttonScale} color={buttonColor} />
             <PrevButton style={skipStyle} scale={buttonScale} color={buttonColor} />
             <NextButton style={skipStyle} scale={buttonScale} color={buttonColor} />
@@ -132,7 +132,7 @@
           <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} color={buttonColor} />
 
           {#if (isStandard && !isMobile) || isLarge || (isScreen && !isStopped) || isVideo}
-            <ProgressBar {progress} fullWidth={isVideo} hidden={isVideo && isMobile && (isHovering || isPaused)} />
+            <ProgressBar {progress} fullWidth={isVideo} />
           {/if}
 
           {#if !isStopped}
@@ -438,13 +438,15 @@
     padding-bottom: 0.5rem;
     position: relative;
     padding: 0.5rem 1rem;
-    bottom: -100%;
-    transition: bottom 0.5s;
+    opacity: 0;
+    transition: opacity 0.25s;
+    pointer-events: none;
   }
 
   .video.paused .controls,
   .video.hovering .controls {
-    bottom: 0;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .video.mobile .summary {
