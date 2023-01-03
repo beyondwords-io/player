@@ -85,7 +85,7 @@
 </script>
 
 {#if isSmall || isStandard || isLarge || isScreen || isVideo}
-  <div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
+  <div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering graceTime={500} enabled={isVideo || isSmall && fixedPosition && fixedWidth !== 0}>
       <div class="main">
         {#if isLarge || isScreen}
@@ -395,6 +395,8 @@
   .video :global(.hoverable) {
     position: relative;
     padding-bottom: 56.25%;
+    border-radius: 0.5rem;
+    overflow: hidden;
   }
 
   .video video {
@@ -402,7 +404,6 @@
     width: 100%;
     height: 100%;
     background: black;
-    border-radius: 0.5rem;
     z-index: -1;
   }
 
@@ -432,5 +433,11 @@
     padding-bottom: 0.5rem;
     position: relative;
     padding: 0.5rem 1rem;
+    bottom: -100%;
+    transition: bottom 0.5s;
+  }
+
+  .video.hovering .controls {
+    bottom: 0;
   }
 </style>
