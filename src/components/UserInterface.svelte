@@ -47,6 +47,7 @@
   $: isStandard = interfaceStyle === "standard";
   $: isLarge = interfaceStyle === "large";
   $: isScreen = interfaceStyle === "screen";
+  $: isVideo = interfaceStyle === "video";
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
   $: isMobile = !isSmall && width < 380 || isScreen && width < 640;
@@ -81,7 +82,7 @@
   $: collapsed = isSmall && fixedPosition && (fixedWidth === 0 || fixedWidth === "auto" && !isAdvert && !isStopped && !isHovering);
 </script>
 
-{#if isSmall || isStandard || isLarge || isScreen}
+{#if isSmall || isStandard || isLarge || isScreen || isVideo}
   <div class="user-interface {interfaceStyle} {positionClass} {controlsOrder}" style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering graceTime={500} enabled={isSmall && fixedPosition && fixedWidth !== 0}>
       <div class="main">
@@ -153,7 +154,7 @@
       </div>
     </Hoverable>
 
-    {#if !isSmall && !isScreen}
+    {#if !isSmall && !isScreen && !isVideo}
       <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
     {/if}
   </div>
@@ -374,5 +375,9 @@
 
   .screen.mobile .end {
     margin-bottom: 2rem;
+  }
+
+  .video .main {
+    background: black;
   }
 </style>
