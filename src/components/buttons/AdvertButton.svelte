@@ -7,7 +7,7 @@
 </script>
 
 <a class="advert-button {interfaceStyle}" href={href} target="_blank" rel="noreferrer">
-  <OpenNewTab color="#00cdbc" {scale} />
+  <OpenNewTab color={interfaceStyle === "video" ? "rgba(250, 250, 250, 0.8)" : "#00cdbc"} {scale} />
 </a>
 
 <style>

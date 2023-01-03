@@ -116,7 +116,7 @@
             <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} {collapsed} />
           {/if}
 
-          {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
+          {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert) || (isVideo && isAdvert && !isMobile)}
             <SpeedButton scale={buttonScale} color={buttonColor} />
             <PrevButton style={skipStyle} scale={buttonScale} color={buttonColor} />
             <NextButton style={skipStyle} scale={buttonScale} color={buttonColor} />
@@ -150,7 +150,7 @@
           {/if}
         </div>
 
-        {#if !isAdvert && !(isSmall && fixedPosition) || isScreen}
+        {#if !isAdvert && !(isSmall && fixedPosition) || isScreen || isVideo}
           <div class="end">
             {#if fixedPosition}
               <CloseButton scale={isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : 1} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />

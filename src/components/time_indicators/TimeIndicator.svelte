@@ -154,4 +154,8 @@
   .screen .inner {
     position: static;
   }
+
+  .video.advert {
+    flex-grow: 0;
+  }
 </style>

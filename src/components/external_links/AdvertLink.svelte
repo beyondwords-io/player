@@ -35,4 +35,10 @@
     position: absolute;
     top: 14.75rem;
   }
+
+  a.video {
+    margin-left: auto;
+    color: rgba(250, 250, 250, 0.8);
+    border-color: rgba(250, 250, 250, 0.8);
+  }
 </style>
