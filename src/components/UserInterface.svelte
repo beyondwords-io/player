@@ -52,7 +52,7 @@
   $: isPlaying = playbackState === "playing";
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
-  $: isMobile = !isSmall && width < 380 || isScreen && width < 640;
+  $: isMobile = (isStandard || isLarge) && width < 380 || isVideo && width < 480 || isScreen && width < 640;
   $: isAdvert = currentAdvert && !isStopped;
 
   $: podcast = podcasts[podcastIndex] || {};
