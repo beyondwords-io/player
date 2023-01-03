@@ -455,4 +455,8 @@
   .video.mobile .controls {
     padding: 0.5rem;
   }
+
+  .video :global(.next-button) {
+    margin-left: 0.5rem;
+  }
 </style>
