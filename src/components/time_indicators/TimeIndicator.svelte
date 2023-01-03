@@ -161,4 +161,8 @@
   .video.mobile {
     justify-content: flex-start;
   }
+
+  .video.stopped {
+    display: none;
+  }
 </style>
