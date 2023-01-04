@@ -39,12 +39,13 @@
 
   a.video {
     margin-left: auto;
+    margin-right: -0.5rem;
     color: rgba(250, 250, 250, 0.8);
     border-color: rgba(250, 250, 250, 0.8);
   }
 
   a.video.right-to-left {
-    margin-left: 0;
+    margin-left: -0.5rem;
     margin-right: auto;
   }
 </style>

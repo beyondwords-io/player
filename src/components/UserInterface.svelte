@@ -453,6 +453,10 @@
     cursor: auto;
   }
 
+  .video.advert .controls {
+    column-gap: 1rem;
+  }
+
   .video.stopped .controls {
     padding: 1rem;
   }
