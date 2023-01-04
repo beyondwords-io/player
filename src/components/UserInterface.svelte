@@ -461,8 +461,8 @@
     flex-direction: row-reverse;
   }
 
-  .video.paused,
-  .video.hovering {
+  .video.paused :global(.hoverable),
+  .video.hovering :global(.hoverable) {
     background: rgba(0, 0, 0, 0.2);
   }
 
