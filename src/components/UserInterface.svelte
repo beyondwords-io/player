@@ -138,6 +138,11 @@
             <ProgressBar {progress} fullWidth={isVideo} />
           {/if}
 
+          {#if isAdvert}
+            <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
+            <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} color={buttonColor} />
+          {/if}
+
           {#if !isStopped}
             <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo}
@@ -148,11 +153,6 @@
                 <PlaylistButton scale={buttonScale} color={buttonColor} />
               {/if}
             </SecondaryButton>
-          {/if}
-
-          {#if isAdvert}
-            <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
-            <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} color={buttonColor} />
           {/if}
         </div>
 
