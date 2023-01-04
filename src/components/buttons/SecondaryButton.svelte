@@ -46,4 +46,9 @@
   .video {
     margin-left: auto;
   }
+
+  .video.advert {
+    margin-left: 0;
+    display: flex;
+  }
 </style>
