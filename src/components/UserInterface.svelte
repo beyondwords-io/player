@@ -11,6 +11,7 @@
   import NewTabButton from "./buttons/NewTabButton.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
+  import BackToTopButton from "./buttons/BackToTopButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
@@ -62,7 +63,7 @@
 
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
   $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
-  $: positionClass = fixedPosition ? `fixed-${position}` : "";
+  $: positionClasses = fixedPosition ? `fixed fixed-${position}` : "";
   $: isLeft = position === "left";
   $: isRight = position === "right";
 
@@ -86,7 +87,7 @@
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
   $: collapsed = isSmall && fixedPosition && (fixedWidth === 0 || fixedWidth === "auto" && !isAdvert && !isStopped && !isHovering);
-  $: classes = `user-interface ${interfaceStyle} ${playbackState} ${positionClass} ${controlsOrder}`;
+  $: classes = `user-interface ${interfaceStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
 </script>
 
 {#if isSmall || isStandard || isLarge || isScreen || isVideo}
@@ -95,6 +96,12 @@
       <div class="main">
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
+        {/if}
+
+        {#if isVideo && fixedPosition}
+          <div class="back-to-top">
+            <BackToTopButton scale={isMobile ? 1.5 : 2} color={buttonColor} />
+          </div>
         {/if}
 
         {#if isLarge || isScreen || isVideo}
@@ -132,7 +139,7 @@
             <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
           {/if}
 
-          <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} color={buttonColor} />
+          <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={buttonColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
             <ProgressBar {progress} fullWidth={isVideo} />
@@ -159,7 +166,7 @@
         {#if !isAdvert && !(isSmall && fixedPosition) || isScreen || isVideo}
           <div class="end">
             {#if fixedPosition}
-              <CloseButton scale={isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : 1} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
+              <CloseButton scale={isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"}  color={buttonColor} />
             {:else}
               <BeyondWords scale={isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1} />
             {/if}
@@ -188,7 +195,7 @@
     color: #323232;
   }
 
-  .fixed-left, .fixed-center, .fixed-right {
+  .fixed {
     position: fixed;
     bottom: 0;
     margin: 1rem;
@@ -482,12 +489,22 @@
     background: rgba(0, 0, 0, 0.2);
   }
 
+  .video.mobile .controls {
+    padding: 0.5rem;
+  }
+
   .video.mobile .summary,
   .video.mobile .end {
     margin: 0.5rem;
   }
 
-  .video.mobile .controls {
-    padding: 0.5rem;
+  .video.fixed .back-to-top,
+  .video.fixed .end {
+    margin: 1rem;
+  }
+
+  .video.fixed.mobile .back-to-top,
+  .video.fixed.mobile .end {
+    margin: 0.75rem;
   }
 </style>
