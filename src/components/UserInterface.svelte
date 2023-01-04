@@ -147,7 +147,10 @@
 
           {#if isAdvert}
             <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
-            <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} color={buttonColor} />
+
+            {#if !(isVideo && isMobile)}
+              <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
+            {/if}
           {/if}
 
           {#if !isStopped}

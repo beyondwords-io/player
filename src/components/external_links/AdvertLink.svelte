@@ -1,8 +1,8 @@
 <script>
   export let href;
+  export let scale = 1;
   export let interfaceStyle;
   export let controlsOrder;
-  export let scale = 1;
 
   $: text = new URL(href).hostname;
 </script>
@@ -39,13 +39,13 @@
 
   a.video {
     margin-left: auto;
-    margin-right: -0.5rem;
+    margin-right: 0;
     color: rgba(250, 250, 250, 0.8);
     border-color: rgba(250, 250, 250, 0.8);
   }
 
   a.video.right-to-left {
-    margin-left: -0.5rem;
+    margin-left: 0;
     margin-right: auto;
   }
 </style>

@@ -4,9 +4,10 @@
   export let href;
   export let scale = 1;
   export let interfaceStyle;
+  export let controlsOrder;
 </script>
 
-<a class="advert-button {interfaceStyle}" href={href} target="_blank" rel="noreferrer">
+<a class="advert-button {interfaceStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer">
   <OpenNewTab color={interfaceStyle === "video" ? "rgba(250, 250, 250, 0.8)" : "#00cdbc"} {scale} />
 </a>
 
@@ -18,5 +19,14 @@
   .screen {
     position: absolute;
     bottom: 2.5rem;
+  }
+
+  .video {
+    margin-left: -0.5rem;
+  }
+
+  .video.right-to-left {
+    margin-left: 0;
+    margin-right: -0.5rem;
   }
 </style>
