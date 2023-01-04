@@ -453,11 +453,23 @@
     cursor: auto;
   }
 
+  .video :global(.next-button) {
+    margin-left: 0.5rem;
+  }
+
   .video.advert .controls {
     column-gap: 1rem;
   }
 
+  .video.stopped .controls,
+  .video.paused .controls,
+  .video.hovering .controls {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .video.stopped .controls {
+    pointer-events: none;
     padding: 1rem;
   }
 
@@ -470,30 +482,12 @@
     background: rgba(0, 0, 0, 0.2);
   }
 
-  .video.paused .controls,
-  .video.hovering .controls {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .video.stopped .controls {
-    opacity: 1;
-    pointer-events: none;
-  }
-
-  .video.mobile .summary {
-    margin: 0.5rem;
-  }
-
+  .video.mobile .summary,
   .video.mobile .end {
     margin: 0.5rem;
   }
 
   .video.mobile .controls {
     padding: 0.5rem;
-  }
-
-  .video :global(.next-button) {
-    margin-left: 0.5rem;
   }
 </style>
