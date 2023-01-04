@@ -1,4 +1,6 @@
 <script>
+  import { onMount } from "svelte";
+
   export let title;
   export let interfaceStyle;
   export let scale = 1;
@@ -8,7 +10,13 @@
   let element;
   let initialWidth;
 
-  setTimeout(() => initialWidth = element.getBoundingClientRect().width, 0);
+  onMount(() => {
+    const timeouts = [10, 100, 1000, 5000].map(delay => (
+      setTimeout(() => initialWidth = element.scrollWidth, delay)
+    ));
+
+    return () => timeouts.forEach(t => clearTimeout(t));
+  });
 
   $: visibility = visible ? "visible" : "hidden";
   $: width = !initialWidth ? "auto" : collapsed ? 0 : `${initialWidth}px`;
