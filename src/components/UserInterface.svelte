@@ -147,10 +147,7 @@
 
           {#if isAdvert}
             <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
-
-            {#if !(isVideo && isMobile)}
-              <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
-            {/if}
+            <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
           {/if}
 
           {#if !isStopped}
@@ -457,10 +454,50 @@
     padding-bottom: 0.5rem;
     position: relative;
     padding: 0.5rem 1rem;
+    cursor: auto;
+  }
+
+  .video .controls > :global(*) {
     opacity: 0;
     transition: opacity 0.25s;
     pointer-events: none;
-    cursor: auto;
+  }
+
+  .video.stopped .controls > :global(*),
+  .video.paused .controls > :global(*),
+  .video.hovering .controls > :global(*),
+  .video.advert .controls > :global(.time-indicator),
+  .video.advert .controls > :global(.advert-link) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .video.advert .controls > :global(.time-indicator) {
+    position: absolute;
+    top: -2rem;
+    left: 1rem;
+  }
+
+  .video.advert .controls > :global(.advert-link) {
+    position: absolute;
+    right: 1rem;
+    top: -2.25rem;
+  }
+
+  .video.advert.mobile .controls > :global(.time-indicator) {
+    left: 0.5rem;
+  }
+
+  .video.advert.mobile .controls > :global(.advert-link) {
+    right: 0.5rem;
+  }
+
+  .video.advert.fixed .controls > :global(.time-indicator) {
+    left: 0.75em;
+  }
+
+  .video.advert.fixed .controls > :global(.advert-link) {
+    right: 0.75rem;
   }
 
   .video :global(.next-button) {
@@ -469,13 +506,6 @@
 
   .video.advert .controls {
     column-gap: 1rem;
-  }
-
-  .video.stopped .controls,
-  .video.paused .controls,
-  .video.hovering .controls {
-    opacity: 1;
-    pointer-events: auto;
   }
 
   .video.stopped .controls {
@@ -509,5 +539,10 @@
   .video.fixed.mobile .back-to-top,
   .video.fixed.mobile .end {
     margin: 0.75rem;
+  }
+
+  .video.fixed .controls {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 </style>

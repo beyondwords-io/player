@@ -17,10 +17,10 @@
 
   $: isScreen = interfaceStyle === "screen";
   $: scale = isScreen && !isMobile ? 3 : isScreen ? 2 : 1;
-  $: opacity = collapsed ? 0 : 1;
+  $: opacityCss = collapsed ? "opacity: 0" : "";
 </script>
 
-<div class="time-indicator {interfaceStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} style="opacity: {opacity}">
+<div class="time-indicator {interfaceStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} style={opacityCss}>
   <div class="inner">
     {#if isAdvert}
       <CountdownTime text="Ad" remaining={remaining} {scale} {color} />

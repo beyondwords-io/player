@@ -22,11 +22,6 @@
   }
 
   .video {
-    margin-left: -0.5rem;
-  }
-
-  .video.right-to-left {
-    margin-left: 0;
-    margin-right: -0.5rem;
+    margin-left: auto;
   }
 </style>
