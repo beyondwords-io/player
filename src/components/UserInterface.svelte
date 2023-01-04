@@ -134,7 +134,7 @@
 
           <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClass} {collapsed} color={buttonColor} />
 
-          {#if (isStandard && !isMobile) || isLarge || (isScreen && !isStopped) || (isVideo && !isStopped)}
+          {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
             <ProgressBar {progress} fullWidth={isVideo} />
           {/if}
 
