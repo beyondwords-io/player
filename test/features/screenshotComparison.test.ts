@@ -15,30 +15,26 @@ const dimensions = {
   ],
 };
 
-for (const params of permutations(dimensions)) {
-  if (params.playbackState === "stopped" && params.currentAdvert) { continue; }
-  if (params.interfaceStyle === "small" && params.podcasts.length === 1) { continue; }
+test("screenshot comparison", async ({ page }) => {
+  await page.goto("http://localhost:8000");
 
-  const testName = [
-    params.interfaceStyle,
-    params.playbackState,
-    params.currentAdvert ? "advert" : "content",
-    params.podcasts.length > 1 ? "playlist" : "single",
-  ].join("-");
-
-  test(testName, async ({ page }) => {
-    await page.goto("http://localhost:8000");
+  for (const params of permutations(dimensions)) {
+    if (params.playbackState === "stopped" && params.currentAdvert) { continue; }
+    if (params.interfaceStyle === "small" && params.podcasts.length === 1) { continue; }
 
     const bounds = await page.evaluate(async (params) => {
       const player = BeyondWords.Player.instances()[0];
-
-      for (const [key, value] of Object.entries(params)) {
-        player[key] = value;
-      }
-
+      Object.entries(params).forEach(([k, v]) => player[k] = v);
       return player.target.getBoundingClientRect();
     }, params);
 
-    await expect(page).toHaveScreenshot({ clip: bounds });
-  });
-}
+    const screenshotName = [
+      params.interfaceStyle,
+      params.playbackState,
+      params.currentAdvert ? "advert" : "content",
+      params.podcasts.length > 1 ? "playlist" : "single",
+    ].join("-");
+
+    await expect(page).toHaveScreenshot(`${screenshotName}.png`, { clip: bounds });
+  }
+});
