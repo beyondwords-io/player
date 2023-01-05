@@ -35,7 +35,7 @@ test("screenshot comparison", async ({ page }) => {
 
       if (scroll !== expected) { window.scrollTo(0, expected); }
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
       const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
 
       const userInterface = player.target.querySelector(`.user-interface${selector}`);
