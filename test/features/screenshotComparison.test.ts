@@ -25,7 +25,9 @@ test("screenshot comparison", async ({ page }) => {
     const bounds = await page.evaluate(async (params) => {
       const player = BeyondWords.Player.instances()[0];
       Object.entries(params).forEach(([k, v]) => player[k] = v);
-      return player.target.getBoundingClientRect();
+
+      const userInterface = player.target.querySelector(".user-interface")
+      return userInterface.getBoundingClientRect();
     }, params);
 
     const screenshotName = [
