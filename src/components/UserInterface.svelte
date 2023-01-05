@@ -304,6 +304,7 @@
     border-radius: 0.375rem;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
 
   .large.advert .controls {
