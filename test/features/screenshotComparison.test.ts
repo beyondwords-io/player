@@ -23,11 +23,8 @@ test("screenshot comparison", async ({ page }) => {
 
   for (const params of permutations(dimensions)) {
     if (params.widgetPosition) { continue; } // TODO: remove
+    if (skipPermutation(params)) { continue; }
 
-    if (params.playbackState === "stopped" && params.currentAdvert) { continue; }
-    if (params.interfaceStyle === "small" && params.podcasts.length === 1) { continue; }
-
-    if (!params.widgetPosition && params.widgetWidth !== "auto") { continue; }
     if (params.widgetPosition) { params.widgetStyle = params.interfaceStyle; }
 
     const bounds = await page.evaluate(async (params) => {
@@ -44,6 +41,20 @@ test("screenshot comparison", async ({ page }) => {
     await expect(page).toHaveScreenshot(`${screenshotName(params)}.png`, { clip: bounds });
   }
 });
+
+const skipPermutation = (params) => {
+  const advertWouldntShow = params.currentAdvert && params.playbackState === "stopped";
+  if (advertWouldntShow) { return true; }
+
+  const playlistWouldntShow = params.interfaceStyle === "small" && params.podcasts.length > 1;
+  if (playlistWouldntShow) { return true; }
+
+  const testingTheWidget = params.widgetPosition;
+  const widthIsIrrelevant = !testingTheWidget && params.widgetWidth !== "auto";
+  if (widthIsIrrelevant) { return true; }
+
+  return false;
+};
 
 const screenshotName = (params) => (
   [
