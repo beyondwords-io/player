@@ -10,8 +10,8 @@ const dimensions = {
   podcastIndex: [0],
   currentTime: [10],
   podcasts: [
-    [{ title: "A podcast title of reasonable length", image: podcastImage, duration: 30, externalUrl: "https://example.com" }],
-    [{ title: `A ${"very ".repeat(50)} long title`, duration: 30 }, { title: "Second playlist item", duration: 30 }],
+    [{ title: "A reasonable length podcast title", image: podcastImage, duration: 30, externalUrl: "https://example.com" }],
+    [{ title: `A ${"very ".repeat(50)} long title`, duration: 30 }, ...Array(10).fill({ title: "Another playlist item" })],
   ],
 };
 
