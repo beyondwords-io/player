@@ -41,14 +41,16 @@ test("screenshot comparison", async ({ page }) => {
       return userInterface.getBoundingClientRect();
     }, params);
 
-    const screenshotName = [
-      params.interfaceStyle,
-      params.playbackState,
-      params.currentAdvert && "advert",
-      params.podcasts.length > 1 && "playlist",
-      params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`,
-    ].filter(s => s).join("-");
-
-    await expect(page).toHaveScreenshot(`${screenshotName}.png`, { clip: bounds });
+    await expect(page).toHaveScreenshot(`${screenshotName(params)}.png`, { clip: bounds });
   }
 });
+
+const screenshotName = (params) => (
+  [
+    params.interfaceStyle,
+    params.playbackState,
+    params.currentAdvert && "advert",
+    params.podcasts.length > 1 && "playlist",
+    params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`,
+  ].filter(s => s).join("-")
+);
