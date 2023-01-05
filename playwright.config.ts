@@ -19,6 +19,7 @@ const config: PlaywrightTestConfig = {
     { name: "android", use: { ...devices["Pixel 5"] } },
     { name: "ios", use: { ...devices["iPhone 12"] } },
   ],
+  workers: 6,
 
   webServer: {
     command: "./bin/server",
