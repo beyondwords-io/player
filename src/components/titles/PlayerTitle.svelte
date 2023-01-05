@@ -37,6 +37,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    max-width: 100%;
 
     transition: width 0.5s, opacity 0.25s;
   }
