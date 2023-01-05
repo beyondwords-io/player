@@ -44,11 +44,10 @@ test("screenshot comparison", async ({ page }) => {
     const screenshotName = [
       params.interfaceStyle,
       params.playbackState,
-      params.currentAdvert ? "advert" : "content",
-      params.podcasts.length > 1 ? "playlist" : "single",
-      params.widgetPosition ? params.widgetPosition : "static",
-      params.widgetWidth,
-    ].join("-");
+      params.currentAdvert && "advert",
+      params.podcasts.length > 1 && "playlist",
+      params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`,
+    ].filter(s => s).join("-");
 
     await expect(page).toHaveScreenshot(`${screenshotName}.png`, { clip: bounds });
   }
