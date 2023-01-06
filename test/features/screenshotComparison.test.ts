@@ -3,10 +3,9 @@ import { podcastImage, advertImage } from "../support/base64Images.ts";
 import permutations from "../support/permutations.ts";
 
 const dimensions = {
-  widgetPosition: [null, "auto", "left", "center", "right"],
-  interfaceStyle: ["small", "standard", "large", "screen", "video"],
-  playbackState: ["stopped", "playing", "paused"],
-  currentAdvert: [null, { url: "https://deliveroo.com", image: advertImage, duration: 15 }],
+  interfaceStyle: ["large", "screen", "small", "standard", "video"],
+  playbackState: ["paused", "playing", "stopped"],
+  currentAdvert: [{ url: "https://deliveroo.com", image: advertImage, duration: 15 }, null],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
   podcastIndex: [0],
   currentTime: [10],
@@ -14,8 +13,9 @@ const dimensions = {
     [{ title: "A reasonable length podcast title", image: podcastImage, duration: 30, externalUrl: "https://example.com" }],
     [{ title: `A ${"very ".repeat(50)} long title`, duration: 30 }, ...Array(10).fill({ title: "Another playlist item" })],
   ],
+  widgetPosition: [null, "auto", "center", "left", "right"],
   widgetStyle: ["none"],
-  widgetWidth: ["auto", 0, "50%"],
+  widgetWidth: [0, "50%", "auto"],
 };
 
 test("screenshot comparison", async ({ page }) => {
