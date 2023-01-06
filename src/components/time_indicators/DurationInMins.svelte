@@ -4,7 +4,7 @@
   export let scale = 1;
   export let color = "#323232";
 
-  $: minutes = Math.round(duration / 60);
+  $: minutes = Math.round((duration || 0) / 60);
 </script>
 
 <div class="duration-in-mins" class:bold={bold} style="font-size: {0.625 * scale}rem; color: {color}">
