@@ -3,7 +3,7 @@ on: [push, pull_request]
 jobs:
   CI:
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.28.1-focal
+    container: mcr.microsoft.com/playwright:v1.29.2-jammy
 
     steps:
     - uses: actions/checkout@v3
