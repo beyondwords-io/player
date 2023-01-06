@@ -6,5 +6,5 @@ else
   container=$(cat .github/workflows/ci.yml | grep container | awk '{print $2}')
   clean_run="cd /player && npm clean-install && npx playwright test $2"
 
-  docker run --rm --ipc=host -v $(pwd):/player $container /bin/bash -c "$clean_run"
+  docker run -it --rm --ipc=host -v $(pwd):/player $container /bin/bash -c "$clean_run"
 fi
