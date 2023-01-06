@@ -183,7 +183,7 @@
       {/if}
     </Hoverable>
 
-    {#if !isSmall && !isScreen && !isVideo}
+    {#if !isSmall && !isScreen}
       <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
     {/if}
   </div>
