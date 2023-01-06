@@ -26,20 +26,18 @@ test("screenshot comparison", async ({ page }) => {
 
     if (params.widgetPosition) { params.widgetStyle = params.interfaceStyle; }
 
-    const bounds = await page.evaluate(async (params) => {
+    await page.evaluate(async (params) => {
       const player = BeyondWords.Player.instances()[0];
       Object.entries(params).forEach(([k, v]) => player[k] = v);
 
       window.scrollTo(0, params.widgetPosition ? 99999 : 0);
       await new Promise(resolve => setTimeout(resolve, 100));
-
-      const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
-      const userInterface = player.target.querySelector(`.user-interface${selector}`);
-
-      return userInterface.getBoundingClientRect();
     }, params);
 
-    await expect(page).toHaveScreenshot(`${screenshotName(params)}.png`, { clip: bounds, fullPage: true });
+    const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
+    const userInterface = page.locator(`.user-interface${selector}`);
+
+    await expect(userInterface).toHaveScreenshot(`${screenshotName(params)}.png`, { fullPage: true });
     process.stdout.write(".");
   }
 });
