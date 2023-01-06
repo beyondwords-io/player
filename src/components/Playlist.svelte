@@ -16,23 +16,25 @@
 
 {#if mode === "show" || mode === "auto" && podcasts.length > 1}
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
-    {#each podcasts as { title, duration }, i}
-      <div class="podcast" class:active={i === index}>
-        {#if i === index}
-          <span class="speaker"><VolumeUp /></span>
-        {:else}
-          <span class="number">{i + 1}</span>
-        {/if}
+    <div class="scrollable">
+      {#each podcasts as { title, duration }, i}
+        <div class="podcast" class:active={i === index}>
+          {#if i === index}
+            <span class="speaker"><VolumeUp /></span>
+          {:else}
+            <span class="number">{i + 1}</span>
+          {/if}
 
-        <span class="title">
-          <PodcastTitle {title} maxLines={isMobile ? 3 : 2} />
-        </span>
+          <span class="title">
+            <PodcastTitle {title} maxLines={isMobile ? 3 : 2} />
+          </span>
 
-        <span class="duration">
-          <DurationInMins {duration} bold={i === index} />
-        </span>
-      </div>
-    {/each}
+          <span class="duration">
+            <DurationInMins {duration} bold={i === index} />
+          </span>
+        </div>
+      {/each}
+    </div>
   </div>
 {/if}
 
@@ -41,23 +43,26 @@
     margin-top: 1rem;
     background: #fafafa;
     border-radius: 0.5rem;
+  }
+
+  .scrollable {
     padding-left: 0.25rem;
     padding-right: 0.625rem;
     overflow-y: scroll;
     max-height: calc(2.5rem * var(--desktop-rows));
   }
 
-  .playlist.mobile {
+  .scrollable.mobile {
     padding-left: 0;
     padding-right: 1rem;
     max-height: calc(5rem * var(--mobile-rows));
   }
 
-  .playlist::-webkit-scrollbar {
+  .scrollable::-webkit-scrollbar {
     width: 0.5rem;
   }
 
-  .playlist::-webkit-scrollbar-thumb {
+  .scrollable::-webkit-scrollbar-thumb {
     background: #323232;
     border-radius: 1rem;
     border: 0.125rem solid #fafafa;
