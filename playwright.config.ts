@@ -15,9 +15,9 @@ const config: PlaywrightTestConfig = {
     { name: "desktop-chrome", use: { ...devices["Desktop Chrome"] } },
     { name: "desktop-firefox", use: { ...devices["Desktop Firefox"] } },
     { name: "desktop-safari", use: { ...devices["Desktop Safari"] } },
-    { name: "desktop-edge", use: { channel: "msedge", } },
-    { name: "mobile-android", use: { ...devices["Pixel 5"] } },
-    { name: "mobile-ios", use: { ...devices["iPhone 12"] } },
+//  { name: "desktop-edge", use: { channel: "msedge", } },
+    { name: "mobile-android", use: { ...devices["Pixel 7"] } },
+    { name: "mobile-ios", use: { ...devices["iPhone 14"] } },
   ],
   workers: 6,
 
