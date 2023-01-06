@@ -42,7 +42,7 @@ test("screenshot comparison", async ({ page }) => {
       return userInterface.getBoundingClientRect();
     }, params);
 
-    await expect(page).toHaveScreenshot(`${screenshotName(params)}.png`, { clip: bounds });
+    await expect(page).toHaveScreenshot(`${screenshotName(params)}.png`, { clip: bounds, fullPage: true });
     process.stdout.write(".");
   }
 });
