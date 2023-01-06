@@ -31,7 +31,7 @@ test("screenshot comparison", async ({ page }) => {
       Object.entries(params).forEach(([k, v]) => player[k] = v);
 
       window.scrollTo(0, params.widgetPosition ? 99999 : 0);
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
       const userInterface = player.target.querySelector(`.user-interface${selector}`);
