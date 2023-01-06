@@ -52,7 +52,7 @@
     max-height: calc(2.5rem * var(--desktop-rows));
   }
 
-  .scrollable.mobile {
+  .mobile .scrollable {
     padding-left: 0;
     padding-right: 1rem;
     max-height: calc(5rem * var(--mobile-rows));

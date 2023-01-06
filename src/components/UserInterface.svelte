@@ -72,6 +72,7 @@
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
 
+  /* eslint-disable indent */
   $: controlsOrder = isScreen                          ? "symmetrical"
                    : isLarge && isMobile               ? "symmetrical"
                    : isStandard && isLeft              ? "left-to-right"
@@ -84,6 +85,7 @@
                    : isVideo && isMobile               ? "right-to-left"
                    : isVideo && isRight                ? "right-to-left"
                    :                                     "left-to-right";
+  /* eslint-enable indent */
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
@@ -179,7 +181,9 @@
       </div>
 
       {#if isVideo}
-        <video poster={isStopped ? podcast.image : ""}></video>
+        <video poster={isStopped ? podcast.image : ""}>
+          <track default kind="captions" srclang="en">
+        </video>
       {/if}
     </Hoverable>
 
