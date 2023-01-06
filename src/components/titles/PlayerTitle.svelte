@@ -1,28 +1,15 @@
 <script>
-  import { onMount } from "svelte";
-
   export let title;
   export let interfaceStyle;
   export let scale = 1;
   export let visible = true;
+  export let collapsible = false;
   export let collapsed = false;
 
   let element;
-  let initialWidth;
 
-  onMount(() => {
-    const timeouts = [10, 100, 1000, 5000].map(delay => (
-      setTimeout(() => initialWidth = element.scrollWidth, delay)
-    ));
-
-    return () => timeouts.forEach(t => clearTimeout(t));
-  });
-
-  $: visibility = visible ? "visible" : "hidden";
-  $: width = !initialWidth ? "auto" : collapsed ? 0 : `${initialWidth}px`;
-  $: opacity = collapsed ? 0 : 1;
-
-  $: style = `font-size: ${0.75 * scale}rem; visibility: ${visibility}; width: ${width}; opacity: ${opacity}`;
+  $: width = collapsed ? 0 : collapsible ? `${element.scrollWidth}px` : "auto";
+  $: style = `font-size: ${0.75 * scale}rem; visibility: ${visible ? "visible" : "hidden"}; width: ${width}; opacity: ${collapsed ? 0 : 1}`;
 </script>
 
 <div class="player-title {interfaceStyle}" {style} bind:this={element}>
@@ -37,7 +24,6 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    max-width: 100%;
 
     transition: width 0.5s, opacity 0.25s;
   }

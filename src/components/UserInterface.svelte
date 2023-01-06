@@ -86,7 +86,8 @@
                    :                                     "left-to-right";
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
-  $: collapsed = isSmall && fixedPosition && (fixedWidth === 0 || fixedWidth === "auto" && !isAdvert && !isStopped && !isHovering);
+  $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
+  $: collapsed = collapsible && !isAdvert && !isStopped && !isHovering || isSmall && fixedWidth === 0;
   $: classes = `user-interface ${interfaceStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
 </script>
 
@@ -126,7 +127,7 @@
           </Visibility>
 
           {#if isStandard && isStopped || isSmall}
-            <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} {collapsed} />
+            <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} {collapsible} {collapsed} />
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
@@ -223,6 +224,10 @@
     background: #fafafa;
     column-gap: 0.5rem;
     transition: padding 0.5s;
+  }
+
+  .summary {
+    max-width: 100%;
   }
 
   .controls {
@@ -379,6 +384,12 @@
 
   .screen.mobile .main {
     padding: 2rem;
+  }
+
+  .screen .summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .screen .controls {
