@@ -12,6 +12,7 @@
   .large-image {
     background: white;
     border-radius: 0.375rem;
+    overflow: hidden;
     grid-row: 1 / span 2;
   }
 </style>
