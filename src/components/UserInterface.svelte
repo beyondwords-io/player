@@ -86,8 +86,11 @@
                    :                                     "left-to-right";
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
+
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
-  $: collapsed = collapsible && !isAdvert && !isStopped && !isHovering || isSmall && fixedWidth === 0;
+  $: forcedCollapsed = isSmall && fixedWidth === 0;
+  $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
+
   $: classes = `user-interface ${interfaceStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
 </script>
 
@@ -146,7 +149,7 @@
             <ProgressBar {progress} fullWidth={isVideo} />
           {/if}
 
-          {#if isAdvert}
+          {#if isAdvert && !forcedCollapsed}
             <AdvertLink href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
             <AdvertButton href={currentAdvert.url} {interfaceStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
           {/if}
