@@ -4,8 +4,10 @@ jobs:
   CI:
     runs-on: ubuntu-latest
     container: mcr.microsoft.com/playwright:v1.28.1-focal
+
     steps:
     - uses: actions/checkout@v3
+    - run: chmod -R a+rw test
     - uses: actions/setup-node@v3
       with:
         cache: "npm"
