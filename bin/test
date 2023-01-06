@@ -1,8 +1,0 @@
-#!/bin/bash
-
-exit_status=0
-
-npx vitest run      || exit_status=1
-npx playwright test || exit_status=1
-
-exit $exit_status

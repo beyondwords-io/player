@@ -3,6 +3,7 @@ on: [push, pull_request]
 jobs:
   CI:
     runs-on: ubuntu-latest
+    container: mcr.microsoft.com/playwright:v1.28.1-focal
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -10,7 +11,8 @@ jobs:
         cache: "npm"
 
     - run: ./bin/setup
-    - run: ./bin/test
+    - run: ./bin/test_units
+    - run: ./bin/test_features --native
     - run: ./bin/lint
     - run: ./bin/build
 
