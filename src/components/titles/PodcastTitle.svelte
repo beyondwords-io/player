@@ -9,7 +9,7 @@
   export let color = "#323232";
 
   $: fontSize = `${0.625 * scale}rem`;
-  $: maxHeight = `${0.625 * scale * 1.2 * maxLines}`;
+  $: maxHeight = `${0.625 * scale * 1.2 * maxLines}rem`;
   $: maxWidthCss = maxWidth ? `max-width: ${maxWidth}rem` : "";
 
   $: style = `--n: ${maxLines}; font-size: ${fontSize}; max-height: ${maxHeight}; flex: ${flex}; ${maxWidthCss}; color: ${color}`;
