@@ -40,7 +40,7 @@
   .playlist {
     margin-top: 1rem;
     background: #fafafa;
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
     padding-left: 0.25rem;
     padding-right: 0.625rem;
     overflow-y: scroll;
