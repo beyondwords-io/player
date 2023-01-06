@@ -30,15 +30,12 @@ test("screenshot comparison", async ({ page }) => {
       const player = BeyondWords.Player.instances()[0];
       Object.entries(params).forEach(([k, v]) => player[k] = v);
 
-      const scroll = document.documentElement.scrollTop ? 99999 : 0;
-      const expected = params.widgetPosition ? 99999 : 0;
-
-      if (scroll !== expected) { window.scrollTo(0, expected); }
-
+      window.scrollTo(0, params.widgetPosition ? 99999 : 0);
       await new Promise(resolve => setTimeout(resolve, 200));
-      const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
 
+      const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
       const userInterface = player.target.querySelector(`.user-interface${selector}`);
+
       return userInterface.getBoundingClientRect();
     }, params);
 
