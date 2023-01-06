@@ -8,7 +8,7 @@
 
   let element;
 
-  $: width = collapsed ? 0 : collapsible ? `${element.scrollWidth}px` : "auto";
+  $: width = collapsed ? 0 : collapsible && element ? `${element.scrollWidth}px` : "auto";
   $: style = `font-size: ${0.75 * scale}rem; visibility: ${visible ? "visible" : "hidden"}; width: ${width}; opacity: ${collapsed ? 0 : 1}`;
 </script>
 
