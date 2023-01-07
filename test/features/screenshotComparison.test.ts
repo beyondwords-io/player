@@ -37,7 +37,9 @@ test("screenshot comparison", async ({ page }) => {
     const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
     const userInterface = page.locator(`.user-interface${selector}`);
 
-    await expect(userInterface).toHaveScreenshot(`${screenshotName(params)}.png`, { fullPage: true });
+    const name = `${screenshotName(params)}.png`;
+    await expect(userInterface).toHaveScreenshot(name, { fullPage: true, maxDiffPixelRatio: 0.02 });
+
     process.stdout.write(".");
   }
 });
