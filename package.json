@@ -16,14 +16,14 @@
   "devDependencies": {
     "@fontsource/inter": "^4.5.14",
     "@playwright/test": "^1.28",
-    "@sveltejs/vite-plugin-svelte": "^1.4",
+    "@sveltejs/vite-plugin-svelte": "^2.0",
     "@typescript-eslint/eslint-plugin": "^5.45",
     "@typescript-eslint/parser": "^5.45",
     "eslint": "^8.29",
     "eslint-plugin-svelte3": "^4.0",
     "jsdom": "^20.0",
     "svelte": "^3.53",
-    "vite": "^3.2",
+    "vite": "^4.0",
     "vite-plugin-css-injected-by-js": "^2.1.1",
     "vitest": "^0.26"
   }
