@@ -24,6 +24,7 @@
   import Playlist from "./Playlist.svelte";
   import Hoverable from "./helpers/Hoverable.svelte";
   import Visibility from "./helpers/Visibility.svelte";
+  import belowBreakpoint from "../helpers/belowBreakpoint";
   import controlsOrderFn from "../helpers/controlsOrder";
 
   export let interfaceStyle = "standard";
@@ -55,7 +56,7 @@
   $: isStopped = playbackState === "stopped";
   $: isAdvert = currentAdvert && !isStopped;
   $: isPlaylist = podcasts.length > 1;
-  $: isMobile = (isStandard || isLarge) && width < 380 || isVideo && width < 480 || isScreen && width < 640;
+  $: isMobile = belowBreakpoint({ interfaceStyle, width });
 
   $: podcast = podcasts[podcastIndex] || {};
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
