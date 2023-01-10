@@ -10,6 +10,8 @@ class RootController {
     if (event.type === "visibility-changed") {
       chooseWidget(this.PlayerClass);
     }
+
+    event.handledAt = new Date().toISOString();
   }
 }
 
