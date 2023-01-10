@@ -4,6 +4,7 @@
 
   let element;
 
+  export let enabled = true;
   export let relativeY = undefined;
   export let absoluteY = undefined;
   export let isVisible = undefined;
@@ -25,7 +26,7 @@
   };
 
   onMount(() => {
-    if (!onChange || typeof IntersectionObserver === "undefined") { return; }
+    if (!enabled || typeof IntersectionObserver === "undefined") { return; }
 
     const observer = new IntersectionObserver(callback, { threshold: 0.5 });
     observer.observe(element);

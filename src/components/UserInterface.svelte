@@ -109,7 +109,7 @@
         {/if}
 
         <div class="controls">
-          <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={fixedPosition ? null : onEvent}>
+          <Visibility enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY onChange={onEvent}>
             <ProgressCircle {progress} enabled={isScreen || isSmall && fixedPosition} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
               {#if isPlaying}
                 <PauseButton scale={playPauseScale} color={buttonColor} />
