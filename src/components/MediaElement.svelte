@@ -41,7 +41,7 @@
 
     const addOrRemove = someInterface === videoInterface ? "add" : "remove";
     placeholder.classList[addOrRemove]("showing-video");
-  }
+  };
 
   $: showUserInterface, interfaceStyle, userInterface, showWidgetAtBottom, widgetStyle, widgetInterface, updateBounds();
 
