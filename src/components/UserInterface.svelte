@@ -24,6 +24,7 @@
   import Playlist from "./Playlist.svelte";
   import Hoverable from "./helpers/Hoverable.svelte";
   import Visibility from "./helpers/Visibility.svelte";
+  import controlsOrderFn from "../helpers/controlsOrder";
 
   export let interfaceStyle = "standard";
   export let skipButtonStyle = "auto";
@@ -72,20 +73,7 @@
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
 
-  /* eslint-disable indent */
-  $: controlsOrder = isScreen                          ? "symmetrical"
-                   : isLarge && isMobile               ? "symmetrical"
-                   : isStandard && isLeft              ? "left-to-right"
-                   : isStandard && isMobile            ? "right-to-left"
-                   : isStandard && isRight && isAdvert ? "right-to-left"
-                   : isStandard && isRight             ? "left-to-right-but-swap-ends"
-                   : isSmall && isLeft                 ? "left-to-right"
-                   : isSmall && isRight                ? "right-to-left"
-                   : isVideo && isLeft                 ? "left-to-right"
-                   : isVideo && isMobile               ? "right-to-left"
-                   : isVideo && isRight                ? "right-to-left"
-                   :                                     "left-to-right";
-  /* eslint-enable indent */
+  $: controlsOrder = controlsOrderFn({ interfaceStyle, position, isMobile, isAdvert });
 
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
