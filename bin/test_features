@@ -4,7 +4,8 @@ if [ "$1" == "--native" ]; then
   npx playwright test $2 $3 $4 $5 # e.g. --headed
 else
   container=$(cat .github/workflows/ci.yml | grep container | awk '{print $2}')
-  clean_run="cd /player && npm clean-install && npx playwright test $2 $3 $4 $5"
+  mount_dir="-v $(pwd):/player -v $(pwd)/node_modules/.test:/player/node_modules"
+  clean_run="cd /player && npm install && npx playwright test $2 $3 $4 $5"
 
-  docker run -it --rm --ipc=host -v $(pwd):/player $container /bin/bash -c "$clean_run"
+  docker run -it --rm --ipc=host $mount_dir $container /bin/bash -c "$clean_run"
 fi
