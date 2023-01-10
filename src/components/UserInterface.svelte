@@ -18,8 +18,8 @@
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./titles/PlayerTitle.svelte";
   import PodcastTitle from "./titles/PodcastTitle.svelte";
-  import ProgressBar from "./ProgressBar.svelte";
-  import ProgressCircle from "./ProgressCircle.svelte";
+  import ProgressBar from "./progress_bars/ProgressBar.svelte";
+  import ProgressCircle from "./progress_bars/ProgressCircle.svelte";
   import TimeIndicator from "./time_indicators/TimeIndicator.svelte";
   import Playlist from "./Playlist.svelte";
   import Hoverable from "./helpers/Hoverable.svelte";
