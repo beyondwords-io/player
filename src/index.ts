@@ -1,4 +1,5 @@
 import PlayerComponent from "./components/Player.svelte";
+import RootController from "./controllers/rootController";
 import resolveTarget from "./helpers/resolveTarget";
 import throwError from "./helpers/throwError";
 
@@ -8,14 +9,9 @@ class Player extends PlayerComponent {
   constructor({ target, ...props }) {
     const { newTarget, showUserInterface } = resolveTarget(target);
 
-    super({
-      target: newTarget,
-      props: {
-        PlayerClass: Player,
-        showUserInterface,
-        ...props,
-      }
-    });
+    super({ target: newTarget, props: { showUserInterface, ...props } });
+
+    this.controller = new RootController(this, Player);
 
     Player.#instances.push(this);
   }

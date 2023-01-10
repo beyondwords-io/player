@@ -38,7 +38,7 @@
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let currentAdvert = undefined;
-  export let onVisibilityChange = undefined;
+  export let onEvent = () => {};
 
   // These are set automatically.
   export let isVisible = undefined;
@@ -109,7 +109,7 @@
         {/if}
 
         <div class="controls">
-          <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={onVisibilityChange}>
+          <Visibility bind:isVisible bind:relativeY bind:absoluteY onChange={fixedPosition ? null : onEvent}>
             <ProgressCircle {progress} enabled={isScreen || isSmall && fixedPosition} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
               {#if isPlaying}
                 <PauseButton scale={playPauseScale} color={buttonColor} />

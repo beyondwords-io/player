@@ -1,6 +1,5 @@
 <script>
   import UserInterface from "./UserInterface.svelte";
-  import chooseWidget from "../helpers/chooseWidget";
 
   export let showUserInterface = false;
   export let interfaceStyle = "standard";
@@ -17,27 +16,17 @@
   export let widgetWidth = "auto";
 
   // These are set automatically.
-  export let PlayerClass = undefined;
   export let showWidgetAtBottom = false;
   export let userInterface = undefined;
+  export let controller = { handleEvent: () => {} };
 
-  $: userInterfaceProps = {
-    interfaceStyle,
-    skipButtonStyle,
-    playlistStyle,
-    playerTitle,
-    podcasts,
-    podcastIndex,
-    currentTime,
-    playbackState,
-    currentAdvert,
-  };
+  $: props = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert };
 </script>
 
 {#if showUserInterface}
-  <UserInterface {...userInterfaceProps} bind:this={userInterface} onVisibilityChange={() => chooseWidget(PlayerClass)} />
+  <UserInterface {...props} onEvent={e => controller.handleEvent(e)} bind:this={userInterface} />
 {/if}
 
 {#if showWidgetAtBottom}
-  <UserInterface {...userInterfaceProps} interfaceStyle={widgetStyle} fixedPosition={widgetPosition} fixedWidth={widgetWidth} playlistStyle="hide" />
+  <UserInterface {...props} onEvent={e => controller.handleEvent(e)} interfaceStyle={widgetStyle} fixedPosition={widgetPosition} fixedWidth={widgetWidth} playlistStyle="hide" />
 {/if}
