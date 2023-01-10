@@ -32,17 +32,16 @@
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
-
   export let podcasts = [];
   export let podcastIndex = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let currentAdvert = undefined;
+  export let onVisibilityChange = undefined;
 
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
-  export let onVisibilityChange = undefined;
 
   let width, isHovering;
 
@@ -54,28 +53,25 @@
   $: isPlaying = playbackState === "playing";
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
-  $: isMobile = (isStandard || isLarge) && width < 380 || isVideo && width < 480 || isScreen && width < 640;
   $: isAdvert = currentAdvert && !isStopped;
+  $: isPlaylist = podcasts.length > 1;
+  $: isMobile = (isStandard || isLarge) && width < 380 || isVideo && width < 480 || isScreen && width < 640;
 
   $: podcast = podcasts[podcastIndex] || {};
-  $: isPlaylist = podcasts.length > 1;
   $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
   $: progress = isStopped ? 0 : currentTime / duration;
-
-  $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
-  $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
-  $: positionClasses = fixedPosition ? `fixed fixed-${position}` : "";
-  $: isLeft = position === "left";
-  $: isRight = position === "right";
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
   $: buttonScale = isSmall ? 0.8 : (isScreen || isVideo && isStopped) && !isMobile ? 2 : 1;
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
 
-  $: controlsOrder = controlsOrderFn({ interfaceStyle, position, isMobile, isAdvert });
-
+  $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
+  $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
+  $: positionClasses = fixedPosition ? `fixed fixed-${position}` : "";
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
+
+  $: controlsOrder = controlsOrderFn({ interfaceStyle, position, isMobile, isAdvert });
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && fixedWidth === 0;
