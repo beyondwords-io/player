@@ -31,6 +31,7 @@
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
+  export let posterImage = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
   export let podcasts = [];
@@ -89,7 +90,7 @@
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering graceTime={collapsible ? 500 : 0} enabled={collapsible || isVideo}>
       {#if isVideo}
-        <div class="video-placeholder" bind:this={videoPlaceholder}></div>
+        <div class="video-placeholder" bind:this={videoPlaceholder} style={posterImage && `background: url(${posterImage}); background-size: contain`}></div>
       {/if}
 
       <div class="main">
@@ -430,7 +431,7 @@
   }
 
   .video .video-placeholder:global(.showing-video) {
-    background: transparent;
+    background: transparent !important;
   }
 
   .video .main {

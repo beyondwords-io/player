@@ -24,11 +24,13 @@
   export let controller = { handleEvent: () => {} };
 
   $: mediaProps = { showUserInterface, interfaceStyle, userInterface, showWidgetAtBottom, widgetInterface, widgetStyle };
-  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert };
+  $: posterImage = playbackState === "stopped" && podcasts[podcastIndex]?.image;
+
+  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert, posterImage };
   $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 
-<MediaElement bind:this={mediaElement} {...mediaProps} />
+<MediaElement bind:this={mediaElement} {...mediaProps} {posterImage} />
 
 {#if showUserInterface}
   <UserInterface bind:this={userInterface} onEvent={e => controller.handleEvent(e)} {...interfaceProps} />

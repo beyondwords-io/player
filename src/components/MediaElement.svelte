@@ -7,6 +7,7 @@
   export let showWidgetAtBottom;
   export let widgetStyle;
   export let widgetInterface;
+  export let posterImage;
 
   let bounds, opacity;
 
@@ -62,8 +63,8 @@
 </script>
 
 <div class="media-element" style="display: {display}; width: {width}; height: {height}; position: {position}; left: {left}; top: {top}; bottom: {bottom}; opacity: {opacity}">
-  <video autoplay loop muted width="100%" height="100%">
-    <source src="sample.mp4" />
+  <video poster={posterImage} width="100%" height="100%">
+    <track kind="captions">
   </video>
 </div>
 
