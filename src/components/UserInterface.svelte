@@ -86,7 +86,7 @@
 
 {#if isSmall || isStandard || isLarge || isScreen || isVideo}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
-    <Hoverable bind:isHovering graceTime={isSmall ? 500 : 0} enabled={isVideo || collapsible}>
+    <Hoverable bind:isHovering graceTime={collapsible ? 500 : 0} enabled={collapsible || isVideo}>
       <div class="main">
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
