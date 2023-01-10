@@ -18,15 +18,17 @@
   // These are set automatically.
   export let showWidgetAtBottom = false;
   export let userInterface = undefined;
+  export let widgetInterface = undefined;
   export let controller = { handleEvent: () => {} };
 
   $: props = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert };
+  $: widgetProps = { ...props, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 
 {#if showUserInterface}
-  <UserInterface {...props} onEvent={e => controller.handleEvent(e)} bind:this={userInterface} />
+  <UserInterface bind:this={userInterface} onEvent={e => controller.handleEvent(e)} {...props} />
 {/if}
 
 {#if showWidgetAtBottom}
-  <UserInterface {...props} onEvent={e => controller.handleEvent(e)} interfaceStyle={widgetStyle} fixedPosition={widgetPosition} fixedWidth={widgetWidth} playlistStyle="hide" />
+  <UserInterface bind:this={widgetInterface} onEvent={e => controller.handleEvent(e)} {...widgetProps} />
 {/if}
