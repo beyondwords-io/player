@@ -63,9 +63,12 @@
   $: progress = isStopped ? 0 : currentTime / duration;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
+  $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
+
   $: buttonScale = isSmall ? 0.8 : (isScreen || isVideo && isStopped) && !isMobile ? 2 : 1;
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
-  $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
+  $: closeScale = isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1;
+  $: logoScale = isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1;
 
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
   $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
@@ -157,9 +160,9 @@
         {#if !isAdvert && !(isSmall && fixedPosition) || isScreen || isVideo}
           <div class="end">
             {#if fixedPosition}
-              <CloseButton scale={isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"}  color={buttonColor} />
+              <CloseButton scale={closeScale} color={buttonColor} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
             {:else}
-              <BeyondWords scale={isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1} />
+              <BeyondWords scale={logoScale} />
             {/if}
           </div>
         {/if}
