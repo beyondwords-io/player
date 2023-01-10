@@ -1,4 +1,5 @@
 <script>
+  import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
 
   export let showUserInterface = false;
@@ -17,16 +18,20 @@
 
   // These are set automatically.
   export let showWidgetAtBottom = false;
+  export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = { handleEvent: () => {} };
 
-  $: props = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert };
-  $: widgetProps = { ...props, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
+  $: mediaProps = { showUserInterface, interfaceStyle, userInterface, showWidgetAtBottom, widgetInterface, widgetStyle };
+  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert };
+  $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 
+<MediaElement bind:this={mediaElement} {...mediaProps} />
+
 {#if showUserInterface}
-  <UserInterface bind:this={userInterface} onEvent={e => controller.handleEvent(e)} {...props} />
+  <UserInterface bind:this={userInterface} onEvent={e => controller.handleEvent(e)} {...interfaceProps} />
 {/if}
 
 {#if showWidgetAtBottom}

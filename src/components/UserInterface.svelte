@@ -41,6 +41,7 @@
   export let onEvent = () => {};
 
   // These are set automatically.
+  export let videoPlaceholder = undefined;
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
@@ -87,6 +88,10 @@
 {#if isSmall || isStandard || isLarge || isScreen || isVideo}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering graceTime={collapsible ? 500 : 0} enabled={collapsible || isVideo}>
+      {#if isVideo}
+        <div class="video-placeholder" bind:this={videoPlaceholder}></div>
+      {/if}
+
       <div class="main">
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
@@ -167,12 +172,6 @@
           </div>
         {/if}
       </div>
-
-      {#if isVideo}
-        <video poster={isStopped ? podcast.image : ""}>
-          <track default kind="captions" srclang="en">
-        </video>
-      {/if}
     </Hoverable>
 
     {#if !isSmall && !isScreen}
@@ -423,12 +422,10 @@
     overflow: hidden;
   }
 
-  .video video {
+  .video .video-placeholder {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: black;
-    z-index: -1;
   }
 
   .video .main {
