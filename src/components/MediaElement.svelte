@@ -16,7 +16,8 @@
   };
 
   const updateBounds = () => {
-    const placeholder = interfaceShowingVideo()?.videoPlaceholder;
+    const videoInterface = interfaceShowingVideo();
+    const placeholder = videoInterface?.videoPlaceholder;
 
     if (placeholder) {
       const userInterfaceStyle = getComputedStyle(placeholder.closest(".user-interface"));
@@ -28,7 +29,18 @@
     } else {
       bounds = null;
     }
+
+    toggleClass(userInterface, videoInterface);
+    toggleClass(widgetInterface, videoInterface);
   };
+
+  const toggleClass = (someInterface, videoInterface) => {
+    const placeholder = someInterface?.videoPlaceholder;
+    if (!placeholder) { return; }
+
+    const addOrRemove = someInterface === videoInterface ? "add" : "remove";
+    placeholder.classList[addOrRemove]("showing-video");
+  }
 
   $: showUserInterface, interfaceStyle, userInterface, showWidgetAtBottom, widgetStyle, widgetInterface, updateBounds();
 
