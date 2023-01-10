@@ -7,7 +7,9 @@ class RootController {
   }
 
   handleEvent(event) {
-    chooseWidget(this.PlayerClass);
+    if (event.type === "visibility-changed") {
+      chooseWidget(this.PlayerClass);
+    }
   }
 }
 

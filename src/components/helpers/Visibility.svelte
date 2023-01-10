@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import newEvent from "../../helpers/newEvent";
 
   let element;
 
@@ -13,9 +14,14 @@
     absoluteY = relativeY + window.scrollY;
 
     if (isVisible === entry.isIntersecting) { return; }
-
     isVisible = entry.isIntersecting;
-    onChange();
+
+    onChange(newEvent({
+      type: "visibility-changed",
+      description: "The player was scrolled into or out of view.",
+      initiatedBy: "user",
+      isVisible,
+    }));
   };
 
   onMount(() => {
