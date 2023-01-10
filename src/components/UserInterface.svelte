@@ -39,10 +39,10 @@
   export let currentAdvert = undefined;
   export let onVisibilityChange = undefined;
 
+  // These are set automatically.
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
-
   let width, isHovering;
 
   $: isSmall = interfaceStyle === "small";
