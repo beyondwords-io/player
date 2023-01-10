@@ -1,3 +1,4 @@
+import throwError from "../helpers/throwError";
 import chooseWidget from "../helpers/chooseWidget";
 
 class RootController {
@@ -7,11 +8,19 @@ class RootController {
   }
 
   handleEvent(event) {
-    if (event.type === "visibility-changed") {
-      chooseWidget(this.PlayerClass);
+    const handler = this[`handle${event.type}`];
+
+    if (handler) {
+      handler.call(this, event);
+    } else {
+      throwError("No handler function for event.", event);
     }
 
     event.handledAt = new Date().toISOString();
+  }
+
+  handleVisibilityChanged() {
+    chooseWidget(this.PlayerClass);
   }
 }
 

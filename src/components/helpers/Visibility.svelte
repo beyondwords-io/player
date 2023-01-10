@@ -17,7 +17,7 @@
     isVisible = entry.isIntersecting;
 
     onChange(newEvent({
-      type: "visibility-changed",
+      type: "VisibilityChanged",
       description: "The player was scrolled into or out of view.",
       initiatedBy: "user",
       isVisible,
