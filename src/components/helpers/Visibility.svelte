@@ -3,17 +3,18 @@
 
   let element;
 
-  export let onChange = undefined;
-  export let isVisible = undefined;
-
   export let relativeY = undefined;
   export let absoluteY = undefined;
+  export let isVisible = undefined;
+  export let onChange = undefined;
 
   const callback = ([entry]) => {
-    isVisible = entry.isIntersecting;
     relativeY = entry.boundingClientRect.y;
     absoluteY = relativeY + window.scrollY;
 
+    if (isVisible === entry.isIntersecting) { return; }
+
+    isVisible = entry.isIntersecting;
     onChange();
   };
 
