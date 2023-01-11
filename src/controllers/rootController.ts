@@ -63,8 +63,8 @@ class RootController {
     console.log("pressed maximize");
   }
 
-  handlePressedNewTab() {
-    console.log("pressed new tab");
+  handlePressedExternalUrl() {
+    console.log("pressed external url");
   }
 
   handlePressedTogglePlaylist() {

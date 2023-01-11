@@ -8,13 +8,13 @@
   import NextButton from "./buttons/NextButton.svelte";
   import PlaylistButton from "./buttons/PlaylistButton.svelte";
   import SecondaryButton from "./buttons/SecondaryButton.svelte";
-  import NewTabButton from "./buttons/NewTabButton.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
   import ScrollToPlayerButton from "./buttons/ScrollToPlayerButton.svelte";
   import CloseWidgetButton from "./buttons/CloseWidgetButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import AdvertButton from "./external_links/AdvertButton.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
+  import ExternalUrlButton from "./external_links/ExternalUrlButton.svelte";
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./titles/PlayerTitle.svelte";
   import PodcastTitle from "./titles/PodcastTitle.svelte";
@@ -151,7 +151,7 @@
               {#if isVideo}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
               {:else if isScreen && podcast.externalUrl}
-                <NewTabButton {onEvent} scale={buttonScale} href={podcast.externalUrl} color={buttonColor} />
+                <ExternalUrlButton {onEvent} scale={buttonScale} href={podcast.externalUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
                 <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} />
               {/if}
