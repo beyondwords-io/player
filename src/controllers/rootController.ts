@@ -62,6 +62,10 @@ class RootController {
   handlePressedAdvertLink() {
     console.log("pressed advert link");
   }
+
+  handlePressedAdvertButton() {
+    console.log("pressed advert button");
+  }
 }
 
 export default RootController;
