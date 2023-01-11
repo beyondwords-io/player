@@ -127,8 +127,8 @@
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
             <SpeedButton scale={buttonScale} color={buttonColor} />
-            <PrevButton style={skipStyle} scale={buttonScale} color={buttonColor} />
-            <NextButton style={skipStyle} scale={buttonScale} color={buttonColor} />
+            <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
+            <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
           {/if}
 
           {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}

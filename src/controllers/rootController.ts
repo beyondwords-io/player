@@ -30,6 +30,30 @@ class RootController {
   handlePressedPause() {
     console.log("pressed pause");
   }
+
+  handlePressedPrevSegment() {
+    console.log("pressed previous segment");
+  }
+
+  handlePressedNextSegment() {
+    console.log("pressed next segment");
+  }
+
+  handlePressedSeekBack({ seconds }) {
+    console.log(`pressed seek back with ${seconds} seconds`);
+  }
+
+  handlePressedSeekAhead({ seconds }) {
+    console.log(`pressed seek ahead with ${seconds} seconds`);
+  }
+
+  handlePressedNextTrack() {
+    console.log("pressed next track");
+  }
+
+  handlePressedPrevTrack() {
+    console.log("pressed prev track");
+  }
 }
 
 export default RootController;
