@@ -59,6 +59,10 @@ class RootController {
     console.log("pressed prev track");
   }
 
+  handlePressedMaximize() {
+    console.log("pressed maximize");
+  }
+
   handlePressedAdvertLink() {
     console.log("pressed advert link");
   }
@@ -68,11 +72,11 @@ class RootController {
   }
 
   handlePressedScrollToPlayer() {
-    console.log("pressed scroll to player button");
+    console.log("pressed scroll to player");
   }
 
   handlePressedCloseWidget() {
-    console.log("pressed close widget button");
+    console.log("pressed close widget");
   }
 }
 

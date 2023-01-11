@@ -149,7 +149,7 @@
           {#if !isStopped}
             <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo}
-                <MaximizeButton scale={buttonScale} color={buttonColor} />
+                <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
               {:else if isScreen && podcast.externalUrl}
                 <NewTabButton scale={buttonScale} href={podcast.externalUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
