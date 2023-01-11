@@ -13,7 +13,7 @@
   $: showBehindStatic = showUserInterface && interfaceStyle === "video" && !showBehindWidget;
 
   $: position = showBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
-  $: style = showBehindWidget && widgetWidth !== "auto" ? `width: ${widgetWidth}` : "";
+  $: style = showBehindWidget ? `width: ${widgetWidth}` : "";
 
   $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
   $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
