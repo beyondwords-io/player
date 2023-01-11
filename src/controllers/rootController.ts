@@ -58,6 +58,10 @@ class RootController {
   handlePressedPrevTrack() {
     console.log("pressed prev track");
   }
+
+  handlePressedAdvertLink() {
+    console.log("pressed advert link");
+  }
 }
 
 export default RootController;

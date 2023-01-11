@@ -1,13 +1,24 @@
 <script>
+  import newEvent from "../../helpers/newEvent";
+
   export let href;
   export let scale = 1;
   export let interfaceStyle;
   export let controlsOrder;
+  export let onEvent = () => {};
 
   $: text = new URL(href).hostname;
+
+  const handleClick = () => {
+    onEvent(newEvent({
+      type: "PressedAdvertLink",
+      description: "The advert link was pressed to open the click-through URL in a new tab.",
+      initiatedBy: "user",
+    }));
+  };
 </script>
 
-<a class="advert-link {interfaceStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem">
+<a class="advert-link {interfaceStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem" on:click={handleClick}>
   {text}
 </a>
 
