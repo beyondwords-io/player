@@ -96,7 +96,7 @@
 
         {#if isVideo && fixedPosition}
           <div class="scroll-to-video">
-            <ScrollToVideoButton scale={isMobile ? 1.5 : 2} color={buttonColor} />
+            <ScrollToVideoButton {onEvent} scale={isMobile ? 1.5 : 2} color={buttonColor} />
           </div>
         {/if}
 

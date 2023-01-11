@@ -66,6 +66,10 @@ class RootController {
   handlePressedAdvertButton() {
     console.log("pressed advert button");
   }
+
+  handlePressedScrollToVideo() {
+    console.log("pressed scroll to video button");
+  }
 }
 
 export default RootController;
