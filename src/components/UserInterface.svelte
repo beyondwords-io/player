@@ -9,11 +9,11 @@
   import PlaylistButton from "./buttons/PlaylistButton.svelte";
   import SecondaryButton from "./buttons/SecondaryButton.svelte";
   import NewTabButton from "./buttons/NewTabButton.svelte";
-  import AdvertButton from "./buttons/AdvertButton.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
   import ScrollToPlayerButton from "./buttons/ScrollToPlayerButton.svelte";
   import CloseWidgetButton from "./buttons/CloseWidgetButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
+  import AdvertButton from "./external_links/AdvertButton.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./titles/PlayerTitle.svelte";
