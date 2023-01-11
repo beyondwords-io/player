@@ -20,10 +20,11 @@
 </script>
 
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
-  <video poster={posterImage} width="100%" height="100%" autoplay loop muted>
-    <source src="sample.mp4">
-    <track kind="captions">
-  </video>
+  <div class="inner">
+    <video poster={posterImage}>
+      <track kind="captions">
+    </video>
+  </div>
 </div>
 
 <style>
@@ -40,6 +41,19 @@
     overflow: hidden;
     min-width: 360px;
     max-width: 720px;
+  }
+
+  .inner {
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+    position: relative;
+  }
+
+  .inner video {
+    position: absolute;
+    width: 100%;
+    height: 100%;
   }
 
   .behind-static {
