@@ -12,7 +12,7 @@
   import AdvertButton from "./buttons/AdvertButton.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
   import ScrollToPlayerButton from "./buttons/ScrollToPlayerButton.svelte";
-  import CloseButton from "./buttons/CloseButton.svelte";
+  import CloseWidgetButton from "./buttons/CloseWidgetButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
   import LargeImage from "./LargeImage.svelte";
@@ -162,7 +162,7 @@
         {#if !isAdvert && !(isSmall && fixedPosition) || isScreen || isVideo}
           <div class="end">
             {#if fixedPosition}
-              <CloseButton scale={closeScale} color={buttonColor} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
+              <CloseWidgetButton scale={closeScale} color={buttonColor} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
             {:else}
               <BeyondWords scale={logoScale} />
             {/if}

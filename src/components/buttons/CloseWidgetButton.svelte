@@ -6,12 +6,12 @@
   export let margin = "auto";
 </script>
 
-<div class="close-button" style="margin: {margin}">
+<div class="close-widget-button" style="margin: {margin}">
   <Close {scale} {color} />
 </div>
 
 <style>
-  .close-button {
+  .close-widget-button {
     display: flex;
     cursor: pointer;
   }
