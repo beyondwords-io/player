@@ -126,7 +126,7 @@
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-            <SpeedButton scale={buttonScale} color={buttonColor} />
+            <SpeedButton {onEvent} scale={buttonScale} color={buttonColor} />
             <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
             <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
           {/if}

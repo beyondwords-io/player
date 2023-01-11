@@ -31,6 +31,10 @@ class RootController {
     console.log("pressed pause");
   }
 
+  handlePressedChangeSpeed() {
+    console.log("pressed change speed");
+  }
+
   handlePressedPrevSegment() {
     console.log("pressed previous segment");
   }
