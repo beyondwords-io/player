@@ -1,18 +1,33 @@
 <script>
   import Pause from "../svg_icons/Pause.svelte";
+  import newEvent from "../../helpers/newEvent";
 
   export let scale = 1;
   export let color = "#323232";
+  export let onEvent = () => {};
+
+  const handleClick = () => {
+    onEvent(newEvent({
+      type: "PressedPause",
+      description: "The pause button was pressed.",
+      initiatedBy: "user",
+    }));
+  };
 </script>
 
-<div class="pause-button">
+<button class="pause-button" on:click={handleClick}>
   <Pause {scale} {color} />
-</div>
+</button>
 
 <style>
   .pause-button {
     display: flex;
     cursor: pointer;
     position: relative;
+
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
   }
 </style>

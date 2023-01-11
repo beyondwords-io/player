@@ -8,7 +8,7 @@
   export let relativeY = undefined;
   export let absoluteY = undefined;
   export let isVisible = undefined;
-  export let onChange = undefined;
+  export let onEvent = () => {};
 
   const callback = ([entry]) => {
     relativeY = entry.boundingClientRect.y;
@@ -17,7 +17,7 @@
     if (isVisible === entry.isIntersecting) { return; }
     isVisible = entry.isIntersecting;
 
-    onChange(newEvent({
+    onEvent(newEvent({
       type: "VisibilityChanged",
       description: "The player was scrolled into or out of view.",
       initiatedBy: "user",

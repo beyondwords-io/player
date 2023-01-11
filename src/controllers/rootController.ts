@@ -22,6 +22,14 @@ class RootController {
   handleVisibilityChanged() {
     chooseWidget(this.PlayerClass);
   }
+
+  handlePressedPlay() {
+    console.log("pressed play");
+  }
+
+  handlePressedPause() {
+    console.log("pressed pause");
+  }
 }
 
 export default RootController;
