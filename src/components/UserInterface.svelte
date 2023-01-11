@@ -11,7 +11,7 @@
   import NewTabButton from "./buttons/NewTabButton.svelte";
   import AdvertButton from "./buttons/AdvertButton.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
-  import BackToTopButton from "./buttons/BackToTopButton.svelte";
+  import ScrollToVideoButton from "./buttons/ScrollToVideoButton.svelte";
   import CloseButton from "./buttons/CloseButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
@@ -95,8 +95,8 @@
         {/if}
 
         {#if isVideo && fixedPosition}
-          <div class="back-to-top">
-            <BackToTopButton scale={isMobile ? 1.5 : 2} color={buttonColor} />
+          <div class="scroll-to-video">
+            <ScrollToVideoButton scale={isMobile ? 1.5 : 2} color={buttonColor} />
           </div>
         {/if}
 
@@ -542,12 +542,12 @@
     margin: 0.5rem;
   }
 
-  .video.fixed .back-to-top,
+  .video.fixed .scroll-to-video,
   .video.fixed .end {
     margin: 1rem;
   }
 
-  .video.fixed.mobile .back-to-top,
+  .video.fixed.mobile .scroll-to-video,
   .video.fixed.mobile .end {
     margin: 0.75rem;
   }

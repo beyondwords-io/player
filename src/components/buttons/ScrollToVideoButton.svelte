@@ -5,12 +5,12 @@
   export let color = "#323232";
 </script>
 
-<div class="back-to-top-button">
+<div class="scroll-to-video-button">
   <UpArrow {scale} {color} />
 </div>
 
 <style>
-  .back-to-top-button {
+  .scroll-to-video-button {
     display: flex;
     cursor: pointer;
   }
