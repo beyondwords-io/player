@@ -23,10 +23,10 @@
   export let widgetInterface = undefined;
   export let controller = { handleEvent: () => {} };
 
-  $: mediaProps = { showUserInterface, interfaceStyle, userInterface, showWidgetAtBottom, widgetInterface, widgetStyle };
+  $: mediaProps = { showUserInterface, interfaceStyle, showWidgetAtBottom, widgetStyle, widgetPosition, widgetWidth };
   $: posterImage = playbackState === "stopped" && podcasts[podcastIndex]?.image;
 
-  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert, posterImage };
+  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert };
   $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 
