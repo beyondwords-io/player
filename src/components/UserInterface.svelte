@@ -165,7 +165,7 @@
             {#if fixedPosition}
               <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={buttonColor} />
             {:else}
-              <BeyondWords scale={logoScale} />
+              <BeyondWords {onEvent} scale={logoScale} />
             {/if}
           </div>
         {/if}

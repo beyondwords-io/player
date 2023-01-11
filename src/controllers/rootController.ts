@@ -59,6 +59,18 @@ class RootController {
     console.log("pressed prev track");
   }
 
+  handlePressedAdvertLink() {
+    console.log("pressed advert link");
+  }
+
+  handlePressedAdvertButton() {
+    console.log("pressed advert button");
+  }
+
+  handlePressedBeyondWords() {
+    console.log("pressed beyondwords");
+  }
+
   handlePressedMaximize() {
     console.log("pressed maximize");
   }
@@ -69,14 +81,6 @@ class RootController {
 
   handlePressedTogglePlaylist() {
     console.log("pressed toggle playlist");
-  }
-
-  handlePressedAdvertLink() {
-    console.log("pressed advert link");
-  }
-
-  handlePressedAdvertButton() {
-    console.log("pressed advert button");
   }
 
   handlePressedScrollToPlayer() {
