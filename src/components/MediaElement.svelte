@@ -51,6 +51,8 @@
     bottom: 0;
     right: 0;
     margin: 1rem;
+    animation: fly-widget 0.33s forwards;
+    opacity: 0;
   }
 
   .fixed-left {
@@ -62,5 +64,10 @@
     left: 0;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  @keyframes fly-widget {
+    from { bottom: -100px; opacity: 0; }
+    to { bottom: 0; opacity: 1; }
   }
 </style>
