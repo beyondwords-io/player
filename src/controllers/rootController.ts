@@ -67,6 +67,10 @@ class RootController {
     console.log("pressed new tab");
   }
 
+  handlePressedTogglePlaylist() {
+    console.log("pressed toggle playlist");
+  }
+
   handlePressedAdvertLink() {
     console.log("pressed advert link");
   }

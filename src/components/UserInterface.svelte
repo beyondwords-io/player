@@ -153,7 +153,7 @@
               {:else if isScreen && podcast.externalUrl}
                 <NewTabButton {onEvent} scale={buttonScale} href={podcast.externalUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
-                <PlaylistButton scale={buttonScale} color={buttonColor} />
+                <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} />
               {/if}
             </SecondaryButton>
           {/if}
