@@ -63,6 +63,10 @@ class RootController {
     console.log("pressed maximize");
   }
 
+  handlePressedNewTab() {
+    console.log("pressed new tab");
+  }
+
   handlePressedAdvertLink() {
     console.log("pressed advert link");
   }

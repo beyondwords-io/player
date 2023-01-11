@@ -151,7 +151,7 @@
               {#if isVideo}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
               {:else if isScreen && podcast.externalUrl}
-                <NewTabButton scale={buttonScale} href={podcast.externalUrl} color={buttonColor} />
+                <NewTabButton {onEvent} scale={buttonScale} href={podcast.externalUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
                 <PlaylistButton scale={buttonScale} color={buttonColor} />
               {/if}
