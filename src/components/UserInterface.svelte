@@ -69,8 +69,9 @@
 
   $: buttonScale = isSmall ? 0.8 : (isScreen || isVideo && isStopped) && !isMobile ? 2 : 1;
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
-  $: closeScale = isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1;
   $: logoScale = isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1;
+  $: closeScale = isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1;
+  $: closeMargin = isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto";
 
   $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
   $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
@@ -162,7 +163,7 @@
         {#if !isAdvert && !(isSmall && fixedPosition) || isScreen || isVideo}
           <div class="end">
             {#if fixedPosition}
-              <CloseWidgetButton {onEvent} scale={closeScale} color={buttonColor} margin={isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto"} />
+              <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={buttonColor} />
             {:else}
               <BeyondWords scale={logoScale} />
             {/if}
