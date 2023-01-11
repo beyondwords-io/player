@@ -171,7 +171,7 @@
       </div>
 
       {#if isVideo && !videoIsBehind}
-        <img class="video-placeholder" src={posterImage ? posterImage : null} />
+        <div class="video-placeholder" style="background-image: url({posterImage})" />
       {/if}
     </Hoverable>
 
@@ -429,6 +429,10 @@
     height: 100%;
     background: #323232;
     z-index: -1;
+    background-color: black;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 
   .video .main {
