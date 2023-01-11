@@ -1,7 +1,9 @@
 <script>
   export let showUserInterface;
+  export let userInterface;
   export let interfaceStyle;
   export let showWidgetAtBottom;
+  export let widgetInterface;
   export let widgetStyle;
   export let widgetPosition;
   export let widgetWidth;
@@ -12,6 +14,9 @@
 
   $: position = showBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = showBehindWidget && widgetWidth !== "auto" ? `width: ${widgetWidth}` : "";
+
+  $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
+  $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
 </script>
 
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>

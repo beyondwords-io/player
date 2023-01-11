@@ -31,6 +31,7 @@
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
+  export let posterImage = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
   export let podcasts = [];
@@ -41,6 +42,7 @@
   export let onEvent = () => {};
 
   // These are set automatically.
+  export let videoIsBehind = false;
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
@@ -167,6 +169,10 @@
           </div>
         {/if}
       </div>
+
+      {#if isVideo && !videoIsBehind}
+        <img class="video-placeholder" src={posterImage ? posterImage : null} />
+      {/if}
     </Hoverable>
 
     {#if !isSmall && !isScreen}
@@ -415,6 +421,14 @@
     padding-bottom: 56.25%;
     border-radius: 0.5rem;
     overflow: hidden;
+  }
+
+  .video .video-placeholder {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #323232;
+    z-index: -1;
   }
 
   .video .main {
