@@ -70,6 +70,10 @@ class RootController {
   handlePressedScrollToPlayer() {
     console.log("pressed scroll to player button");
   }
+
+  handlePressedCloseWidget() {
+    console.log("pressed close widget button");
+  }
 }
 
 export default RootController;

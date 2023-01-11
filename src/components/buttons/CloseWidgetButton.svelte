@@ -1,18 +1,33 @@
 <script>
   import Close from "../svg_icons/Close.svelte";
+  import newEvent from "../../helpers/newEvent";
 
   export let scale = 1;
   export let color = "#323232";
   export let margin = "auto";
+  export let onEvent = () => {};
+
+  const handleClick = () => {
+    onEvent(newEvent({
+      type: "PressedCloseWidget",
+      description: "The close widget button was pressed.",
+      initiatedBy: "user",
+    }));
+  };
 </script>
 
-<div class="close-widget-button" style="margin: {margin}">
+<button class="close-widget-button" style="margin: {margin}" on:click={handleClick}>
   <Close {scale} {color} />
-</div>
+</button>
 
 <style>
   .close-widget-button {
     display: flex;
     cursor: pointer;
+
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
   }
 </style>
