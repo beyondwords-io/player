@@ -8,19 +8,19 @@
 
   const handleClick = () => {
     onEvent(newEvent({
-      type: "PressedScrollToVideo",
-      description: "The scroll to video button was pressed.",
+      type: "PressedScrollToPlayer",
+      description: "The scroll to player button was pressed.",
       initiatedBy: "user",
     }));
   };
 </script>
 
-<button class="scroll-to-video-button" on:click={handleClick}>
+<button class="scroll-to-player-button" on:click={handleClick}>
   <UpArrow {scale} {color} />
 </button>
 
 <style>
-  .scroll-to-video-button {
+  .scroll-to-player-button {
     display: flex;
     cursor: pointer;
 
