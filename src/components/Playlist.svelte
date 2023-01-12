@@ -18,7 +18,7 @@
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     <div class="scrollable">
       {#each podcasts as { title, duration }, i}
-        <div class="podcast" class:active={i === index}>
+        <button class="podcast" class:active={i === index}>
           {#if i === index}
             <span class="speaker"><VolumeUp /></span>
           {:else}
@@ -32,7 +32,7 @@
           <span class="duration">
             <DurationInMins {duration} bold={i === index} />
           </span>
-        </div>
+        </button>
       {/each}
     </div>
   </div>
@@ -67,8 +67,8 @@
   }
 
   .podcast {
+    width: 100%;
     height: 2.5rem;
-    padding-right: 0.625rem;
 
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -79,6 +79,14 @@
     font-size: 0.625rem;
     font-weight: 300;
     line-height: 1.2;
+
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    padding-right: 0.625rem;
+    text-align: left;
+    cursor: pointer;
   }
 
   .mobile .podcast {
