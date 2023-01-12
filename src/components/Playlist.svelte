@@ -23,13 +23,25 @@
       itemIndex: i,
     });
   };
+
+  const handleKeydown = (i) => (event) => {
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      event.target.previousElementSibling.focus();
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      event.target.nextElementSibling.focus();
+    }
+  };
 </script>
 
 {#if mode === "show" || mode === "auto" && podcasts.length > 1}
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     <div class="scrollable">
       {#each podcasts as { title, duration }, i}
-        <button class="podcast" class:active={i === index} on:click={handleClick(i)}>
+        <button class="podcast" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown(i)}>
           {#if i === index}
             <span class="speaker"><VolumeUp /></span>
           {:else}
