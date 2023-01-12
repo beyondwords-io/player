@@ -57,6 +57,7 @@
     height: 0.5rem;
     border-radius: 0.25rem;
     background: #323232;
+    pointer-events: none;
   }
 
   .full-width {
