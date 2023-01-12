@@ -54,11 +54,20 @@
       fromWidget: showBehindWidget,
     }));
   };
+
+  const handleRateChange = () => {
+    onEvent(newEvent({
+      type: "PlaybackSpeedUpdated",
+      description: "The media's current playback speed was updated.",
+      initiatedBy: "media",
+      fromWidget: showBehindWidget,
+    }));
+  };
 </script>
 
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
   <div class="inner">
-    <video bind:this={video} poster={playlistItem?.image || null} on:play={handlePlay} on:pause={handlePause} on:timeupdate={handleTimeUpdate}>
+    <video bind:this={video} poster={playlistItem?.image || null} on:play={handlePlay} on:pause={handlePause} on:timeupdate={handleTimeUpdate} on:ratechange={handleRateChange}>
       {#each media as source}
         <source src={source}>
       {/each}

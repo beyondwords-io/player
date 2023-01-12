@@ -34,7 +34,12 @@ class RootController {
   }
 
   handlePressedChangeSpeed() {
-    console.log("pressed change speed");
+    const availableSpeeds = [1, 1.25, 1.5, 1.75, 2, 0.25, 0.5, 0.75];
+
+    const currentIndex = availableSpeeds.indexOf(this.player.playbackSpeed);
+    const cycledIndex = (currentIndex + 1) % availableSpeeds.length;
+
+    this.player.mediaElement.video.playbackRate = availableSpeeds[cycledIndex];
   }
 
   handlePressedPrevSegment() {
@@ -129,6 +134,10 @@ class RootController {
 
   handlePlaybackTimeUpdated() {
     this.player.playbackTime = this.player.mediaElement.video.currentTime;
+  }
+
+  handlePlaybackSpeedUpdated() {
+    this.player.playbackSpeed = this.player.mediaElement.video.playbackRate;
   }
 
   handlePressedAdvertLink() {
