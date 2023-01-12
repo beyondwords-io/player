@@ -23,6 +23,7 @@
   $: style = showBehindWidget ? `width: ${widgetWidth}` : "";
 
   $: playlistItem = playlist[playlistIndex];
+  $: media = [playlistItem.media].flat();
 
   $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
   $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
@@ -58,7 +59,10 @@
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
   <div class="inner">
     <video bind:this={video} poster={playlistItem.image || null} on:play={handlePlay} on:pause={handlePause} on:timeupdate={handleTimeUpdate}>
-      <source src="sample.mp4">
+      {#each media as source}
+        <source src={source}>
+      {/each}
+
       <track kind="captions">
     </video>
   </div>

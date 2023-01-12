@@ -109,7 +109,10 @@ class RootController {
   }
 
   handlePressedPlaylistItem({ itemIndex }) {
-    console.log(`pressed playlist item ${itemIndex}`);
+    this.player.playlistIndex = itemIndex;
+
+    this.player.mediaElement.video.load();
+    this.player.mediaElement.video.play();
   }
 
   handlePressedVideoBackground() {
