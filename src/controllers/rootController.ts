@@ -43,19 +43,23 @@ class RootController {
   }
 
   handlePressedPrevSegment() {
+    if (this.player.activeAdvert) { return; }
     console.log("pressed previous segment");
   }
 
   handlePressedNextSegment() {
+    if (this.player.activeAdvert) { return; }
     console.log("pressed next segment");
   }
 
   handlePressedSeekBack({ seconds }) {
-    console.log(`pressed seek back with ${seconds} seconds`);
+    if (this.player.activeAdvert) { return; }
+    this.player.mediaElement.video.currentTime -= seconds;
   }
 
   handlePressedSeekAhead({ seconds }) {
-    console.log(`pressed seek ahead with ${seconds} seconds`);
+    if (this.player.activeAdvert) { return; }
+    this.player.mediaElement.video.currentTime += seconds;
   }
 
   handlePressedNextTrack() {

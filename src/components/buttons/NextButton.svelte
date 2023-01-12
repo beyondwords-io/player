@@ -9,8 +9,8 @@
   export let color = "#323232";
   export let onEvent = () => {};
 
-  $: backwardsSeconds = style.split("-")[1] || 10;
-  $: forwardsSeconds = style.split("-")[2] || backwardsSeconds;
+  $: backwardsSeconds = parseFloat(style.split("-")[1] || 10);
+  $: forwardsSeconds = parseFloat(style.split("-")[2] || backwardsSeconds);
 
   $: isSegments = style === "segments";
   $: isSeconds = style.startsWith("seconds");
