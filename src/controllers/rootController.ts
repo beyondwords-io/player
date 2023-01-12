@@ -107,11 +107,13 @@ class RootController {
   }
 
   handlePressedLeftOnProgressBar() {
-    console.log("pressed left on progress bar");
+    if (this.player.activeAdvert) { return; }
+    this.player.mediaElement.video.currentTime -= 5;
   }
 
   handlePressedRightOnProgressBar() {
-    console.log("pressed right on progress bar");
+    if (this.player.activeAdvert) { return; }
+    this.player.mediaElement.video.currentTime += 5;
   }
 
   handlePressedSpaceOnProgressBar() {
