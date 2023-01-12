@@ -22,7 +22,7 @@ const config: PlaywrightTestConfig = {
     { name: "desktop-safari", use: { ...getDevice("Desktop Safari") } },
 //  { name: "desktop-edge", use: { channel: "msedge", } },
     { name: "mobile-android", use: { ...getDevice("Pixel 5") } },
-    { name: "mobile-ios", use: { ...getDevice("iPhone 13") } },
+    { name: "mobile-ios", use: { ...getDevice("iPhone 11") } },
   ],
   workers: 6,
 
