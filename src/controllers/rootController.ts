@@ -118,7 +118,11 @@ class RootController {
   }
 
   handlePressedVideoBackground() {
-    console.log("pressed video background");
+    if (this.player.playbackState === "playing") {
+      this.player.mediaElement.video.pause();
+    } else {
+      this.player.mediaElement.video.play();
+    }
   }
 
   handlePlaybackStarted() {
