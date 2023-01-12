@@ -94,6 +94,22 @@ class RootController {
   handlePressedProgressBar({ ratio }) {
     console.log(`pressed progress bar at ratio ${ratio}`);
   }
+
+  handlePressedLeftOnProgressBar() {
+    console.log("pressed left on progress bar");
+  }
+
+  handlePressedRightOnProgressBar() {
+    console.log("pressed right on progress bar");
+  }
+
+  handlePressedSpaceOnProgressBar() {
+    console.log("pressed space on progress bar");
+  }
+
+  handlePressedEnterOnProgressBar() {
+    console.log("pressed enter on progress bar");
+  }
 }
 
 export default RootController;
