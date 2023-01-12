@@ -16,15 +16,15 @@
   $: desktopRows = desktopRows || 5;
 
   const handleClick = (i) => () => {
-    onEvent({
+    onEvent(newEvent({
       type: "PressedPlaylistItem",
       description: "A playlist item was pressed.",
       initiatedBy: "user",
       itemIndex: i,
-    });
+    }));
   };
 
-  const handleKeydown = (i) => (event) => {
+  const handleKeydown = (event) => {
     if (event.key === "ArrowUp") {
       event.preventDefault();
       event.target.previousElementSibling.focus();
@@ -41,7 +41,7 @@
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     <div class="scrollable">
       {#each podcasts as { title, duration }, i}
-        <button class="podcast" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown(i)}>
+        <button class="podcast" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown}>
           {#if i === index}
             <span class="speaker"><VolumeUp /></span>
           {:else}

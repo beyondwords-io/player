@@ -15,9 +15,8 @@ const validateEvent = (props) => {
 };
 
 const validateProperty = (props, name) => {
-  if (!props.hasOwnProperty(name)) {
-    throwError(`Invalid event: missing a '${name}' property`, props);
-  }
+  if (Object.prototype.hasOwnProperty.call(props, name)) { return; }
+  throwError(`Invalid event: missing a '${name}' property`, props);
 };
 
 export { validatePartialEvent };
