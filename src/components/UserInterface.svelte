@@ -74,7 +74,7 @@
   $: closeScale = isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1;
   $: closeMargin = isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto";
 
-  $: widthStyle = fixedWidth === "auto" && isSmall ? "fit-content" : fixedWidth;
+  $: widthStyle = fixedWidth === "auto" ? (isSmall ? "fit-content" : "") : fixedWidth;
   $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
   $: positionClasses = fixedPosition ? `fixed fixed-${position}` : "";
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
@@ -566,5 +566,17 @@
   .video.fixed .controls {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
+  }
+
+  :global(.beyondwords-player):fullscreen .video {
+    max-width: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  :global(.beyondwords-player):fullscreen .video :global(.hoverable) {
+    padding: 0;
+    height: 100%;
+    background: none;
   }
 </style>

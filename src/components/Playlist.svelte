@@ -152,4 +152,8 @@
   .mobile .duration {
     align-self: flex-start;
   }
+
+  :global(.beyondwords-player):fullscreen .playlist {
+    display: none;
+  }
 </style>

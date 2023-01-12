@@ -139,4 +139,14 @@
     from { bottom: -100px; opacity: 0; }
     to { bottom: 0; opacity: 1; }
   }
+
+  :global(.beyondwords-player):fullscreen {
+    display: flex;
+    align-items: center;
+  }
+
+  :global(.beyondwords-player):fullscreen .media-element {
+    max-width: none;
+    border-radius: 0;
+  }
 </style>

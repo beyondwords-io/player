@@ -71,7 +71,11 @@ class RootController {
   }
 
   handlePressedMaximize() {
-    console.log("pressed maximize");
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      this.player.target.requestFullscreen();
+    }
   }
 
   handlePressedTogglePlaylist() {
