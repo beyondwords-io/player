@@ -1,3 +1,4 @@
+import validateEvent from "../helpers/validateEvent";
 import throwError from "../helpers/throwError";
 import chooseWidget from "../helpers/chooseWidget";
 
@@ -8,6 +9,7 @@ class RootController {
   }
 
   handleEvent(event) {
+    validateEvent(event);
     const handler = this[`handle${event.type}`];
 
     if (handler) {
