@@ -47,14 +47,12 @@
 
   .scrollable {
     padding-left: 0.25rem;
-    padding-right: 0.625rem;
     overflow-y: scroll;
     max-height: calc(2.5rem * var(--desktop-rows));
   }
 
   .mobile .scrollable {
     padding-left: 0;
-    padding-right: 1rem;
     max-height: calc(5rem * var(--mobile-rows));
   }
 
@@ -70,6 +68,8 @@
 
   .podcast {
     height: 2.5rem;
+    padding-right: 0.625rem;
+
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-rows: auto;
@@ -85,6 +85,7 @@
     height: 5rem;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;
+    padding-right: 1rem;
   }
 
   .number,
