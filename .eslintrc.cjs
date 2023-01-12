@@ -29,7 +29,9 @@ module.exports = {
     "quotes": ["error", "double"],
     "semi": ["error", "always"],
     "eqeqeq": ["error", "always"],
-    "@typescript-eslint/no-empty-function": ["error", { "allow": ["arrowFunctions"] }]
+    "@typescript-eslint/no-empty-function": [
+      "error", { "allow": ["arrowFunctions", "methods"] }
+    ]
   },
   "settings": {
     "svelte3/typescript": true

@@ -125,6 +125,8 @@ class RootController {
     this.#playOrPause();
   }
 
+  // These methods respond to events emitted by the video element.
+  // We shouldn't assume the methods above will succeed, e.g. video.play()
   handlePlaybackStarted() {
     this.player.playbackState = "playing";
   }
@@ -141,21 +143,11 @@ class RootController {
     this.player.playbackSpeed = this.player.mediaElement.video.playbackRate;
   }
 
-  handlePressedAdvertLink() {
-    // Do nothing since the anchor already opens in a new tab.
-  }
-
-  handlePressedAdvertButton() {
-    // Do nothing since the anchor already opens in a new tab.
-  }
-
-  handlePressedBeyondWords() {
-    // Do nothing since the anchor already opens in a new tab.
-  }
-
-  handlePressedExternalUrl() {
-    // Do nothing since the anchor already opens in a new tab.
-  }
+  // These methods do nothing since the anchors already open a new tab.
+  handlePressedAdvertLink() { }
+  handlePressedAdvertButton() { }
+  handlePressedBeyondWords() { }
+  handlePressedExternalUrl() { }
 
   // private
 
