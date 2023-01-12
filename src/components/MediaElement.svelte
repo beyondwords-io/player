@@ -1,4 +1,6 @@
 <script>
+  import newEvent from "../helpers/newEvent";
+
   export let showUserInterface;
   export let userInterface;
   export let interfaceStyle;
@@ -8,6 +10,10 @@
   export let widgetPosition;
   export let widgetWidth;
   export let posterImage;
+  export let onEvent = () => {};
+
+  // This is set automatically.
+  export let video;
 
   $: showBehindWidget = showWidgetAtBottom && widgetStyle === "video";
   $: showBehindStatic = showUserInterface && interfaceStyle === "video" && !showBehindWidget;
@@ -17,11 +23,22 @@
 
   $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
   $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
+
+  const onTimeupdate = ({ timeStamp }) => {
+    onEvent(newEvent({
+      type: "PlaybackTimeUpdated",
+      description: "The current playback time of the media updated.",
+      initiatedBy: "media",
+      fromWidget: showBehindWidget,
+      updatedTime: timeStamp / 1000,
+    }));
+  };
 </script>
 
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
   <div class="inner">
-    <video poster={posterImage}>
+    <video bind:this={video} poster={posterImage} on:timeupdate={onTimeupdate}>
+      <source src="sample.mp4">
       <track kind="captions">
     </video>
   </div>

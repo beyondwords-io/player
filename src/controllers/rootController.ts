@@ -120,6 +120,10 @@ class RootController {
   handlePressedVideoBackground() {
     console.log("pressed video background");
   }
+
+  handlePlaybackTimeUpdated({ updatedTime }) {
+    console.log(`playback time updated to ${updatedTime}`);
+  }
 }
 
 export default RootController;
