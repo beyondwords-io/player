@@ -1,6 +1,11 @@
 import type { PlaywrightTestConfig } from "@playwright/test";
 import { devices } from "@playwright/test";
 
+const getDevice = (name) => {
+  if (devices[name]) { return devices[name]; }
+  throw new Error(`Device ${name} does not exist`);
+}
+
 const config: PlaywrightTestConfig = {
   testDir: "test/features",
   snapshotPathTemplate: "test/screenshots/{arg}-{projectName}{ext}",
@@ -12,12 +17,12 @@ const config: PlaywrightTestConfig = {
   use: { actionTimeout: 5000 },
 
   projects: [
-    { name: "desktop-chrome", use: { ...devices["Desktop Chrome"] } },
-    { name: "desktop-firefox", use: { ...devices["Desktop Firefox"] } },
-    { name: "desktop-safari", use: { ...devices["Desktop Safari"] } },
+    { name: "desktop-chrome", use: { ...getDevice("Desktop Chrome") } },
+    { name: "desktop-firefox", use: { ...getDevice("Desktop Firefox") } },
+    { name: "desktop-safari", use: { ...getDevice("Desktop Safari") } },
 //  { name: "desktop-edge", use: { channel: "msedge", } },
-    { name: "mobile-android", use: { ...devices["Pixel 7"] } },
-    { name: "mobile-ios", use: { ...devices["iPhone 14"] } },
+    { name: "mobile-android", use: { ...getDevice("Pixel 5") } },
+    { name: "mobile-ios", use: { ...getDevice("iPhone 13") } },
   ],
   workers: 6,
 
