@@ -61,24 +61,8 @@ class RootController {
     console.log("pressed prev track");
   }
 
-  handlePressedAdvertLink() {
-    console.log("pressed advert link");
-  }
-
-  handlePressedAdvertButton() {
-    console.log("pressed advert button");
-  }
-
-  handlePressedBeyondWords() {
-    console.log("pressed beyondwords");
-  }
-
   handlePressedMaximize() {
     console.log("pressed maximize");
-  }
-
-  handlePressedExternalUrl() {
-    console.log("pressed external url");
   }
 
   handlePressedTogglePlaylist() {
@@ -142,6 +126,22 @@ class RootController {
 
   handlePlaybackTimeUpdated() {
     this.player.playbackTime = this.player.mediaElement.video.currentTime;
+  }
+
+  handlePressedAdvertLink() {
+    // Do nothing since the anchor already opens in a new tab.
+  }
+
+  handlePressedAdvertButton() {
+    // Do nothing since the anchor already opens in a new tab.
+  }
+
+  handlePressedBeyondWords() {
+    // Do nothing since the anchor already opens in a new tab.
+  }
+
+  handlePressedExternalUrl() {
+    // Do nothing since the anchor already opens in a new tab.
   }
 
   // private
