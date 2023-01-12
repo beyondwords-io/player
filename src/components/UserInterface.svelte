@@ -38,6 +38,7 @@
   export let playlistIndex = 0;
   export let playbackTime = 0;
   export let playbackState = "stopped";
+  export let playbackSpeed = 1;
   export let activeAdvert = undefined;
   export let onEvent = () => {};
 
@@ -135,7 +136,7 @@
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-            <SpeedButton {onEvent} scale={buttonScale} color={buttonColor} />
+            <SpeedButton {onEvent} speed={playbackSpeed} scale={buttonScale} color={buttonColor} />
             <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
             <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
           {/if}
