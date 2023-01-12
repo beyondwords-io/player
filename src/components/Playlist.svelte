@@ -2,23 +2,34 @@
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
   import PodcastTitle from "./titles/PodcastTitle.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
+  import newEvent from "../helpers/newEvent";
 
   export let style = "auto";
   export let podcasts = [];
   export let index = 0;
   export let isMobile;
+  export let onEvent;
 
   $: [mode, desktopRows, mobileRows] = style.split("-");
 
   $: mobileRows = mobileRows || desktopRows || 4;
   $: desktopRows = desktopRows || 5;
+
+  const handleClick = (i) => () => {
+    onEvent({
+      type: "PressedPlaylistItem",
+      description: "A playlist item was pressed.",
+      initiatedBy: "user",
+      itemIndex: i,
+    });
+  };
 </script>
 
 {#if mode === "show" || mode === "auto" && podcasts.length > 1}
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     <div class="scrollable">
       {#each podcasts as { title, duration }, i}
-        <button class="podcast" class:active={i === index}>
+        <button class="podcast" class:active={i === index} on:click={handleClick(i)}>
           {#if i === index}
             <span class="speaker"><VolumeUp /></span>
           {:else}

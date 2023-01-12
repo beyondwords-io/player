@@ -177,7 +177,7 @@
     </Hoverable>
 
     {#if !isSmall && !isScreen}
-      <Playlist style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
+      <Playlist {onEvent} style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
     {/if}
   </div>
 {/if}

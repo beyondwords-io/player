@@ -110,6 +110,10 @@ class RootController {
   handlePressedEnterOnProgressBar() {
     console.log("pressed enter on progress bar");
   }
+
+  handlePressedPlaylistItem({ itemIndex }) {
+    console.log(`pressed playlist item ${itemIndex}`);
+  };
 }
 
 export default RootController;
