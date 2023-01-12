@@ -106,11 +106,11 @@ class RootController {
   }
 
   handlePressedSpaceOnProgressBar() {
-    console.log("pressed space on progress bar");
+    this.#playOrPause();
   }
 
   handlePressedEnterOnProgressBar() {
-    console.log("pressed enter on progress bar");
+    this.#playOrPause();
   }
 
   handlePressedPlaylistItem({ itemIndex }) {
@@ -118,11 +118,7 @@ class RootController {
   }
 
   handlePressedVideoBackground() {
-    if (this.player.playbackState === "playing") {
-      this.player.mediaElement.video.pause();
-    } else {
-      this.player.mediaElement.video.play();
-    }
+    this.#playOrPause();
   }
 
   handlePlaybackStarted() {
@@ -135,6 +131,16 @@ class RootController {
 
   handlePlaybackTimeUpdated({ updatedTime }) {
     this.player.currentTime = updatedTime;
+  }
+
+  // private
+
+  #playOrPause() {
+    if (this.player.playbackState === "playing") {
+      this.player.mediaElement.video.pause();
+    } else {
+      this.player.mediaElement.video.play();
+    }
   }
 }
 
