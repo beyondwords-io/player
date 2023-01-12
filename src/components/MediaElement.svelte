@@ -9,7 +9,8 @@
   export let widgetStyle;
   export let widgetPosition;
   export let widgetWidth;
-  export let posterImage;
+  export let playlist;
+  export let playlistIndex;
   export let onEvent = () => {};
 
   // This is set automatically.
@@ -20,6 +21,8 @@
 
   $: position = showBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = showBehindWidget ? `width: ${widgetWidth}` : "";
+
+  $: playlistItem = playlist[playlistIndex];
 
   $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
   $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
@@ -55,7 +58,7 @@
 
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
   <div class="inner">
-    <video bind:this={video} poster={posterImage} on:play={handlePlay} on:pause={handlePause} on:timeupdate={handleTimeUpdate}>
+    <video bind:this={video} poster={playlistItem.image || null} on:play={handlePlay} on:pause={handlePause} on:timeupdate={handleTimeUpdate}>
       <source src="sample.mp4">
       <track kind="captions">
     </video>

@@ -32,7 +32,6 @@
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
-  export let posterImage = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
   export let playlist = [];
@@ -181,7 +180,7 @@
       </div>
 
       {#if isVideo && !videoIsBehind}
-        <div class="video-placeholder" style="background-image: url({posterImage})" />
+        <div class="video-placeholder" style={isStopped ? `background-image: url(${playlistItem.image})` : ""} />
       {/if}
     </Hoverable>
 
