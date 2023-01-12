@@ -130,7 +130,7 @@ class RootController {
   }
 
   handlePlaybackTimeUpdated({ updatedTime }) {
-    this.player.currentTime = updatedTime;
+    this.player.playbackTime = updatedTime;
   }
 
   // private
