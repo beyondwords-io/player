@@ -26,11 +26,11 @@ class RootController {
   }
 
   handlePressedPlay() {
-    console.log("pressed play");
+    this.player.mediaElement.video.play();
   }
 
   handlePressedPause() {
-    console.log("pressed pause");
+    this.player.mediaElement.video.pause();
   }
 
   handlePressedChangeSpeed() {
@@ -121,8 +121,16 @@ class RootController {
     console.log("pressed video background");
   }
 
+  handlePlaybackStarted() {
+    this.player.playbackState = "playing";
+  }
+
+  handlePlaybackPaused() {
+    this.player.playbackState = "paused";
+  }
+
   handlePlaybackTimeUpdated({ updatedTime }) {
-    console.log(`playback time updated to ${updatedTime}`);
+    this.player.currentTime = updatedTime;
   }
 }
 

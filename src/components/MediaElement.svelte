@@ -24,10 +24,28 @@
   $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
   $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
 
+  const onPlay = () => {
+    onEvent(newEvent({
+      type: "PlaybackStarted",
+      description: "The media started playing from its current playback time.",
+      initiatedBy: "media",
+      fromWidget: showBehindWidget,
+    }));
+  };
+
+  const onPause = () => {
+    onEvent(newEvent({
+      type: "PlaybackPaused",
+      description: "The media became paused at its current playback time.",
+      initiatedBy: "media",
+      fromWidget: showBehindWidget,
+    }));
+  };
+
   const onTimeupdate = ({ timeStamp }) => {
     onEvent(newEvent({
       type: "PlaybackTimeUpdated",
-      description: "The current playback time of the media updated.",
+      description: "The media's current playback time was updated.",
       initiatedBy: "media",
       fromWidget: showBehindWidget,
       updatedTime: timeStamp / 1000,
@@ -37,7 +55,7 @@
 
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
   <div class="inner">
-    <video bind:this={video} poster={posterImage} on:timeupdate={onTimeupdate}>
+    <video bind:this={video} poster={posterImage} on:play={onPlay} on:pause={onPause} on:timeupdate={onTimeupdate}>
       <source src="sample.mp4">
       <track kind="captions">
     </video>
