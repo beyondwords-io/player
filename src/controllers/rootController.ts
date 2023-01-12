@@ -85,7 +85,7 @@ class RootController {
   }
 
   handlePressedScrollToPlayer() {
-    console.log("pressed scroll to player");
+    this.player.target.scrollIntoView();
   }
 
   handlePressedCloseWidget() {
