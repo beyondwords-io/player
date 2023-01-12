@@ -39,7 +39,7 @@
   export let podcastIndex = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
-  export let currentAdvert = undefined;
+  export let activeAdvert = undefined;
   export let onEvent = () => {};
 
   // These are set automatically.
@@ -57,12 +57,12 @@
   $: isPlaying = playbackState === "playing";
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
-  $: isAdvert = currentAdvert && !isStopped;
+  $: isAdvert = activeAdvert && !isStopped;
   $: isPlaylist = podcasts.length > 1;
   $: isMobile = belowBreakpoint({ interfaceStyle, width });
 
   $: podcast = podcasts[podcastIndex] || {};
-  $: duration = isAdvert ? currentAdvert.duration : podcast.duration;
+  $: duration = isAdvert ? activeAdvert.duration : podcast.duration;
   $: progress = isStopped ? 0 : currentTime / duration;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
@@ -101,7 +101,7 @@
     <Hoverable bind:isHovering graceTime={collapsible ? 500 : 0} enabled={collapsible || isVideo}>
       <div class="main" data-is-video-main={isVideo} on:click={e => e.target.dataset.isVideoMain && handleClick()}>
         {#if isLarge || isScreen}
-          <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
+          <LargeImage src={isAdvert ? (activeAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
 
         {#if isVideo && fixedPosition}
@@ -152,8 +152,8 @@
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
-            <AdvertLink {onEvent} href={currentAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
-            <AdvertButton {onEvent} href={currentAdvert.url} {interfaceStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
+            <AdvertLink {onEvent} href={activeAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
+            <AdvertButton {onEvent} href={activeAdvert.url} {interfaceStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
           {/if}
 
           {#if !isStopped}

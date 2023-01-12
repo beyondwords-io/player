@@ -11,7 +11,7 @@
   export let podcastIndex = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
-  export let currentAdvert = undefined;
+  export let activeAdvert = undefined;
   export let widgetStyle = "standard";
   export let widgetPosition = "auto";
   export let widgetWidth = "auto";
@@ -26,7 +26,7 @@
   $: posterImage = playbackState === "stopped" && podcasts[podcastIndex]?.image;
   $: mediaProps = { showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth, posterImage };
 
-  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, currentAdvert, posterImage };
+  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, activeAdvert, posterImage };
   $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 

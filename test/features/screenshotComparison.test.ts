@@ -5,7 +5,7 @@ import permutations from "../support/permutations.ts";
 const dimensions = {
   interfaceStyle: ["large", "screen", "small", "standard", "video"],
   playbackState: ["paused", "playing", "stopped"],
-  currentAdvert: [{ url: "https://deliveroo.com", image: advertImage, duration: 15 }, null],
+  activeAdvert: [{ url: "https://deliveroo.com", image: advertImage, duration: 15 }, null],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
   podcastIndex: [0],
   currentTime: [10],
@@ -47,7 +47,7 @@ test("screenshot comparison", async ({ page }) => {
 const skipPermutation = (params) => {
   const testingTheWidget = params.widgetPosition;
 
-  const advertWouldntShow = params.currentAdvert && params.playbackState === "stopped";
+  const advertWouldntShow = params.activeAdvert && params.playbackState === "stopped";
   if (advertWouldntShow) { return true; }
 
   const playlistWouldntShow = (testingTheWidget || params.interfaceStyle === "small") && params.podcasts.length > 1;
@@ -63,7 +63,7 @@ const screenshotName = (params) => (
   [
     params.interfaceStyle,
     params.playbackState,
-    params.currentAdvert && "advert",
+    params.activeAdvert && "advert",
     params.podcasts.length > 1 && "playlist",
     params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`.replace("%", ""),
   ].filter(s => s).join("-")
