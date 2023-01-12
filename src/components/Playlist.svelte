@@ -1,11 +1,11 @@
 <script>
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
-  import PodcastTitle from "./titles/PodcastTitle.svelte";
+  import PlaylistItemTitle from "./titles/PlaylistItemTitle.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
   import newEvent from "../helpers/newEvent";
 
   export let style = "auto";
-  export let podcasts = [];
+  export let playlist = [];
   export let index = 0;
   export let isMobile;
   export let onEvent;
@@ -37,11 +37,11 @@
   };
 </script>
 
-{#if mode === "show" || mode === "auto" && podcasts.length > 1}
+{#if mode === "show" || mode === "auto" && playlist.length > 1}
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     <div class="scrollable">
-      {#each podcasts as { title, duration }, i}
-        <button class="podcast" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown}>
+      {#each playlist as { title, duration }, i}
+        <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown}>
           {#if i === index}
             <span class="speaker"><VolumeUp /></span>
           {:else}
@@ -49,7 +49,7 @@
           {/if}
 
           <span class="title">
-            <PodcastTitle {title} maxLines={isMobile ? 3 : 2} />
+            <PlaylistItemTitle {title} maxLines={isMobile ? 3 : 2} />
           </span>
 
           <span class="duration">
@@ -89,7 +89,7 @@
     border: 0.125rem solid #fafafa;
   }
 
-  .podcast {
+  .item {
     width: 100%;
     height: 2.5rem;
 
@@ -112,7 +112,7 @@
     cursor: pointer;
   }
 
-  .mobile .podcast {
+  .mobile .item {
     height: 5rem;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;

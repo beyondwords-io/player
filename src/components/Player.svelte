@@ -7,8 +7,8 @@
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
-  export let podcasts = [];
-  export let podcastIndex = 0;
+  export let playlist = [];
+  export let playlistIndex = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let activeAdvert = undefined;
@@ -23,10 +23,10 @@
   export let widgetInterface = undefined;
   export let controller = { handleEvent: () => {} };
 
-  $: posterImage = playbackState === "stopped" && podcasts[podcastIndex]?.image;
+  $: posterImage = playbackState === "stopped" && playlist[playlistIndex]?.image;
   $: mediaProps = { showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth, posterImage };
 
-  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, podcasts, podcastIndex, currentTime, playbackState, activeAdvert, posterImage };
+  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, playlist, playlistIndex, currentTime, playbackState, activeAdvert, posterImage };
   $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 

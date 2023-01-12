@@ -17,7 +17,7 @@
   import ExternalUrlButton from "./external_links/ExternalUrlButton.svelte";
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./titles/PlayerTitle.svelte";
-  import PodcastTitle from "./titles/PodcastTitle.svelte";
+  import PlaylistItemTitle from "./titles/PlaylistItemTitle.svelte";
   import ProgressBar from "./progress_bars/ProgressBar.svelte";
   import ProgressCircle from "./progress_bars/ProgressCircle.svelte";
   import TimeIndicator from "./time_indicators/TimeIndicator.svelte";
@@ -35,8 +35,8 @@
   export let posterImage = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
-  export let podcasts = [];
-  export let podcastIndex = 0;
+  export let playlist = [];
+  export let playlistIndex = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let activeAdvert = undefined;
@@ -58,11 +58,11 @@
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
-  $: isPlaylist = podcasts.length > 1;
+  $: isPlaylist = playlist.length > 1;
   $: isMobile = belowBreakpoint({ interfaceStyle, width });
 
-  $: podcast = podcasts[podcastIndex] || {};
-  $: duration = isAdvert ? activeAdvert.duration : podcast.duration;
+  $: playlistItem = playlist[playlistIndex] || {};
+  $: duration = isAdvert ? activeAdvert.duration : playlistItem.duration;
   $: progress = isStopped ? 0 : currentTime / duration;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
@@ -101,7 +101,7 @@
     <Hoverable bind:isHovering graceTime={collapsible ? 500 : 0} enabled={collapsible || isVideo}>
       <div class="main" data-is-video-main={isVideo} on:click={e => e.target.dataset.isVideoMain && handleClick()}>
         {#if isLarge || isScreen}
-          <LargeImage src={isAdvert ? (activeAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
+          <LargeImage src={isAdvert ? (activeAdvert.image || playlistItem.image) : playlistItem.image} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
 
         {#if isVideo && fixedPosition}
@@ -114,8 +114,8 @@
           <div class="summary">
             <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {interfaceStyle} scale={isScreen ? 2 : 1} />
 
-            {#if isLarge || isScreen || isVideo && !(podcast.image && isStopped) && !fixedPosition}
-              <PodcastTitle title={podcast.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
+            {#if isLarge || isScreen || isVideo && !(playlistItem.image && isStopped) && !fixedPosition}
+              <PlaylistItemTitle title={playlistItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
             {/if}
           </div>
         {/if}
@@ -142,7 +142,7 @@
           {/if}
 
           {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
-            <PodcastTitle title={podcast.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
+            <PlaylistItemTitle title={playlistItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
           {/if}
 
           <TimeIndicator {currentTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={buttonColor} />
@@ -160,8 +160,8 @@
             <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
-              {:else if isScreen && podcast.externalUrl}
-                <ExternalUrlButton {onEvent} scale={buttonScale} href={podcast.externalUrl} color={buttonColor} />
+              {:else if isScreen && playlistItem.externalUrl}
+                <ExternalUrlButton {onEvent} scale={buttonScale} href={playlistItem.externalUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
                 <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} />
               {/if}
@@ -186,7 +186,7 @@
     </Hoverable>
 
     {#if !isSmall && !isScreen}
-      <Playlist {onEvent} style={playlistStyle} podcasts={podcasts} index={podcastIndex} isMobile={isMobile} />
+      <Playlist {onEvent} style={playlistStyle} {playlist} index={playlistIndex} isMobile={isMobile} />
     {/if}
   </div>
 {/if}

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { podcastImage, advertImage } from "../support/base64Images.ts";
+import { itemImage, advertImage } from "../support/base64Images.ts";
 import permutations from "../support/permutations.ts";
 
 const dimensions = {
@@ -7,10 +7,10 @@ const dimensions = {
   playbackState: ["paused", "playing", "stopped"],
   activeAdvert: [{ url: "https://deliveroo.com", image: advertImage, duration: 15 }, null],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
-  podcastIndex: [0],
+  playlistIndex: [0],
   currentTime: [10],
-  podcasts: [
-    [{ title: "A reasonable length podcast title", image: podcastImage, duration: 30, externalUrl: "https://example.com" }],
+  playlist: [
+    [{ title: "A reasonable length podcast title", image: itemImage, duration: 30, externalUrl: "https://example.com" }],
     [{ title: `A ${"very ".repeat(50)} long title`, duration: 30 }, ...Array(10).fill({ title: "Another playlist item" })],
   ],
   widgetPosition: [null, "auto", "center", "left", "right"],
@@ -50,7 +50,7 @@ const skipPermutation = (params) => {
   const advertWouldntShow = params.activeAdvert && params.playbackState === "stopped";
   if (advertWouldntShow) { return true; }
 
-  const playlistWouldntShow = (testingTheWidget || params.interfaceStyle === "small") && params.podcasts.length > 1;
+  const playlistWouldntShow = (testingTheWidget || params.interfaceStyle === "small") && params.playlist.length > 1;
   if (playlistWouldntShow) { return true; }
 
   const widthIsIrrelevant = !testingTheWidget && params.widgetWidth !== "auto";
@@ -64,7 +64,7 @@ const screenshotName = (params) => (
     params.interfaceStyle,
     params.playbackState,
     params.activeAdvert && "advert",
-    params.podcasts.length > 1 && "playlist",
+    params.playlist.length > 1 && "playlist",
     params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`.replace("%", ""),
   ].filter(s => s).join("-")
 );
