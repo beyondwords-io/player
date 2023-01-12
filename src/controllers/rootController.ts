@@ -63,11 +63,11 @@ class RootController {
   }
 
   handlePressedNextTrack() {
-    console.log("pressed next track");
+    this.#tryPlayIndex(i => i + 1);
   }
 
   handlePressedPrevTrack() {
-    console.log("pressed prev track");
+    this.#tryPlayIndex(i => i - 1);
   }
 
   handlePressedMaximize() {
@@ -118,10 +118,7 @@ class RootController {
   }
 
   handlePressedPlaylistItem({ itemIndex }) {
-    this.player.playlistIndex = itemIndex;
-
-    this.player.mediaElement.video.load();
-    this.player.mediaElement.video.play();
+    this.#tryPlayIndex(() => itemIndex);
   }
 
   handlePressedVideoBackground() {
@@ -168,6 +165,17 @@ class RootController {
     } else {
       this.player.mediaElement.video.play();
     }
+  }
+
+  #tryPlayIndex(indexFn) {
+    const tryIndex = indexFn(this.player.playlistIndex);
+    const outOfBounds = tryIndex < 0 || tryIndex >= this.player.playlist.length;
+
+    if (outOfBounds || tryIndex === this.player.playlistIndex) { return; }
+    this.player.playlistIndex = tryIndex;
+
+    this.player.mediaElement.video.load();
+    this.player.mediaElement.video.play();
   }
 }
 
