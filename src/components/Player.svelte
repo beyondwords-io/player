@@ -33,9 +33,9 @@
 <MediaElement bind:this={mediaElement} {...mediaProps} />
 
 {#if showUserInterface}
-  <UserInterface bind:this={userInterface} onEvent={e => controller.handleEvent(e)} {...interfaceProps} />
+  <UserInterface bind:this={userInterface} onEvent={e => controller.handleEvent({ ...e, fromWidget: false })} {...interfaceProps} />
 {/if}
 
 {#if showWidgetAtBottom}
-  <UserInterface bind:this={widgetInterface} onEvent={e => controller.handleEvent(e)} {...widgetProps} />
+  <UserInterface bind:this={widgetInterface} onEvent={e => controller.handleEvent({ ...e, fromWidget: true })} {...widgetProps} />
 {/if}
