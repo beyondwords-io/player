@@ -1,9 +1,27 @@
 <script>
+  import newEvent from "../../helpers/newEvent";
+
   export let progress = 0;
   export let fullWidth = false;
+  export let onEvent = () => {};
+
+  const handleClick = (event) => {
+    const clickedX = event.offsetX;
+    const barWidth = event.target.clientWidth;
+
+    const unclamped = clickedX / barWidth;
+    const ratio = Math.max(0, Math.min(1, unclamped));
+
+    onEvent(newEvent({
+      type: "PressedProgressBar",
+      description: "The progress bar was pressed at some ratio.",
+      initiatedBy: "user",
+      ratio,
+    }));
+  };
 </script>
 
-<div class="progress-bar" class:full-width={fullWidth}>
+<div class="progress-bar" class:full-width={fullWidth} on:click={handleClick}>
   <div class="progress" style="width: {progress * 100}%"></div>
 </div>
 

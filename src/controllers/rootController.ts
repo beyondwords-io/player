@@ -90,6 +90,10 @@ class RootController {
   handlePressedCloseWidget() {
     console.log("pressed close widget");
   }
+
+  handlePressedProgressBar({ ratio }) {
+    console.log(`pressed progress bar at ratio ${ratio}`);
+  }
 }
 
 export default RootController;
