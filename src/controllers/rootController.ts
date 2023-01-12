@@ -100,7 +100,10 @@ class RootController {
   }
 
   handlePressedProgressBar({ ratio }) {
-    console.log(`pressed progress bar at ratio ${ratio}`);
+    if (this.player.activeAdvert) { return; }
+
+    const playlistItem = this.player.playlist[this.player.playlistIndex];
+    this.player.mediaElement.video.currentTime = ratio * playlistItem.duration;
   }
 
   handlePressedLeftOnProgressBar() {
@@ -135,8 +138,8 @@ class RootController {
     this.player.playbackState = "paused";
   }
 
-  handlePlaybackTimeUpdated({ updatedTime }) {
-    this.player.playbackTime = updatedTime;
+  handlePlaybackTimeUpdated() {
+    this.player.playbackTime = this.player.mediaElement.video.currentTime;
   }
 
   // private

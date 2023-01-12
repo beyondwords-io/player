@@ -45,13 +45,12 @@
     }));
   };
 
-  const handleTimeUpdate = ({ timeStamp }) => {
+  const handleTimeUpdate = () => {
     onEvent(newEvent({
       type: "PlaybackTimeUpdated",
       description: "The media's current playback time was updated.",
       initiatedBy: "media",
       fromWidget: showBehindWidget,
-      updatedTime: timeStamp / 1000,
     }));
   };
 </script>
