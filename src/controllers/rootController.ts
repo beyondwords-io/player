@@ -82,7 +82,13 @@ class RootController {
   }
 
   handlePressedTogglePlaylist() {
-    console.log("pressed toggle playlist");
+    const parts = this.player.playlistStyle.split("-");
+
+    const isPlaylist = this.player.playlist.length > 1;
+    const isShowing = parts[0] === "show" || parts[0] === "auto" && isPlaylist;
+
+    parts[0] = isShowing ? "hide" : "show";
+    this.player.playlistStyle = parts.join("-");
   }
 
   handlePressedScrollToPlayer() {
