@@ -51,6 +51,7 @@
     background: #d9d9d9;
     display: flex;
     cursor: pointer;
+    overflow: hidden;
   }
 
   .progress {
