@@ -114,6 +114,10 @@ class RootController {
   handlePressedPlaylistItem({ itemIndex }) {
     console.log(`pressed playlist item ${itemIndex}`);
   };
+
+  handlePressedVideoBackground() {
+    console.log("pressed video background");
+  }
 }
 
 export default RootController;

@@ -26,6 +26,7 @@
   import Visibility from "./helpers/Visibility.svelte";
   import belowBreakpoint from "../helpers/belowBreakpoint";
   import controlsOrderFn from "../helpers/controlsOrder";
+  import newEvent from "../helpers/newEvent";
 
   export let interfaceStyle = "standard";
   export let skipButtonStyle = "auto";
@@ -85,12 +86,20 @@
   $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
 
   $: classes = `user-interface ${interfaceStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
+
+  const handleClick = () => {
+    onEvent(newEvent({
+      type: "PressedVideoBackground",
+      description: "The video background was pressed.",
+      initiatedBy: "user",
+    }));
+  };
 </script>
 
 {#if isSmall || isStandard || isLarge || isScreen || isVideo}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering graceTime={collapsible ? 500 : 0} enabled={collapsible || isVideo}>
-      <div class="main">
+      <div class="main" data-is-video-main={isVideo} on:click={e => e.target.dataset.isVideoMain && handleClick()}>
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (currentAdvert.image || podcast.image) : podcast.image} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
