@@ -136,6 +136,9 @@ class RootController {
   // We shouldn't assume the methods above will succeed, e.g. video.play()
   handlePlaybackStarted() {
     this.player.playbackState = "playing";
+
+    const otherPlayers = this.PlayerClass.instances().filter(p => p !== this.player);
+    otherPlayers.forEach(p => p.mediaElement.video.pause());
   }
 
   handlePlaybackPaused() {
