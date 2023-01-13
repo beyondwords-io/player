@@ -86,6 +86,7 @@
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
   <div class="inner">
     <video bind:this={video}
+           preload={playlistItem?.image ? "none" : "metadata"}
            disablePictureInPicture
            on:play={handlePlay}
            on:pause={handlePause}
