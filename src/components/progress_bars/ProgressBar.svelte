@@ -39,19 +39,23 @@
   };
 </script>
 
-<div class="progress-bar" class:full-width={fullWidth} on:click={handleClick} tabindex="0" on:keydown={handleKeydown}>
+<button class="progress-bar" class:full-width={fullWidth} on:click={handleClick} on:keydown={handleKeydown}>
   <div class="progress" style="width: {progress * 100}%"></div>
-</div>
+</button>
 
 <style>
   .progress-bar {
     flex-grow: 1;
     height: 0.5rem;
     border-radius: 0.25rem;
-    background: #d9d9d9;
     display: flex;
     cursor: pointer;
     overflow: hidden;
+
+    background: #d9d9d9;
+    border: none;
+    margin: 0;
+    padding: 0;
   }
 
   .progress {
