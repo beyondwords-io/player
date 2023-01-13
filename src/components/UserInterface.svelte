@@ -84,6 +84,7 @@
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
   $: controlsOrder = controlsOrderFn({ activeStyle, position, isMobile, isAdvert });
+  $: posterImage = isStopped ? playlistItem.image : null;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && fixedWidth === 0;
@@ -184,8 +185,8 @@
         {/if}
       </div>
 
-      {#if isVideo && !videoIsBehind}
-        <div class="video-placeholder" style={isStopped ? `background-image: url(${playlistItem.image})` : ""} />
+      {#if isVideo && (posterImage || !videoIsBehind)}
+        <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
       {/if}
     </Hoverable>
 

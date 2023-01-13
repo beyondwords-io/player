@@ -85,9 +85,8 @@
 
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
   <div class="inner">
-    <video poster={playlistItem?.image || null}
+    <video bind:this={video}
            disablePictureInPicture
-           bind:this={video}
            on:play={handlePlay}
            on:pause={handlePause}
            on:timeupdate={handleTimeUpdate}
@@ -115,6 +114,7 @@
     overflow: hidden;
     min-width: 360px;
     max-width: 720px;
+    z-index: -1;
   }
 
   .inner {
