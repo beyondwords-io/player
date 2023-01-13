@@ -1,6 +1,7 @@
 import validateEvent from "../helpers/validateEvent";
 import throwError from "../helpers/throwError";
 import chooseWidget from "../helpers/chooseWidget";
+import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 
 class RootController {
   constructor(player, PlayerClass) {
@@ -71,10 +72,10 @@ class RootController {
   }
 
   handlePressedMaximize() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
+    if (fullScreenElement()) {
+      exitFullScreen();
     } else {
-      this.player.target.requestFullscreen();
+      requestFullScreen(this.player.target);
     }
   }
 
@@ -154,7 +155,7 @@ class RootController {
   }
 
   handleFullScreenModeUpdated() {
-    const playerIsFullScreen = document.fullscreenElement === this.player.target;
+    const playerIsFullScreen = fullScreenElement() === this.player.target;
     console.log(playerIsFullScreen);
 
     this.player.userInterface.videoIsMaximized = playerIsFullScreen;
