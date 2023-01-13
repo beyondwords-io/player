@@ -93,7 +93,10 @@ class RootController {
   }
 
   handlePressedCloseWidget() {
-    console.log("pressed close widget");
+    for (const player of this.PlayerClass.instances()) {
+      player.mediaElement.video.pause();
+      player.widgetStyle = "closed-by-user";
+    }
   }
 
   handlePressedProgressBar({ ratio }) {

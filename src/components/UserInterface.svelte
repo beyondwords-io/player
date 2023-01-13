@@ -26,6 +26,7 @@
   import Visibility from "./helpers/Visibility.svelte";
   import belowBreakpoint from "../helpers/belowBreakpoint";
   import controlsOrderFn from "../helpers/controlsOrder";
+  import { knownInterfaceStyle } from "../helpers/interfaceStyles";
   import newEvent from "../helpers/newEvent";
 
   export let interfaceStyle = "standard";
@@ -99,7 +100,7 @@
   };
 </script>
 
-{#if isSmall || isStandard || isLarge || isScreen || isVideo}
+{#if knownInterfaceStyle(activeStyle)}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering graceTime={collapsible ? 500 : 0} enabled={collapsible || isVideo}>
       <div class="main" data-is-video-main={isVideo} on:click={e => e.target.dataset.isVideoMain && handleClick()}>
