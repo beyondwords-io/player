@@ -44,22 +44,25 @@
 
   // These are set automatically.
   export let videoIsBehind = false;
+  export let videoIsMaximized = false;
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
   let width, isHovering;
 
-  $: isSmall = interfaceStyle === "small";
-  $: isStandard = interfaceStyle === "standard";
-  $: isLarge = interfaceStyle === "large";
-  $: isScreen = interfaceStyle === "screen";
-  $: isVideo = interfaceStyle === "video";
+  $: activeStyle = videoIsMaximized && !fixedPosition ? "video" : interfaceStyle;
+
+  $: isSmall = activeStyle === "small";
+  $: isStandard = activeStyle === "standard";
+  $: isLarge = activeStyle === "large";
+  $: isScreen = activeStyle === "screen";
+  $: isVideo = activeStyle === "video";
   $: isPlaying = playbackState === "playing";
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
   $: isPlaylist = playlist.length > 1;
-  $: isMobile = belowBreakpoint({ interfaceStyle, width });
+  $: isMobile = belowBreakpoint({ activeStyle, width });
 
   $: playlistItem = playlist[playlistIndex] || {};
   $: duration = isAdvert ? activeAdvert.duration : playlistItem.duration;
@@ -79,13 +82,13 @@
   $: positionClasses = fixedPosition ? `fixed fixed-${position}` : "";
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
-  $: controlsOrder = controlsOrderFn({ interfaceStyle, position, isMobile, isAdvert });
+  $: controlsOrder = controlsOrderFn({ activeStyle, position, isMobile, isAdvert });
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && fixedWidth === 0;
   $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
 
-  $: classes = `user-interface ${interfaceStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
+  $: classes = `user-interface ${activeStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
 
   const handleClick = () => {
     onEvent(newEvent({
@@ -112,7 +115,7 @@
 
         {#if isLarge || isScreen || isVideo}
           <div class="summary">
-            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {interfaceStyle} scale={isScreen ? 2 : 1} />
+            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {activeStyle} scale={isScreen ? 2 : 1} />
 
             {#if isLarge || isScreen || isVideo && !(playlistItem.image && isStopped) && !fixedPosition}
               <PlaylistItemTitle title={playlistItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
@@ -132,7 +135,7 @@
           </Visibility>
 
           {#if isStandard && isStopped || isSmall}
-            <PlayerTitle title="Listen to this article" visible={!isAdvert} {interfaceStyle} {collapsible} {collapsed} />
+            <PlayerTitle title="Listen to this article" visible={!isAdvert} {activeStyle} {collapsible} {collapsed} />
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
@@ -145,19 +148,19 @@
             <PlaylistItemTitle title={playlistItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
           {/if}
 
-          <TimeIndicator {playbackTime} {duration} {interfaceStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={buttonColor} />
+          <TimeIndicator {playbackTime} {duration} {activeStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={buttonColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
             <ProgressBar {onEvent} {progress} fullWidth={isVideo} />
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
-            <AdvertLink {onEvent} href={activeAdvert.url} {interfaceStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
-            <AdvertButton {onEvent} href={activeAdvert.url} {interfaceStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
+            <AdvertLink {onEvent} href={activeAdvert.url} {activeStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
+            <AdvertButton {onEvent} href={activeAdvert.url} {activeStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
           {/if}
 
           {#if !isStopped}
-            <SecondaryButton {interfaceStyle} {isMobile} {isAdvert} scale={buttonScale}>
+            <SecondaryButton {activeStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
               {:else if isScreen && playlistItem.externalUrl}

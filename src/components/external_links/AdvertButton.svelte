@@ -4,7 +4,7 @@
 
   export let href;
   export let scale = 1;
-  export let interfaceStyle;
+  export let activeStyle;
   export let controlsOrder;
   export let onEvent = () => {};
 
@@ -17,8 +17,8 @@
   };
 </script>
 
-<a class="advert-button {interfaceStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" on:click={handleClick}>
-  <OpenNewTab color={interfaceStyle === "video" ? "rgba(250, 250, 250, 0.8)" : "#00cdbc"} {scale} />
+<a class="advert-button {activeStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" on:click={handleClick}>
+  <OpenNewTab color={activeStyle === "video" ? "rgba(250, 250, 250, 0.8)" : "#00cdbc"} {scale} />
 </a>
 
 <style>
