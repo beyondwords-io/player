@@ -49,7 +49,7 @@
           {/if}
 
           <span class="title">
-            <PlaylistItemTitle {title} maxLines={isMobile ? 3 : 2} />
+            <PlaylistItemTitle {title} maxLines={isMobile ? 3 : 2} bold={i === index} />
           </span>
 
           <span class="duration">
