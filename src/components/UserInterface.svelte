@@ -104,7 +104,7 @@
 {#if knownInterfaceStyle(activeStyle)}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering graceTime={collapsible ? 500 : 0} enabled={collapsible || isVideo}>
-      <div class="main" data-is-video-main={isVideo} on:click={e => e.target.dataset.isVideoMain && handleClick()}>
+      <div class="main" data-is-video-main={isVideo} on:click={e => e.target.dataset.isVideoMain && handleClick()} on:keyup={null}>
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (activeAdvert.image || playlistItem.image) : playlistItem.image} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
