@@ -153,7 +153,7 @@
     align-self: flex-start;
   }
 
-  :global(.beyondwords-player):fullscreen .playlist {
+  :global(.beyondwords-player.maximized) .playlist {
     display: none;
   }
 </style>

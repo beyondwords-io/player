@@ -572,13 +572,13 @@
     padding-right: 0.75rem;
   }
 
-  :global(.beyondwords-player):fullscreen .video {
+  :global(.beyondwords-player.maximized) .video {
     max-width: none;
     width: 100%;
     height: 100%;
   }
 
-  :global(.beyondwords-player):fullscreen .video :global(.hoverable) {
+  :global(.beyondwords-player.maximized) .video :global(.hoverable) {
     padding: 0;
     height: 100%;
     background: none;

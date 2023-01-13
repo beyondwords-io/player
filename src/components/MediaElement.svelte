@@ -170,12 +170,13 @@
     to { bottom: 0; opacity: 1; }
   }
 
-  :global(.beyondwords-player):fullscreen {
+  :global(.beyondwords-player.maximized) {
     display: flex;
     align-items: center;
+    background: black;
   }
 
-  :global(.beyondwords-player):fullscreen .media-element {
+  :global(.beyondwords-player.maximized) .media-element {
     max-width: none;
     border-radius: 0;
   }

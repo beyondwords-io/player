@@ -157,9 +157,11 @@ class RootController {
   handleFullScreenModeUpdated() {
     const playerIsFullScreen = fullScreenElement() === this.player.target;
     console.log(playerIsFullScreen);
+    const addOrRemove = playerIsFullScreen ? "add" : "remove";
 
     this.player.userInterface.videoIsMaximized = playerIsFullScreen;
     this.player.mediaElement.videoIsMaximized = playerIsFullScreen;
+    this.player.target.classList[addOrRemove]("maximized");
   }
 
   // These methods do nothing since the anchors already open a new tab.
