@@ -62,12 +62,12 @@ class RootController {
     this.player.mediaElement.video.currentTime += seconds;
   }
 
-  handlePressedNextTrack() {
-    this.#tryPlayIndex(i => i + 1);
+  handlePressedPrevTrack() {
+    this.#setTrack(i => i - 1);
   }
 
-  handlePressedPrevTrack() {
-    this.#tryPlayIndex(i => i - 1);
+  handlePressedNextTrack() {
+    this.#setTrack(i => i + 1);
   }
 
   handlePressedMaximize() {
@@ -122,7 +122,7 @@ class RootController {
   }
 
   handlePressedPlaylistItem({ itemIndex }) {
-    this.#tryPlayIndex(() => itemIndex);
+    this.#setTrack(() => itemIndex, { forcePlay: true });
   }
 
   handlePressedVideoBackground() {
@@ -171,15 +171,26 @@ class RootController {
     }
   }
 
-  #tryPlayIndex(indexFn) {
+  #setTrack(indexFn, { forcePlay } = {}) {
     const tryIndex = indexFn(this.player.playlistIndex);
+
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.playlist.length;
+    const sameIndex = tryIndex === this.player.playlistIndex;
+    const isPlaying = this.player.playbackState === "playing";
 
-    if (outOfBounds || tryIndex === this.player.playlistIndex) { return; }
-    this.player.playlistIndex = tryIndex;
+    if (outOfBounds) {
+      this.player.mediaElement.video.load();
+      this.player.playbackState = "stopped";
+    } else if (sameIndex) {
+      this.player.mediaElement.video.play();
+    } else {
+      this.player.playlistIndex = tryIndex;
+      this.player.mediaElement.video.load();
 
-    this.player.mediaElement.video.load();
-    this.player.mediaElement.video.play();
+      if (isPlaying || forcePlay) {
+        this.player.mediaElement.video.play();
+      }
+    }
   }
 }
 
