@@ -78,8 +78,13 @@
   };
 
   onMount(() => {
-    const listener = addEventListener("fullscreenchange", handleFullScreenChange);
-    return () => removeEventListener("fullscreenchange", listener);
+    const listener1 = addEventListener("fullscreenchange", handleFullScreenChange);
+    const listener2 = addEventListener("webkitfullscreenchange", handleFullScreenChange);
+
+    return () => {
+      removeEventListener("fullscreenchange", listener1);
+      removeEventListener("fullscreenchange", listener2);
+    };
   });
 </script>
 
