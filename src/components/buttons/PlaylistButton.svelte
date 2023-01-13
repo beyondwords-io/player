@@ -1,6 +1,7 @@
 <script>
   import BurgerMenu from "../svg_icons/BurgerMenu.svelte";
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let scale = 1;
   export let color = "#323232";
@@ -15,7 +16,7 @@
   };
 </script>
 
-<button class="playlist-button" on:click={handleClick}>
+<button class="playlist-button" on:click={handleClick} on:mouseup={blurElement}>
   <BurgerMenu {scale} {color} />
 </button>
 

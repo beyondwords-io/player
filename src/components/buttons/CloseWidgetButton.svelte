@@ -1,6 +1,7 @@
 <script>
   import Close from "../svg_icons/Close.svelte";
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let scale = 1;
   export let color = "#323232";
@@ -16,7 +17,7 @@
   };
 </script>
 
-<button class="close-widget-button" style="margin: {margin}" on:click={handleClick}>
+<button class="close-widget-button" style="margin: {margin}" on:click={handleClick} on:mouseup={blurElement}>
   <Close {scale} {color} />
 </button>
 

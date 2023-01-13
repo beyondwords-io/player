@@ -1,5 +1,6 @@
 <script>
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let progress = 0;
   export let fullWidth = false;
@@ -39,7 +40,7 @@
   };
 </script>
 
-<button class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMousedown} on:keydown={handleKeydown}>
+<button class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMousedown} on:keydown={handleKeydown} on:mouseup={blurElement}>
   <div class="progress" style="width: {progress * 100}%"></div>
 </button>
 

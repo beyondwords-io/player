@@ -3,6 +3,7 @@
   import SeekAhead from "../svg_icons/SeekAhead.svelte";
   import NextTrack from "../svg_icons/NextTrack.svelte";
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let style = "segments";
   export let scale = 1;
@@ -35,7 +36,7 @@
   };
 </script>
 
-<button class="next-button" on:click={handleClick}>
+<button class="next-button" on:click={handleClick} on:mouseup={blurElement}>
   {#if isSegments}
     <Down {scale} {color} />
   {:else if isSeconds}

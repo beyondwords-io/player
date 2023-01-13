@@ -1,6 +1,7 @@
 <script>
   import Play from "../svg_icons/Play.svelte";
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let scale = 1;
   export let color = "#323232";
@@ -15,7 +16,7 @@
   };
 </script>
 
-<button class="play-button" on:click={handleClick}>
+<button class="play-button" on:click={handleClick} on:mouseup={blurElement}>
   <Play {scale} {color} />
 </button>
 

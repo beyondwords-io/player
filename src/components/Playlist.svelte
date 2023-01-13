@@ -3,6 +3,7 @@
   import PlaylistItemTitle from "./titles/PlaylistItemTitle.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
   import newEvent from "../helpers/newEvent";
+  import blurElement from "../helpers/blurElement";
 
   export let style = "auto";
   export let playlist = [];
@@ -41,7 +42,7 @@
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     <div class="scrollable">
       {#each playlist as { title, duration }, i}
-        <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown}>
+        <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:mouseup={blurElement}>
           {#if i === index}
             <span class="speaker"><VolumeUp /></span>
           {:else}

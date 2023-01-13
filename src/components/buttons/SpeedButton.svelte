@@ -1,5 +1,6 @@
 <script>
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let speed = 1;
   export let scale = 1;
@@ -18,7 +19,7 @@
   };
 </script>
 
-<button class="speed-button" on:click={handleClick} style="width: {size}; height: {size}; font-size: {fontSize}; color: {color}">
+<button class="speed-button" on:click={handleClick} on:mouseup={blurElement} style="width: {size}; height: {size}; font-size: {fontSize}; color: {color}">
   {speed}x
 </button>
 

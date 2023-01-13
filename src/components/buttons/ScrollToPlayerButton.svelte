@@ -1,6 +1,7 @@
 <script>
   import UpArrow from "../svg_icons/UpArrow.svelte";
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let scale = 1;
   export let color = "#323232";
@@ -15,7 +16,7 @@
   };
 </script>
 
-<button class="scroll-to-player-button" on:click={handleClick}>
+<button class="scroll-to-player-button" on:click={handleClick} on:mouseup={blurElement}>
   <UpArrow {scale} {color} />
 </button>
 

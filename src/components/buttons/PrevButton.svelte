@@ -3,6 +3,7 @@
   import SeekBack from "../svg_icons/SeekBack.svelte";
   import PrevTrack from "../svg_icons/PrevTrack.svelte";
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let style = "segments";
   export let scale = 1;
@@ -35,7 +36,7 @@
   };
 </script>
 
-<button class="prev-button" on:click={handleClick}>
+<button class="prev-button" on:click={handleClick} on:mouseup={blurElement}>
   {#if isSegments}
     <Up {scale} {color} />
   {:else if isSeconds}

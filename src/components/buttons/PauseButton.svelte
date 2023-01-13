@@ -1,6 +1,7 @@
 <script>
   import Pause from "../svg_icons/Pause.svelte";
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let scale = 1;
   export let color = "#323232";
@@ -15,7 +16,7 @@
   };
 </script>
 
-<button class="pause-button" on:click={handleClick}>
+<button class="pause-button" on:click={handleClick} on:mouseup={blurElement}>
   <Pause {scale} {color} />
 </button>
 
