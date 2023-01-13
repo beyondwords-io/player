@@ -5,7 +5,7 @@
   export let fullWidth = false;
   export let onEvent = () => {};
 
-  const handleClick = (event) => {
+  const handleMousedown = (event) => {
     const clickedX = event.offsetX;
     const barWidth = event.target.clientWidth;
 
@@ -39,7 +39,7 @@
   };
 </script>
 
-<button class="progress-bar" class:full-width={fullWidth} on:click={handleClick} on:keydown={handleKeydown}>
+<button class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMousedown} on:keydown={handleKeydown}>
   <div class="progress" style="width: {progress * 100}%"></div>
 </button>
 
