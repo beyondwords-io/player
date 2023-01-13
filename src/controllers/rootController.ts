@@ -147,6 +147,14 @@ class RootController {
     this.player.playbackSpeed = this.player.mediaElement.video.playbackRate;
   }
 
+  handleFullScreenModeUpdated() {
+    const playerIsFullScreen = document.fullscreenElement === this.player.target;
+    console.log(playerIsFullScreen);
+
+    this.player.userInterface.videoIsMaximized = playerIsFullScreen;
+    this.player.mediaElement.videoIsMaximized = playerIsFullScreen;
+  }
+
   // These methods do nothing since the anchors already open a new tab.
   handlePressedAdvertLink() { }
   handlePressedAdvertButton() { }

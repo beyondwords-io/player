@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import newEvent from "../helpers/newEvent";
 
   export let showUserInterface;
@@ -13,11 +14,14 @@
   export let playlistIndex;
   export let onEvent = () => {};
 
-  // This is set automatically.
+  // These are set automatically.
   export let video;
+  export let videoIsMaximized = false;
 
-  $: showBehindWidget = showWidgetAtBottom && widgetStyle === "video";
-  $: showBehindStatic = showUserInterface && interfaceStyle === "video" && !showBehindWidget;
+  $: activeStyle = videoIsMaximized ? "video" : interfaceStyle;
+
+  $: showBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !videoIsMaximized;
+  $: showBehindStatic = showUserInterface && activeStyle === "video" && !showBehindWidget;
 
   $: position = showBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = showBehindWidget ? `width: ${widgetWidth}` : "";
@@ -63,6 +67,20 @@
       fromWidget: showBehindWidget,
     }));
   };
+
+  const handleFullScreenChange = () => {
+    onEvent(newEvent({
+      type: "FullScreenModeUpdated",
+      description: "The browser entered or exited full screen mode.",
+      initiatedBy: "browser",
+      fromWidget: showBehindWidget,
+    }));
+  };
+
+  onMount(() => {
+    const listener = addEventListener("fullscreenchange", handleFullScreenChange);
+    return () => removeEventListener("fullscreenchange", listener);
+  });
 </script>
 
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
