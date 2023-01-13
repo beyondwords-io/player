@@ -1,8 +1,7 @@
 <script>
   import "@fontsource/inter/variable.css";
   import { fly } from "svelte/transition";
-  import PlayButton from "./buttons/PlayButton.svelte";
-  import PauseButton from "./buttons/PauseButton.svelte";
+  import PlayPauseButton from "./buttons/PlayPauseButton.svelte";
   import SpeedButton from "./buttons/SpeedButton.svelte";
   import PrevButton from "./buttons/PrevButton.svelte";
   import NextButton from "./buttons/NextButton.svelte";
@@ -128,11 +127,7 @@
         <div class="controls">
           <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
             <ProgressCircle {progress} enabled={isScreen || isSmall && fixedPosition} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
-              {#if isPlaying}
-                <PauseButton {onEvent} scale={playPauseScale} color={buttonColor} />
-              {:else}
-                <PlayButton {onEvent} scale={playPauseScale} color={buttonColor} />
-              {/if}
+              <PlayPauseButton {onEvent} {isPlaying} scale={playPauseScale} color={buttonColor} />
             </ProgressCircle>
           </Visibility>
 
