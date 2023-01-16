@@ -6,8 +6,10 @@
   export let idleDelay = Infinity;
   export let isHovering = false;
 
-  let isExit, isIdle;
-  let exitTimeout, idleTimeout;
+  let isExit = true;
+  let isIdle = true;
+  let exitTimeout;
+  let idleTimeout;
 
   $: isHovering = enabled && !isExit && !isIdle;
 
