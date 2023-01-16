@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import loadStream from "../helpers/loadStream";
   import newEvent from "../helpers/newEvent";
 
   export let showUserInterface;
@@ -17,6 +18,7 @@
   // These are set automatically.
   export let video;
   export let videoIsMaximized = false;
+  export let hls = null;
 
   $: activeStyle = videoIsMaximized ? "video" : interfaceStyle;
 
@@ -28,6 +30,8 @@
 
   $: playlistItem = playlist[playlistIndex];
   $: media = [playlistItem?.media].flat().filter(m => m);
+
+  $: hls = loadStream(media[0], video, hls);
 
   $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
   $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
