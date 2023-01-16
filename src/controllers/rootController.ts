@@ -146,6 +146,10 @@ class RootController {
     this.player.playbackState = "paused";
   }
 
+  handlePlaybackEnded() {
+    this.#setTrack(i => i + 1, { forcePlay: true });
+  }
+
   handlePlaybackTimeUpdated() {
     this.player.playbackTime = this.player.mediaElement.video.currentTime;
   }
