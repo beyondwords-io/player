@@ -2,31 +2,53 @@
   import { onDestroy } from "svelte";
 
   export let enabled;
-  export let graceTime;
+  export let exitDelay = 0;
+  export let idleDelay = Infinity;
   export let isHovering = false;
 
-  let timeout;
+  let isExit, isIdle;
+  let exitTimeout, idleTimeout;
+
+  $: isHovering = !isExit && !isIdle;
 
   const onEnter = () => {
-    if (timeout) { clearTimeout(timeout); }
-    isHovering = true;
+    if (exitTimeout) { clearTimeout(exitTimeout); }
+    if (idleTimeout) { clearTimeout(idleTimeout); }
+
+    isExit = false;
+    isIdle = false;
   };
 
   const onLeave = () => {
-    if (timeout) { clearTimeout(timeout); }
-    timeout = setTimeout(() => isHovering = false, graceTime);
+    if (exitTimeout) { clearTimeout(exitTimeout); }
+
+    isExit = false;
+    exitTimeout = setTimeout(() => isExit = true, exitDelay);
+  };
+
+  const onMove = () => {
+    if (idleTimeout) { clearTimeout(idleTimeout); }
+
+    isIdle = false;
+    idleTimeout = setTimeout(() => isIdle = true, idleDelay);
   };
 
   onDestroy(() => {
-    if (timeout) { clearTimeout(timeout); }
-    isHovering = false;
+    if (exitTimeout) { clearTimeout(exitTimeout); }
+    if (idleTimeout) { clearTimeout(idleTimeout); }
   });
 </script>
 
 {#if enabled}
-  <div class="hoverable" on:mouseenter={onEnter} on:mouseleave={onLeave}>
+  <div class="hoverable" class:idle={isIdle} on:mouseenter={onEnter} on:mouseleave={onLeave} on:mousemove={onMove}>
     <slot></slot>
   </div>
 {:else}
   <slot></slot>
 {/if}
+
+<style>
+  .idle {
+    cursor: none;
+  }
+</style>
