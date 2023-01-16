@@ -150,6 +150,10 @@ class RootController {
     this.#setTrack(i => i + 1, { forcePlay: true });
   }
 
+  handleMediaDurationUpdated() {
+    this.player.mediaDuration = this.player.mediaElement.video.duration;
+  }
+
   handlePlaybackTimeUpdated() {
     this.player.playbackTime = this.player.mediaElement.video.currentTime;
   }
@@ -160,7 +164,6 @@ class RootController {
 
   handleFullScreenModeUpdated() {
     const playerIsFullScreen = fullScreenElement() === this.player.target;
-    console.log(playerIsFullScreen);
     const addOrRemove = playerIsFullScreen ? "add" : "remove";
 
     this.player.userInterface.videoIsMaximized = playerIsFullScreen;

@@ -9,6 +9,7 @@
   export let playerTitle = undefined;
   export let playlist = [];
   export let playlistIndex = 0;
+  export let mediaDuration = 0;
   export let playbackTime = 0;
   export let playbackState = "stopped";
   export let playbackSpeed = 1;
@@ -25,7 +26,7 @@
   export let controller = { handleEvent: () => {} };
 
   $: mediaProps = { showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth, playlist, playlistIndex };
-  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, playlist, playlistIndex, playbackTime, playbackState, playbackSpeed, activeAdvert };
+  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, playlist, playlistIndex, mediaDuration, playbackTime, playbackState, playbackSpeed, activeAdvert };
   $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 
