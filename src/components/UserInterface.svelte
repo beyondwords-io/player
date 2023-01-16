@@ -431,6 +431,7 @@
     padding-bottom: 56.25%;
     border-radius: 0.5rem;
     overflow: hidden;
+    transition: background-color 0.25s;
   }
 
   .video .video-placeholder {
