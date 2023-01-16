@@ -59,6 +59,15 @@
     }));
   };
 
+  const handleDurationChange = () => {
+    onEvent(newEvent({
+      type: "MediaDurationUpdated",
+      description: "The media's duration was updated.",
+      initiatedBy: "media",
+      fromWidget: showBehindWidget,
+    }));
+  };
+
   const handleTimeUpdate = () => {
     onEvent(newEvent({
       type: "PlaybackTimeUpdated",
@@ -105,6 +114,7 @@
            on:play={handlePlay}
            on:pause={handlePause}
            on:ended={handleEnded}
+           on:durationchange={handleDurationChange}
            on:timeupdate={handleTimeUpdate}
            on:ratechange={handleRateChange}>
       {#each media as source}
