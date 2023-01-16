@@ -145,7 +145,12 @@ class RootController {
   }
 
   handlePlaybackEnded() {
-    this.#setTrack(i => i + 1, { forcePlay: true });
+    if (this.player.activeAdvert) {
+      this.player.activeAdvert = null;
+      this.#setTrack(i => i, { forceLoad: true, forcePlay: true });
+    } else {
+      this.#setTrack(i => i + 1, { forcePlay: true });
+    }
   }
 
   handleMediaDurationUpdated() {
@@ -185,11 +190,11 @@ class RootController {
     }
   }
 
-  #setTrack(indexFn, { forcePlay } = {}) {
+  #setTrack(indexFn, { forceLoad, forcePlay } = {}) {
     const tryIndex = indexFn(this.player.playlistIndex);
 
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.playlist.length;
-    const sameIndex = tryIndex === this.player.playlistIndex;
+    const hasChanged = tryIndex !== this.player.playlistIndex;
 
     const isAdvert = this.player.activeAdvert;
     const isPlaying = this.player.playbackState === "playing";
@@ -197,16 +202,14 @@ class RootController {
     if (outOfBounds) {
       this.player.mediaElement.video.load();
       this.player.playbackState = "stopped";
-    } else if (sameIndex) {
-      this.player.mediaElement.video.play();
     } else {
       this.player.playlistIndex = tryIndex;
 
-      if (!isAdvert) {
+      if (forceLoad || hasChanged && !isAdvert) {
         this.player.mediaElement.video.load();
       }
 
-      if (isPlaying || forcePlay) {
+      if (forcePlay || isPlaying) {
         this.player.mediaElement.video.play();
       }
     }
