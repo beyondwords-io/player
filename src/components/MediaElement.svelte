@@ -3,6 +3,7 @@
   import loadStream from "../helpers/loadStream";
   import newEvent from "../helpers/newEvent";
 
+  export let media;
   export let showUserInterface;
   export let userInterface;
   export let interfaceStyle;
@@ -11,8 +12,6 @@
   export let widgetStyle;
   export let widgetPosition;
   export let widgetWidth;
-  export let playlist;
-  export let playlistIndex;
   export let onEvent = () => {};
 
   // These are set automatically.
@@ -28,10 +27,8 @@
   $: position = showBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = showBehindWidget ? `width: ${widgetWidth}` : "";
 
-  $: playlistItem = playlist[playlistIndex];
-  $: media = [playlistItem?.media].flat().filter(m => m);
-
-  $: hls = loadStream(media[0], video, hls);
+  $: sources = [media].flat().filter(m => m);
+  $: hls = loadStream(sources[0], video, hls);
 
   $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
   $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
@@ -121,7 +118,8 @@
            on:durationchange={handleDurationChange}
            on:timeupdate={handleTimeUpdate}
            on:ratechange={handleRateChange}>
-      {#each media as source}
+
+      {#each sources as source}
         <source src={source}>
       {/each}
 

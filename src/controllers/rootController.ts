@@ -102,9 +102,7 @@ class RootController {
 
   handlePressedProgressBar({ ratio }) {
     if (this.player.activeAdvert) { return; }
-
-    const playlistItem = this.player.playlist[this.player.playlistIndex];
-    this.player.mediaElement.video.currentTime = ratio * playlistItem.duration;
+    this.player.mediaElement.video.currentTime = ratio * this.player.mediaDuration;
   }
 
   handlePressedLeftOnProgressBar() {

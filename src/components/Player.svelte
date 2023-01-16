@@ -25,7 +25,9 @@
   export let widgetInterface = undefined;
   export let controller = { handleEvent: () => {} };
 
-  $: mediaProps = { showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth, playlist, playlistIndex };
+  $: media = activeAdvert ? activeAdvert.media : playlist[playlistIndex]?.media;
+  $: mediaProps = { media, showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
+
   $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, playlist, playlistIndex, mediaDuration, playbackTime, playbackState, playbackSpeed, activeAdvert };
   $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
