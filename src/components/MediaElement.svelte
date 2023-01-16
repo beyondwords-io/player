@@ -50,6 +50,15 @@
     }));
   };
 
+  const handleEnded = () => {
+    onEvent(newEvent({
+      type: "PlaybackEnded",
+      description: "The media finished playing.",
+      initiatedBy: "media",
+      fromWidget: showBehindWidget,
+    }));
+  };
+
   const handleTimeUpdate = () => {
     onEvent(newEvent({
       type: "PlaybackTimeUpdated",
@@ -95,6 +104,7 @@
            disablePictureInPicture
            on:play={handlePlay}
            on:pause={handlePause}
+           on:ended={handleEnded}
            on:timeupdate={handleTimeUpdate}
            on:ratechange={handleRateChange}>
       {#each media as source}
