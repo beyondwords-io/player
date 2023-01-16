@@ -190,6 +190,8 @@ class RootController {
 
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.playlist.length;
     const sameIndex = tryIndex === this.player.playlistIndex;
+
+    const isAdvert = this.player.activeAdvert;
     const isPlaying = this.player.playbackState === "playing";
 
     if (outOfBounds) {
@@ -199,7 +201,10 @@ class RootController {
       this.player.mediaElement.video.play();
     } else {
       this.player.playlistIndex = tryIndex;
-      this.player.mediaElement.video.load();
+
+      if (!isAdvert) {
+        this.player.mediaElement.video.load();
+      }
 
       if (isPlaying || forcePlay) {
         this.player.mediaElement.video.play();
