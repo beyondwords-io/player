@@ -9,7 +9,7 @@
   let isExit, isIdle;
   let exitTimeout, idleTimeout;
 
-  $: isHovering = !isExit && !isIdle;
+  $: isHovering = enabled && !isExit && !isIdle;
 
   const onEnter = () => {
     if (exitTimeout) { clearTimeout(exitTimeout); }
@@ -39,13 +39,14 @@
   });
 </script>
 
-{#if enabled}
-  <div class="hoverable" class:idle={isIdle} on:mouseenter={onEnter} on:mouseleave={onLeave} on:mousemove={onMove}>
-    <slot></slot>
-  </div>
-{:else}
+<div class="hoverable"
+     class:idle={enabled && isIdle}
+     on:mouseenter={enabled && onEnter}
+     on:mouseleave={enabled && onLeave}
+     on:mousemove={enabled && onMove}>
+
   <slot></slot>
-{/if}
+</div>
 
 <style>
   .idle {
