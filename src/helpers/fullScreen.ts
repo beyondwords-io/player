@@ -1,3 +1,7 @@
+const canFullScreen = () => (
+  document.fullscreenEnabled
+);
+
 const requestFullScreen = (element) => {
   if (element.requestFullscreen) {
     element.requestFullscreen();
@@ -19,4 +23,4 @@ const fullScreenElement = () => (
 );
 
 
-export { requestFullScreen, exitFullScreen, fullScreenElement };
+export { canFullScreen, requestFullScreen, exitFullScreen, fullScreenElement };

@@ -27,6 +27,7 @@
   import controlsOrderFn from "../helpers/controlsOrder";
   import { knownInterfaceStyle } from "../helpers/interfaceStyles";
   import newEvent from "../helpers/newEvent";
+  import { canFullScreen } from "../helpers/fullScreen";
 
   export let interfaceStyle = "standard";
   export let skipButtonStyle = "auto";
@@ -158,7 +159,7 @@
 
           {#if !isStopped}
             <SecondaryButton {activeStyle} {isMobile} {isAdvert} scale={buttonScale}>
-              {#if isVideo}
+              {#if isVideo && canFullScreen()}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
               {:else if isScreen && playlistItem.externalUrl}
                 <ExternalUrlButton {onEvent} scale={buttonScale} href={playlistItem.externalUrl} color={buttonColor} />
