@@ -43,7 +43,7 @@
      class:idle={enabled && isIdle}
      on:mouseenter={enabled && onEnter}
      on:mouseleave={enabled && onLeave}
-     on:mousemove={enabled && onMove}>
+     on:mousemove={enabled && idleDelay !== Infinity && onMove}>
 
   <slot></slot>
 </div>
