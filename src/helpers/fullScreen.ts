@@ -1,5 +1,5 @@
 const canFullScreen = () => (
-  document.fullscreenEnabled
+  document.fullscreenEnabled || document.webkitFullscreenEnabled
 );
 
 const requestFullScreen = (element) => {
