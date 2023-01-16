@@ -485,7 +485,7 @@
     pointer-events: none;
   }
 
-  .video:focus-within .controls > :global(*),
+  :global(.hoverable):focus-within .controls > :global(*),
   .video.stopped .controls > :global(*),
   .video.paused .controls > :global(*),
   .video.hovering .controls > :global(*),
