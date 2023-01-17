@@ -233,7 +233,7 @@ class RootController {
       type.includes("SeekBack") ||
       type.includes("SeekAhead") ||
       type.includes("Progress") && !type.includes("Space") && !type.includes("Enter")
-    )
+    );
   }
 
   #playOrPause() {

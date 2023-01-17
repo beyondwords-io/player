@@ -19,7 +19,7 @@ export const validatePostEvent = (props) => {
   validatePreEvent(props);
 
   validateProperty(props, "processedAt");
-}
+};
 
 const validateProperty = (props, name) => {
   if (Object.prototype.hasOwnProperty.call(props, name)) { return; }

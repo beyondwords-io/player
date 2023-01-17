@@ -6,7 +6,7 @@ const newEvent = (props) => {
 
   const id = randomUuid();
   const createdAt = new Date().toISOString();
-  const status = "pending"
+  const status = "pending";
 
   return { id, createdAt, status, ...props };
 };
