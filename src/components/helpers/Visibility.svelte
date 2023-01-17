@@ -4,7 +4,7 @@
 
   let element;
 
-  export let enabled = true;
+  export let enabled = false;
   export let relativeY = undefined;
   export let absoluteY = undefined;
   export let isVisible = undefined;

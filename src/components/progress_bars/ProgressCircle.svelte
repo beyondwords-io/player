@@ -1,6 +1,6 @@
 <script>
   export let progress = 0;
-  export let enabled = true;
+  export let enabled = false;
   export let bold;
   export let scale = 1;
   export let color = "#323232";
