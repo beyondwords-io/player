@@ -67,7 +67,7 @@
   $: isMobile = belowBreakpoint({ activeStyle, width });
 
   $: playlistItem = playlist[playlistIndex] || {};
-  $: progress = isStopped ? 0 : playbackTime / mediaDuration;
+  $: progress = playbackTime / mediaDuration;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
