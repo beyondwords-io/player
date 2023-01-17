@@ -70,6 +70,7 @@
   }
 
   .scrollable {
+    padding: 0.2rem 0;
     padding-left: 0.25rem;
     overflow-y: scroll;
     max-height: calc(2.5rem * var(--desktop-rows));
