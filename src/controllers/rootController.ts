@@ -35,12 +35,38 @@ class RootController {
   }
 
   handlePressedChangeSpeed() {
-    const availableSpeeds = [1, 1.25, 1.5, 1.75, 2, 0.25, 0.5, 0.75];
+    if (this.player.activeAdvert) { return; }
+    this.#setSpeed(i => i + 1, { cycle: true });
+  }
 
-    const currentIndex = availableSpeeds.indexOf(this.player.playbackSpeed);
-    const cycledIndex = (currentIndex + 1) % availableSpeeds.length;
+  handlePressedLeftOnChangeSpeed() {
+    if (this.player.activeAdvert) { return; }
+    this.#setSpeed(i => i - 1);
+  }
 
-    this.player.mediaElement.video.playbackRate = availableSpeeds[cycledIndex];
+  handlePressedRightOnChangeSpeed() {
+    if (this.player.activeAdvert) { return; }
+    this.#setSpeed(i => i + 1);
+  }
+
+  handlePressedDownOnChangeSpeed() {
+    if (this.player.activeAdvert) { return; }
+    this.#setSpeed(i => i - 1);
+  }
+
+  handlePressedUpOnChangeSpeed() {
+    if (this.player.activeAdvert) { return; }
+    this.#setSpeed(i => i + 1);
+  }
+
+  handlePressedSpaceOnChangeSpeed() {
+    if (this.player.activeAdvert) { return; }
+    this.#setSpeed(i => i + 1, { cycle: true });
+  }
+
+  handlePressedEnterOnChangeSpeed() {
+    if (this.player.activeAdvert) { return; }
+    this.#setSpeed(i => i + 1, { cycle: true });
   }
 
   handlePressedPrevSegment() {
@@ -202,6 +228,24 @@ class RootController {
     } else {
       this.player.mediaElement.video.play();
     }
+  }
+
+  #setSpeed(indexFn, { cycle } = {}) {
+    const availableSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+    const maxIndex = availableSpeeds.length - 1;
+
+    const currentIndex = availableSpeeds.indexOf(this.player.playbackSpeed);
+    const tryIndex = indexFn(currentIndex);
+
+    let updatedIndex;
+
+    if (cycle) {
+      updatedIndex = tryIndex % availableSpeeds.length;
+    } else {
+      updatedIndex = Math.max(0, Math.min(maxIndex, tryIndex));
+    }
+
+    this.player.mediaElement.video.playbackRate = availableSpeeds[updatedIndex] || 1;
   }
 
   #setTime(timeFn) {
