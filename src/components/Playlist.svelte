@@ -47,7 +47,7 @@
 
 {#if mode === "show" || mode === "auto" && playlist.length > 1}
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
-    <div class="scrollable">
+    <div class="scrollable" tabindex="-1">
       {#each playlist as { title, duration }, i}
         <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
           {#if i === index}
