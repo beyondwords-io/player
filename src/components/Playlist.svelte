@@ -21,7 +21,7 @@
       type: "PressedPlaylistItem",
       description: "A playlist item was pressed.",
       initiatedBy: "user",
-      itemIndex: i,
+      index: i,
     }));
   };
 

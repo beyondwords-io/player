@@ -26,68 +26,57 @@ class RootController {
     validatePostEvent(event);
   }
 
-  handleVisibilityChanged() {
-    chooseWidget(this.PlayerClass);
+  handlePressedPlay()                  { this.player.mediaElement.video.play(); }
+  handlePressedPause()                 { this.player.mediaElement.video.pause(); }
+
+  handlePressedChangeSpeed()           { this.#setSpeed(i => i + 1, { cycle: true }); }
+  handlePressedEnterOnChangeSpeed()    { this.#setSpeed(i => i + 1, { cycle: true }); }
+  handlePressedSpaceOnChangeSpeed()    { this.#setSpeed(i => i + 1, { cycle: true }); }
+  handlePressedUpOnChangeSpeed()       { this.#setSpeed(i => i + 1); }
+  handlePressedRightOnChangeSpeed()    { this.#setSpeed(i => i + 1); }
+  handlePressedDownOnChangeSpeed()     { this.#setSpeed(i => i - 1); }
+  handlePressedLeftOnChangeSpeed()     { this.#setSpeed(i => i - 1); }
+
+  handlePressedPrevSegment()           { console.log("pressed previous segment"); }
+  handlePressedNextSegment()           { console.log("pressed next segment"); }
+  handlePressedSeekBack({ seconds })   { this.#setTime(t => t - seconds); }
+  handlePressedSeekAhead({ seconds })  { this.#setTime(t => t + seconds); }
+  handlePressedPrevTrack()             { this.#setTrack(i => i - 1); }
+  handlePressedNextTrack()             { this.#setTrack(i => i + 1); }
+  handlePressedPlaylistItem({ index }) { this.#setTrack(() => index, { forcePlay: true }); }
+
+  handlePressedAdvertLink()            { /* Do nothing */ }
+  handlePressedAdvertButton()          { /* Do nothing */ }
+  handlePressedBeyondWords()           { /* Do nothing */ }
+  handlePressedExternalUrl()           { /* Do nothing */ }
+
+  handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
+  handlePressedScrollToPlayer()        { this.player.target.scrollIntoView(); }
+
+  handlePressedVideoBackground()       { this.#playOrPause(); }
+  handlePressedEnterOnProgressBar()    { this.#playOrPause(); }
+  handlePressedSpaceOnProgressBar()    { this.#playOrPause(); }
+  handlePressedEnterOnProgressCircle() { this.#playOrPause(); }
+  handlePressedSpaceOnProgressCircle() { this.#playOrPause(); }
+
+  handlePressedLeftOnProgressBar()     { this.#setTime(t => t - 5); }
+  handlePressedRightOnProgressBar()    { this.#setTime(t => t + 5); }
+  handlePressedLeftOnProgressCircle()  { this.#setTime(t => t - 5); }
+  handlePressedRightOnProgressCircle() { this.#setTime(t => t + 5); }
+
+  handlePressedProgressBar({ ratio }) {
+    this.wasPlayingBeforeScrubbing = this.player.playbackState === "playing";
+    this.#setTime((_, duration) => ratio * duration);
   }
 
-  handlePressedPlay() {
-    this.player.mediaElement.video.play();
-  }
-
-  handlePressedPause() {
+  handleScrubbedProgressBar({ ratio }) {
     this.player.mediaElement.video.pause();
+    this.#setTime((_, duration) => ratio * duration);
   }
 
-  handlePressedChangeSpeed() {
-    this.#setSpeed(i => i + 1, { cycle: true });
-  }
-
-  handlePressedLeftOnChangeSpeed() {
-    this.#setSpeed(i => i - 1);
-  }
-
-  handlePressedRightOnChangeSpeed() {
-    this.#setSpeed(i => i + 1);
-  }
-
-  handlePressedDownOnChangeSpeed() {
-    this.#setSpeed(i => i - 1);
-  }
-
-  handlePressedUpOnChangeSpeed() {
-    this.#setSpeed(i => i + 1);
-  }
-
-  handlePressedSpaceOnChangeSpeed() {
-    this.#setSpeed(i => i + 1, { cycle: true });
-  }
-
-  handlePressedEnterOnChangeSpeed() {
-    this.#setSpeed(i => i + 1, { cycle: true });
-  }
-
-  handlePressedPrevSegment() {
-    console.log("pressed previous segment");
-  }
-
-  handlePressedNextSegment() {
-    console.log("pressed next segment");
-  }
-
-  handlePressedSeekBack({ seconds }) {
-    this.#setTime(t => t - seconds);
-  }
-
-  handlePressedSeekAhead({ seconds }) {
-    this.#setTime(t => t + seconds);
-  }
-
-  handlePressedPrevTrack() {
-    this.#setTrack(i => i - 1);
-  }
-
-  handlePressedNextTrack() {
-    this.#setTrack(i => i + 1);
+  handleFinishedScrubbingProgressBar() {
+    if (this.wasPlayingBeforeScrubbing) { return; }
+    this.player.mediaElement.video.play();
   }
 
   handlePressedMaximize() {
@@ -108,10 +97,6 @@ class RootController {
     this.player.playlistStyle = parts.join("-");
   }
 
-  handlePressedScrollToPlayer() {
-    this.player.target.scrollIntoView();
-  }
-
   handlePressedCloseWidget() {
     for (const player of this.PlayerClass.instances()) {
       player.mediaElement.video.pause();
@@ -119,63 +104,13 @@ class RootController {
     }
   }
 
-  handlePressedProgressBar({ ratio }) {
-    this.wasPlayingBeforeScrubbing = this.player.playbackState === "playing";
-    this.#setTime((_, duration) => ratio * duration);
-  }
-
-  handleScrubbedProgressBar({ ratio }) {
-    this.player.mediaElement.video.pause();
-    this.#setTime((_, duration) => ratio * duration);
-  }
-
-  handleFinishedScrubbingProgressBar() {
-    if (!this.wasPlayingBeforeScrubbing) { return; }
-    this.player.mediaElement.video.play();
-  }
-
-  handlePressedLeftOnProgressBar() {
-    this.#setTime(t => t - 5);
-  }
-
-  handlePressedRightOnProgressBar() {
-    this.#setTime(t => t + 5);
-  }
-
-  handlePressedSpaceOnProgressBar() {
-    this.#playOrPause();
-  }
-
-  handlePressedEnterOnProgressBar() {
-    this.#playOrPause();
-  }
-
-  handlePressedLeftOnProgressCircle() {
-    this.#setTime(t => t - 5);
-  }
-
-  handlePressedRightOnProgressCircle() {
-    this.#setTime(t => t + 5);
-  }
-
-  handlePressedSpaceOnProgressCircle() {
-    this.#playOrPause();
-  }
-
-  handlePressedEnterOnProgressCircle() {
-    this.#playOrPause();
-  }
-
-  handlePressedPlaylistItem({ itemIndex }) {
-    this.#setTrack(() => itemIndex, { forcePlay: true });
-  }
-
-  handlePressedVideoBackground() {
-    this.#playOrPause();
-  }
-
-  // These methods respond to events emitted by the video element.
+  // The following methods respond to events emitted by the video element.
   // We shouldn't assume the methods above will succeed, e.g. video.play()
+
+  handleMediaDurationUpdated() { this.player.mediaDuration = this.player.mediaElement.video.duration; }
+  handlePlaybackTimeUpdated()  { this.player.playbackTime = this.player.mediaElement.video.currentTime; }
+  handlePlaybackSpeedUpdated() { this.player.playbackSpeed = this.player.mediaElement.video.playbackRate; }
+
   handlePlaybackStarted() {
     this.player.playbackState = "playing";
 
@@ -196,18 +131,6 @@ class RootController {
     }
   }
 
-  handleMediaDurationUpdated() {
-    this.player.mediaDuration = this.player.mediaElement.video.duration;
-  }
-
-  handlePlaybackTimeUpdated() {
-    this.player.playbackTime = this.player.mediaElement.video.currentTime;
-  }
-
-  handlePlaybackSpeedUpdated() {
-    this.player.playbackSpeed = this.player.mediaElement.video.playbackRate;
-  }
-
   handleFullScreenModeUpdated() {
     const playerIsFullScreen = fullScreenElement() === this.player.target;
     const addOrRemove = playerIsFullScreen ? "add" : "remove";
@@ -216,12 +139,6 @@ class RootController {
     this.player.mediaElement.videoIsMaximized = playerIsFullScreen;
     this.player.target.classList[addOrRemove]("maximized");
   }
-
-  // These methods do nothing since the anchors already open a new tab.
-  handlePressedAdvertLink() { }
-  handlePressedAdvertButton() { }
-  handlePressedBeyondWords() { }
-  handlePressedExternalUrl() { }
 
   // private
 
