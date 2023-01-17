@@ -42,16 +42,9 @@
 </script>
 
 <div class="hoverable"
-     class:idle={enabled && isIdle}
      on:mouseenter={enabled && onEnter}
      on:mouseleave={enabled && onLeave}
      on:mousemove={enabled && idleDelay !== Infinity && onMove}>
 
   <slot></slot>
 </div>
-
-<style>
-  .idle {
-    cursor: none;
-  }
-</style>

@@ -455,6 +455,13 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(0, 1fr) auto;
+    cursor: none;
+  }
+
+  .video.stopped .main,
+  .video.paused .main,
+  .video.hovering .main {
+    cursor: default;
   }
 
   .video .summary {
