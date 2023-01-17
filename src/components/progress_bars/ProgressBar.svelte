@@ -33,7 +33,14 @@
   };
 
   const handleMouseUp = () => {
+    if (!mouseDown) { return; }
     mouseDown = false;
+
+    onEvent(newEvent({
+      type: "FinishedScrubbingProgressBar",
+      description: "The mouse was released after scrubbing the progress bar.",
+      initiatedBy: "user",
+    }));
   };
 
   const handleKeydown = (event) => {

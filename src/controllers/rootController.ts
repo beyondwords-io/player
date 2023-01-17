@@ -102,12 +102,21 @@ class RootController {
 
   handlePressedProgressBar({ ratio }) {
     if (this.player.activeAdvert) { return; }
+
+    this.wasPlayingBeforeScrubbing = this.player.playbackState === "playing";
     this.player.mediaElement.video.currentTime = ratio * this.player.mediaDuration;
   }
 
   handleScrubbedProgressBar({ ratio }) {
     if (this.player.activeAdvert) { return; }
+
+    this.player.mediaElement.video.pause();
     this.player.mediaElement.video.currentTime = ratio * this.player.mediaDuration;
+  }
+
+  handleFinishedScrubbingProgressBar() {
+    if (!this.wasPlayingBeforeScrubbing) { return; }
+    this.player.mediaElement.video.play();
   }
 
   handlePressedLeftOnProgressBar() {
