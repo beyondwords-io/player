@@ -1,4 +1,4 @@
-import { validatePartialEvent } from "./validateEvent";
+import { validatePartialEvent } from "./eventValidation";
 import { v4 as randomUuid } from "uuid";
 
 const newEvent = (props) => {

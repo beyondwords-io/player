@@ -1,12 +1,12 @@
 import throwError from "./throwError";
 
-const validatePartialEvent = (props) => {
+export const validatePartialEvent = (props) => {
   validateProperty(props, "type");
   validateProperty(props, "description");
   validateProperty(props, "initiatedBy");
 };
 
-const validateEvent = (props) => {
+export const validatePreEvent = (props) => {
   validatePartialEvent(props);
 
   validateProperty(props, "id");
@@ -15,10 +15,13 @@ const validateEvent = (props) => {
   validateProperty(props, "fromWidget");
 };
 
+export const validatePostEvent = (props) => {
+  validatePreEvent(props);
+
+  validateProperty(props, "handledAt");
+}
+
 const validateProperty = (props, name) => {
   if (Object.prototype.hasOwnProperty.call(props, name)) { return; }
   throwError(`Invalid event: missing a '${name}' property`, props);
 };
-
-export { validatePartialEvent };
-export default validateEvent;

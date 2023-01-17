@@ -1,7 +1,7 @@
-import validateEvent from "../helpers/validateEvent";
+import { validatePreEvent, validatePostEvent } from "../helpers/eventValidation";
+import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 import throwError from "../helpers/throwError";
 import chooseWidget from "../helpers/chooseWidget";
-import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 
 class RootController {
   constructor(player, PlayerClass) {
@@ -10,7 +10,7 @@ class RootController {
   }
 
   handleEvent(event) {
-    validateEvent(event);
+    validatePreEvent(event);
     const handler = this[`handle${event.type}`];
 
     if (this.#ignoreDueToAdvert(event)) {
@@ -23,6 +23,7 @@ class RootController {
     }
 
     event.handledAt = new Date().toISOString();
+    validatePostEvent(event);
   }
 
   handleVisibilityChanged() {
