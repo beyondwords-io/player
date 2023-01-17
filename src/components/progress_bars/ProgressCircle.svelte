@@ -1,5 +1,5 @@
 <script>
-  import newEvent from "../../helpers/newEvent";
+  import handleKeyDown from "./handleKeyDown";
 
   export let progress = 0;
   export let enabled = false;
@@ -16,28 +16,10 @@
   $: circumference = radius * 2 * Math.PI;
   $: clamped = Math.max(0, Math.min(1, progress));
   $: dashOffset = circumference * (1 - clamped);
-
-  export const handleKeyDown = (event) => {
-    let key;
-
-    if (event.key === "ArrowLeft")  { key = "Left"; }
-    if (event.key === "ArrowRight") { key = "Right"; }
-    if (event.key === " ")          { key = "Space"; }
-    if (event.key === "Enter")      { key = "Enter"; }
-
-    if (!key) { return; }
-    event.preventDefault();
-
-    onEvent(newEvent({
-      type: `Pressed${key}OnProgressBar`,
-      description: `The ${key.toLowerCase()} key was pressed while the progress bar was focussed.`,
-      initiatedBy: "user",
-    }));
-  };
 </script>
 
 {#if enabled}
-  <button class="progress-circle" style="width: {scale * 40}px; height: {scale * 40}px" on:keydown={handleKeyDown}>
+  <button class="progress-circle" style="width: {scale * 40}px; height: {scale * 40}px" on:keydown={handleKeyDown(onEvent)}>
     <svg fill="none" width={size} height={size} xmlns="http://www.w3.org/2000/svg">
       <circle cx="50%"
               cy="50%"

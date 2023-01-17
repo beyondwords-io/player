@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
+  import handleKeyDown from "./handleKeyDown";
 
   export let progress = 0;
   export let fullWidth = false;
@@ -47,24 +48,6 @@
     }));
   };
 
-  const handleKeydown = (event) => {
-    let key;
-
-    if (event.key === "ArrowLeft")  { key = "Left"; }
-    if (event.key === "ArrowRight") { key = "Right"; }
-    if (event.key === " ")          { key = "Space"; }
-    if (event.key === "Enter")      { key = "Enter"; }
-
-    if (!key) { return; }
-    event.preventDefault();
-
-    onEvent(newEvent({
-      type: `Pressed${key}OnProgressBar`,
-      description: `The ${key.toLowerCase()} key was pressed while the progress bar was focussed.`,
-      initiatedBy: "user",
-    }));
-  };
-
   const getMouseRatio = (event) => {
     const { x, width } = progressBar.getBoundingClientRect();
     const mouseRatio = (event.clientX - x) / width;
@@ -83,7 +66,7 @@
   });
 </script>
 
-<button bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMouseDown} on:keydown={handleKeydown} on:mouseup={blurElement}>
+<button bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent)} on:mouseup={blurElement}>
   <div class="progress" style="width: {progress * 100}%"></div>
 </button>
 
