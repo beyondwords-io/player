@@ -78,6 +78,7 @@
     display: flex;
     cursor: pointer;
     overflow: hidden;
+    outline-offset: 0.2rem;
 
     background: #d9d9d9;
     border: none;

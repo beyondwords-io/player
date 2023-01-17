@@ -17,7 +17,7 @@
   };
 </script>
 
-<button class="close-widget-button" style="margin: {margin}" on:click={handleClick} on:mouseup={blurElement}>
+<button class="close-widget-button" style="margin: {margin}; outline-offset: {0.3 * scale}rem" on:click={handleClick} on:mouseup={blurElement}>
   <Close {scale} {color} />
 </button>
 
