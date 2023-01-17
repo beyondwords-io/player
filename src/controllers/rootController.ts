@@ -13,8 +13,11 @@ class RootController {
     validateEvent(event);
     const handler = this[`handle${event.type}`];
 
-    if (handler) {
+    if (this.#ignoreDueToAdvert(event)) {
+      event.status = "ignored";
+    } else if (handler) {
       handler.call(this, event);
+      event.status = "handled";
     } else {
       throwError("No handler function for event.", event);
     }
@@ -35,57 +38,46 @@ class RootController {
   }
 
   handlePressedChangeSpeed() {
-    if (this.player.activeAdvert) { return; }
     this.#setSpeed(i => i + 1, { cycle: true });
   }
 
   handlePressedLeftOnChangeSpeed() {
-    if (this.player.activeAdvert) { return; }
     this.#setSpeed(i => i - 1);
   }
 
   handlePressedRightOnChangeSpeed() {
-    if (this.player.activeAdvert) { return; }
     this.#setSpeed(i => i + 1);
   }
 
   handlePressedDownOnChangeSpeed() {
-    if (this.player.activeAdvert) { return; }
     this.#setSpeed(i => i - 1);
   }
 
   handlePressedUpOnChangeSpeed() {
-    if (this.player.activeAdvert) { return; }
     this.#setSpeed(i => i + 1);
   }
 
   handlePressedSpaceOnChangeSpeed() {
-    if (this.player.activeAdvert) { return; }
     this.#setSpeed(i => i + 1, { cycle: true });
   }
 
   handlePressedEnterOnChangeSpeed() {
-    if (this.player.activeAdvert) { return; }
     this.#setSpeed(i => i + 1, { cycle: true });
   }
 
   handlePressedPrevSegment() {
-    if (this.player.activeAdvert) { return; }
     console.log("pressed previous segment");
   }
 
   handlePressedNextSegment() {
-    if (this.player.activeAdvert) { return; }
     console.log("pressed next segment");
   }
 
   handlePressedSeekBack({ seconds }) {
-    if (this.player.activeAdvert) { return; }
     this.#setTime(t => t - seconds);
   }
 
   handlePressedSeekAhead({ seconds }) {
-    if (this.player.activeAdvert) { return; }
     this.#setTime(t => t + seconds);
   }
 
@@ -127,15 +119,11 @@ class RootController {
   }
 
   handlePressedProgressBar({ ratio }) {
-    if (this.player.activeAdvert) { return; }
-
     this.wasPlayingBeforeScrubbing = this.player.playbackState === "playing";
     this.#setTime((_, duration) => ratio * duration);
   }
 
   handleScrubbedProgressBar({ ratio }) {
-    if (this.player.activeAdvert) { return; }
-
     this.player.mediaElement.video.pause();
     this.#setTime((_, duration) => ratio * duration);
   }
@@ -146,12 +134,10 @@ class RootController {
   }
 
   handlePressedLeftOnProgressBar() {
-    if (this.player.activeAdvert) { return; }
     this.#setTime(t => t - 5);
   }
 
   handlePressedRightOnProgressBar() {
-    if (this.player.activeAdvert) { return; }
     this.#setTime(t => t + 5);
   }
 
@@ -164,12 +150,10 @@ class RootController {
   }
 
   handlePressedLeftOnProgressCircle() {
-    if (this.player.activeAdvert) { return; }
     this.#setTime(t => t - 5);
   }
 
   handlePressedRightOnProgressCircle() {
-    if (this.player.activeAdvert) { return; }
     this.#setTime(t => t + 5);
   }
 
@@ -239,6 +223,17 @@ class RootController {
   handlePressedExternalUrl() { }
 
   // private
+
+  #ignoreDueToAdvert({ type }) {
+    return this.player.activeAdvert && (
+      type.includes("ChangeSpeed") ||
+      type.includes("PrevSegment") ||
+      type.includes("NextSegment") ||
+      type.includes("SeekBack") ||
+      type.includes("SeekAhead") ||
+      type.includes("Progress") && !type.includes("Space") && !type.includes("Enter")
+    )
+  }
 
   #playOrPause() {
     if (this.player.playbackState === "playing") {
