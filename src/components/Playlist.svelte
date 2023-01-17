@@ -36,13 +36,20 @@
       event.target.nextElementSibling.focus();
     }
   };
+
+  const handleFocus = (event) => {
+    const scrollable = event.target.parentNode;
+    const nearestTen = Math.round(scrollable.scrollTop / 10) * 10;
+
+    scrollable.scrollTop = nearestTen;
+  };
 </script>
 
 {#if mode === "show" || mode === "auto" && playlist.length > 1}
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     <div class="scrollable">
       {#each playlist as { title, duration }, i}
-        <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:mouseup={blurElement}>
+        <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
           {#if i === index}
             <span class="speaker"><VolumeUp /></span>
           {:else}
