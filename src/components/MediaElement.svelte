@@ -174,6 +174,7 @@
     margin: 1rem;
     animation: fly-widget 0.33s forwards;
     opacity: 0;
+    z-index: 999;
   }
 
   .fixed-left {

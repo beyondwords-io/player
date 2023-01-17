@@ -207,7 +207,7 @@
     bottom: 0;
     margin: 1rem;
     max-width: calc(100% - 2rem);
-    z-index: 1;
+    z-index: 1000;
   }
 
   .fixed-left {
