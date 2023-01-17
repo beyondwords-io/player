@@ -163,6 +163,24 @@ class RootController {
     this.#playOrPause();
   }
 
+  handlePressedLeftOnProgressCircle() {
+    if (this.player.activeAdvert) { return; }
+    this.#setTime(t => t - 5);
+  }
+
+  handlePressedRightOnProgressCircle() {
+    if (this.player.activeAdvert) { return; }
+    this.#setTime(t => t + 5);
+  }
+
+  handlePressedSpaceOnProgressCircle() {
+    this.#playOrPause();
+  }
+
+  handlePressedEnterOnProgressCircle() {
+    this.#playOrPause();
+  }
+
   handlePressedPlaylistItem({ itemIndex }) {
     this.#setTrack(() => itemIndex, { forcePlay: true });
   }

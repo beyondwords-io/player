@@ -63,7 +63,7 @@
   });
 </script>
 
-<button bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent)} on:mouseup={blurElement}>
+<button bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement}>
   <div class="progress" style="width: {progress * 100}%"></div>
 </button>
 

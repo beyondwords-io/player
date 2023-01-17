@@ -1,6 +1,6 @@
 import newEvent from "../../helpers/newEvent";
 
-const handleKeyDown = (onEvent) => (event) => {
+const handleKeyDown = (onEvent, kind) => (event) => {
   let key;
 
   if (event.key === "ArrowLeft")  { key = "Left"; }
@@ -12,8 +12,8 @@ const handleKeyDown = (onEvent) => (event) => {
   event.preventDefault();
 
   onEvent(newEvent({
-    type: `Pressed${key}OnProgressBar`,
-    description: `The ${key.toLowerCase()} key was pressed while the progress bar was focussed.`,
+    type: `Pressed${key}OnProgress${kind}`,
+    description: `The ${key.toLowerCase()} key was pressed while the progress ${kind.toLowerCase()} was focussed.`,
     initiatedBy: "user",
   }));
 };
