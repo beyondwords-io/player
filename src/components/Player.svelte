@@ -23,7 +23,7 @@
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
-  export let controller = { handleEvent: () => {} };
+  export let controller = { processEvent: () => {} };
 
   $: media = activeAdvert ? activeAdvert.media : playlist[playlistIndex]?.media;
   $: mediaProps = { media, showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
@@ -32,12 +32,12 @@
   $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 
-<MediaElement bind:this={mediaElement} onEvent={e => controller.handleEvent(e)} {...mediaProps} />
+<MediaElement bind:this={mediaElement} onEvent={e => controller.processEvent(e)} {...mediaProps} />
 
 {#if showUserInterface}
-  <UserInterface bind:this={userInterface} onEvent={e => controller.handleEvent({ ...e, fromWidget: false })} {...interfaceProps} />
+  <UserInterface bind:this={userInterface} onEvent={e => controller.processEvent({ ...e, fromWidget: false })} {...interfaceProps} />
 {/if}
 
 {#if showWidgetAtBottom}
-  <UserInterface bind:this={widgetInterface} onEvent={e => controller.handleEvent({ ...e, fromWidget: true })} {...widgetProps} />
+  <UserInterface bind:this={widgetInterface} onEvent={e => controller.processEvent({ ...e, fromWidget: true })} {...widgetProps} />
 {/if}

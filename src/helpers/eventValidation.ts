@@ -18,7 +18,7 @@ export const validatePreEvent = (props) => {
 export const validatePostEvent = (props) => {
   validatePreEvent(props);
 
-  validateProperty(props, "handledAt");
+  validateProperty(props, "processedAt");
 }
 
 const validateProperty = (props, name) => {

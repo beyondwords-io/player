@@ -9,7 +9,7 @@ class RootController {
     this.PlayerClass = PlayerClass;
   }
 
-  handleEvent(event) {
+  processEvent(event) {
     validatePreEvent(event);
     const handler = this[`handle${event.type}`];
 
@@ -22,7 +22,7 @@ class RootController {
       throwError("No handler function for event.", event);
     }
 
-    event.handledAt = new Date().toISOString();
+    event.processedAt = new Date().toISOString();
     validatePostEvent(event);
   }
 
