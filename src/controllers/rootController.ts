@@ -230,19 +230,24 @@ class RootController {
     const isPlaying = this.player.playbackState === "playing";
 
     if (outOfBounds) {
-      this.player.mediaElement.video.load();
+      this.#loadMedia();
       this.player.playbackState = "stopped";
     } else {
       this.player.playlistIndex = tryIndex;
 
       if (forceLoad || hasChanged && !isAdvert) {
-        this.player.mediaElement.video.load();
+        this.#loadMedia();
       }
 
       if (forcePlay || isPlaying) {
         this.player.mediaElement.video.play();
       }
     }
+  }
+
+  #loadMedia() {
+    this.player.mediaElement.video.load();
+    this.player.mediaElement.video.playbackRate = this.player.playbackSpeed;
   }
 }
 
