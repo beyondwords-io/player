@@ -5,6 +5,7 @@
   import blurElement from "../../helpers/blurElement";
 
   export let isPlaying = false;
+  export let tabindex = 0;
   export let scale = 1;
   export let color = "#323232";
   export let onEvent = () => {};
@@ -20,7 +21,7 @@
   };
 </script>
 
-<button class="play-button" on:click={handleClick} on:mouseup={blurElement}>
+<button class="play-button" {tabindex} on:click={handleClick} on:mouseup={blurElement}>
   {#if isPlaying}
     <Pause {scale} {color} />
   {:else}
