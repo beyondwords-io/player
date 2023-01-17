@@ -23,6 +23,7 @@
 
   const handleMouseMove = (event) => {
     if (!mouseDown) { return; }
+    if (!progressBar) { handleMouseUp(); return; }
 
     onEvent(newEvent({
       type: "ScrubbedProgressBar",
