@@ -121,12 +121,12 @@ class RootController {
 
   handlePressedLeftOnProgressBar() {
     if (this.player.activeAdvert) { return; }
-    this.player.mediaElement.video.currentTime -= 5;
+    this.#setTime(t => t - 5);
   }
 
   handlePressedRightOnProgressBar() {
     if (this.player.activeAdvert) { return; }
-    this.player.mediaElement.video.currentTime += 5;
+    this.#setTime(t => t + 5);
   }
 
   handlePressedSpaceOnProgressBar() {
@@ -214,6 +214,10 @@ class RootController {
     const updatedTime = Math.min(timeFn(currentTime, duration), duration - 0.01);
 
     this.player.mediaElement.video.currentTime = updatedTime;
+
+    // Normally, we'd wait for the timeupdate event from the video tag but in this
+    // case we want to immediately update the progress bar to feel more responsive.
+    this.player.playbackTime = updatedTime;
   }
 
   #setTrack(indexFn, { forceLoad, forcePlay } = {}) {

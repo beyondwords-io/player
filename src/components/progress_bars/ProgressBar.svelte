@@ -13,13 +13,12 @@
 
   const handleMouseDown = (event) => {
     mouseDown = true;
-    progress = getMouseRatio(event);
 
     onEvent(newEvent({
       type: "PressedProgressBar",
       description: "The progress bar was pressed at some ratio.",
       initiatedBy: "user",
-      ratio: progress,
+      ratio: getMouseRatio(event),
     }));
   };
 
@@ -27,13 +26,11 @@
     if (!mouseDown) { return; }
     if (!progressBar) { handleMouseUp(); return; }
 
-    progress = getMouseRatio(event);
-
     onEvent(newEvent({
       type: "ScrubbedProgressBar",
       description: "The mouse was pressed on the progress bar then dragged.",
       initiatedBy: "user",
-      ratio: progress,
+      ratio: getMouseRatio(event),
     }));
   };
 
