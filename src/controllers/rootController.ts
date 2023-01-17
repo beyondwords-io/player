@@ -55,12 +55,12 @@ class RootController {
 
   handlePressedSeekBack({ seconds }) {
     if (this.player.activeAdvert) { return; }
-    this.player.mediaElement.video.currentTime -= seconds;
+    this.#setTime(t => t - seconds);
   }
 
   handlePressedSeekAhead({ seconds }) {
     if (this.player.activeAdvert) { return; }
-    this.player.mediaElement.video.currentTime += seconds;
+    this.#setTime(t => t + seconds);
   }
 
   handlePressedPrevTrack() {
@@ -104,14 +104,14 @@ class RootController {
     if (this.player.activeAdvert) { return; }
 
     this.wasPlayingBeforeScrubbing = this.player.playbackState === "playing";
-    this.player.mediaElement.video.currentTime = ratio * this.player.mediaDuration;
+    this.#setTime((_, duration) => ratio * duration);
   }
 
   handleScrubbedProgressBar({ ratio }) {
     if (this.player.activeAdvert) { return; }
 
     this.player.mediaElement.video.pause();
-    this.player.mediaElement.video.currentTime = ratio * this.player.mediaDuration;
+    this.#setTime((_, duration) => ratio * duration);
   }
 
   handleFinishedScrubbingProgressBar() {
@@ -202,6 +202,18 @@ class RootController {
     } else {
       this.player.mediaElement.video.play();
     }
+  }
+
+  #setTime(timeFn) {
+    const currentTime = this.player.mediaElement.video.currentTime;
+    const duration = this.player.mediaElement.video.duration;
+
+    // Workaround a bug in HLS.js which emits 'ended' events if you set currentTime
+    // past the duration while the media is paused. A regular video or audio tag
+    // doesn't emit that event. See https://github.com/video-dev/hls.js/issues/5168
+    const updatedTime = Math.min(timeFn(currentTime, duration), duration - 0.01);
+
+    this.player.mediaElement.video.currentTime = updatedTime;
   }
 
   #setTrack(indexFn, { forceLoad, forcePlay } = {}) {
