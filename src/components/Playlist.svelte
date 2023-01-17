@@ -28,12 +28,16 @@
   const handleKeydown = (event) => {
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      event.target.previousElementSibling.focus();
+      const prevItem = event.target.previousElementSibling;
+
+      if (prevItem) { prevItem.focus(); }
     }
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      event.target.nextElementSibling.focus();
+      const nextItem = event.target.nextElementSibling;
+
+      if (nextItem) { nextItem.focus(); }
     }
   };
 
