@@ -206,7 +206,7 @@ class RootController {
 
   #setTime(timeFn) {
     const currentTime = this.player.mediaElement.video.currentTime;
-    const duration = this.player.mediaElement.video.duration;
+    const duration = this.player.mediaElement.video.duration || 0;
 
     // Workaround a bug in HLS.js which emits 'ended' events if you set currentTime
     // past the duration while the media is paused. A regular video or audio tag
