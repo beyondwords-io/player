@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
 
@@ -6,19 +7,33 @@
   export let fullWidth = false;
   export let onEvent = () => {};
 
-  const handleMousedown = (event) => {
-    const clickedX = event.offsetX;
-    const barWidth = event.target.clientWidth;
+  let progressBar;
+  let mouseDown;
 
-    const unclamped = clickedX / barWidth;
-    const ratio = Math.max(0, Math.min(1, unclamped));
+  const handleMouseDown = (event) => {
+    mouseDown = true;
 
     onEvent(newEvent({
       type: "PressedProgressBar",
       description: "The progress bar was pressed at some ratio.",
       initiatedBy: "user",
-      ratio,
+      ratio: getMouseRatio(event),
     }));
+  };
+
+  const handleMouseMove = (event) => {
+    if (!mouseDown) { return; }
+
+    onEvent(newEvent({
+      type: "ScrubbedProgressBar",
+      description: "The mouse was pressed on the progress bar then dragged.",
+      initiatedBy: "user",
+      ratio: getMouseRatio(event),
+    }));
+  };
+
+  const handleMouseUp = () => {
+    mouseDown = false;
   };
 
   const handleKeydown = (event) => {
@@ -38,9 +53,26 @@
       initiatedBy: "user",
     }));
   };
+
+  const getMouseRatio = (event) => {
+    const { x, width } = progressBar.getBoundingClientRect();
+    const mouseRatio = (event.clientX - x) / width;
+
+    return Math.max(0, Math.min(1, mouseRatio));
+  };
+
+  onMount(() => {
+    const listener1 = addEventListener("mouseup", handleMouseUp);
+    const listener2 = addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      removeEventListener("mouseup", listener1);
+      removeEventListener("mousemove", listener2);
+    };
+  });
 </script>
 
-<button class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMousedown} on:keydown={handleKeydown} on:mouseup={blurElement}>
+<button bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMouseDown} on:keydown={handleKeydown} on:mouseup={blurElement}>
   <div class="progress" style="width: {progress * 100}%"></div>
 </button>
 

@@ -105,6 +105,11 @@ class RootController {
     this.player.mediaElement.video.currentTime = ratio * this.player.mediaDuration;
   }
 
+  handleScrubbedProgressBar({ ratio }) {
+    if (this.player.activeAdvert) { return; }
+    this.player.mediaElement.video.currentTime = ratio * this.player.mediaDuration;
+  }
+
   handlePressedLeftOnProgressBar() {
     if (this.player.activeAdvert) { return; }
     this.player.mediaElement.video.currentTime -= 5;

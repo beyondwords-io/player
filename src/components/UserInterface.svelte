@@ -92,7 +92,7 @@
 
   $: classes = `user-interface ${activeStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
 
-  const handleClick = () => {
+  const handleMouseDown = () => {
     onEvent(newEvent({
       type: "PressedVideoBackground",
       description: "The video background was pressed.",
@@ -104,7 +104,7 @@
 {#if knownInterfaceStyle(activeStyle)}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
-      <div class="main" data-is-video-main={isVideo} on:click={e => e.target.dataset.isVideoMain && handleClick()} on:keyup={null}>
+      <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null}>
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (activeAdvert.image || playlistItem.image) : playlistItem.image} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
