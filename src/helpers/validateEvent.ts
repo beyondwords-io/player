@@ -11,6 +11,7 @@ const validateEvent = (props) => {
 
   validateProperty(props, "id");
   validateProperty(props, "createdAt");
+  validateProperty(props, "status");
   validateProperty(props, "fromWidget");
 };
 
