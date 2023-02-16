@@ -1,6 +1,7 @@
 <script>
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
+  import PlayerApiClient from "../api_clients/playerApiClient";
 
   export let showUserInterface = false;
   export let interfaceStyle = "standard";
@@ -17,6 +18,8 @@
   export let widgetStyle = "standard";
   export let widgetPosition = "auto";
   export let widgetWidth = "auto";
+  export let playerApiUrl = "https://api.beyondwords.io/v1";
+  export let projectId = undefined;
 
   // These are set automatically.
   export let showWidgetAtBottom = false;
@@ -24,6 +27,7 @@
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = { processEvent: () => {} };
+  export let playerApiClient = new PlayerApiClient(playerApiUrl, projectId);
 
   $: media = activeAdvert ? activeAdvert.media : playlist[playlistIndex]?.media;
   $: mediaProps = { media, showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
