@@ -8,8 +8,8 @@
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
-  export let playlist = [];
-  export let playlistIndex = 0;
+  export let content = [];
+  export let contentIndex = 0;
   export let mediaDuration = 0;
   export let playbackTime = 0;
   export let playbackState = "stopped";
@@ -29,10 +29,10 @@
   export let controller = { processEvent: () => {} };
   export let playerApiClient = new PlayerApiClient(playerApiUrl, projectId);
 
-  $: media = activeAdvert ? activeAdvert.media : playlist[playlistIndex]?.media;
+  $: media = activeAdvert ? activeAdvert.media : content[contentIndex]?.media;
   $: mediaProps = { media, showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
 
-  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, playlist, playlistIndex, mediaDuration, playbackTime, playbackState, playbackSpeed, activeAdvert };
+  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, mediaDuration, playbackTime, playbackState, playbackSpeed, activeAdvert };
   $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 

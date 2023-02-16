@@ -7,9 +7,9 @@ const dimensions = {
   playbackState: ["paused", "playing", "stopped"],
   activeAdvert: [{ url: "https://deliveroo.com", image: advertImage }, null],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
-  playlistIndex: [0],
+  contentIndex: [0],
   playbackTime: [10],
-  playlist: [
+  content: [
     [{ title: "A reasonable length podcast title", image: itemImage, externalUrl: "https://example.com" }],
     [{ title: `A ${"very ".repeat(50)} long title` }, ...Array(10).fill({ title: "Another playlist item" })],
   ],
@@ -51,7 +51,7 @@ const skipPermutation = (params) => {
   const advertWouldntShow = params.activeAdvert && params.playbackState === "stopped";
   if (advertWouldntShow) { return true; }
 
-  const playlistWouldntShow = (testingTheWidget || params.interfaceStyle === "small") && params.playlist.length > 1;
+  const playlistWouldntShow = (testingTheWidget || params.interfaceStyle === "small") && params.content.length > 1;
   if (playlistWouldntShow) { return true; }
 
   const widthIsIrrelevant = !testingTheWidget && params.widgetWidth !== "auto";
@@ -65,7 +65,7 @@ const screenshotName = (params) => (
     params.interfaceStyle,
     params.playbackState,
     params.activeAdvert && "advert",
-    params.playlist.length > 1 && "playlist",
+    params.content.length > 1 && "playlist",
     params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`.replace("%", ""),
   ].filter(s => s).join("-")
 );

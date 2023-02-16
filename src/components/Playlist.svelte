@@ -1,12 +1,12 @@
 <script>
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
-  import PlaylistItemTitle from "./titles/PlaylistItemTitle.svelte";
+  import ContentTitle from "./titles/ContentTitle.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
   import newEvent from "../helpers/newEvent";
   import blurElement from "../helpers/blurElement";
 
   export let style = "auto";
-  export let playlist = [];
+  export let content = [];
   export let index = 0;
   export let isMobile;
   export let onEvent;
@@ -49,10 +49,10 @@
   };
 </script>
 
-{#if mode === "show" || mode === "auto" && playlist.length > 1}
+{#if mode === "show" || mode === "auto" && content.length > 1}
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
     <div class="scrollable" tabindex="-1">
-      {#each playlist as { title, duration }, i}
+      {#each content as { title, duration }, i}
         <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
           {#if i === index}
             <span class="speaker"><VolumeUp /></span>
@@ -61,7 +61,7 @@
           {/if}
 
           <span class="title">
-            <PlaylistItemTitle {title} maxLines={isMobile ? 3 : 2} bold={i === index} />
+            <ContentTitle {title} maxLines={isMobile ? 3 : 2} bold={i === index} />
           </span>
 
           <span class="duration">

@@ -16,7 +16,7 @@
   import ExternalUrlButton from "./external_links/ExternalUrlButton.svelte";
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./titles/PlayerTitle.svelte";
-  import PlaylistItemTitle from "./titles/PlaylistItemTitle.svelte";
+  import ContentTitle from "./titles/ContentTitle.svelte";
   import ProgressBar from "./progress_bars/ProgressBar.svelte";
   import ProgressCircle from "./progress_bars/ProgressCircle.svelte";
   import TimeIndicator from "./time_indicators/TimeIndicator.svelte";
@@ -35,8 +35,8 @@
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
-  export let playlist = [];
-  export let playlistIndex = 0;
+  export let content = [];
+  export let contentIndex = 0;
   export let mediaDuration = 0;
   export let playbackTime = 0;
   export let playbackState = "stopped";
@@ -63,10 +63,10 @@
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
-  $: isPlaylist = playlist.length > 1;
+  $: isPlaylist = content.length > 1;
   $: isMobile = belowBreakpoint({ activeStyle, width });
 
-  $: playlistItem = playlist[playlistIndex] || {};
+  $: contentItem = content[contentIndex] || {};
   $: progress = playbackTime / mediaDuration;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
@@ -84,7 +84,7 @@
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
   $: controlsOrder = controlsOrderFn({ activeStyle, position, isMobile, isAdvert });
-  $: posterImage = isStopped ? playlistItem.image : null;
+  $: posterImage = isStopped ? contentItem.image : null;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && fixedWidth === 0;
@@ -106,7 +106,7 @@
     <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
       <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null}>
         {#if isLarge || isScreen}
-          <LargeImage src={isAdvert ? (activeAdvert.image || playlistItem.image) : playlistItem.image} scale={isScreen && !isMobile ? 1.5 : 1} />
+          <LargeImage src={isAdvert ? (activeAdvert.image || contentItem.image) : contentItem.image} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
 
         {#if isVideo && fixedPosition}
@@ -119,8 +119,8 @@
           <div class="summary">
             <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {activeStyle} scale={isScreen ? 2 : 1} />
 
-            {#if isLarge || isScreen || isVideo && !(playlistItem.image && isStopped) && !fixedPosition}
-              <PlaylistItemTitle title={playlistItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
+            {#if isLarge || isScreen || isVideo && !(contentItem.image && isStopped) && !fixedPosition}
+              <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
             {/if}
           </div>
         {/if}
@@ -143,7 +143,7 @@
           {/if}
 
           {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
-            <PlaylistItemTitle title={playlistItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
+            <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
           {/if}
 
           <TimeIndicator {playbackTime} duration={mediaDuration} {activeStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={buttonColor} />
@@ -161,8 +161,8 @@
             <SecondaryButton {activeStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo && canFullScreen()}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
-              {:else if isScreen && playlistItem.externalUrl}
-                <ExternalUrlButton {onEvent} scale={buttonScale} href={playlistItem.externalUrl} color={buttonColor} />
+              {:else if isScreen && contentItem.externalUrl}
+                <ExternalUrlButton {onEvent} scale={buttonScale} href={contentItem.externalUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
                 <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} />
               {/if}
@@ -187,7 +187,7 @@
     </Hoverable>
 
     {#if !isSmall && !isScreen}
-      <Playlist {onEvent} style={playlistStyle} {playlist} index={playlistIndex} isMobile={isMobile} />
+      <Playlist {onEvent} style={playlistStyle} {content} index={contentIndex} isMobile={isMobile} />
     {/if}
   </div>
 {/if}

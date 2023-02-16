@@ -90,7 +90,7 @@ class RootController {
   handlePressedTogglePlaylist() {
     const parts = this.player.playlistStyle.split("-");
 
-    const isPlaylist = this.player.playlist.length > 1;
+    const isPlaylist = this.player.content.length > 1;
     const isShowing = parts[0] === "show" || parts[0] === "auto" && isPlaylist;
 
     parts[0] = isShowing ? "hide" : "show";
@@ -196,10 +196,10 @@ class RootController {
   }
 
   #setTrack(indexFn, { forceLoad, forcePlay } = {}) {
-    const tryIndex = indexFn(this.player.playlistIndex);
+    const tryIndex = indexFn(this.player.contentIndex);
 
-    const outOfBounds = tryIndex < 0 || tryIndex >= this.player.playlist.length;
-    const hasChanged = tryIndex !== this.player.playlistIndex;
+    const outOfBounds = tryIndex < 0 || tryIndex >= this.player.content.length;
+    const hasChanged = tryIndex !== this.player.contentIndex;
 
     const isAdvert = this.player.activeAdvert;
     const isPlaying = this.player.playbackState === "playing";
@@ -208,7 +208,7 @@ class RootController {
       this.#loadMedia();
       this.player.playbackState = "stopped";
     } else {
-      this.player.playlistIndex = tryIndex;
+      this.player.contentIndex = tryIndex;
 
       if (forceLoad || hasChanged && !isAdvert) {
         this.#loadMedia();

@@ -15,12 +15,12 @@
   $: style = `--n: ${maxLines}; font-size: ${fontSize}; max-height: ${maxHeight}; flex: ${flex}; ${maxWidthCss}; color: ${color}`;
 </script>
 
-<div class="playlist-item-title" class:bold class:one-line={maxLines === 1} class:n-lines={maxLines > 1} {style}>
+<div class="content-title" class:bold class:one-line={maxLines === 1} class:n-lines={maxLines > 1} {style}>
   {title}
 </div>
 
 <style>
-  .playlist-item-title {
+  .content-title {
     font-weight: 300;
     line-height: 1.2;
     text-overflow: ellipsis;
