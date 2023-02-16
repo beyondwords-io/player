@@ -26,6 +26,10 @@ class RootController {
     validatePostEvent(event);
   }
 
+  handleIdentifiersChanged() {
+    console.log("TODO: fetch data from API");
+  }
+
   handlePressedPlay()                  { this.player.mediaElement.video.play(); }
   handlePressedPause()                 { this.player.mediaElement.video.pause(); }
 
