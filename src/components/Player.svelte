@@ -1,5 +1,4 @@
 <script>
-  import PlayerApiClient from "../api_clients/playerApiClient";
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
@@ -29,7 +28,6 @@
   export let widgetWidth = "auto";
 
   // These are set automatically.
-  export let playerApiClient = new PlayerApiClient(playerApiUrl, projectId);
   export let showWidgetAtBottom = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;

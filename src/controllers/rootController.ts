@@ -1,6 +1,7 @@
 import { validatePreEvent, validatePostEvent } from "../helpers/eventValidation";
 import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 import throwError from "../helpers/throwError";
+import setPropsFromApi from "../helpers/setPropsFromApi";
 import chooseWidget from "../helpers/chooseWidget";
 
 class RootController {
@@ -24,10 +25,6 @@ class RootController {
 
     event.processedAt = new Date().toISOString();
     validatePostEvent(event);
-  }
-
-  handleIdentifiersChanged() {
-    console.log("TODO: fetch data from API");
   }
 
   handlePressedPlay()                  { this.player.mediaElement.video.play(); }
@@ -54,6 +51,7 @@ class RootController {
   handlePressedBeyondWords()           { /* Do nothing */ }
   handlePressedExternalUrl()           { /* Do nothing */ }
 
+  handleIdentifiersChanged()           { setPropsFromApi(this.player); }
   handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
   handlePressedScrollToPlayer()        { this.player.target.scrollIntoView(); }
 

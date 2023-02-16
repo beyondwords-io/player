@@ -27,11 +27,11 @@ class PlayerApiClient {
 
   async #fetchJson(path, fetchOptions = {}) {
     const url = `${this.baseUrl}/${path}`;
-    const response = await fetch(url, fetchOptions);
-    const json = await response.json().catch(() => {});
+    const response = await fetch(url, fetchOptions).catch(() => {});
+    const json = await response?.json().catch(() => {});
 
-    if (response.status !== 200) {
-      throwError(`Failed to fetch ${url}`, { ...fetchOptions, responseStatus: response.status, responseJson: json });
+    if (response?.status !== 200) {
+      throwError(`Failed to fetch ${url}`, { ...fetchOptions, responseStatus: response?.status, responseJson: json });
     }
 
     return json;
