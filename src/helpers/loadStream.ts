@@ -3,7 +3,7 @@ import Hls from "hls.js/dist/hls.light.js";
 const loadStream = (source, video, hls) => {
   if (hls) { hls.detachMedia(); }
 
-  const isStreamable = (source || "").endsWith(".m3u8");
+  const isStreamable = (source || {}).contentType === "application/x-mpegURL";
   if (!isStreamable) { return; }
 
   const isPlayable = video;
@@ -17,7 +17,7 @@ const loadStream = (source, video, hls) => {
 
   hls = hls || new Hls({ enableWorker: false });
 
-  hls.loadSource(source);
+  hls.loadSource(source.url);
   hls.attachMedia(video);
 
   return hls;

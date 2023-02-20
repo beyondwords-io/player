@@ -119,8 +119,8 @@
            on:timeupdate={handleTimeUpdate}
            on:ratechange={handleRateChange}>
 
-      {#each sources as source}
-        <source src={source}>
+      {#each sources as { url, contentType }}
+        <source src={url} type={contentType}>
       {/each}
 
       <track kind="captions">
