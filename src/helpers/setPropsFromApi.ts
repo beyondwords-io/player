@@ -39,6 +39,7 @@ const fetchData = (client, identifiers) => {
 const setProps = (player, data) => {
   player.playerStyle = data.settings.player_style;
   player.playerTitle = data.playlist?.title || data.settings.player_title;
+  player.callToAction = data.settings.call_to_action;
 
   player.content = data.content.map((item) => ({
     title: item.title,
