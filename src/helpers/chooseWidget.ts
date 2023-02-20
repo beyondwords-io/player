@@ -1,4 +1,4 @@
-import { knownInterfaceStyle } from "./interfaceStyles";
+import { knownPlayerStyle } from "./playerStyles";
 
 const chooseWidget = (Player) => {
   let somePlayerIsVisible = false;
@@ -10,7 +10,7 @@ const chooseWidget = (Player) => {
   for (const player of Player.instances()) {
     if (!player.userInterface) { continue; }
 
-    const knownStyle = knownInterfaceStyle(player.widgetStyle);
+    const knownStyle = knownPlayerStyle(player.widgetStyle);
     if (!knownStyle) { continue; }
 
     const withinViewport = player.userInterface.isVisible;

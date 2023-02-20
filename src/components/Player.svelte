@@ -12,7 +12,7 @@
   export let playlist = undefined;
 
   export let showUserInterface = false;
-  export let interfaceStyle = "standard";
+  export let playerStyle = "standard";
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
@@ -37,16 +37,16 @@
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
 
   $: media = activeAdvert ? activeAdvert.media : content[contentIndex]?.media;
-  $: mediaProps = { media, showUserInterface, userInterface, interfaceStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
+  $: mediaProps = { media, showUserInterface, userInterface, playerStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
 
-  $: interfaceProps = { interfaceStyle, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, mediaDuration, playbackTime, playbackState, playbackSpeed, activeAdvert };
-  $: widgetProps = { ...interfaceProps, interfaceStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
+  $: playerProps = { playerStyle, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, mediaDuration, playbackTime, playbackState, playbackSpeed, activeAdvert };
+  $: widgetProps = { ...playerProps, playerStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 
 <MediaElement bind:this={mediaElement} onEvent={e => controller.processEvent(e)} {...mediaProps} />
 
 {#if showUserInterface}
-  <UserInterface bind:this={userInterface} onEvent={e => controller.processEvent({ ...e, fromWidget: false })} {...interfaceProps} />
+  <UserInterface bind:this={userInterface} onEvent={e => controller.processEvent({ ...e, fromWidget: false })} {...playerProps} />
 {/if}
 
 {#if showWidgetAtBottom}

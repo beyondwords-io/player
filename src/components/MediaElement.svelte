@@ -6,7 +6,7 @@
   export let media;
   export let showUserInterface;
   export let userInterface;
-  export let interfaceStyle;
+  export let playerStyle;
   export let showWidgetAtBottom;
   export let widgetInterface;
   export let widgetStyle;
@@ -19,7 +19,7 @@
   export let videoIsMaximized = false;
   export let hls = null;
 
-  $: activeStyle = videoIsMaximized ? "video" : interfaceStyle;
+  $: activeStyle = videoIsMaximized ? "video" : playerStyle;
 
   $: showBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !videoIsMaximized;
   $: showBehindStatic = showUserInterface && activeStyle === "video" && !showBehindWidget;

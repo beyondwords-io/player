@@ -3,7 +3,7 @@ import { itemImage, advertImage } from "../support/base64Images.ts";
 import permutations from "../support/permutations.ts";
 
 const dimensions = {
-  interfaceStyle: ["large", "screen", "small", "standard", "video"],
+  playerStyle: ["large", "screen", "small", "standard", "video"],
   playbackState: ["paused", "playing", "stopped"],
   activeAdvert: [{ url: "https://deliveroo.com", imageUrl: advertImage }, null],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
@@ -25,7 +25,7 @@ test("screenshot comparison", async ({ page }) => {
     if (skipPermutation(params)) { continue; }
 
     params.mediaDuration = params.activeAdvert ? 15 : 30;
-    params.widgetStyle = params.widgetPosition ? params.interfaceStyle : "none";
+    params.widgetStyle = params.widgetPosition ? params.playerStyle : "none";
 
     await page.evaluate(async (params) => {
       const player = BeyondWords.Player.instances()[0];
@@ -51,7 +51,7 @@ const skipPermutation = (params) => {
   const advertWouldntShow = params.activeAdvert && params.playbackState === "stopped";
   if (advertWouldntShow) { return true; }
 
-  const playlistWouldntShow = (testingTheWidget || params.interfaceStyle === "small") && params.content.length > 1;
+  const playlistWouldntShow = (testingTheWidget || params.playerStyle === "small") && params.content.length > 1;
   if (playlistWouldntShow) { return true; }
 
   const widthIsIrrelevant = !testingTheWidget && params.widgetWidth !== "auto";
@@ -62,7 +62,7 @@ const skipPermutation = (params) => {
 
 const screenshotName = (params) => (
   [
-    params.interfaceStyle,
+    params.playerStyle,
     params.playbackState,
     params.activeAdvert && "advert",
     params.content.length > 1 && "playlist",

@@ -25,11 +25,11 @@
   import Visibility from "./helpers/Visibility.svelte";
   import belowBreakpoint from "../helpers/belowBreakpoint";
   import controlsOrderFn from "../helpers/controlsOrder";
-  import { knownInterfaceStyle } from "../helpers/interfaceStyles";
+  import { knownPlayerStyle } from "../helpers/playerStyles";
   import newEvent from "../helpers/newEvent";
   import { canFullScreen } from "../helpers/fullScreen";
 
-  export let interfaceStyle = "standard";
+  export let playerStyle = "standard";
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
@@ -52,7 +52,7 @@
   export let absoluteY = undefined;
   let width, isHovering;
 
-  $: activeStyle = videoIsMaximized && !fixedPosition ? "video" : interfaceStyle;
+  $: activeStyle = videoIsMaximized && !fixedPosition ? "video" : playerStyle;
 
   $: isSmall = activeStyle === "small";
   $: isStandard = activeStyle === "standard";
@@ -101,7 +101,7 @@
   };
 </script>
 
-{#if knownInterfaceStyle(activeStyle)}
+{#if knownPlayerStyle(activeStyle)}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
       <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null}>
