@@ -1,6 +1,5 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
-import setPropsFromData from "./setPropsFromData";
 
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient(player.playerApiUrl, player.projectId);
@@ -12,7 +11,7 @@ const setPropsFromApi = async (player) => {
   const data = await fetchData(client, identifiers);
   if (!data) { return; }
 
-  setPropsFromData(player, data); // TODO: override initialProps
+  setProps(player, data); // TODO: override initialProps
 };
 
 const identifiersArray = (player) => {
@@ -35,6 +34,25 @@ const fetchData = (client, identifiers) => {
   if (identifier.playlist_id) { return client.byPlaylistId(identifier.playlist_id); }
   if (identifier.source_id)   { return client.bySourceId(identifier.source_id); }
   if (identifier.source_url)  { return client.bySourceUrl(identifier.source_url); }
+};
+
+const setProps = (player, data) => {
+  player.playerTitle = data.playlist?.title || data.settings.player_title;
+
+  player.content = data.content.map((item) => ({
+    title: item.title,
+    image: data.playlist?.image_url || item.image_url,
+    sourceUrl: item.source_url,
+    duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
+    media: [...item.video, ...item.audio].map((media) => ({
+      url: media.url,
+      contentType: media.content_type,
+    })),
+  }));
+
+  // TODO: segments + skip behaviour
+  // TODO: settings
+  // TODO: ads
 };
 
 export default setPropsFromApi;
