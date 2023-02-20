@@ -1,5 +1,6 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
+import setPropsFromData from "./setPropsFromData";
 
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient(player.playerApiUrl, player.projectId);
@@ -11,7 +12,7 @@ const setPropsFromApi = async (player) => {
   const data = await fetchData(client, identifiers);
   if (!data) { return; }
 
-  console.log(data);
+  setPropsFromData(player, data); // TODO: override initialProps
 };
 
 const identifiersArray = (player) => {
