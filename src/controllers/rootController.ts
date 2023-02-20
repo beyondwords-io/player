@@ -223,6 +223,7 @@ class RootController {
   }
 
   #loadMedia() {
+    this.player.mediaElement.hls = null;
     this.player.mediaElement.video.load();
     this.player.mediaElement.video.playbackRate = this.player.playbackSpeed;
   }
