@@ -6,7 +6,10 @@
 
   export let progress = 0;
   export let fullWidth = false;
+  export let color = "#323232";
   export let onEvent = () => {};
+
+  $: backgroundStyle = fullWidth ? "" : `background: ${color}`;
 
   let progressBar;
   let mouseDown;
@@ -64,7 +67,8 @@
 </script>
 
 <button bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement}>
-  <div class="progress" style="width: {progress * 100}%"></div>
+  <div class="background" style="{backgroundStyle}"></div>
+  <div class="progress" style="{backgroundStyle}; width: {progress * 100}%"></div>
 </button>
 
 <style>
@@ -77,16 +81,24 @@
     overflow: hidden;
     outline-offset: 0.2rem;
 
-    background: #d9d9d9;
     border: none;
     margin: 0;
     padding: 0;
+    position: relative;
+  }
+
+  .background {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    opacity: 0.15;
   }
 
   .progress {
     height: 0.5rem;
     border-radius: 0.25rem;
-    background: #323232;
     pointer-events: none;
   }
 

@@ -27,6 +27,9 @@
   export let widgetStyle = "standard";
   export let widgetPosition = "auto";
   export let widgetWidth = "auto";
+  export let textColor = "#111";
+  export let backgroundColor = "#F5F5F5";
+  export let iconColor = "rgba(0, 0, 0, 0.8)";
 
   // These are set automatically.
   export let showWidgetAtBottom = false;
@@ -40,7 +43,7 @@
   $: media = activeAdvert ? activeAdvert.media : content[contentIndex]?.media;
   $: mediaProps = { media, showUserInterface, userInterface, playerStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
 
-  $: interfaceProps = { playerStyle, callToAction, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, mediaDuration, playbackTime, playbackState, playbackSpeed, activeAdvert };
+  $: interfaceProps = { playerStyle, callToAction, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, mediaDuration, playbackTime, playbackState, playbackSpeed, activeAdvert, textColor, backgroundColor, iconColor };
   $: widgetProps = { ...interfaceProps, playerStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 

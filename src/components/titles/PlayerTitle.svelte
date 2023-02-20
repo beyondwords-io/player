@@ -5,11 +5,12 @@
   export let visible = true;
   export let collapsible = false;
   export let collapsed = false;
+  export let color = "#111";
 
   let element;
 
   $: width = collapsed ? 0 : collapsible && element ? `${element.scrollWidth}px` : "auto";
-  $: style = `font-size: ${0.75 * scale}rem; visibility: ${visible ? "visible" : "hidden"}; width: ${width}; opacity: ${collapsed ? 0 : 1}`;
+  $: style = `font-size: ${0.75 * scale}rem; visibility: ${visible ? "visible" : "hidden"}; width: ${width}; opacity: ${collapsed ? 0 : 1}; color: ${color}`;
 </script>
 
 <div class="player-title {activeStyle}" {style} bind:this={element}>

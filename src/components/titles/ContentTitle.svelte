@@ -6,7 +6,7 @@
   export let bold = false;
   export let flex = "0 1 auto";
   export let scale = 1;
-  export let color = "#323232";
+  export let color = "#111";
 
   $: fontSize = `${0.625 * scale}rem`;
   $: maxHeight = `${0.625 * scale * 1.2 * maxLines}rem`;

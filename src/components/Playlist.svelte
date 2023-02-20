@@ -6,6 +6,9 @@
   import blurElement from "../helpers/blurElement";
 
   export let style = "auto";
+  export let textColor = "#111";
+  export let backgroundColor = "#F5F5F5";
+  export let iconColor = "#000";
   export let content = [];
   export let index = 0;
   export let isMobile;
@@ -50,22 +53,22 @@
 </script>
 
 {#if mode === "show" || mode === "auto" && content.length > 1}
-  <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}">
+  <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
     <div class="scrollable" tabindex="-1">
       {#each content as { title, duration }, i}
         <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
           {#if i === index}
-            <span class="speaker"><VolumeUp /></span>
+            <span class="speaker"><VolumeUp color={iconColor} /></span>
           {:else}
-            <span class="number">{i + 1}</span>
+            <span class="number" style="color: {textColor}">{i + 1}</span>
           {/if}
 
           <span class="title">
-            <ContentTitle {title} maxLines={isMobile ? 3 : 2} bold={i === index} />
+            <ContentTitle {title} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
           </span>
 
           <span class="duration">
-            <DurationInMins {duration} bold={i === index} />
+            <DurationInMins {duration} bold={i === index} color={textColor} />
           </span>
         </button>
       {/each}
@@ -76,7 +79,6 @@
 <style>
   .playlist {
     margin-top: 1rem;
-    background: #fafafa;
     border-radius: 0.5rem;
   }
 

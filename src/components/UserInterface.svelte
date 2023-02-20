@@ -43,6 +43,9 @@
   export let playbackState = "stopped";
   export let playbackSpeed = 1;
   export let activeAdvert = undefined;
+  export let textColor = "#111";
+  export let backgroundColor = "#F5F5F5";
+  export let iconColor = "black";
   export let onEvent = () => {};
 
   // These are set automatically.
@@ -71,7 +74,7 @@
   $: progress = playbackTime / mediaDuration;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
-  $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : "#323232";
+  $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : iconColor;
 
   $: buttonScale = isSmall ? 0.8 : (isScreen || isVideo && isStopped) && !isMobile ? 2 : 1;
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
@@ -105,7 +108,7 @@
 {#if knownPlayerStyle(activeStyle) && content.length > 0}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
-      <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null}>
+      <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null} style="background: {isVideo ? "transparent" : backgroundColor}">
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert ? (activeAdvert.imageUrl || contentItem.imageUrl) : contentItem.imageUrl} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
@@ -118,23 +121,23 @@
 
         {#if isLarge || isScreen || isVideo}
           <div class="summary">
-            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {activeStyle} scale={isScreen ? 2 : 1} />
+            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {activeStyle} scale={isScreen ? 2 : 1} color={textColor} />
 
             {#if isLarge || isScreen || isVideo && !(contentItem.imageUrl && isStopped) && !fixedPosition}
-              <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
+              <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : textColor} />
             {/if}
           </div>
         {/if}
 
         <div class="controls">
           <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
-            <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : "#323232"}>
+            <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : iconColor}>
               <PlayPauseButton {onEvent} {isPlaying} tabindex={isScreen || isSmall ? -1 : 0} scale={playPauseScale} color={buttonColor} />
             </ProgressCircle>
           </Visibility>
 
           {#if isStandard && isStopped || isSmall}
-            <PlayerTitle title={callToAction || ""} visible={!isAdvert} {activeStyle} {collapsible} {collapsed} />
+            <PlayerTitle title={callToAction || ""} visible={!isAdvert} {activeStyle} {collapsible} {collapsed} color={textColor} />
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
@@ -144,13 +147,13 @@
           {/if}
 
           {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
-            <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} />
+            <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={textColor} />
           {/if}
 
-          <TimeIndicator {playbackTime} duration={mediaDuration} {activeStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={buttonColor} />
+          <TimeIndicator {playbackTime} duration={mediaDuration} {activeStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : textColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
-            <ProgressBar {onEvent} {progress} fullWidth={isVideo} />
+            <ProgressBar {onEvent} {progress} fullWidth={isVideo} color={iconColor} />
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
@@ -188,7 +191,7 @@
     </Hoverable>
 
     {#if !isSmall && !isScreen}
-      <Playlist {onEvent} style={playlistStyle} {content} index={contentIndex} isMobile={isMobile} />
+      <Playlist {onEvent} style={playlistStyle} {content} index={contentIndex} isMobile={isMobile} {textColor} {backgroundColor} {iconColor} />
     {/if}
   </div>
 {/if}
@@ -200,7 +203,6 @@
 
   .user-interface :global(*) {
     font-family: "InterVariable", sans-serif;
-    color: #323232;
   }
 
   .fixed {
@@ -228,7 +230,6 @@
 
   .main {
     box-sizing: border-box;
-    background: #fafafa;
     column-gap: 0.5rem;
     transition: padding 0.5s;
   }
