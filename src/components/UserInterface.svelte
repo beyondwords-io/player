@@ -84,7 +84,7 @@
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
   $: controlsOrder = controlsOrderFn({ activeStyle, position, isMobile, isAdvert });
-  $: posterImage = isStopped ? contentItem.image : null;
+  $: posterImage = isStopped ? contentItem.imageUrl : null;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && fixedWidth === 0;
@@ -106,7 +106,7 @@
     <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
       <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null}>
         {#if isLarge || isScreen}
-          <LargeImage src={isAdvert ? (activeAdvert.image || contentItem.image) : contentItem.image} scale={isScreen && !isMobile ? 1.5 : 1} />
+          <LargeImage src={isAdvert ? (activeAdvert.imageUrl || contentItem.imageUrl) : contentItem.imageUrl} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
 
         {#if isVideo && fixedPosition}
@@ -119,7 +119,7 @@
           <div class="summary">
             <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {activeStyle} scale={isScreen ? 2 : 1} />
 
-            {#if isLarge || isScreen || isVideo && !(contentItem.image && isStopped) && !fixedPosition}
+            {#if isLarge || isScreen || isVideo && !(contentItem.imageUrl && isStopped) && !fixedPosition}
               <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : "#323232"} />
             {/if}
           </div>

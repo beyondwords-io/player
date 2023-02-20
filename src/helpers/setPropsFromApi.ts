@@ -41,7 +41,7 @@ const setProps = (player, data) => {
 
   player.content = data.content.map((item) => ({
     title: item.title,
-    image: data.playlist?.image_url || item.image_url,
+    imageUrl: data.playlist?.image_url || item.image_url,
     sourceUrl: item.source_url,
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
     media: [...item.video, ...item.audio].map((media) => ({
