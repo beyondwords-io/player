@@ -20,10 +20,16 @@ const setPropsFromContent = (player, content) => {
       contentType: media.contentType,
     })),
   }));
+
+  // TODO: segments + skip behaviour
 };
 
 const setPropsFromPlaylist = (player, playlist) => {
+  playlist = playlist || {};
 
+  player.playerTitle = playlist.title;
+  // TODO: project title
+  // TODO: playlist image
 };
 
 const setPropsFromSettings = (player, settings) => {
