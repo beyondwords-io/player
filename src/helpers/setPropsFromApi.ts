@@ -1,4 +1,5 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
+import snakeCaseKeys from "./snakeCaseKeys";
 
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient(player.playerApiUrl, player.projectId);
@@ -20,9 +21,9 @@ const identifiersArray = (player) => {
   if (player.playlistId) { identifiers.push({ playlist_id: player.playlistId }); }
   if (player.sourceId)   { identifiers.push({ source_id: player.sourceId }); }
   if (player.sourceUrl)  { identifiers.push({ source_url: player.sourceUrl }); }
-  if (player.playlist)   { identifiers.push(...player.playlist); }
+  if (player.playlist)   { identifiers.push(...snakeCaseKeys(player.playlist)); }
 
-  return identifiers;
+  return [...new Set(identifiers.map(JSON.stringify))].map(JSON.parse);
 };
 
 const fetchData = (client, identifiers) => {
@@ -36,3 +37,4 @@ const fetchData = (client, identifiers) => {
 };
 
 export default setPropsFromApi;
+export { identifiersArray, fetchData };
