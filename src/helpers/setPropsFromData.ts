@@ -13,7 +13,7 @@ const setPropsFromContent = (player, content) => {
   player.content = content.map((item) => ({
     title: item.title,
     image: item.imageUrl,
-    externalUrl: item.sourceUrl,
+    sourceUrl: item.sourceUrl,
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
     media: [...item.video, ...item.audio].map((media) => ({
       url: media.url,

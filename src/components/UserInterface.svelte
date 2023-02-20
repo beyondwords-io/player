@@ -161,8 +161,8 @@
             <SecondaryButton {activeStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo && canFullScreen()}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
-              {:else if isScreen && contentItem.externalUrl}
-                <ExternalUrlButton {onEvent} scale={buttonScale} href={contentItem.externalUrl} color={buttonColor} />
+              {:else if isScreen && contentItem.sourceUrl}
+                <ExternalUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
                 <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} />
               {/if}

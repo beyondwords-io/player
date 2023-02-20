@@ -10,7 +10,7 @@ const dimensions = {
   contentIndex: [0],
   playbackTime: [10],
   content: [
-    [{ title: "A reasonable length podcast title", image: itemImage, externalUrl: "https://example.com" }],
+    [{ title: "A reasonable length podcast title", image: itemImage, sourceUrl: "https://example.com" }],
     [{ title: `A ${"very ".repeat(50)} long title` }, ...Array(10).fill({ title: "Another playlist item" })],
   ],
   widgetPosition: [null, "auto", "center", "left", "right"],
