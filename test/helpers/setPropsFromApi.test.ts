@@ -60,11 +60,11 @@ describe("setPropsFromApi", () => {
     beforeEach(() => calls = []);
 
     const mockClient = {
-       byRequestBody: arg => { calls.push("byRequestBody", arg); return "result"; },
-       byContentId:   arg => { calls.push("byContentId",   arg); return "result"; },
-       byPlaylistId:  arg => { calls.push("byPlaylistId",  arg); return "result"; },
-       bySourceId:    arg => { calls.push("bySourceId",    arg); return "result"; },
-       bySourceUrl:   arg => { calls.push("bySourceUrl",   arg); return "result"; },
+      byRequestBody: arg => { calls.push("byRequestBody", arg); return "result"; },
+      byContentId:   arg => { calls.push("byContentId",   arg); return "result"; },
+      byPlaylistId:  arg => { calls.push("byPlaylistId",  arg); return "result"; },
+      bySourceId:    arg => { calls.push("bySourceId",    arg); return "result"; },
+      bySourceUrl:   arg => { calls.push("bySourceUrl",   arg); return "result"; },
     };
 
     it("can fetch by request body and returns the result", () => {

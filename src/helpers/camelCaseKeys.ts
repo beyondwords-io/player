@@ -1,5 +1,5 @@
 const camelCaseKeys = (value) => {
-  if (typeof value !== 'object' || value === null) {
+  if (typeof value !== "object" || value === null) {
     return value;
   }
 

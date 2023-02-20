@@ -22,7 +22,7 @@ class PlayerApiClient {
   }
 
   byRequestBody(identifiers) {
-    return this.#postJson(`by_request_body`, identifiers);
+    return this.#postJson("by_request_body", identifiers);
   }
 
   async #fetchJson(path, fetchOptions = {}) {
