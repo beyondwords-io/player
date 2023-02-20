@@ -77,7 +77,7 @@ class RootController {
   }
 
   handleFinishedScrubbingProgressBar() {
-    if (this.wasPlayingBeforeScrubbing) { return; }
+    if (!this.wasPlayingBeforeScrubbing) { return; }
     this.player.mediaElement.video.play();
   }
 
