@@ -31,14 +31,22 @@ class PlayerApiClient {
     const json = await response?.json().catch(() => {});
 
     if (response?.status !== 200) {
-      throwError(`Failed to fetch ${url}`, { ...fetchOptions, responseStatus: response?.status, responseJson: json });
+      throwError(`Failed to fetch ${url}`, {
+        ...fetchOptions,
+        responseStatus: response?.status,
+        responseJson: json,
+      });
     }
 
     return json;
   }
 
   async #postJson(path, data) {
-    this.#fetchJson(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+    return this.#fetchJson(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
   }
 }
 
