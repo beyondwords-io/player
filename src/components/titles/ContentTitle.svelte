@@ -16,7 +16,7 @@
 </script>
 
 <div class="content-title" class:bold class:one-line={maxLines === 1} class:n-lines={maxLines > 1} {style}>
-  {title}
+  {title || ""}
 </div>
 
 <style>

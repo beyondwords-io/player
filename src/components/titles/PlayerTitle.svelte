@@ -13,7 +13,7 @@
 </script>
 
 <div class="player-title {activeStyle}" {style} bind:this={element}>
-  {title}
+  {title || ""}
 </div>
 
 <style>
