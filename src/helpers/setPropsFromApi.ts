@@ -47,6 +47,18 @@ const setProps = (player, data) => {
   player.textColor = colors.text_color;
   player.backgroundColor = colors.background_color;
   player.iconColor = colors.icon_color;
+  // TODO: title_enabled
+  // TODO: image_enabled
+  player.widgetStyle = data.settings.widget_style;
+  player.widgetPosition = data.settings.widget_position;
+  // TODO: segment_playback_enabled
+  player.skipButtonStyle = data.settings.skip_button_style;
+  // TODO: paywall_type
+  // TODO: paywall_url
+  // TODO: download_button_enabled
+  // TODO: share_button_enabled
+  // TODO: voice_icon_enabled
+  // TODO: logo_icon_enabled
 
   player.content = data.content.map((item) => ({
     title: item.title,
@@ -60,7 +72,6 @@ const setProps = (player, data) => {
   }));
 
   // TODO: segments + skip behaviour
-  // TODO: settings
   // TODO: ads
 };
 
