@@ -1,5 +1,6 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
+import resolveTheme from "./resolveTheme";
 
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient(player.playerApiUrl, player.projectId);
@@ -37,9 +38,15 @@ const fetchData = (client, identifiers) => {
 };
 
 const setProps = (player, data) => {
+  const theme = resolveTheme(data.settings.theme);
+  const colors = data.settings[`${theme}_theme`];
+
   player.playerStyle = data.settings.player_style;
   player.playerTitle = data.playlist?.title || data.settings.player_title;
   player.callToAction = data.settings.call_to_action;
+  player.textColor = colors.text_color;
+  player.backgroundColor = colors.background_color;
+  player.iconColor = colors.icon_color;
 
   player.content = data.content.map((item) => ({
     title: item.title,
