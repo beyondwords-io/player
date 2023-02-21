@@ -42,7 +42,7 @@
 </script>
 
 <button class="speed-button" {style} on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown}>
-  {speed}x
+  <span>{speed}x</span>
 </button>
 
 <style>
@@ -57,5 +57,9 @@
     border: none;
     margin: 0;
     padding: 0;
+  }
+
+  .speed-button:hover span {
+    opacity: 0.7;
   }
 </style>

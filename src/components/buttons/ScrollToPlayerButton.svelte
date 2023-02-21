@@ -30,4 +30,8 @@
     margin: 0;
     padding: 0;
   }
+
+  .scroll-to-player-button:hover {
+    opacity: 0.8;
+  }
 </style>

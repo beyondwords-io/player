@@ -56,4 +56,8 @@
     margin: 0;
     padding: 0;
   }
+
+  .prev-button:hover :global(svg) {
+    opacity: 0.8;
+  }
 </style>

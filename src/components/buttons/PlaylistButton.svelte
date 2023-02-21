@@ -30,4 +30,8 @@
     margin: 0;
     padding: 0;
   }
+
+  .playlist-button:hover {
+    opacity: 0.7;
+  }
 </style>

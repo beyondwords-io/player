@@ -127,6 +127,14 @@
     cursor: pointer;
   }
 
+  .item:hover :global(.content-title) {
+    font-weight: 500;
+  }
+
+  .item:hover :global(.duration-in-mins) {
+    font-weight: 700;
+  }
+
   .mobile .item {
     height: 5rem;
     grid-template-columns: auto minmax(0, 1fr);

@@ -22,4 +22,8 @@
   .beyond-words {
     display: flex;
   }
+
+  .beyond-words:hover {
+    opacity: 0.8;
+  }
 </style>

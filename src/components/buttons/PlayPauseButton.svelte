@@ -40,4 +40,8 @@
     margin: 0;
     padding: 0;
   }
+
+  .play-pause-button:hover {
+    opacity: 0.8;
+  }
 </style>
