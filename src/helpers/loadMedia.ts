@@ -1,27 +1,27 @@
 import Hls from "hls.js/dist/hls.light.js";
 
 const loadMedia = (source, video, hls) => {
-  if (hls) { hls.detachMedia(); }
+  if (!source || !video) { return; }
 
-  const prevPaused = video?.paused;
-  const prevRate = video?.playbackRate;
+  const prevPaused = video.paused;
+  const prevRate = video.playbackRate;
 
-  const isPlayable = source && video;
-  if (!isPlayable) { return; }
+  hls?.detachMedia();
 
   const isStreamable = source.contentType === "application/x-mpegURL";
-  if (!isStreamable) { video.load(); return; } // Reload when source changes.
-
-  const nativeHlsSupported = video.canPlayType("application/vnd.apple.mpegurl");
-  if (nativeHlsSupported) { return; } // Already loaded by video <source>
-
   const libraryHlsSupported = Hls.isSupported();
-  if (!libraryHlsSupported) { return; } // An alternate source will be used.
+  const nativeHlsSupported = video.canPlayType("application/vnd.apple.mpegurl");
 
-  hls = hls || new Hls({ enableWorker: false });
+  const useLibraryHls = isStreamable && libraryHlsSupported && !nativeHlsSupported;
 
-  hls.loadSource(source.url);
-  hls.attachMedia(video);
+  if (useLibraryHls) {
+    hls = hls || new Hls({ enableWorker: false });
+
+    hls.loadSource(source.url);
+    hls.attachMedia(video);
+  } else {
+    video.load();
+  }
 
   if (!prevPaused) { video.play(); }
   video.playbackRate = prevRate;
