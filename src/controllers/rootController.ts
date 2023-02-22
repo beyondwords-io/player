@@ -111,7 +111,7 @@ class RootController {
 
   handleMediaDurationUpdated() { /* Do nothing */ }
   handlePlaybackTimeUpdated()  { /* Do nothing */ }
-  handlePlaybackSpeedUpdated() { this.player.playbackRate = this.player.mediaElement.video.playbackRate; }
+  handlePlaybackSpeedUpdated() { /* Do nothing */ }
 
   handlePlaybackStarted() {
     this.player.playbackState = "playing";

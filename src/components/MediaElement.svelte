@@ -6,6 +6,7 @@
   export let media;
   export let duration;
   export let currentTime;
+  export let playbackRate;
   export let showUserInterface;
   export let userInterface;
   export let playerStyle;
@@ -114,6 +115,7 @@
     <video bind:this={video}
            bind:duration
            bind:currentTime
+           bind:playbackRate
            preload="metadata"
            disablePictureInPicture
            on:play={handlePlay}
