@@ -24,7 +24,7 @@
   $: sources = [media].flat().filter(m => m);
   $: hls = loadStream(sources[0], video, hls);
 
-  $: playbackState === "playing" ? video?.play() : video?.pause();
+  $: sources, playbackState === "playing" ? video?.play() : video?.pause();
 
   const handlePlay = () => {
     onEvent(newEvent({
