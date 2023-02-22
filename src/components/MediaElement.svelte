@@ -4,6 +4,7 @@
   import newEvent from "../helpers/newEvent";
 
   export let media;
+  export let playbackState;
   export let duration;
   export let currentTime;
   export let playbackRate;
@@ -22,6 +23,8 @@
 
   $: sources = [media].flat().filter(m => m);
   $: hls = loadStream(sources[0], video, hls);
+
+  $: playbackState === "playing" ? video?.play() : video?.pause();
 
   const handlePlay = () => {
     onEvent(newEvent({
