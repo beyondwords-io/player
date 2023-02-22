@@ -1,6 +1,6 @@
 <script>
   export let title;
-  export let activeStyle;
+  export let playerStyle;
   export let scale = 1;
   export let visible = true;
   export let collapsible = false;
@@ -13,7 +13,7 @@
   $: style = `font-size: ${0.75 * scale}rem; visibility: ${visible ? "visible" : "hidden"}; width: ${width}; opacity: ${collapsed ? 0 : 1}; color: ${color}`;
 </script>
 
-<div class="player-title {activeStyle}" {style} bind:this={element}>
+<div class="player-title {playerStyle}" {style} bind:this={element}>
   {title || ""}
 </div>
 

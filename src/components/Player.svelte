@@ -33,6 +33,7 @@
 
   // These are set automatically.
   export let showWidgetAtBottom = false;
+  export let videoIsMaximized = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
@@ -40,11 +41,16 @@
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
 
-  $: media = activeAdvert ? activeAdvert.media : content[contentIndex]?.media;
-  $: mediaProps = { media, showUserInterface, userInterface, playerStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
+  $: interfaceStyle = videoIsMaximized ? "video" : playerStyle;
 
-  $: interfaceProps = { playerStyle, callToAction, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, duration, currentTime, playbackState, playbackRate, activeAdvert, textColor, backgroundColor, iconColor };
-  $: widgetProps = { ...interfaceProps, playerStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
+  $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !videoIsMaximized;
+  $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
+
+  $: media = activeAdvert ? activeAdvert.media : content[contentIndex]?.media;
+  $: mediaProps = { media, videoBehindWidget, videoBehindStatic, widgetPosition, widgetWidth };
+
+  $: interfaceProps = { playerStyle: interfaceStyle, callToAction, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, duration, currentTime, playbackState, playbackRate, activeAdvert, textColor, backgroundColor, iconColor, videoIsBehind: videoBehindStatic };
+  $: widgetProps = { ...interfaceProps, playerStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide", videoIsBehind: videoBehindWidget };
 </script>
 
 <MediaElement bind:this={mediaElement} bind:duration bind:currentTime bind:playbackRate onEvent={e => controller.processEvent(e)} {...mediaProps} />

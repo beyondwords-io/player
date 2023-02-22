@@ -1,11 +1,11 @@
 <script>
-  export let activeStyle;
+  export let playerStyle;
   export let isMobile;
   export let isAdvert;
   export let scale;
 </script>
 
-<div class="secondary-button {activeStyle}" class:mobile={isMobile} class:advert={isAdvert} style="--scale: {scale}">
+<div class="secondary-button {playerStyle}" class:mobile={isMobile} class:advert={isAdvert} style="--scale: {scale}">
   <slot></slot>
 </div>
 

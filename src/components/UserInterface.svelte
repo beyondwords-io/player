@@ -50,25 +50,22 @@
 
   // These are set automatically.
   export let videoIsBehind = false;
-  export let videoIsMaximized = false;
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
   let width, isHovering;
 
-  $: activeStyle = videoIsMaximized && !fixedPosition ? "video" : playerStyle;
-
-  $: isSmall = activeStyle === "small";
-  $: isStandard = activeStyle === "standard";
-  $: isLarge = activeStyle === "large";
-  $: isScreen = activeStyle === "screen";
-  $: isVideo = activeStyle === "video";
+  $: isSmall = playerStyle === "small";
+  $: isStandard = playerStyle === "standard";
+  $: isLarge = playerStyle === "large";
+  $: isScreen = playerStyle === "screen";
+  $: isVideo = playerStyle === "video";
   $: isPlaying = playbackState === "playing";
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
   $: isPlaylist = content.length > 1;
-  $: isMobile = belowBreakpoint({ activeStyle, width });
+  $: isMobile = belowBreakpoint({ playerStyle, width });
 
   $: contentItem = content[contentIndex] || {};
   $: progress = currentTime / duration;
@@ -87,14 +84,14 @@
   $: positionClasses = fixedPosition ? `fixed fixed-${position}` : "";
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
-  $: controlsOrder = controlsOrderFn({ activeStyle, position, isMobile, isAdvert });
+  $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
   $: posterImage = isStopped ? contentItem.imageUrl : null;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && fixedWidth === 0;
   $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
 
-  $: classes = `user-interface ${activeStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
+  $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
 
   const handleMouseDown = () => {
     onEvent(newEvent({
@@ -105,7 +102,7 @@
   };
 </script>
 
-{#if knownPlayerStyle(activeStyle) && content.length > 0}
+{#if knownPlayerStyle(playerStyle) && content.length > 0}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
       <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null} style="background: {isVideo ? "transparent" : backgroundColor}">
@@ -121,7 +118,7 @@
 
         {#if isLarge || isScreen || isVideo}
           <div class="summary">
-            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {activeStyle} scale={isScreen ? 2 : 1} color={textColor} />
+            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {playerStyle} scale={isScreen ? 2 : 1} color={textColor} />
 
             {#if isLarge || isScreen || isVideo && !(contentItem.imageUrl && isStopped) && !fixedPosition}
               <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : textColor} />
@@ -137,7 +134,7 @@
           </Visibility>
 
           {#if isStandard && isStopped || isSmall}
-            <PlayerTitle title={callToAction || ""} visible={!isAdvert} {activeStyle} {collapsible} {collapsed} color={textColor} />
+            <PlayerTitle title={callToAction || ""} visible={!isAdvert} {playerStyle} {collapsible} {collapsed} color={textColor} />
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
@@ -150,19 +147,19 @@
             <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={textColor} />
           {/if}
 
-          <TimeIndicator {currentTime} {duration} {activeStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : textColor} />
+          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : textColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
             <ProgressBar {onEvent} {progress} fullWidth={isVideo} color={iconColor} />
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
-            <AdvertLink {onEvent} href={activeAdvert.url} {activeStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
-            <AdvertButton {onEvent} href={activeAdvert.url} {activeStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
+            <AdvertLink {onEvent} href={activeAdvert.url} {playerStyle} scale={isScreen ? 2 : 1} {controlsOrder} />
+            <AdvertButton {onEvent} href={activeAdvert.url} {playerStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
           {/if}
 
           {#if !isStopped}
-            <SecondaryButton {activeStyle} {isMobile} {isAdvert} scale={buttonScale}>
+            <SecondaryButton {playerStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo && canFullScreen()}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
               {:else if isScreen && contentItem.sourceUrl}

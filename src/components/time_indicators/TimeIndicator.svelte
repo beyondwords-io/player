@@ -7,7 +7,7 @@
   export let currentTime = 0;
   $: remaining = Math.max(0, duration - currentTime);
 
-  export let activeStyle;
+  export let playerStyle;
   export let positionClasses;
   export let isMobile;
   export let isAdvert;
@@ -15,12 +15,12 @@
   export let collapsed;
   export let color = "323232";
 
-  $: isScreen = activeStyle === "screen";
+  $: isScreen = playerStyle === "screen";
   $: scale = isScreen && !isMobile ? 3 : isScreen ? 2 : 1;
   $: opacityCss = collapsed ? "opacity: 0" : "";
 </script>
 
-<div class="time-indicator {activeStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} style={opacityCss}>
+<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} style={opacityCss}>
   <div class="inner">
     {#if isAdvert}
       <CountdownTime text="Ad" remaining={remaining} {scale} {color} />

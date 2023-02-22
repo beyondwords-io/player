@@ -137,8 +137,7 @@ class RootController {
     const playerIsFullScreen = fullScreenElement() === this.player.target;
     const addOrRemove = playerIsFullScreen ? "add" : "remove";
 
-    this.player.userInterface.videoIsMaximized = playerIsFullScreen;
-    this.player.mediaElement.videoIsMaximized = playerIsFullScreen;
+    this.player.videoIsMaximized = playerIsFullScreen;
     this.player.target.classList[addOrRemove]("maximized");
   }
 

@@ -7,41 +7,28 @@
   export let duration;
   export let currentTime;
   export let playbackRate;
-  export let showUserInterface;
-  export let userInterface;
-  export let playerStyle;
-  export let showWidgetAtBottom;
-  export let widgetInterface;
-  export let widgetStyle;
+  export let videoBehindWidget;
+  export let videoBehindStatic;
   export let widgetPosition;
   export let widgetWidth;
   export let onEvent = () => {};
 
   // These are set automatically.
   export let video;
-  export let videoIsMaximized = false;
   export let hls = null;
 
-  $: activeStyle = videoIsMaximized ? "video" : playerStyle;
-
-  $: showBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !videoIsMaximized;
-  $: showBehindStatic = showUserInterface && activeStyle === "video" && !showBehindWidget;
-
-  $: position = showBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
-  $: style = showBehindWidget ? `width: ${widgetWidth}` : "";
+  $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
+  $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
 
   $: sources = [media].flat().filter(m => m);
   $: hls = loadStream(sources[0], video, hls);
-
-  $: if (userInterface) { userInterface.videoIsBehind = showBehindStatic; }
-  $: if (widgetInterface) { widgetInterface.videoIsBehind = showBehindWidget; }
 
   const handlePlay = () => {
     onEvent(newEvent({
       type: "PlaybackStarted",
       description: "The media started playing from its current playback time.",
       initiatedBy: "media",
-      fromWidget: showBehindWidget,
+      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -50,7 +37,7 @@
       type: "PlaybackPaused",
       description: "The media became paused at its current playback time.",
       initiatedBy: "media",
-      fromWidget: showBehindWidget,
+      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -59,7 +46,7 @@
       type: "PlaybackEnded",
       description: "The media finished playing.",
       initiatedBy: "media",
-      fromWidget: showBehindWidget,
+      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -68,7 +55,7 @@
       type: "DurationUpdated",
       description: "The media's duration was updated.",
       initiatedBy: "media",
-      fromWidget: showBehindWidget,
+      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -77,7 +64,7 @@
       type: "CurrentTimeUpdated",
       description: "The media's current time was updated.",
       initiatedBy: "media",
-      fromWidget: showBehindWidget,
+      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -86,7 +73,7 @@
       type: "PlaybackRateUpdated",
       description: "The media's playback rate was updated.",
       initiatedBy: "media",
-      fromWidget: showBehindWidget,
+      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -95,7 +82,7 @@
       type: "FullScreenModeUpdated",
       description: "The browser entered or exited full screen mode.",
       initiatedBy: "browser",
-      fromWidget: showBehindWidget,
+      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -110,7 +97,7 @@
   });
 </script>
 
-<div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
+<div class="media-element {position}" class:behind-static={videoBehindStatic} class:behind-widget={videoBehindWidget} {style}>
   <div class="inner">
     <video bind:this={video}
            bind:duration

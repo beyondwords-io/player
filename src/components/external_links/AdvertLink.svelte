@@ -3,7 +3,7 @@
 
   export let href;
   export let scale = 1;
-  export let activeStyle;
+  export let playerStyle;
   export let controlsOrder;
   export let onEvent = () => {};
 
@@ -18,7 +18,7 @@
   };
 </script>
 
-<a class="advert-link {activeStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem" on:click={handleClick}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem" on:click={handleClick}>
   {text}
 </a>
 
