@@ -110,7 +110,7 @@ class RootController {
   // We shouldn't assume the methods above will succeed, e.g. video.play()
 
   handleMediaDurationUpdated() { this.player.mediaDuration = this.player.mediaElement.video.duration; }
-  handlePlaybackTimeUpdated()  { this.player.currentTime = this.player.mediaElement.video.currentTime; }
+  handlePlaybackTimeUpdated()  { /* Do nothing */ }
   handlePlaybackSpeedUpdated() { this.player.playbackSpeed = this.player.mediaElement.video.playbackRate; }
 
   handlePlaybackStarted() {
