@@ -10,13 +10,13 @@ const loadStream = (source, video, hls) => {
   if (!isPlayable) { return; }
 
   const isStreamable = source.contentType === "application/x-mpegURL";
-  if (!isStreamable) { return; }
+  if (!isStreamable) { video?.load(); return; } // Reload when source changes.
 
   const nativeHlsSupported = video.canPlayType("application/vnd.apple.mpegurl");
   if (nativeHlsSupported) { return; } // Already loaded by video <source>
 
   const libraryHlsSupported = Hls.isSupported();
-  if (!libraryHlsSupported) { return; }
+  if (!libraryHlsSupported) { return; } // An alternate source will be used.
 
   hls = hls || new Hls({ enableWorker: false });
 
