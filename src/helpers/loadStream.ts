@@ -3,6 +3,9 @@ import Hls from "hls.js/dist/hls.light.js";
 const loadStream = (source, video, hls) => {
   if (hls) { hls.detachMedia(); }
 
+  const prevPaused = video?.paused;
+  const prevRate = video?.playbackRate;
+
   const isPlayable = source && video;
   if (!isPlayable) { return; }
 
@@ -19,6 +22,9 @@ const loadStream = (source, video, hls) => {
 
   hls.loadSource(source.url);
   hls.attachMedia(video);
+
+  if (!prevPaused) { video.play(); }
+  video.playbackRate = prevRate;
 
   return hls;
 };
