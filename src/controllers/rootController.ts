@@ -94,11 +94,10 @@ class RootController {
   }
 
   handlePlaybackEnded() {
-    if (this.preScrubState) { return; } // Don't skip to next track while scrubbing.
-
-    if (this.player.activeAdvert) {
+    if (this.preScrubState) {
+      return; // Don't skip track while scrubbing.
+    } else if (this.player.activeAdvert) {
       this.player.activeAdvert = null;
-      this.#setTrack(i => i); // TODO: test this
     } else {
       this.#setTrack(i => i + 1);
     }
