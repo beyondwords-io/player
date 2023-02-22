@@ -27,8 +27,8 @@ class RootController {
     validatePostEvent(event);
   }
 
-  handlePressedPlay()                  { this.player.mediaElement.video.play(); }
-  handlePressedPause()                 { this.player.mediaElement.video.pause(); }
+  handlePressedPlay()                  { this.player.playbackState = "playing"; }
+  handlePressedPause()                 { this.player.playbackState = "paused"; }
 
   handlePressedChangeSpeed()           { this.#setSpeed(i => i + 1, { cycle: true }); }
   handlePressedEnterOnChangeSpeed()    { this.#setSpeed(i => i + 1, { cycle: true }); }
@@ -44,7 +44,6 @@ class RootController {
   handlePressedSeekAhead({ seconds })  { this.#setTime(t => t + seconds); }
   handlePressedPrevTrack()             { this.#setTrack(i => i - 1); }
   handlePressedNextTrack()             { this.#setTrack(i => i + 1); }
-  handlePressedPlaylistItem({ index }) { this.#setTrack(() => index, { forcePlay: true }); }
 
   handlePressedAdvertLink()            { /* Do nothing */ }
   handlePressedAdvertButton()          { /* Do nothing */ }
@@ -54,6 +53,7 @@ class RootController {
   handleDurationUpdated()              { /* Do nothing */ }
   handleCurrentTimeUpdated()           { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
+  handlePlaybackPaused()               { /* Do nothing */ }
 
   handleIdentifiersChanged()           { setPropsFromApi(this.player); }
   handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
@@ -71,18 +71,37 @@ class RootController {
   handlePressedRightOnProgressCircle() { this.#setTime(t => t + 5); }
 
   handlePressedProgressBar({ ratio }) {
-    this.wasPlayingBeforeScrubbing = this.player.playbackState === "playing";
+    this.preScrubState = this.player.playbackState;;
     this.#setTime((_, duration) => ratio * duration);
   }
 
   handleScrubbedProgressBar({ ratio }) {
-    this.player.mediaElement.video.pause();
+    if (this.player.playbackState === "playing") {
+      this.player.playbackState = "paused";
+    }
+
     this.#setTime((_, duration) => ratio * duration);
   }
 
   handleFinishedScrubbingProgressBar() {
-    if (!this.wasPlayingBeforeScrubbing) { return; }
-    this.player.mediaElement.video.play();
+    this.player.playbackState = this.preScrubState;
+    delete this.preScrubState;
+  }
+
+  handlePlaybackStarted() {
+    const otherPlayers = this.PlayerClass.instances().filter(p => p !== this.player);
+    otherPlayers.forEach(p => p.playbackState = "paused");
+  }
+
+  handlePlaybackEnded() {
+    if (this.preScrubState) { return; } // Don't skip to next track while scrubbing.
+
+    if (this.player.activeAdvert) {
+      this.player.activeAdvert = null;
+      this.#setTrack(i => i); // TODO: test this
+    } else {
+      this.#setTrack(i => i + 1);
+    }
   }
 
   handlePressedMaximize() {
@@ -91,6 +110,19 @@ class RootController {
     } else {
       requestFullScreen(this.player.target);
     }
+  }
+
+  handleFullScreenModeUpdated() {
+    const playerIsFullScreen = fullScreenElement() === this.player.target;
+    const addOrRemove = playerIsFullScreen ? "add" : "remove";
+
+    this.player.videoIsMaximized = playerIsFullScreen;
+    this.player.target.classList[addOrRemove]("maximized");
+  }
+
+  handlePressedPlaylistItem({ index }) {
+    this.#setTrack(() => index);
+    this.player.playbackState = "playing";
   }
 
   handlePressedTogglePlaylist() {
@@ -105,40 +137,9 @@ class RootController {
 
   handlePressedCloseWidget() {
     for (const player of this.PlayerClass.instances()) {
-      player.mediaElement.video.pause();
+      player.playbackState = "paused";
       player.widgetStyle = "closed-by-user";
     }
-  }
-
-  // The following methods respond to events emitted by the video element.
-  // We shouldn't assume the methods above will succeed, e.g. video.play()
-
-  handlePlaybackStarted() {
-    this.player.playbackState = "playing";
-
-    const otherPlayers = this.PlayerClass.instances().filter(p => p !== this.player);
-    otherPlayers.forEach(p => p.mediaElement.video.pause());
-  }
-
-  handlePlaybackPaused() {
-    this.player.playbackState = "paused";
-  }
-
-  handlePlaybackEnded() {
-    if (this.player.activeAdvert) {
-      this.player.activeAdvert = null;
-      this.#setTrack(i => i, { forceLoad: true, forcePlay: true });
-    } else {
-      this.#setTrack(i => i + 1, { forcePlay: true });
-    }
-  }
-
-  handleFullScreenModeUpdated() {
-    const playerIsFullScreen = fullScreenElement() === this.player.target;
-    const addOrRemove = playerIsFullScreen ? "add" : "remove";
-
-    this.player.videoIsMaximized = playerIsFullScreen;
-    this.player.target.classList[addOrRemove]("maximized");
   }
 
   // private
@@ -156,9 +157,9 @@ class RootController {
 
   #playOrPause() {
     if (this.player.playbackState === "playing") {
-      this.player.mediaElement.video.pause();
+      this.player.playbackState = "paused";
     } else {
-      this.player.mediaElement.video.play();
+      this.player.playbackState = "playing";
     }
   }
 
@@ -177,54 +178,25 @@ class RootController {
       updatedIndex = Math.max(0, Math.min(maxIndex, tryIndex));
     }
 
-    this.player.mediaElement.video.playbackRate = availableSpeeds[updatedIndex] || 1;
+    this.player.playbackRate = availableSpeeds[updatedIndex] || 1;
   }
 
-  #setTime(timeFn) {
-    const currentTime = this.player.mediaElement.video.currentTime;
-    const duration = this.player.mediaElement.video.duration || 0;
-
-    // Workaround a bug in HLS.js which emits 'ended' events if you set currentTime
-    // past the duration while the media is paused. A regular video or audio tag
-    // doesn't emit that event. See https://github.com/video-dev/hls.js/issues/5168
-    const updatedTime = Math.min(timeFn(currentTime, duration), duration - 0.01);
-
-    this.player.mediaElement.video.currentTime = updatedTime;
-
-    // Normally, we'd wait for the timeupdate event from the video tag but in this
-    // case we want to immediately update the progress bar to feel more responsive.
-    this.player.currentTime = updatedTime;
-  }
-
-  #setTrack(indexFn, { forceLoad, forcePlay } = {}) {
+  #setTrack(indexFn) {
     const tryIndex = indexFn(this.player.contentIndex);
 
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.content.length;
     const hasChanged = tryIndex !== this.player.contentIndex;
 
-    const isAdvert = this.player.activeAdvert;
-    const isPlaying = this.player.playbackState === "playing";
-
     if (outOfBounds) {
-      this.#loadMedia();
       this.player.playbackState = "stopped";
+      this.#setTime(() => 0);
     } else {
       this.player.contentIndex = tryIndex;
-
-      if (forceLoad || hasChanged && !isAdvert) {
-        this.#loadMedia();
-      }
-
-      if (forcePlay || isPlaying) {
-        this.player.mediaElement.video.play();
-      }
     }
   }
 
-  #loadMedia() {
-    this.player.mediaElement.hls = null;
-    this.player.mediaElement.video.load();
-    this.player.mediaElement.video.playbackRate = this.player.playbackRate;
+  #setTime(timeFn) {
+    this.player.currentTime = timeFn(this.player.currentTime, this.player.duration || 0);
   }
 }
 
