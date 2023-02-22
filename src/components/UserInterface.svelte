@@ -38,7 +38,7 @@
   export let fixedWidth = "auto";
   export let content = [];
   export let contentIndex = 0;
-  export let mediaDuration = 0;
+  export let duration = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let playbackSpeed = 1;
@@ -71,7 +71,7 @@
   $: isMobile = belowBreakpoint({ activeStyle, width });
 
   $: contentItem = content[contentIndex] || {};
-  $: progress = currentTime / mediaDuration;
+  $: progress = currentTime / duration;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : iconColor;
@@ -150,7 +150,7 @@
             <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={textColor} />
           {/if}
 
-          <TimeIndicator {currentTime} duration={mediaDuration} {activeStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : textColor} />
+          <TimeIndicator {currentTime} {duration} {activeStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : textColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
             <ProgressBar {onEvent} {progress} fullWidth={isVideo} color={iconColor} />

@@ -19,7 +19,7 @@
   export let playerTitle = undefined;
   export let content = [];
   export let contentIndex = 0;
-  export let mediaDuration = 0;
+  export let duration = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let playbackSpeed = 1;
@@ -43,7 +43,7 @@
   $: media = activeAdvert ? activeAdvert.media : content[contentIndex]?.media;
   $: mediaProps = { media, showUserInterface, userInterface, playerStyle, showWidgetAtBottom, widgetInterface, widgetStyle, widgetPosition, widgetWidth };
 
-  $: interfaceProps = { playerStyle, callToAction, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, mediaDuration, currentTime, playbackState, playbackSpeed, activeAdvert, textColor, backgroundColor, iconColor };
+  $: interfaceProps = { playerStyle, callToAction, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, duration, currentTime, playbackState, playbackSpeed, activeAdvert, textColor, backgroundColor, iconColor };
   $: widgetProps = { ...interfaceProps, playerStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 

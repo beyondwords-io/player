@@ -24,7 +24,7 @@ test("screenshot comparison", async ({ page }) => {
   for (const params of permutations(dimensions)) {
     if (skipPermutation(params)) { continue; }
 
-    params.mediaDuration = params.activeAdvert ? 15 : 30;
+    params.duration = params.activeAdvert ? 15 : 30;
     params.widgetStyle = params.widgetPosition ? params.playerStyle : "none";
 
     await page.evaluate(async (params) => {
