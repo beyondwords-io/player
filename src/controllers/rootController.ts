@@ -111,7 +111,7 @@ class RootController {
 
   handleMediaDurationUpdated() { /* Do nothing */ }
   handlePlaybackTimeUpdated()  { /* Do nothing */ }
-  handlePlaybackSpeedUpdated() { this.player.playbackSpeed = this.player.mediaElement.video.playbackRate; }
+  handlePlaybackSpeedUpdated() { this.player.playbackRate = this.player.mediaElement.video.playbackRate; }
 
   handlePlaybackStarted() {
     this.player.playbackState = "playing";
@@ -167,7 +167,7 @@ class RootController {
     const availableSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
     const maxIndex = availableSpeeds.length - 1;
 
-    const currentIndex = availableSpeeds.indexOf(this.player.playbackSpeed);
+    const currentIndex = availableSpeeds.indexOf(this.player.playbackRate);
     const tryIndex = indexFn(currentIndex);
 
     let updatedIndex;
@@ -225,7 +225,7 @@ class RootController {
   #loadMedia() {
     this.player.mediaElement.hls = null;
     this.player.mediaElement.video.load();
-    this.player.mediaElement.video.playbackRate = this.player.playbackSpeed;
+    this.player.mediaElement.video.playbackRate = this.player.playbackRate;
   }
 }
 

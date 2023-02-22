@@ -41,7 +41,7 @@
   export let duration = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
-  export let playbackSpeed = 1;
+  export let playbackRate = 1;
   export let activeAdvert = undefined;
   export let textColor = "#111";
   export let backgroundColor = "#F5F5F5";
@@ -141,7 +141,7 @@
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-            <SpeedButton {onEvent} speed={playbackSpeed} scale={buttonScale} color={buttonColor} />
+            <SpeedButton {onEvent} speed={playbackRate} scale={buttonScale} color={buttonColor} />
             <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
             <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
           {/if}
