@@ -8,7 +8,7 @@ const dimensions = {
   activeAdvert: [{ url: "https://deliveroo.com", imageUrl: advertImage }, null],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
   contentIndex: [0],
-  playbackTime: [10],
+  currentTime: [10],
   content: [
     [{ title: "A reasonable length podcast title", imageUrl: itemImage, sourceUrl: "https://example.com" }],
     [{ title: `A ${"very ".repeat(50)} long title` }, ...Array(10).fill({ title: "Another playlist item" })],

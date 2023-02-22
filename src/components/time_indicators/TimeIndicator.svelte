@@ -4,8 +4,8 @@
   import PlaybackTime from "./PlaybackTime.svelte";
 
   export let duration = 0;
-  export let playbackTime = 0;
-  $: remaining = Math.max(0, duration - playbackTime);
+  export let currentTime = 0;
+  $: remaining = Math.max(0, duration - currentTime);
 
   export let activeStyle;
   export let positionClasses;
@@ -27,7 +27,7 @@
     {:else if isStopped}
       <DurationInMins {duration} {scale} {color} />
     {:else}
-      <PlaybackTime {duration} {playbackTime} {scale} {color} />
+      <PlaybackTime {duration} {currentTime} {scale} {color} />
     {/if}
   </div>
 </div>

@@ -110,7 +110,7 @@ class RootController {
   // We shouldn't assume the methods above will succeed, e.g. video.play()
 
   handleMediaDurationUpdated() { this.player.mediaDuration = this.player.mediaElement.video.duration; }
-  handlePlaybackTimeUpdated()  { this.player.playbackTime = this.player.mediaElement.video.currentTime; }
+  handlePlaybackTimeUpdated()  { this.player.currentTime = this.player.mediaElement.video.currentTime; }
   handlePlaybackSpeedUpdated() { this.player.playbackSpeed = this.player.mediaElement.video.playbackRate; }
 
   handlePlaybackStarted() {
@@ -194,7 +194,7 @@ class RootController {
 
     // Normally, we'd wait for the timeupdate event from the video tag but in this
     // case we want to immediately update the progress bar to feel more responsive.
-    this.player.playbackTime = updatedTime;
+    this.player.currentTime = updatedTime;
   }
 
   #setTrack(indexFn, { forceLoad, forcePlay } = {}) {
