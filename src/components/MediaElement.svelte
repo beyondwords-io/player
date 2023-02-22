@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import loadStream from "../helpers/loadStream";
+  import loadMedia from "../helpers/loadMedia";
   import newEvent from "../helpers/newEvent";
 
   export let media;
@@ -22,7 +22,7 @@
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
 
   $: sources = [media].flat().filter(m => m);
-  $: hls = loadStream(sources[0], video, hls);
+  $: hls = loadMedia(sources[0], video, hls);
 
   $: sources, playbackState === "playing" ? video?.play() : video?.pause();
 

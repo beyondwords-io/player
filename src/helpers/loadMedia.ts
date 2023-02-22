@@ -1,6 +1,6 @@
 import Hls from "hls.js/dist/hls.light.js";
 
-const loadStream = (source, video, hls) => {
+const loadMedia = (source, video, hls) => {
   if (hls) { hls.detachMedia(); }
 
   const prevPaused = video?.paused;
@@ -10,7 +10,7 @@ const loadStream = (source, video, hls) => {
   if (!isPlayable) { return; }
 
   const isStreamable = source.contentType === "application/x-mpegURL";
-  if (!isStreamable) { video?.load(); return; } // Reload when source changes.
+  if (!isStreamable) { video.load(); return; } // Reload when source changes.
 
   const nativeHlsSupported = video.canPlayType("application/vnd.apple.mpegurl");
   if (nativeHlsSupported) { return; } // Already loaded by video <source>
@@ -29,4 +29,4 @@ const loadStream = (source, video, hls) => {
   return hls;
 };
 
-export default loadStream;
+export default loadMedia;
