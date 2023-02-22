@@ -4,6 +4,7 @@
   import newEvent from "../helpers/newEvent";
 
   export let media;
+  export let duration;
   export let currentTime;
   export let showUserInterface;
   export let userInterface;
@@ -111,6 +112,7 @@
 <div class="media-element {position}" class:behind-static={showBehindStatic} class:behind-widget={showBehindWidget} {style}>
   <div class="inner">
     <video bind:this={video}
+           bind:duration
            bind:currentTime
            preload="metadata"
            disablePictureInPicture

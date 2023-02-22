@@ -109,7 +109,7 @@ class RootController {
   // The following methods respond to events emitted by the video element.
   // We shouldn't assume the methods above will succeed, e.g. video.play()
 
-  handleMediaDurationUpdated() { this.player.duration = this.player.mediaElement.video.duration; }
+  handleMediaDurationUpdated() { /* Do nothing */ }
   handlePlaybackTimeUpdated()  { /* Do nothing */ }
   handlePlaybackSpeedUpdated() { this.player.playbackSpeed = this.player.mediaElement.video.playbackRate; }
 

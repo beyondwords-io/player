@@ -47,7 +47,7 @@
   $: widgetProps = { ...interfaceProps, playerStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide" };
 </script>
 
-<MediaElement bind:this={mediaElement} bind:currentTime onEvent={e => controller.processEvent(e)} {...mediaProps} />
+<MediaElement bind:this={mediaElement} bind:duration bind:currentTime onEvent={e => controller.processEvent(e)} {...mediaProps} />
 
 {#if showUserInterface}
   <UserInterface bind:this={userInterface} onEvent={e => controller.processEvent({ ...e, fromWidget: false })} {...interfaceProps} />
