@@ -40,25 +40,67 @@
   export let controller = { processEvent: () => {} };
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
-
   $: interfaceStyle = videoIsMaximized ? "video" : playerStyle;
 
   $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !videoIsMaximized;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
-
-  $: media = activeAdvert ? activeAdvert.media : content[contentIndex]?.media;
-  $: mediaProps = { media, videoBehindWidget, videoBehindStatic, widgetPosition, widgetWidth };
-
-  $: interfaceProps = { playerStyle: interfaceStyle, callToAction, skipButtonStyle, playlistStyle, playerTitle, content, contentIndex, duration, currentTime, playbackState, playbackRate, activeAdvert, textColor, backgroundColor, iconColor, videoIsBehind: videoBehindStatic };
-  $: widgetProps = { ...interfaceProps, playerStyle: widgetStyle, fixedPosition: widgetPosition, fixedWidth: widgetWidth, playlistStyle: "hide", videoIsBehind: videoBehindWidget };
 </script>
 
-<MediaElement bind:this={mediaElement} bind:duration bind:currentTime bind:playbackRate onEvent={e => controller.processEvent(e)} {...mediaProps} />
+<MediaElement
+  bind:this={mediaElement}
+  onEvent={e => controller.processEvent(e)}
+  media={activeAdvert ? activeAdvert.media : content[contentIndex]?.media}
+  {playbackState}
+  bind:duration
+  bind:currentTime
+  bind:playbackRate
+  {videoBehindWidget}
+  {videoBehindStatic}
+  {widgetPosition}
+  {widgetWidth} />
 
 {#if showUserInterface}
-  <UserInterface bind:this={userInterface} onEvent={e => controller.processEvent({ ...e, fromWidget: false })} {...interfaceProps} />
+  <UserInterface
+    bind:this={userInterface}
+    onEvent={e => controller.processEvent({ ...e, fromWidget: false })}
+    playerStyle={interfaceStyle}
+    {callToAction}
+    {skipButtonStyle}
+    {playlistStyle}
+    {playerTitle}
+    {content}
+    {contentIndex}
+    {duration}
+    {currentTime}
+    {playbackState}
+    {playbackRate}
+    {activeAdvert}
+    {textColor}
+    {backgroundColor}
+    {iconColor}
+    videoIsBehind={videoBehindStatic} />
 {/if}
 
 {#if showWidgetAtBottom}
-  <UserInterface bind:this={widgetInterface} onEvent={e => controller.processEvent({ ...e, fromWidget: true })} {...widgetProps} />
+  <UserInterface
+    bind:this={widgetInterface}
+    onEvent={e => controller.processEvent({ ...e, fromWidget: true })}
+    playerStyle={widgetStyle}
+    {callToAction}
+    {skipButtonStyle}
+    playlistStyle="hide"
+    {playerTitle}
+    fixedPosition={widgetPosition}
+    fixedWidth={widgetWidth}
+    {content}
+    {contentIndex}
+    {duration}
+    {currentTime}
+    {playbackState}
+    {playbackRate}
+    {activeAdvert}
+    {textColor}
+    {backgroundColor}
+    {iconColor}
+    videoIsBehind={videoBehindWidget} />
 {/if}
