@@ -65,7 +65,7 @@
 
   const handleDurationChange = () => {
     onEvent(newEvent({
-      type: "MediaDurationUpdated",
+      type: "DurationUpdated",
       description: "The media's duration was updated.",
       initiatedBy: "media",
       fromWidget: showBehindWidget,
@@ -74,8 +74,8 @@
 
   const handleTimeUpdate = () => {
     onEvent(newEvent({
-      type: "PlaybackTimeUpdated",
-      description: "The media's current playback time was updated.",
+      type: "CurrentTimeUpdated",
+      description: "The media's current time was updated.",
       initiatedBy: "media",
       fromWidget: showBehindWidget,
     }));
@@ -83,8 +83,8 @@
 
   const handleRateChange = () => {
     onEvent(newEvent({
-      type: "PlaybackSpeedUpdated",
-      description: "The media's current playback speed was updated.",
+      type: "PlaybackRateUpdated",
+      description: "The media's playback rate was updated.",
       initiatedBy: "media",
       fromWidget: showBehindWidget,
     }));

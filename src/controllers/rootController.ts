@@ -51,6 +51,10 @@ class RootController {
   handlePressedBeyondWords()           { /* Do nothing */ }
   handlePressedExternalUrl()           { /* Do nothing */ }
 
+  handleDurationUpdated()              { /* Do nothing */ }
+  handleCurrentTimeUpdated()           { /* Do nothing */ }
+  handlePlaybackRateUpdated()          { /* Do nothing */ }
+
   handleIdentifiersChanged()           { setPropsFromApi(this.player); }
   handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
   handlePressedScrollToPlayer()        { this.player.target.scrollIntoView(); }
@@ -108,10 +112,6 @@ class RootController {
 
   // The following methods respond to events emitted by the video element.
   // We shouldn't assume the methods above will succeed, e.g. video.play()
-
-  handleMediaDurationUpdated() { /* Do nothing */ }
-  handlePlaybackTimeUpdated()  { /* Do nothing */ }
-  handlePlaybackSpeedUpdated() { /* Do nothing */ }
 
   handlePlaybackStarted() {
     this.player.playbackState = "playing";
