@@ -33,16 +33,16 @@
 
   // These are set automatically.
   export let showWidgetAtBottom = false;
-  export let videoIsMaximized = false;
+  export let isFullScreen = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = { processEvent: () => {} };
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
-  $: interfaceStyle = videoIsMaximized ? "video" : playerStyle;
+  $: interfaceStyle = isFullScreen ? "video" : playerStyle;
 
-  $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !videoIsMaximized;
+  $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
 </script>
 
