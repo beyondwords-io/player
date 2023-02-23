@@ -99,8 +99,11 @@ class RootController {
   handlePlaybackEnded() {
     if (this.preScrubState) { return; } // Don't skip track while scrubbing.
 
+    const wasAdvert = this.#isAdvert();
     this.#chooseAndSetAdvert({ atTheEnd: true });
-    if (this.#isAdvert()) { return; } // Don't skip track during the advert.
+
+    if (this.#isAdvert()) { return; } // Don't skip track during an advert.
+    if (wasAdvert) { return; } // Don't skip track so the content can play.
 
     this.#setTrack(i => i + 1);
   }
