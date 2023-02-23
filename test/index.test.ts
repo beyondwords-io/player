@@ -2,6 +2,7 @@ import BeyondWords from "../src/index";
 
 describe("BeyondWords.Player", () => {
   beforeEach(() => {
+    HTMLMediaElement.prototype.pause = () => {};
     BeyondWords.Player.destroyAll();
   });
 
