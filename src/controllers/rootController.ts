@@ -71,7 +71,7 @@ class RootController {
   handlePressedRightOnProgressCircle() { this.#setTime(t => t + 5); }
 
   handlePressedProgressBar({ ratio }) {
-    this.preScrubState = this.player.playbackState;;
+    this.preScrubState = this.player.playbackState;
     this.#setTime((_, duration) => ratio * duration);
   }
 
@@ -190,9 +190,7 @@ class RootController {
 
   #setTrack(indexFn) {
     const tryIndex = indexFn(this.player.contentIndex);
-
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.content.length;
-    const hasChanged = tryIndex !== this.player.contentIndex;
 
     if (outOfBounds) {
       this.player.playbackState = "stopped";
