@@ -51,7 +51,9 @@ class RootController {
   handlePressedExternalUrl()           { /* Do nothing */ }
 
   handleDurationUpdated()              { /* Do nothing */ }
-  handleCurrentTimeUpdated()           { /* Do nothing */ }
+  #adPlayed = false;
+  handleCurrentTimeUpdated()           { if (!this.#adPlayed && this.player.currentTime > 1.5) { this.#setAdvert(0); this.#adPlayed = true } } // TODO
+
   handlePlaybackRateUpdated()          { /* Do nothing */ }
   handlePlaybackPaused()               { /* Do nothing */ }
 
@@ -94,8 +96,6 @@ class RootController {
   }
 
   handlePlaybackEnded() {
-    if (!this.#isAdvert()) { this.#setAdvert(0); return; } // TODO: temporary
-
     if (this.preScrubState) {
       return; // Don't skip track while scrubbing.
     } else if (this.#isAdvert()) {
@@ -215,19 +215,24 @@ class RootController {
   }
 
   #savePlayerState() {
-    const keys = ["textColor", "backgroundColor", "iconColor", "playbackRate"];
+    const keys = ["textColor", "backgroundColor", "iconColor", "currentTime", "playbackRate"];
+
     this.playerState = Object.fromEntries(keys.map(k => [k, this.player[k]]));
+    this.prevTrack = this.player.contentIndex;
   }
 
   #overridePlayerState() {
     const advert = this.player.adverts[this.player.advertIndex];
+
     Object.keys(this.playerState).forEach(k => advert[k] && (this.player[k] = advert[k]));
     this.player.playbackRate = 1;
   }
 
   #restorePlayerState() {
+    const trackChanged = this.player.contentIndex !== this.prevTrack;
+    if (trackChanged) { delete this.playerState.currentTime; }
+
     Object.entries(this.playerState).forEach(([k, v]) => this.player[k] = v);
-    delete this.playerState;
   }
 }
 
