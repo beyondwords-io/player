@@ -38,8 +38,9 @@ class RootController {
   handlePressedDownOnChangeSpeed()     { this.#setSpeed(i => i - 1); }
   handlePressedLeftOnChangeSpeed()     { this.#setSpeed(i => i - 1); }
 
-  handlePressedPrevSegment()           { console.log("pressed previous segment"); }
-  handlePressedNextSegment()           { console.log("pressed next segment"); }
+  handlePressedPrevSegment()           { this.#setSegment(i => i - 1); }
+  handlePressedNextSegment()           { this.#setSegment(i => i + 1); }
+
   handlePressedSeekBack({ seconds })   { this.#setTime(t => t - seconds); }
   handlePressedSeekAhead({ seconds })  { this.#setTime(t => t + seconds); }
   handlePressedPrevTrack()             { this.#setTrack(i => i - 1); }
@@ -184,6 +185,25 @@ class RootController {
     }
 
     this.player.playbackRate = availableSpeeds[updatedIndex] || 1;
+  }
+
+  #setSegment(indexFn) {
+    const segments = this.player.content[this.player.contentIndex].segments;
+
+    const time = this.player.currentTime;
+    const currentIndex = segments.findIndex(s => s.startTime <= time && time < s.startTime + s.duration);
+
+    const tryIndex = indexFn(currentIndex);
+    const underBounds = tryIndex < 0;
+    const overBounds = tryIndex >= segments.length;
+
+    if (underBounds) {
+      this.#setTrack(i => i - 1);
+    } else if (overBounds) {
+      this.#setTrack(i => i + 1);
+    } else {
+      this.#setTime(() => segments[tryIndex].startTime);
+    }
   }
 
   #setTrack(indexFn) {
