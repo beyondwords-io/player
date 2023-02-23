@@ -71,17 +71,25 @@ const setProps = (player, data) => {
     })),
   }));
 
-  player.adverts = data.ads.map((item) => ({
-    type: item.type,
-    placement: item.placement,
-    vastUrl: item.vast_url,
-    clickThroughUrl: item.click_through_url,
-    // TODO: imageUrl
-    media: item.media.map((media) => ({
-      url: media.url,
-      contentType: media.content_type,
-    })),
-  }));
+  player.adverts = data.ads.map((item) => {
+    const theme = resolveTheme(item.theme);
+    const colors = item[`${theme}_theme`];
+
+    return {
+      type: item.type,
+      placement: item.placement,
+      vastUrl: item.vast_url,
+      clickThroughUrl: item.click_through_url,
+      textColor: colors?.text_color,
+      backgroundColor: colors?.background_color,
+      iconColor: colors?.icon_color,
+      // TODO: imageUrl
+      media: item.media.map((media) => ({
+        url: media.url,
+        contentType: media.content_type,
+      })),
+    };
+  });
 
   // TODO: segments + skip behaviour
 };
