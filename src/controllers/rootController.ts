@@ -3,6 +3,7 @@ import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
+import chooseAdvert from "../helpers/chooseAdvert";
 import chooseWidget from "../helpers/chooseWidget";
 
 class RootController {
@@ -53,13 +54,10 @@ class RootController {
   handlePressedExternalUrl()           { /* Do nothing */ }
 
   handleDurationUpdated()              { /* Do nothing */ }
-  #adPlayed = false;
-  handleCurrentTimeUpdated()           { if (!this.#adPlayed && this.player.currentTime > 1.5) { this.#setAdvert(0); this.#adPlayed = true } } // TODO
-
-  handlePlaybackRateUpdated()          { /* Do nothing */ }
+  handleCurrentTimeUpdated()           { this.#chooseAndSetAdvert(); }
   handlePlaybackPaused()               { /* Do nothing */ }
+  handlePlaybackRateUpdated()          { /* Do nothing */ }
 
-  handleIdentifiersChanged()           { setPropsFromApi(this.player); }
   handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
   handlePressedScrollToPlayer()        { this.player.target.scrollIntoView(); }
 
@@ -80,10 +78,7 @@ class RootController {
   }
 
   handleScrubbedProgressBar({ ratio }) {
-    if (this.player.playbackState === "playing") {
-      this.player.playbackState = "paused";
-    }
-
+    if (this.player.playbackState === "playing") { this.player.playbackState = "paused"; }
     this.#setTime((_, duration) => ratio * duration);
   }
 
@@ -92,19 +87,22 @@ class RootController {
     delete this.preScrubState;
   }
 
+  handleIdentifiersChanged() {
+    setPropsFromApi(this.player).then(() => this.#chooseAndSetAdvert());
+  }
+
   handlePlaybackStarted() {
     const otherPlayers = this.PlayerClass.instances().filter(p => p !== this.player);
     otherPlayers.forEach(p => p.playbackState = "paused");
   }
 
   handlePlaybackEnded() {
-    if (this.preScrubState) {
-      return; // Don't skip track while scrubbing.
-    } else if (this.#isAdvert()) {
-      this.#setAdvert(-1);
-    } else {
-      this.#setTrack(i => i + 1);
-    }
+    if (this.preScrubState) { return; } // Don't skip track while scrubbing.
+
+    this.#chooseAndSetAdvert({ atTheEnd: true });
+    if (this.#isAdvert()) { return; } // Don't skip track during the advert.
+
+    this.#setTrack(i => i + 1);
   }
 
   handlePressedMaximize() {
@@ -220,6 +218,10 @@ class RootController {
 
   #setTime(timeFn) {
     this.player.currentTime = timeFn(this.player.currentTime, this.player.duration || 0);
+  }
+
+  #chooseAndSetAdvert({ atTheEnd = false } = {}) {
+    this.#setAdvert(chooseAdvert(this.player, { atTheEnd }));
   }
 
   #setAdvert(index) {
