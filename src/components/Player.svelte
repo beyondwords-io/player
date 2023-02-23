@@ -44,12 +44,15 @@
 
   $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
+
+  $: media = activeAdvert?.media;
+  $: !activeAdvert && (media = content[contentIndex]?.media);
 </script>
 
 <MediaElement
   bind:this={mediaElement}
   onEvent={e => controller.processEvent(e)}
-  media={activeAdvert ? activeAdvert.media : content[contentIndex]?.media}
+  {media}
   {playbackState}
   bind:duration
   bind:currentTime
