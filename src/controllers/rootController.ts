@@ -229,12 +229,12 @@ class RootController {
     const advertsStarted = !wasAdvert && this.#isAdvert();
     const advertsFinished = wasAdvert && !this.#isAdvert();
 
-    if (advertsStarted)   { this.#savePlayerState(); }
+    if (advertsStarted)   { this.#backupPlayerState(); }
     if (this.#isAdvert()) { this.#overridePlayerState(); }
     if (advertsFinished)  { this.#restorePlayerState(); }
   }
 
-  #savePlayerState() {
+  #backupPlayerState() {
     const keys = ["textColor", "backgroundColor", "iconColor", "currentTime", "playbackRate"];
 
     this.playerState = Object.fromEntries(keys.map(k => [k, this.player[k]]));
