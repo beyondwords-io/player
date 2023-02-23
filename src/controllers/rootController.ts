@@ -2,6 +2,7 @@ import { validatePreEvent, validatePostEvent } from "../helpers/eventValidation"
 import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
+import findSegmentIndex from "../helpers/findSegmentIndex";
 import chooseWidget from "../helpers/chooseWidget";
 
 class RootController {
@@ -190,10 +191,9 @@ class RootController {
   #setSegment(indexFn) {
     const segments = this.player.content[this.player.contentIndex].segments;
 
-    const time = this.player.currentTime;
-    const currentIndex = segments.findIndex(s => s.startTime <= time && time < s.startTime + s.duration);
-
+    const currentIndex = findSegmentIndex(segments, this.player.currentTime);
     const tryIndex = indexFn(currentIndex);
+
     const underBounds = tryIndex < 0;
     const overBounds = tryIndex >= segments.length;
 
