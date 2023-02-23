@@ -76,6 +76,7 @@ const setProps = (player, data) => {
     placement: item.placement,
     vastUrl: item.vast_url,
     clickThroughUrl: item.click_through_url,
+    // TODO: imageUrl
     media: item.media.map((media) => ({
       url: media.url,
       contentType: media.content_type,

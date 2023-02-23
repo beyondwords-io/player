@@ -19,12 +19,12 @@
   export let playerTitle = undefined;
   export let content = [];
   export let contentIndex = 0;
+  export let adverts = [];
+  export let advertIndex = -1;
   export let duration = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let playbackRate = 1;
-  export let adverts = [];
-  export let activeAdvert = undefined;
   export let widgetStyle = "standard";
   export let widgetPosition = "auto";
   export let widgetWidth = "auto";
@@ -45,6 +45,8 @@
 
   $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
+
+  $: activeAdvert = adverts[advertIndex];
 
   $: media = activeAdvert?.media;
   $: !activeAdvert && (media = content[contentIndex]?.media);

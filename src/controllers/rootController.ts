@@ -96,8 +96,8 @@ class RootController {
   handlePlaybackEnded() {
     if (this.preScrubState) {
       return; // Don't skip track while scrubbing.
-    } else if (this.player.activeAdvert) {
-      this.player.activeAdvert = null;
+    } else if (this.#isAdvert()) {
+      this.#clearAdvert();
     } else {
       this.#setTrack(i => i + 1);
     }
@@ -144,7 +144,7 @@ class RootController {
   // private
 
   #ignoreDueToAdvert({ type }) {
-    return this.player.activeAdvert && (
+    return this.#isAdvert() && (
       type.includes("ChangeSpeed") ||
       type.includes("PrevSegment") ||
       type.includes("NextSegment") ||
@@ -152,6 +152,14 @@ class RootController {
       type.includes("SeekAhead") ||
       type.includes("Progress") && !type.includes("Space") && !type.includes("Enter")
     );
+  }
+
+  #isAdvert() {
+    return this.player.advertIndex !== -1;
+  }
+
+  #clearAdvert() {
+    this.player.advertIndex = -1;
   }
 
   #playOrPause() {

@@ -7,7 +7,7 @@
   export let controlsOrder;
   export let onEvent = () => {};
 
-  $: text = new URL(href).hostname;
+  $: text = href && new URL(href).hostname;
 
   const handleClick = () => {
     onEvent(newEvent({
@@ -19,7 +19,7 @@
 </script>
 
 <a class="advert-link {playerStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem" on:click={handleClick}>
-  {text}
+  {text || ""}
 </a>
 
 <style>
