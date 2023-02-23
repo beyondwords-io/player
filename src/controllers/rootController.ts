@@ -94,6 +94,8 @@ class RootController {
   }
 
   handlePlaybackEnded() {
+    if (!this.#isAdvert()) { this.#setAdvert(0); return; } // TODO: temporary
+
     if (this.preScrubState) {
       return; // Don't skip track while scrubbing.
     } else if (this.#isAdvert()) {
@@ -158,8 +160,26 @@ class RootController {
     return this.player.advertIndex !== -1;
   }
 
+  #setAdvert(index) {
+    this.player.advertIndex = index;
+
+    const advert = this.player.adverts[this.player.advertIndex];
+
+    this.preAdTextColor = this.player.textColor;
+    this.preAdBackgroundColor = this.player.backgroundColor;
+    this.preAdIconColor = this.player.iconColor;
+
+    if (advert.textColor) { this.player.textColor = advert.textColor; }
+    if (advert.backgroundColor) { this.player.backgroundColor = advert.backgroundColor; }
+    if (advert.iconColor) { this.player.iconColor = advert.iconColor; }
+  }
+
   #clearAdvert() {
     this.player.advertIndex = -1;
+
+    this.player.textColor = this.preAdTextColor;
+    this.player.backgroundColor = this.preAdBackgroundColor;
+    this.player.iconColor = this.preAdIconColor;
   }
 
   #playOrPause() {
