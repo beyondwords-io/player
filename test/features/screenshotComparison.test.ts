@@ -5,7 +5,8 @@ import permutations from "../support/permutations.ts";
 const dimensions = {
   playerStyle: ["large", "screen", "small", "standard", "video"],
   playbackState: ["paused", "playing", "stopped"],
-  activeAdvert: [{ url: "https://deliveroo.com", imageUrl: advertImage }, null],
+  adverts: [[{ clickThroughUrl: "https://deliveroo.com", imageUrl: advertImage }]],
+  advertIndex: [0, -1],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
   contentIndex: [0],
   currentTime: [10],
@@ -24,7 +25,7 @@ test("screenshot comparison", async ({ page }) => {
   for (const params of permutations(dimensions)) {
     if (skipPermutation(params)) { continue; }
 
-    params.duration = params.activeAdvert ? 15 : 30;
+    params.duration = params.advertIndex === 0 ? 15 : 30;
     params.widgetStyle = params.widgetPosition ? params.playerStyle : "none";
 
     await page.evaluate(async (params) => {
@@ -48,7 +49,7 @@ test("screenshot comparison", async ({ page }) => {
 const skipPermutation = (params) => {
   const testingTheWidget = params.widgetPosition;
 
-  const advertWouldntShow = params.activeAdvert && params.playbackState === "stopped";
+  const advertWouldntShow = params.advertIndex === 0 && params.playbackState === "stopped";
   if (advertWouldntShow) { return true; }
 
   const playlistWouldntShow = (testingTheWidget || params.playerStyle === "small") && params.content.length > 1;
@@ -64,7 +65,7 @@ const screenshotName = (params) => (
   [
     params.playerStyle,
     params.playbackState,
-    params.activeAdvert && "advert",
+    params.advertIndex === 0 && "advert",
     params.content.length > 1 && "playlist",
     params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`.replace("%", ""),
   ].filter(s => s).join("-")
