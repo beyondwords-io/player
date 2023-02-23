@@ -103,7 +103,11 @@ class RootController {
     this.#chooseAndSetAdvert({ atTheEnd: true });
 
     if (this.#isAdvert()) { return; } // Don't skip track during an advert.
-    if (wasAdvert) { return; } // Don't skip track so the content can play.
+
+    if (wasAdvert) {
+      this.skipNextAdvert = true; // Don't play more than one advert in a row.
+      return; // Don't skip track because this content item hasn't played yet.
+    }
 
     this.#setTrack(i => i + 1);
   }
@@ -224,6 +228,7 @@ class RootController {
   }
 
   #chooseAndSetAdvert({ atTheEnd = false } = {}) {
+    if (this.skipNextAdvert) { delete this.skipNextAdvert; return; }
     this.#setAdvert(chooseAdvert(this.player, { atTheEnd }));
   }
 
