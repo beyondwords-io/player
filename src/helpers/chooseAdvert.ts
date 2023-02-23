@@ -10,9 +10,9 @@ const chooseAdvert = (player, { atTheEnd }) => {
   if (currentAdvert && atTheEnd) { updatePlayedAdvertMedia(currentAdvert); }
   const placements = placementsThatCanPlay(player, atTheEnd);
 
-  let bestSoFar;
-  let bestIndex = -1;
+  let bestSoFar = -1;
   let bestType = -Infinity;
+  let bestRandom = -Infinity;
 
   for (const [thisIndex, advert] of player.adverts.entries()) {
     if (alreadyPlayedAdvertMedia(advert)) { continue; }
@@ -21,12 +21,15 @@ const chooseAdvert = (player, { atTheEnd }) => {
     const thisType = typeScores[advert.type] || 0;
     if (thisType < bestType) { continue; }
 
-    bestSoFar = advert;
-    bestIndex = thisIndex;
+    const thisRandom = Math.random();
+    if (thisType === bestType && thisRandom < bestRandom) { continue; }
+
+    bestSoFar = thisIndex;
     bestType = thisType;
+    bestRandom = thisRandom;
   }
 
-  return bestIndex;
+  return bestSoFar;
 };
 
 const typeScores = { vast: 1, custom: 0 };
