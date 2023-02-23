@@ -69,6 +69,11 @@ const setProps = (player, data) => {
       url: media.url,
       contentType: media.content_type,
     })),
+    segments: item.segments.map((segment) => ({
+      marker: segment.marker,
+      startTime: segment.start_time ? segment.start_time / 1000 : 0,
+      duration: segment.duration ? segment.duration / 1000 : 0,
+    })),
   }));
 
   player.adverts = data.ads.map((item) => {
@@ -90,8 +95,6 @@ const setProps = (player, data) => {
       })),
     };
   });
-
-  // TODO: segments + skip behaviour
 };
 
 export default setPropsFromApi;
