@@ -39,6 +39,6 @@ const chooseWidget = (Player) => {
   }
 };
 
-const stateScores = { playing: 2, paused: 1 };
+const stateScores = { playing: 2, paused: 1, stopped: 0 };
 
 export default chooseWidget;

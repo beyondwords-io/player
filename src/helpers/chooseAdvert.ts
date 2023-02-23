@@ -1,6 +1,35 @@
 import findSegmentIndex from "./findSegmentIndex";
+import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
 const chooseAdvert = (player, { atTheEnd }) => {
+  const currentAdvert = player.adverts[player.advertIndex];
+  if (currentAdvert && !atTheEnd) { return player.advertIndex; }
+
+  if (currentAdvert && atTheEnd) { updatePlayedAdvertMedia(currentAdvert); }
+  const placements = placementsThatCanPlay(player, atTheEnd);
+
+  let bestSoFar;
+  let bestIndex = -1;
+  let bestType = -Infinity;
+
+  for (const [thisIndex, advert] of player.adverts.entries()) {
+    if (alreadyPlayedAdvertMedia(advert)) { continue; }
+    if (!placements.has(advert.placement)) { continue; }
+
+    const thisType = typeScores[advert.type] || 0;
+    if (thisType < bestType) { continue; }
+
+    bestSoFar = advert;
+    bestIndex = thisIndex;
+    bestType = thisType;
+  }
+
+  return bestIndex;
+};
+
+const typeScores = { vast: 1, custom: 0 };
+
+const placementsThatCanPlay = (player, atTheEnd) => {
   const atTheStart = player.currentTime === 0;
 
   const isFirstItem = player.contentIndex === 0;
@@ -17,15 +46,13 @@ const chooseAdvert = (player, { atTheEnd }) => {
 
   if (atTheStart)             { eligiblePlacements.add("pre-roll"); }
 
-  if (0)  /*TODO: segments*/  { eligiblePlacements.add("mid-roll"); }
+  if (0)  /*TODO: segments*/  { eligiblePlacements.add("mid-roll"); } // should exclude playlists
   if (isBetweenPlaylistItems) { eligiblePlacements.add("mid-roll"); }
 
   if (atTheEnd && isLastItem) { eligiblePlacements.add("post-roll"); }
   if (isBetweenPlaylistItems) { eligiblePlacements.add("post-roll"); }
 
-  console.log(eligiblePlacements);
-
-  return -1;
-};
+  return eligiblePlacements;
+}
 
 export default chooseAdvert;
