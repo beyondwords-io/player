@@ -235,24 +235,20 @@ class RootController {
   }
 
   #backupPlayerState() {
-    const keys = ["textColor", "backgroundColor", "iconColor", "currentTime", "playbackRate"];
-
-    this.playerState = Object.fromEntries(keys.map(k => [k, this.player[k]]));
-    this.prevTrack = this.player.contentIndex;
+    this.prevTime = this.player.currentTime;
+    this.prevRate = this.player.playbackRate;
+    this.prevIndex = this.player.contentIndex;
   }
 
   #overridePlayerState() {
-    const advert = this.player.adverts[this.player.advertIndex];
-
-    Object.keys(this.playerState).forEach(k => advert[k] && (this.player[k] = advert[k]));
     this.player.playbackRate = 1;
   }
 
   #restorePlayerState() {
-    const trackChanged = this.player.contentIndex !== this.prevTrack;
-    if (trackChanged) { delete this.playerState.currentTime; }
+    this.player.playbackRate = this.prevRate;
 
-    Object.entries(this.playerState).forEach(([k, v]) => this.player[k] = v);
+    const trackChanged = this.player.contentIndex !== this.prevIndex;
+    if (!trackChanged) { this.player.currentTime = this.prevTime; }
   }
 }
 

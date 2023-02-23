@@ -70,8 +70,12 @@
   $: contentItem = content[contentIndex] || {};
   $: progress = currentTime / duration;
 
+  $: activeTextColor = isAdvert && activeAdvert?.textColor || textColor;
+  $: activeBackgroundColor = isAdvert && activeAdvert?.backgroundColor || backgroundColor;
+  $: activeIconColor = isAdvert && activeAdvert?.iconColor || iconColor;
+
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
-  $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : iconColor;
+  $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : activeIconColor;
 
   $: buttonScale = isSmall ? 0.8 : (isScreen || isVideo && isStopped) && !isMobile ? 2 : 1;
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
@@ -105,9 +109,9 @@
 {#if knownPlayerStyle(playerStyle) && content.length > 0}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
-      <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null} style="background: {isVideo ? "transparent" : backgroundColor}">
+      <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
         {#if isLarge || isScreen}
-          <LargeImage src={isAdvert ? (activeAdvert.imageUrl || contentItem.imageUrl) : contentItem.imageUrl} scale={isScreen && !isMobile ? 1.5 : 1} />
+          <LargeImage src={isAdvert && activeAdvert.imageUrl || contentItem.imageUrl} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
 
         {#if isVideo && fixedPosition}
@@ -118,23 +122,23 @@
 
         {#if isLarge || isScreen || isVideo}
           <div class="summary">
-            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {playerStyle} scale={isScreen ? 2 : 1} color={textColor} />
+            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {playerStyle} scale={isScreen ? 2 : 1} color={activeTextColor} />
 
             {#if isLarge || isScreen || isVideo && !(contentItem.imageUrl && isStopped) && !fixedPosition}
-              <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : textColor} />
+              <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : activeTextColor} />
             {/if}
           </div>
         {/if}
 
         <div class="controls">
           <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
-            <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : iconColor}>
+            <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={isAdvert ? "#00cdbc" : activeIconColor}>
               <PlayPauseButton {onEvent} {isPlaying} tabindex={isScreen || isSmall ? -1 : 0} scale={playPauseScale} color={buttonColor} />
             </ProgressCircle>
           </Visibility>
 
           {#if isStandard && isStopped || isSmall}
-            <PlayerTitle title={callToAction || ""} visible={!isAdvert} {playerStyle} {collapsible} {collapsed} color={textColor} />
+            <PlayerTitle title={callToAction || ""} visible={!isAdvert} {playerStyle} {collapsible} {collapsed} color={activeTextColor} />
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
@@ -144,13 +148,13 @@
           {/if}
 
           {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
-            <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={textColor} />
+            <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
           {/if}
 
-          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : textColor} />
+          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : activeTextColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
-            <ProgressBar {onEvent} {progress} fullWidth={isVideo} color={iconColor} />
+            <ProgressBar {onEvent} {progress} fullWidth={isVideo} color={activeIconColor} />
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
@@ -188,7 +192,7 @@
     </Hoverable>
 
     {#if !isSmall && !isScreen}
-      <Playlist {onEvent} style={playlistStyle} {content} index={contentIndex} isMobile={isMobile} {textColor} {backgroundColor} {iconColor} />
+      <Playlist {onEvent} style={playlistStyle} {content} index={contentIndex} isMobile={isMobile} textColor={activeTextColor} backgroundColor={activeBackgroundColor} iconColor={activeIconColor} />
     {/if}
   </div>
 {/if}
