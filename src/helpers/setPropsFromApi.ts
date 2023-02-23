@@ -64,6 +64,7 @@ const setProps = (player, data) => {
     title: item.title,
     imageUrl: data.playlist?.image_url || item.image_url,
     sourceUrl: item.source_url,
+    adsEnabled: item.ads_enabled,
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
     media: [...item.video, ...item.audio].map((media) => ({
       url: media.url,
