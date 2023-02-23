@@ -99,7 +99,7 @@ class RootController {
     if (this.preScrubState) {
       return; // Don't skip track while scrubbing.
     } else if (this.#isAdvert()) {
-      this.#clearAdvert();
+      this.#setAdvert(-1);
     } else {
       this.#setTrack(i => i + 1);
     }
@@ -160,28 +160,6 @@ class RootController {
     return this.player.advertIndex !== -1;
   }
 
-  #setAdvert(index) {
-    this.player.advertIndex = index;
-
-    const advert = this.player.adverts[this.player.advertIndex];
-
-    this.preAdTextColor = this.player.textColor;
-    this.preAdBackgroundColor = this.player.backgroundColor;
-    this.preAdIconColor = this.player.iconColor;
-
-    if (advert.textColor) { this.player.textColor = advert.textColor; }
-    if (advert.backgroundColor) { this.player.backgroundColor = advert.backgroundColor; }
-    if (advert.iconColor) { this.player.iconColor = advert.iconColor; }
-  }
-
-  #clearAdvert() {
-    this.player.advertIndex = -1;
-
-    this.player.textColor = this.preAdTextColor;
-    this.player.backgroundColor = this.preAdBackgroundColor;
-    this.player.iconColor = this.preAdIconColor;
-  }
-
   #playOrPause() {
     if (this.player.playbackState === "playing") {
       this.player.playbackState = "paused";
@@ -222,6 +200,33 @@ class RootController {
 
   #setTime(timeFn) {
     this.player.currentTime = timeFn(this.player.currentTime, this.player.duration || 0);
+  }
+
+  #setAdvert(index) {
+    const wasAdvert = this.#isAdvert();
+    this.player.advertIndex = index;
+
+    const advertsStarted = !wasAdvert && this.#isAdvert();
+    const advertsFinished = wasAdvert && !this.#isAdvert();
+
+    if (advertsStarted)   { this.#savePlayerState(); }
+    if (this.#isAdvert()) { this.#overridePlayerState(); }
+    if (advertsFinished)  { this.#restorePlayerState(); }
+  }
+
+  #savePlayerState() {
+    const keys = ["textColor", "backgroundColor", "iconColor"];
+    this.playerState = Object.fromEntries(keys.map(k => [k, this.player[k]]));
+  }
+
+  #overridePlayerState() {
+    const advert = this.player.adverts[this.player.advertIndex];
+    Object.keys(this.playerState).forEach(k => advert[k] && (this.player[k] = advert[k]));
+  }
+
+  #restorePlayerState() {
+    Object.entries(this.playerState).forEach(([k, v]) => this.player[k] = v);
+    delete this.playerState;
   }
 }
 
