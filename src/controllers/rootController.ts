@@ -215,13 +215,14 @@ class RootController {
   }
 
   #savePlayerState() {
-    const keys = ["textColor", "backgroundColor", "iconColor"];
+    const keys = ["textColor", "backgroundColor", "iconColor", "playbackRate"];
     this.playerState = Object.fromEntries(keys.map(k => [k, this.player[k]]));
   }
 
   #overridePlayerState() {
     const advert = this.player.adverts[this.player.advertIndex];
     Object.keys(this.playerState).forEach(k => advert[k] && (this.player[k] = advert[k]));
+    this.player.playbackRate = 1;
   }
 
   #restorePlayerState() {
