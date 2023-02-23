@@ -77,19 +77,21 @@ const setProps = (player, data) => {
   }));
 
   player.adverts = data.ads.map((item) => {
+    const isVast = item.type === "vast";
+
     const theme = resolveTheme(item.theme);
     const colors = item[`${theme}_theme`];
 
     return {
       type: item.type,
       placement: item.placement,
-      vastUrl: item.vast_url,
-      clickThroughUrl: item.click_through_url,
+      vastUrl: isVast ? item.vast_url : null,
+      clickThroughUrl: !isVast ? item.click_through_url : null,
       textColor: colors?.text_color,
       backgroundColor: colors?.background_color,
       iconColor: colors?.icon_color,
       // TODO: imageUrl
-      media: item.media.map((media) => ({
+      media: isVast ? [] : item.media.map((media) => ({
         url: media.url,
         contentType: media.content_type,
       })),
