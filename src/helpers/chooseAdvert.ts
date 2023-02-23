@@ -2,6 +2,8 @@ import findSegmentIndex from "./findSegmentIndex";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
 const chooseAdvert = (player, { atTheEnd }) => {
+  if (!player.content[player.contentIndex].adsEnabled) { return -1; }
+
   const currentAdvert = player.adverts[player.advertIndex];
   if (currentAdvert && !atTheEnd) { return player.advertIndex; }
 
