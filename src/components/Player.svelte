@@ -23,6 +23,7 @@
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let playbackRate = 1;
+  export let adverts = [];
   export let activeAdvert = undefined;
   export let widgetStyle = "standard";
   export let widgetPosition = "auto";

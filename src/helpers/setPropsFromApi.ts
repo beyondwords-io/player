@@ -71,8 +71,18 @@ const setProps = (player, data) => {
     })),
   }));
 
+  player.adverts = data.ads.map((item) => ({
+    type: item.type,
+    placement: item.placement,
+    vastUrl: item.vast_url,
+    clickThroughUrl: item.click_through_url,
+    media: item.media.map((media) => ({
+      url: media.url,
+      contentType: media.content_type,
+    })),
+  }));
+
   // TODO: segments + skip behaviour
-  // TODO: ads
 };
 
 export default setPropsFromApi;
