@@ -63,7 +63,7 @@
   $: isPlaying = playbackState === "playing";
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
-  $: isAdvert = activeAdvert && !isStopped;
+  $: isAdvert = activeAdvert && (isPlaying || isPaused && currentTime > 0);
   $: isPlaylist = content.length > 1;
   $: isMobile = belowBreakpoint({ playerStyle, width });
 
