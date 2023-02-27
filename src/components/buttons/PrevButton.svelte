@@ -8,6 +8,7 @@
   export let style = "segments";
   export let scale = 1;
   export let color = "#323232";
+  export let disabled = false;
   export let onEvent = () => {};
 
   $: backwardsSeconds = style.split("-")[1] || 10;
@@ -36,7 +37,7 @@
   };
 </script>
 
-<button class="prev-button" on:click={handleClick} on:mouseup={blurElement}>
+<button class="prev-button" {disabled} on:click={handleClick} on:mouseup={blurElement}>
   {#if isSeconds}
     <SeekBack seconds={backwardsSeconds} {scale} {color} />
   {:else if isSegments}

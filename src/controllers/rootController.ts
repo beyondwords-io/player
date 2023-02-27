@@ -199,16 +199,10 @@ class RootController {
     const currentIndex = findSegmentIndex(segments, this.player.currentTime);
     const tryIndex = indexFn(currentIndex);
 
-    const underBounds = tryIndex < 0;
-    const overBounds = tryIndex >= segments.length;
+    const outOfBounds = tryIndex < 0 || tryIndex >= segments.length;
+    if (outOfBounds) { return; }
 
-    if (underBounds) {
-      this.#setTrack(i => i - 1);
-    } else if (overBounds) {
-      this.#setTrack(i => i + 1);
-    } else {
-      this.#setTime(() => segments[tryIndex].startTime);
-    }
+    this.#setTime(() => segments[tryIndex].startTime);
   }
 
   #setTrack(indexFn) {
@@ -266,3 +260,5 @@ class RootController {
 }
 
 export default RootController;
+    // TODO: choose advert on media started instead of after identifiers loaded so you can
+    // set the current time that should be returned to after the advert?
