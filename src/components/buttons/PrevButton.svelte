@@ -1,6 +1,6 @@
 <script>
-  import Up from "../svg_icons/Up.svelte";
   import SeekBack from "../svg_icons/SeekBack.svelte";
+  import PrevSegment from "../svg_icons/PrevSegment.svelte";
   import PrevTrack from "../svg_icons/PrevTrack.svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
@@ -37,10 +37,10 @@
 </script>
 
 <button class="prev-button" on:click={handleClick} on:mouseup={blurElement}>
-  {#if isSegments}
-    <Up {scale} {color} />
-  {:else if isSeconds}
+  {#if isSeconds}
     <SeekBack seconds={backwardsSeconds} {scale} {color} />
+  {:else if isSegments}
+    <PrevSegment {scale} {color} />
   {:else if isTracks}
     <PrevTrack {scale} {color} />
   {/if}

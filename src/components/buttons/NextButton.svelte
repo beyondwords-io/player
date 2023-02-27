@@ -1,6 +1,6 @@
 <script>
-  import Down from "../svg_icons/Down.svelte";
   import SeekAhead from "../svg_icons/SeekAhead.svelte";
+  import NextSegment from "../svg_icons/NextSegment.svelte";
   import NextTrack from "../svg_icons/NextTrack.svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
@@ -37,10 +37,10 @@
 </script>
 
 <button class="next-button" on:click={handleClick} on:mouseup={blurElement}>
-  {#if isSegments}
-    <Down {scale} {color} />
-  {:else if isSeconds}
+  {#if isSeconds}
     <SeekAhead seconds={forwardsSeconds} {scale} {color} />
+  {:else if isSegments}
+    <NextSegment {scale} {color} />
   {:else if isTracks}
     <NextTrack {scale} {color} />
   {/if}
