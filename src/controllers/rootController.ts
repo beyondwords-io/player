@@ -217,12 +217,11 @@ class RootController {
 
     if (outOfBounds) {
       this.player.playbackState = "stopped";
+      this.#setTime(() => 0);
     } else {
       this.player.contentIndex = tryIndex;
-    }
 
-    if (!this.#isAdvert()) {
-      this.#setTime(() => 0);
+      if (!this.#isAdvert()) { this.#setTime(() => 0); }
       this.#chooseAndSetAdvert({ atTheStart: true });
     }
   }
@@ -233,7 +232,7 @@ class RootController {
 
   #chooseAndSetAdvert(options = {}) {
     if (this.skipNextAdvert) { delete this.skipNextAdvert; return; }
-    this.#setAdvert(chooseAdvert(this.player, options));
+    this.#setAdvert(chooseAdvert(this.player, { ...options, prevIndex: this.prevIndex }));
   }
 
   #setAdvert(index) {

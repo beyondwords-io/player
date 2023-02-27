@@ -1,11 +1,12 @@
 import findSegmentIndex from "./findSegmentIndex";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = (player, { atTheStart, atTheEnd }) => {
+const chooseAdvert = (player, { atTheStart, atTheEnd, prevIndex }) => {
+  const contentIndexBeforeAdvert = prevIndex || player.contentIndex;
+  if (!player.content[contentIndexBeforeAdvert]?.adsEnabled) { return -1; }
+
   const currentAdvert = player.adverts[player.advertIndex];
   if (currentAdvert && !atTheEnd) { return player.advertIndex; }
-
-  if (!player.content[player.contentIndex]?.adsEnabled) { return -1; }
 
   if (currentAdvert && atTheEnd) { updatePlayedAdvertMedia(currentAdvert); }
   const placements = placementsThatCanPlay(player, { atTheStart, atTheEnd });
