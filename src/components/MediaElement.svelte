@@ -107,7 +107,8 @@
            bind:currentTime
            bind:playbackRate
            preload="metadata"
-           disablePictureInPicture
+           playsinline
+           disablepictureinpicture
            on:play={handlePlay}
            on:pause={handlePause}
            on:ended={handleEnded}
