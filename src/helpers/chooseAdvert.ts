@@ -1,14 +1,14 @@
 import findSegmentIndex from "./findSegmentIndex";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = (player, { atTheEnd }) => {
+const chooseAdvert = (player, { atTheStart, atTheEnd }) => {
   const currentAdvert = player.adverts[player.advertIndex];
   if (currentAdvert && !atTheEnd) { return player.advertIndex; }
 
-  if (!player.content[player.contentIndex].adsEnabled) { return -1; }
+  if (!player.content[player.contentIndex]?.adsEnabled) { return -1; }
 
   if (currentAdvert && atTheEnd) { updatePlayedAdvertMedia(currentAdvert); }
-  const placements = placementsThatCanPlay(player, atTheEnd);
+  const placements = placementsThatCanPlay(player, { atTheStart, atTheEnd });
 
   let bestSoFar = -1;
   let bestType = -Infinity;
@@ -34,9 +34,7 @@ const chooseAdvert = (player, { atTheEnd }) => {
 
 const typeScores = { vast: 1, custom: 0 };
 
-const placementsThatCanPlay = (player, atTheEnd) => {
-  const atTheStart = player.currentTime === 0;
-
+const placementsThatCanPlay = (player, { atTheStart, atTheEnd }) => {
   const isFirstItem = player.contentIndex === 0;
   const isLastItem = player.contentIndex === player.content.length - 1;
 

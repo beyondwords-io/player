@@ -217,9 +217,13 @@ class RootController {
 
     if (outOfBounds) {
       this.player.playbackState = "stopped";
-      this.#setTime(() => 0);
     } else {
       this.player.contentIndex = tryIndex;
+    }
+
+    if (!this.#isAdvert()) {
+      this.#setTime(() => 0);
+      this.#chooseAndSetAdvert({ atTheStart: true });
     }
   }
 
@@ -227,9 +231,9 @@ class RootController {
     this.player.currentTime = timeFn(this.player.currentTime, this.player.duration || 0);
   }
 
-  #chooseAndSetAdvert({ atTheEnd = false } = {}) {
+  #chooseAndSetAdvert(options = {}) {
     if (this.skipNextAdvert) { delete this.skipNextAdvert; return; }
-    this.#setAdvert(chooseAdvert(this.player, { atTheEnd }));
+    this.#setAdvert(chooseAdvert(this.player, options));
   }
 
   #setAdvert(index) {
