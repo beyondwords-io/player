@@ -183,6 +183,7 @@
     left: 0;
     margin-left: auto;
     margin-right: auto;
+    max-width: min(720px, 100% - 2rem);
   }
 
   @keyframes fly-widget {

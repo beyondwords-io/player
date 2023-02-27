@@ -430,6 +430,10 @@
     transition: background-color 0.25s;
   }
 
+  .video.fixed {
+    max-width: min(720px, 100% - 2rem);
+  }
+
   .video :global(.hoverable) {
     position: relative;
     padding-bottom: 56.25%;
