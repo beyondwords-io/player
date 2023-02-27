@@ -6,7 +6,7 @@ const playedAdvertMedia = new Set();
 
 const updatePlayedAdvertMedia = (advert) => {
   advert.media.forEach(m => playedAdvertMedia.add(m.url));
-}
+};
 
 const alreadyPlayedAdvertMedia = (advert) => (
   advert.media.some(m => playedAdvertMedia.has(m.url))

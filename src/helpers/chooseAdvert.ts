@@ -46,17 +46,37 @@ const placementsThatCanPlay = (player, { atTheStart, atTheEnd }) => {
   const isPlaylist = player.content.length > 1;
   const isBetweenPlaylistItems = isPlaylist && atTheStart && !isFirstItem;
 
+  const midrollIndex = isPlaylist ? null : midrollSegmentIndex(segments);
+  const midrollSegment = segments[midrollIndex];
+  const isAfterMidrollTime = midrollSegment && player.currentTime > midrollSegment.startTime;
+
   const eligiblePlacements = new Set();
 
   if (atTheStart)             { eligiblePlacements.add("pre-roll"); }
 
-  if (0)  /*TODO: segments*/  { eligiblePlacements.add("mid-roll"); } // should exclude playlists
+  if (isAfterMidrollTime)     { eligiblePlacements.add("mid-roll"); }
   if (isBetweenPlaylistItems) { eligiblePlacements.add("mid-roll"); }
 
   if (atTheEnd && isLastItem) { eligiblePlacements.add("post-roll"); }
   if (isBetweenPlaylistItems) { eligiblePlacements.add("post-roll"); }
 
   return eligiblePlacements;
-}
+};
+
+// Don't play mid-roll adverts if the content duration is less than two minutes.
+const minimumDurationForMidrollToPlay = 2 * 60;
+
+const midrollSegmentIndex = (segments) => {
+  const lastSegment = segments[segments.length - 1];
+  if (!lastSegment) { return; }
+
+  const duration = lastSegment.startTime + lastSegment.duration;
+  if (duration < minimumDurationForMidrollToPlay) { return; }
+
+  const midrollIndex = findSegmentIndex(segments, duration / 2) + 1;
+  if (midrollIndex === segments.length) { return; }
+
+  return midrollIndex;
+};
 
 export default chooseAdvert;
