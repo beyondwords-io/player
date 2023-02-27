@@ -255,7 +255,7 @@ class RootController {
   }
 
   #restorePlayerState() {
-    this.player.playbackRate = this.prevRate;
+    this.player.playbackRate = this.prevRate || 1;
 
     const trackChanged = this.player.contentIndex !== this.prevIndex;
     if (!trackChanged) { this.player.currentTime = this.prevTime; }
