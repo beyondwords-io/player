@@ -91,7 +91,7 @@ class RootController {
     setPropsFromApi(this.player).then(() => this.#chooseAndSetAdvert());
   }
 
-  handlePlaybackStarted() {
+  handlePlaybackPlaying() {
     const otherPlayers = this.PlayerClass.instances().filter(p => p !== this.player);
     otherPlayers.forEach(p => p.playbackState = "paused");
   }

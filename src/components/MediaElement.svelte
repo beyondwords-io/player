@@ -28,8 +28,8 @@
 
   const handlePlay = () => {
     onEvent(newEvent({
-      type: "PlaybackStarted",
-      description: "The media started playing from its current playback time.",
+      type: "PlaybackPlaying",
+      description: "The media began playing from its current playback time.",
       initiatedBy: "media",
       fromWidget: videoBehindWidget,
     }));
@@ -47,7 +47,7 @@
   const handleEnded = () => {
     onEvent(newEvent({
       type: "PlaybackEnded",
-      description: "The media finished playing.",
+      description: "The media finished playing because it reached the end.",
       initiatedBy: "media",
       fromWidget: videoBehindWidget,
     }));
