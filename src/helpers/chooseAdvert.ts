@@ -39,18 +39,16 @@ const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart,
   const isFirstItem = contentIndex === 0;
   const isLastItem = contentIndex === content.length - 1;
 
-  const segments = content[contentIndex].segments;
-  const segmentIndex = findSegmentIndex(segments, currentTime);
-  const currentSegment = segments[segmentIndex];
-
   const isPlaylist = content.length > 1;
   const isBetweenPlaylistItems = isPlaylist && atTheStart && !isFirstItem;
 
+  const segments = content[contentIndex].segments;
+  const lastSegment = segments[segments.length - 1];
+
   const midrollIndex = isPlaylist ? null : midrollSegmentIndex(segments);
   const midrollSegment = segments[midrollIndex];
-  const isAfterMidroll = midrollSegment && currentTime > midrollSegment.startTime;
 
-  const lastSegment = segments[segments.length - 1];
+  const isAfterMidroll = midrollSegment && currentTime > midrollSegment.startTime;
   const duration = lastSegment ? lastSegment.startTime + lastSegment.duration : 0;
   const closeToEnd = currentTime > duration - minimumTimeUntilEndForMidrollToPlay;
 

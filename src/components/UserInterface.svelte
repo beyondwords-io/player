@@ -72,7 +72,7 @@
   $: segments = contentItem.segments || [];
 
   $: progress = currentTime / duration;
-  $: segmentIndex = isAdvert ? -1 : findSegmentIndex(segments, currentTime)
+  $: segmentIndex = isAdvert ? -1 : findSegmentIndex(segments, currentTime);
   $: currentSegment = segments[segmentIndex];
 
   $: activeTextColor = isAdvert && activeAdvert?.textColor || textColor;
@@ -80,7 +80,7 @@
   $: activeIconColor = isAdvert && activeAdvert?.iconColor || iconColor;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
-  $: skipDisabled = skipStyle === "segments"
+  $: skipDisabled = skipStyle === "segments";
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : activeIconColor;
 
   $: buttonScale = isSmall ? 0.8 : (isScreen || isVideo && isStopped) && !isMobile ? 2 : 1;

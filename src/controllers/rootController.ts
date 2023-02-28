@@ -253,10 +253,11 @@ class RootController {
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
-    let { adverts, advertIndex, content, contentIndex, currentTime } = this.player;
+    const { adverts, content, currentTime } = this.player;
+    let { advertIndex, contentIndex } = this.player;
 
-    if (typeof this.prevContent !== "undefined") { contentIndex = this.prevContent; }
     if (typeof this.nextAdvert !== "undefined") { advertIndex = this.nextAdvert; }
+    if (typeof this.prevContent !== "undefined") { contentIndex = this.prevContent; }
 
     this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd }));
   }

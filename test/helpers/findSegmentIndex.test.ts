@@ -5,7 +5,7 @@ describe("findSegmentIndex", () => {
     const segments = [
       { startTime: 0.05, duration: 1 },
       { startTime: 1.1, duration: 1 },
-    ]
+    ];
 
     expect(findSegmentIndex(segments, -Infinity)).toEqual(0);
     expect(findSegmentIndex(segments, -1)).toEqual(0);
