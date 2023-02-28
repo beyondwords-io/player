@@ -48,23 +48,33 @@ const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart,
 
   const midrollIndex = isPlaylist ? null : midrollSegmentIndex(segments);
   const midrollSegment = segments[midrollIndex];
-  const isAfterMidrollTime = midrollSegment && currentTime > midrollSegment.startTime;
+  const isAfterMidroll = midrollSegment && currentTime > midrollSegment.startTime;
+
+  const lastSegment = segments[segments.length - 1];
+  const duration = lastSegment ? lastSegment.startTime + lastSegment.duration : 0;
+  const closeToEnd = currentTime > duration - minimumTimeUntilEndForMidrollToPlay;
 
   const eligiblePlacements = new Set();
 
-  if (atTheStart)             { eligiblePlacements.add("pre-roll"); }
+  if (atTheStart)                    { eligiblePlacements.add("pre-roll"); }
 
-  if (isAfterMidrollTime)     { eligiblePlacements.add("mid-roll"); }
-  if (isBetweenPlaylistItems) { eligiblePlacements.add("mid-roll"); }
+  if (isAfterMidroll && !closeToEnd) { eligiblePlacements.add("mid-roll"); }
+  if (isBetweenPlaylistItems)        { eligiblePlacements.add("mid-roll"); }
 
-  if (atTheEnd && isLastItem) { eligiblePlacements.add("post-roll"); }
-  if (isBetweenPlaylistItems) { eligiblePlacements.add("post-roll"); }
+  if (atTheEnd && isLastItem)        { eligiblePlacements.add("post-roll"); }
+  if (isBetweenPlaylistItems)        { eligiblePlacements.add("post-roll"); }
 
   return eligiblePlacements;
 };
 
 // Don't play mid-roll adverts if the content duration is less than two minutes.
 const minimumDurationForMidrollToPlay = 2 * 60;
+
+// Don't play mid-roll adverts if seeked to the last 10 seconds of content.
+const minimumTimeUntilEndForMidrollToPlay = 10;
+
+// Play mid-roll adverts from segments starting after half-way time minus 0.5 seconds.
+const halfWayTimeToleranceForMidroll = 0.5;
 
 const midrollSegmentIndex = (segments) => {
   const lastSegment = segments[segments.length - 1];
@@ -77,7 +87,7 @@ const midrollSegmentIndex = (segments) => {
   const halfWayIndex = findSegmentIndex(segments, duration / 2);
 
   const startTime = segments[halfWayIndex].startTime;
-  const isHalfWay = startTime >= halfWayTime - 0.5;
+  const isHalfWay = startTime >= halfWayTime - halfWayTimeToleranceForMidroll;
 
   const midrollIndex = isHalfWay ? halfWayIndex : halfWayIndex + 1;
   if (midrollIndex === segments.length) { return; }
