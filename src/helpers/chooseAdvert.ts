@@ -73,7 +73,13 @@ const midrollSegmentIndex = (segments) => {
   const duration = lastSegment.startTime + lastSegment.duration;
   if (duration < minimumDurationForMidrollToPlay) { return; }
 
-  const midrollIndex = findSegmentIndex(segments, duration / 2) + 1;
+  const halfWayTime = duration / 2;
+  const halfWayIndex = findSegmentIndex(segments, duration / 2);
+
+  const startTime = segments[halfWayIndex].startTime;
+  const isHalfWay = startTime >= halfWayTime - 0.5;
+
+  const midrollIndex = isHalfWay ? halfWayIndex : halfWayIndex + 1;
   if (midrollIndex === segments.length) { return; }
 
   return midrollIndex;
