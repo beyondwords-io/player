@@ -102,12 +102,8 @@ class RootController {
     const wasAdvert = this.#isAdvert();
     this.#chooseAndSetAdvert({ atTheEnd: true });
 
-    if (this.#isAdvert()) { return; } // Don't skip track during an advert.
-
-    if (wasAdvert) {
-      this.skipNextAdvert = true; // Don't play more than one advert in a row.
-      return; // Don't skip track because this content item hasn't played yet.
-    }
+    if (wasAdvert) { return; } // Don't skip track because the content hasn't played yet.
+    if (this.#isAdvert()) { return; } // Don't skip track until post-roll has played.
 
     this.#setTrack(i => i + 1);
   }
@@ -243,8 +239,6 @@ class RootController {
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
-    if (this.skipNextAdvert) { delete this.skipNextAdvert; return; }
-
     let { adverts, advertIndex, content, contentIndex, currentTime } = this.player;
     if (typeof this.prevIndex !== "undefined") { contentIndex = this.prevIndex; }
 

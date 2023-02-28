@@ -5,9 +5,10 @@ const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, curren
   if (!content[contentIndex]?.adsEnabled) { return -1; }
 
   const currentAdvert = adverts[advertIndex];
-  if (currentAdvert && !atTheEnd) { return advertIndex; }
 
-  if (currentAdvert && atTheEnd) { updatePlayedAdvertMedia(currentAdvert); }
+  if (currentAdvert && !atTheEnd) { return advertIndex; }
+  if (currentAdvert && atTheEnd) { updatePlayedAdvertMedia(currentAdvert); return -1; }
+
   const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd });
 
   let bestSoFar = -1;
