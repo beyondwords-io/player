@@ -76,11 +76,7 @@ class RootController {
 
   handlePressedProgressBar({ ratio }) {
     this.preScrubState = this.player.playbackState;
-
-    if (this.player.playbackState === "playing") {
-      this.player.playbackState = "paused";
-    }
-
+    this.#pauseIfPlaying();
     this.#setTime((_, duration) => ratio * duration);
   }
 
@@ -183,6 +179,12 @@ class RootController {
       this.player.playbackState = "paused";
     } else {
       this.player.playbackState = "playing";
+    }
+  }
+
+  #pauseIfPlaying() {
+    if (this.player.playbackState === "playing") {
+      this.player.playbackState = "paused";
     }
   }
 
