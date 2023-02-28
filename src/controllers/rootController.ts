@@ -229,6 +229,7 @@ class RootController {
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
+    if (this.preScrubState) { return; } // Don't play adverts while scrubbing.
     if (this.skipNextAdvert) { delete this.skipNextAdvert; return; }
 
     let { adverts, advertIndex, content, contentIndex, currentTime } = this.player;
