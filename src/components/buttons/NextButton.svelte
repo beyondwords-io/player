@@ -19,6 +19,7 @@
   $: isTracks = style === "tracks";
 
   const handleClick = () => {
+    if (disabled) { return; }
     let type, description, props;
 
     if (isSegments) {
@@ -37,7 +38,7 @@
   };
 </script>
 
-<button class="next-button" {disabled} on:click={handleClick} on:mouseup={blurElement}>
+<button class="next-button" on:click={handleClick} on:mouseup={blurElement}>
   {#if isSeconds}
     <SeekAhead seconds={forwardsSeconds} {scale} {color} />
   {:else if isSegments}
