@@ -95,7 +95,11 @@ class RootController {
 
   handlePlaybackPlaying() {
     const otherPlayers = this.PlayerClass.instances().filter(p => p !== this.player);
-    otherPlayers.forEach(p => p.playbackState = "paused");
+    const playingPlayers = otherPlayers.filter(p => p.playbackState === "playing");
+
+    playingPlayers.forEach(p => p.playbackState = "paused");
+
+    this.#playDeferredAdvert();
   }
 
   handlePlaybackEnded() {
@@ -240,12 +244,24 @@ class RootController {
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
     let { adverts, advertIndex, content, contentIndex, currentTime } = this.player;
+
     if (typeof this.prevIndex !== "undefined") { contentIndex = this.prevIndex; }
+    if (typeof this.deferredAdvert !== "undefined") { advertIndex = this.deferredAdvert; }
 
     this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd }));
   }
 
+  #playDeferredAdvert() {
+    if (typeof this.deferredAdvert === "undefined") { return; }
+
+    this.#setAdvert(this.deferredAdvert);
+    delete this.deferredAdvert;
+  }
+
   #setAdvert(index) {
+    const defer = this.player.playbackState !== "playing" && index !== -1;
+    if (defer) { this.deferredAdvert = index; return; } else { delete this.deferredAdvert; }
+
     const wasAdvert = this.#isAdvert();
     this.player.advertIndex = index;
 
@@ -280,5 +296,3 @@ class RootController {
 }
 
 export default RootController;
-    // TODO: choose advert on media started instead of after identifiers loaded so you can
-    // set the current time that should be returned to after the advert?

@@ -64,15 +64,14 @@
   $: isPlaying = playbackState === "playing";
   $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
-  $: isAdvert = activeAdvert && (isPlaying || isPaused && currentTime > 0);
+  $: isAdvert = activeAdvert && !isStopped;
   $: isPlaylist = content.length > 1;
   $: isMobile = belowBreakpoint({ playerStyle, width });
 
   $: contentItem = content[contentIndex] || {};
   $: segments = contentItem.segments || [];
 
-  $: visibleDuration = activeAdvert && !isAdvert ? contentItem.duration : duration;
-  $: progress = currentTime / visibleDuration;
+  $: progress = currentTime / duration;
   $: segmentIndex = isAdvert ? -1 : findSegmentIndex(segments, currentTime)
   $: currentSegment = segments[segmentIndex];
 
@@ -158,7 +157,7 @@
             <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
           {/if}
 
-          <TimeIndicator {currentTime} duration={visibleDuration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : activeTextColor} />
+          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : activeTextColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
             <ProgressBar {onEvent} {progress} fullWidth={isVideo} color={activeIconColor} />
