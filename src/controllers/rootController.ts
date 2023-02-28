@@ -17,7 +17,9 @@ class RootController {
     const handler = this[`handle${event.type}`];
 
     if (this.#ignoreDueToAdvert(event)) {
-      event.status = "ignored";
+      event.status = "ignored-due-to-advert";
+    } else if (this.#ignoreDueToScrubbing(event)) {
+      event.status = "ignored-due-to-scrubbing";
     } else if (handler) {
       handler.call(this, event);
       event.status = "handled";
@@ -101,8 +103,6 @@ class RootController {
   }
 
   handlePlaybackEnded() {
-    if (this.preScrubState) { return; } // Don't skip track while scrubbing.
-
     const wasAdvert = this.#isAdvert();
     this.#chooseAndSetAdvert({ atTheEnd: true });
 
@@ -164,6 +164,13 @@ class RootController {
       type.includes("SeekBack") ||
       type.includes("SeekAhead") ||
       type.includes("Progress") && !type.includes("Space") && !type.includes("Enter")
+    );
+  }
+
+  #ignoreDueToScrubbing({ type }) {
+    return this.preScrubState && (
+      type.includes("CurrentTimeUpdated") ||
+      type.includes("PlaybackEnded")
     );
   }
 
@@ -234,7 +241,6 @@ class RootController {
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
-    if (this.preScrubState) { return; } // Don't play adverts while scrubbing.
     if (this.skipNextAdvert) { delete this.skipNextAdvert; return; }
 
     let { adverts, advertIndex, content, contentIndex, currentTime } = this.player;
