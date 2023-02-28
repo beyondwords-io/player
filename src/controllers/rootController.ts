@@ -74,11 +74,15 @@ class RootController {
 
   handlePressedProgressBar({ ratio }) {
     this.preScrubState = this.player.playbackState;
+
+    if (this.player.playbackState === "playing") {
+      this.player.playbackState = "paused";
+    }
+
     this.#setTime((_, duration) => ratio * duration);
   }
 
   handleScrubbedProgressBar({ ratio }) {
-    if (this.player.playbackState === "playing") { this.player.playbackState = "paused"; }
     this.#setTime((_, duration) => ratio * duration);
   }
 
