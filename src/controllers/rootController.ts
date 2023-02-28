@@ -268,18 +268,16 @@ class RootController {
     const advertsStarted = !wasAdvert && this.#isAdvert();
     const advertsFinished = wasAdvert && !this.#isAdvert();
 
-    if (advertsStarted)   { this.#backupPlayerState(); }
-    if (this.#isAdvert()) { this.#overridePlayerState(); }
+    if (advertsStarted)   { this.#overridePlayerState(); }
     if (advertsFinished)  { this.#restorePlayerState(); }
   }
 
-  #backupPlayerState() {
+  #overridePlayerState() {
     this.prevTime = this.player.currentTime;
     this.prevRate = this.player.playbackRate;
     this.prevContent = this.player.contentIndex;
-  }
 
-  #overridePlayerState() {
+    this.player.currentTime = 0;
     this.player.playbackRate = 1;
   }
 
