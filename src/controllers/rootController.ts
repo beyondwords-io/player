@@ -245,22 +245,22 @@ class RootController {
   #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
     let { adverts, advertIndex, content, contentIndex, currentTime } = this.player;
 
-    if (typeof this.prevIndex !== "undefined") { contentIndex = this.prevIndex; }
-    if (typeof this.deferredAdvert !== "undefined") { advertIndex = this.deferredAdvert; }
+    if (typeof this.prevContent !== "undefined") { contentIndex = this.prevContent; }
+    if (typeof this.nextAdvert !== "undefined") { advertIndex = this.nextAdvert; }
 
     this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd }));
   }
 
   #playDeferredAdvert() {
-    if (typeof this.deferredAdvert === "undefined") { return; }
+    if (typeof this.nextAdvert === "undefined") { return; }
 
-    this.#setAdvert(this.deferredAdvert);
-    delete this.deferredAdvert;
+    this.#setAdvert(this.nextAdvert);
+    delete this.nextAdvert;
   }
 
   #setAdvert(index) {
     const defer = this.player.playbackState !== "playing" && index !== -1;
-    if (defer) { this.deferredAdvert = index; return; } else { delete this.deferredAdvert; }
+    if (defer) { this.nextAdvert = index; return; } else { delete this.nextAdvert; }
 
     const wasAdvert = this.#isAdvert();
     this.player.advertIndex = index;
@@ -276,7 +276,7 @@ class RootController {
   #backupPlayerState() {
     this.prevTime = this.player.currentTime;
     this.prevRate = this.player.playbackRate;
-    this.prevIndex = this.player.contentIndex;
+    this.prevContent = this.player.contentIndex;
   }
 
   #overridePlayerState() {
@@ -286,12 +286,12 @@ class RootController {
   #restorePlayerState() {
     this.player.playbackRate = this.prevRate || 1;
 
-    const trackChanged = this.player.contentIndex !== this.prevIndex;
+    const trackChanged = this.player.contentIndex !== this.prevContent;
     if (!trackChanged) { this.player.currentTime = this.prevTime; }
 
     delete this.prevTime;
     delete this.prevRate;
-    delete this.prevIndex;
+    delete this.prevContent;
   }
 }
 
