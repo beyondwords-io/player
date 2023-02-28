@@ -225,7 +225,12 @@ class RootController {
   }
 
   #setTime(timeFn) {
-    this.player.currentTime = timeFn(this.player.currentTime, this.player.duration || 0);
+    const duration = this.player.duration || 0;
+
+    const newTime = timeFn(this.player.currentTime, duration);
+    const maxTime = this.player.duration - 0.001;
+
+    this.player.currentTime = Math.max(0, Math.min(maxTime, newTime));
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
