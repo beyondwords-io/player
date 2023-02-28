@@ -56,7 +56,7 @@ class RootController {
   handlePressedExternalUrl()           { /* Do nothing */ }
 
   handleDurationUpdated()              { /* Do nothing */ }
-  handleCurrentTimeUpdated()           { this.#chooseAndSetAdvert(); }
+  handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#chooseAndSetAdvert(); }
   handlePlaybackPaused()               { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
@@ -103,6 +103,8 @@ class RootController {
   }
 
   handlePlaybackEnded() {
+    if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
+
     const wasAdvert = this.#isAdvert();
     this.#chooseAndSetAdvert({ atTheEnd: true });
 
@@ -174,6 +176,10 @@ class RootController {
     return this.player.advertIndex !== -1;
   }
 
+  #isMidrollAdvert() {
+    return this.player.adverts[this.player.advertIndex]?.placement === "mid-roll";
+  }
+
   #playOrPause() {
     if (this.player.playbackState === "playing") {
       this.player.playbackState = "paused";
@@ -228,7 +234,11 @@ class RootController {
     } else {
       this.player.contentIndex = tryIndex;
 
-      if (!this.#isAdvert()) { this.#setTime(() => 0); }
+      if (!this.#isAdvert()) {
+        this.#setTime(() => 0);
+        this.midrollPlayed = false;
+      }
+
       this.#chooseAndSetAdvert({ atTheStart: true });
     }
   }
