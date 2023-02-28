@@ -224,9 +224,13 @@ class RootController {
     this.player.currentTime = timeFn(this.player.currentTime, this.player.duration || 0);
   }
 
-  #chooseAndSetAdvert(options = {}) {
+  #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
     if (this.skipNextAdvert) { delete this.skipNextAdvert; return; }
-    this.#setAdvert(chooseAdvert(this.player, { ...options, prevIndex: this.prevIndex }));
+
+    let { adverts, advertIndex, content, contentIndex, currentTime } = this.player;
+    if (typeof this.prevIndex !== "undefined") { contentIndex = this.prevIndex; }
+
+    this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd }));
   }
 
   #setAdvert(index) {
@@ -256,6 +260,10 @@ class RootController {
 
     const trackChanged = this.player.contentIndex !== this.prevIndex;
     if (!trackChanged) { this.player.currentTime = this.prevTime; }
+
+    delete this.prevTime;
+    delete this.prevRate;
+    delete this.prevIndex;
   }
 }
 

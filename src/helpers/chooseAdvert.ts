@@ -1,21 +1,20 @@
 import findSegmentIndex from "./findSegmentIndex";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = (player, { atTheStart, atTheEnd, prevIndex }) => {
-  const contentIndexBeforeAdvert = prevIndex || player.contentIndex;
-  if (!player.content[contentIndexBeforeAdvert]?.adsEnabled) { return -1; }
+const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd } = {}) => {
+  if (!content[contentIndex]?.adsEnabled) { return -1; }
 
-  const currentAdvert = player.adverts[player.advertIndex];
-  if (currentAdvert && !atTheEnd) { return player.advertIndex; }
+  const currentAdvert = adverts[advertIndex];
+  if (currentAdvert && !atTheEnd) { return advertIndex; }
 
   if (currentAdvert && atTheEnd) { updatePlayedAdvertMedia(currentAdvert); }
-  const placements = placementsThatCanPlay(player, { atTheStart, atTheEnd });
+  const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd });
 
   let bestSoFar = -1;
   let bestType = -Infinity;
   let bestRandom = -Infinity;
 
-  for (const [thisIndex, advert] of player.adverts.entries()) {
+  for (const [thisIndex, advert] of adverts.entries()) {
     if (alreadyPlayedAdvertMedia(advert)) { continue; }
     if (!placements.has(advert.placement)) { continue; }
 
@@ -35,20 +34,20 @@ const chooseAdvert = (player, { atTheStart, atTheEnd, prevIndex }) => {
 
 const typeScores = { vast: 1, custom: 0 };
 
-const placementsThatCanPlay = (player, { atTheStart, atTheEnd }) => {
-  const isFirstItem = player.contentIndex === 0;
-  const isLastItem = player.contentIndex === player.content.length - 1;
+const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart, atTheEnd }) => {
+  const isFirstItem = contentIndex === 0;
+  const isLastItem = contentIndex === content.length - 1;
 
-  const segments = player.content[player.contentIndex].segments;
-  const segmentIndex = findSegmentIndex(segments, player.currentTime);
+  const segments = content[contentIndex].segments;
+  const segmentIndex = findSegmentIndex(segments, currentTime);
   const currentSegment = segments[segmentIndex];
 
-  const isPlaylist = player.content.length > 1;
+  const isPlaylist = content.length > 1;
   const isBetweenPlaylistItems = isPlaylist && atTheStart && !isFirstItem;
 
   const midrollIndex = isPlaylist ? null : midrollSegmentIndex(segments);
   const midrollSegment = segments[midrollIndex];
-  const isAfterMidrollTime = midrollSegment && player.currentTime > midrollSegment.startTime;
+  const isAfterMidrollTime = midrollSegment && currentTime > midrollSegment.startTime;
 
   const eligiblePlacements = new Set();
 
