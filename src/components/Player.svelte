@@ -32,6 +32,7 @@
   export let textColor = "#111";
   export let backgroundColor = "#F5F5F5";
   export let iconColor = "rgba(0, 0, 0, 0.8)";
+  export let advertConsent = "personalized";
 
   // These are set automatically.
   export let showWidgetAtBottom = false;
@@ -48,10 +49,15 @@
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
 
   $: activeAdvert = adverts[advertIndex];
-  $: vastUrl = withQueryParams(activeAdvert?.vastUrl, { vad_type: "linear" });
 
   $: media = activeAdvert?.media;
   $: !activeAdvert && (media = content[contentIndex]?.media);
+
+  $: vastUrl = withQueryParams(activeAdvert?.vastUrl, {
+    vad_type: "linear",
+    npa: advertConsent !== "personalized" ? 1 : 0,
+    tfua: advertConsent === "under-the-age-of-consent" ? 1 : 0,
+  });
 </script>
 
 <MediaElement
