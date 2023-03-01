@@ -1,5 +1,5 @@
 import findSegmentIndex from "./findSegmentIndex";
-import { updatedErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
+import { updateErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
 const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored } = {}) => {
@@ -7,7 +7,7 @@ const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, curren
 
   const currentAdvert = adverts[advertIndex];
   x: if (currentAdvert) {
-    if (errored) { updatedErroredAdverts(currentAdvert); break x; } // Choose another advert.
+    if (errored) { updateErroredAdverts(currentAdvert); break x; } // Choose another advert.
     if (atTheEnd) { updatePlayedAdvertMedia(currentAdvert); return -1; } // Play the content.
     if (!atTheEnd) { return advertIndex; } // Keep playing the current advert until it ends.
   }
