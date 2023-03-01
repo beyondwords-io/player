@@ -126,17 +126,7 @@
     </video>
 
     {#if vastUrl}
-      <VastContainer
-        {onEvent}
-        {vastUrl}
-        videoElement={video}
-        {playbackState}
-        bind:duration
-        bind:currentTime
-        {videoBehindWidget}
-        {videoBehindStatic}
-        {widgetPosition}
-        {widgetWidth} />
+      <VastContainer {onEvent} {vastUrl} {video} {playbackState} bind:duration bind:currentTime {videoBehindWidget} />
     {/if}
   </div>
 </div>

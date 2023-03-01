@@ -2,14 +2,11 @@
   import newEvent from "../helpers/newEvent";
 
   export let vastUrl;
-  export let videoElement;
+  export let video;
   export let playbackState;
   export let duration;
   export let currentTime;
   export let videoBehindWidget;
-  export let videoBehindStatic;
-  export let widgetPosition;
-  export let widgetWidth;
   export let onEvent = () => {};
 
   // These are set automatically.
@@ -24,7 +21,7 @@
   $: adsManager, playbackState === "playing" ? adsManager?.resume() : adsManager?.pause();
 
   const initializeIMA = () => {
-    adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, videoElement);
+    adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, video);
 
     adsLoader = new google.ima.AdsLoader(adDisplayContainer); // TODO: contentComplete
     adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, onAdsManagerLoaded, false);
@@ -32,16 +29,16 @@
 
     adsRequest = new google.ima.AdsRequest();
     adsRequest.adTagUrl = vastUrl;
-    adsRequest.linearAdSlotWidth = videoElement.clientWidth; // TODO: check this
-    adsRequest.linearAdSlotHeight = videoElement.clientHeight;
-    adsRequest.nonLinearAdSlotWidth = videoElement.clientWidth;
-    adsRequest.nonLinearAdSlotHeight = videoElement.clientHeight / 3;
+    adsRequest.linearAdSlotWidth = video.clientWidth; // TODO: check this
+    adsRequest.linearAdSlotHeight = video.clientHeight;
+    adsRequest.nonLinearAdSlotWidth = video.clientWidth;
+    adsRequest.nonLinearAdSlotHeight = video.clientHeight / 3;
 
     adsLoader.requestAds(adsRequest);
   };
 
   const onAdsManagerLoaded = (adsManagerLoadedEvent) => {
-    adsManager = adsManagerLoadedEvent.getAdsManager(videoElement);
+    adsManager = adsManagerLoadedEvent.getAdsManager(video);
 
     adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress);
     adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
@@ -54,16 +51,16 @@
     if (adsLoaded) { return; }
     adsLoaded = true;
 
-    videoElement.pause();
-    videoElement.load();
+    video.pause();
+    video.load();
     adDisplayContainer.initialize();
 
     try {
-      adsManager.init(videoElement.clientWidth, videoElement.clientHeight, google.ima.ViewMode.NORMAL);
+      adsManager.init(video.clientWidth, video.clientHeight, google.ima.ViewMode.NORMAL);
       adsManager.start();
     } catch (adError) {
       console.log("AdsManager could not be started");
-      videoElement.play(); // TODO: emit failed advert event (and add to MediaElement if no sources?)
+      video.play(); // TODO: emit failed advert event (and add to MediaElement if no sources?)
     }
   };
 
