@@ -118,6 +118,10 @@ class RootController {
     this.#setTrack(i => i + 1);
   }
 
+  handlePlaybackErrored() {
+    this.handlePlaybackEnded();
+  }
+
   handlePressedMaximize() {
     if (fullScreenElement()) {
       exitFullScreen();

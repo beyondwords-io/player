@@ -61,8 +61,7 @@
       adsManager.start();
       onAnimationFrame();
     } catch (adError) {
-      console.log("AdsManager could not be started");
-      video.play(); // TODO: emit failed advert event (and add to MediaElement if no sources?)
+      onAdError(null, adError);
     }
   };
 
@@ -90,9 +89,18 @@
     }));
   };
 
-  const onAdError = (adErrorEvent) => {
-    console.log(adErrorEvent.getError()); // TODO: what to do on error?
+  const onAdError = (adEvent, adError) => {
+    adError = adError || adEvent.getError();
     adsManager?.destroy();
+
+    onEvent(newEvent({
+      type: "PlaybackErrored",
+      description: "The media failed to play.",
+      initiatedBy: "google-ima-sdk",
+      fromWidget: videoBehindWidget,
+      errorMessage: adError.getMessage(),
+      errorCode: adError.getErrorCode(),
+    }));
   };
 
   const onAnimationFrame = () => {
