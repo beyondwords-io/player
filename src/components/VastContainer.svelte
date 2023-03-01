@@ -23,7 +23,7 @@
   const initializeIMA = () => {
     adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, video);
 
-    adsLoader = new google.ima.AdsLoader(adDisplayContainer); // TODO: contentComplete
+    adsLoader = new google.ima.AdsLoader(adDisplayContainer);
     adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, onAdsManagerLoaded, false);
     adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError, false);
 
