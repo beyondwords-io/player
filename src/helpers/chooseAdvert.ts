@@ -1,13 +1,16 @@
 import findSegmentIndex from "./findSegmentIndex";
+import { updatedErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd } = {}) => {
+const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored } = {}) => {
   if (!content[contentIndex]?.adsEnabled) { return -1; }
 
   const currentAdvert = adverts[advertIndex];
-
-  if (currentAdvert && !atTheEnd) { return advertIndex; }
-  if (currentAdvert && atTheEnd) { updatePlayedAdvertMedia(currentAdvert); return -1; }
+  x: if (currentAdvert) {
+    if (errored) { updatedErroredAdverts(currentAdvert); break x; } // Choose another advert.
+    if (atTheEnd) { updatePlayedAdvertMedia(currentAdvert); return -1; } // Play the content.
+    if (!atTheEnd) { return advertIndex; } // Keep playing the current advert until it ends.
+  }
 
   const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd });
 
@@ -17,6 +20,7 @@ const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, curren
 
   for (const [thisIndex, advert] of adverts.entries()) {
     if (alreadyPlayedAdvertMedia(advert)) { continue; }
+    if (resultedInAPlaybackError(advert)) { continue; }
     if (!placements.has(advert.placement)) { continue; }
 
     const thisType = typeScores[advert.type] || 0;

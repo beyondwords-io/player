@@ -119,7 +119,11 @@ class RootController {
   }
 
   handlePlaybackErrored() {
-    this.handlePlaybackEnded();
+    if (this.#isAdvert()) {
+      this.#chooseAndSetAdvert({ errored: true });
+    } else {
+      this.handlePlaybackEnded();
+    }
   }
 
   handlePressedMaximize() {
@@ -260,14 +264,14 @@ class RootController {
     this.player.currentTime = Math.max(0, Math.min(maxTime, newTime));
   }
 
-  #chooseAndSetAdvert({ atTheStart, atTheEnd } = {}) {
+  #chooseAndSetAdvert({ atTheStart, atTheEnd, errored } = {}) {
     const { adverts, content, currentTime } = this.player;
     let { advertIndex, contentIndex } = this.player;
 
     if (typeof this.nextAdvert !== "undefined") { advertIndex = this.nextAdvert; }
     if (typeof this.prevContent !== "undefined") { contentIndex = this.prevContent; }
 
-    this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd }));
+    this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
   }
 
   #playDeferredAdvert() {
