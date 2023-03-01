@@ -8,6 +8,9 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"
   ],
+  "globals": {
+    "google": "readonly"
+  },
   "overrides": [
     {
       "files": ["**/*.svelte"],
