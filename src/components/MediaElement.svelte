@@ -1,9 +1,11 @@
 <script>
   import { onMount } from "svelte";
+  import VastContainer from "./VastContainer.svelte";
   import loadMedia from "../helpers/loadMedia";
   import newEvent from "../helpers/newEvent";
 
   export let media;
+  export let vastUrl;
   export let playbackState;
   export let duration;
   export let currentTime;
@@ -122,6 +124,20 @@
 
       <track kind="captions">
     </video>
+
+    {#if vastUrl}
+      <VastContainer
+        {onEvent}
+        {vastUrl}
+        videoElement={video}
+        {playbackState}
+        bind:duration
+        bind:currentTime
+        {videoBehindWidget}
+        {videoBehindStatic}
+        {widgetPosition}
+        {widgetWidth} />
+    {/if}
   </div>
 </div>
 

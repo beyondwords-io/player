@@ -1,6 +1,5 @@
 <script>
   import MediaElement from "./MediaElement.svelte";
-  import VastContainer from "./VastContainer.svelte";
   import UserInterface from "./UserInterface.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
 
@@ -37,7 +36,6 @@
   export let showWidgetAtBottom = false;
   export let isFullScreen = false;
   export let mediaElement = undefined;
-  export let vastContainer = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = { processEvent: () => {} };
@@ -59,6 +57,7 @@
   bind:this={mediaElement}
   onEvent={e => controller.processEvent(e)}
   {media}
+  {vastUrl}
   {playbackState}
   bind:duration
   bind:currentTime
@@ -67,21 +66,6 @@
   {videoBehindStatic}
   {widgetPosition}
   {widgetWidth} />
-
-{#if vastUrl}
-  <VastContainer
-    bind:this={vastContainer}
-    onEvent={e => controller.processEvent(e)}
-    {vastUrl}
-    videoElement={mediaElement?.video}
-    {playbackState}
-    bind:duration
-    bind:currentTime
-    {videoBehindWidget}
-    {videoBehindStatic}
-    {widgetPosition}
-    {widgetWidth} />
-{/if}
 
 {#if showUserInterface}
   <UserInterface
