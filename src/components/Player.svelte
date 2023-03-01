@@ -2,6 +2,7 @@
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
+  import withQueryParams from "../helpers/withQueryParams";
 
   export let playerApiUrl = "https://api.beyondwords.io/v1";
   export let projectId = undefined;
@@ -47,7 +48,7 @@
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
 
   $: activeAdvert = adverts[advertIndex];
-  $: vastUrl = activeAdvert?.vastUrl;
+  $: vastUrl = withQueryParams(activeAdvert?.vastUrl, { vad_type: "linear" });
 
   $: media = activeAdvert?.media;
   $: !activeAdvert && (media = content[contentIndex]?.media);

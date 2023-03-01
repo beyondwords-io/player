@@ -29,10 +29,8 @@
 
     adsRequest = new google.ima.AdsRequest();
     adsRequest.adTagUrl = vastUrl;
-    adsRequest.linearAdSlotWidth = video.clientWidth; // TODO: check this
+    adsRequest.linearAdSlotWidth = video.clientWidth;
     adsRequest.linearAdSlotHeight = video.clientHeight;
-    adsRequest.nonLinearAdSlotWidth = video.clientWidth;
-    adsRequest.nonLinearAdSlotHeight = video.clientHeight / 3;
 
     adsLoader.requestAds(adsRequest);
   };
