@@ -3,6 +3,7 @@ import BeyondWords from "../src/index";
 describe("BeyondWords.Player", () => {
   beforeEach(() => {
     HTMLMediaElement.prototype.pause = () => {};
+    HTMLMediaElement.prototype.load = () => {};
     BeyondWords.Player.destroyAll();
   });
 
