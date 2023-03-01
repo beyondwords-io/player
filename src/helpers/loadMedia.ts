@@ -1,14 +1,14 @@
 import Hls from "hls.js/dist/hls.light.js";
 
 const loadMedia = (source, video, hls) => {
-  if (!source || !video) { return; }
+  if (!video) { return; }
 
   const prevPaused = video.paused;
   const prevRate = video.playbackRate;
 
   hls?.detachMedia();
 
-  const isStreamable = source.contentType === "application/x-mpegURL";
+  const isStreamable = (source || {}).contentType === "application/x-mpegURL";
   const libraryHlsSupported = Hls.isSupported();
   const nativeHlsSupported = video.canPlayType("application/vnd.apple.mpegurl");
 
