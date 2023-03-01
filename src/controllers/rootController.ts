@@ -102,6 +102,10 @@ class RootController {
     this.#playDeferredAdvert();
   }
 
+  handleContentResumeRequested() {
+    this.handlePlaybackEnded();
+  }
+
   handlePlaybackEnded() {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
 
