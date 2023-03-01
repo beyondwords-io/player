@@ -9,13 +9,13 @@
   export let videoBehindWidget;
   export let onEvent = () => {};
 
-  // These are set automatically.
-  export let adContainer = undefined;
-  export let adDisplayContainer = undefined;
-  export let adsLoader = undefined;
-  export let adsRequest = undefined;
-  export let adsManager = undefined;
-  export let adsLoaded = false;
+  let adContainer;
+  let adDisplayContainer;
+  let adsLoader;
+  let adsRequest;
+  let adsManager;
+  let adsLoaded;
+  let adData;
 
   $: adsManager && playbackState === "playing" && loadAds();
   $: adsManager, playbackState === "playing" ? adsManager?.resume() : adsManager?.pause();
@@ -56,6 +56,7 @@
     try {
       adsManager.init(video.clientWidth, video.clientHeight, google.ima.ViewMode.NORMAL);
       adsManager.start();
+      onAnimationFrame();
     } catch (adError) {
       console.log("AdsManager could not be started");
       video.play(); // TODO: emit failed advert event (and add to MediaElement if no sources?)
@@ -63,29 +64,18 @@
   };
 
   const onAdProgress = (adEvent) => {
-    const adData = adEvent.getAdData();
+    adData = adEvent.getAdData();
+    adData.updatedAt = Date.now();
 
-    if (duration !== adData.duration) {
-      duration = adData.duration;
+    if (duration === adData.duration) { return; }
+    duration = adData.duration;
 
-      onEvent(newEvent({
-        type: "DurationUpdated",
-        description: "The media's duration was updated.",
-        initiatedBy: "google-ima-sdk",
-        fromWidget: videoBehindWidget,
-      }));
-    }
-
-    if (currentTime !== adData.currentTime) {
-      currentTime = adData.currentTime; // TODO: smooth currentTime?
-
-      onEvent(newEvent({
-        type: "CurrentTimeUpdated",
-        description: "The media's current time was updated.",
-        initiatedBy: "google-ima-sdk",
-        fromWidget: videoBehindWidget,
-      }));
-    }
+    onEvent(newEvent({
+      type: "DurationUpdated",
+      description: "The media's duration was updated.",
+      initiatedBy: "google-ima-sdk",
+      fromWidget: videoBehindWidget,
+    }));
   };
 
   const onContentResumeRequested = () => {
@@ -102,7 +92,25 @@
     adsManager?.destroy();
   };
 
-  // TODO: window resize / position change
+  const onAnimationFrame = () => {
+    if (!adContainer) { return; }
+
+    currentTime = smoothedCurrentTime();
+    adsManager.resize(video.clientWidth, video.clientHeight, google.ima.ViewMode.NORMAL);
+    requestAnimationFrame(onAnimationFrame);
+  };
+
+  const smoothedCurrentTime = () => {
+    if (!adData) { return 0; }
+
+    if (playbackState === "playing") {
+      const elapsed = (Date.now() - adData.updatedAt) / 1000;
+      return adData.currentTime + elapsed;
+    } else {
+      adData.updatedAt = Date.now();
+      return currentTime;
+    }
+  };
 </script>
 
 <svelte:head> <!-- TODO: load script sooner? -->
