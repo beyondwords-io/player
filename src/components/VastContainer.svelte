@@ -1,7 +1,10 @@
 <script>
   import newEvent from "../helpers/newEvent";
+  import withQueryParams from "../helpers/withQueryParams";
+  import googleAdTagParams from "../helpers/googleAdTagParams";
 
   export let vastUrl;
+  export let advertConsent;
   export let video;
   export let playbackState;
   export let duration;
@@ -17,6 +20,8 @@
   let adsLoaded;
   let adData;
 
+  $: adTagUrl = withQueryParams(vastUrl, googleAdTagParams(advertConsent));
+
   $: adsManager && playbackState === "playing" && loadAds();
   $: adsManager, playbackState === "playing" ? adsManager?.resume() : adsManager?.pause();
 
@@ -28,7 +33,7 @@
     adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError, false);
 
     adsRequest = new google.ima.AdsRequest();
-    adsRequest.adTagUrl = vastUrl;
+    adsRequest.adTagUrl = adTagUrl;
     adsRequest.linearAdSlotWidth = video.clientWidth;
     adsRequest.linearAdSlotHeight = video.clientHeight;
 

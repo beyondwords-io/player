@@ -6,6 +6,7 @@
 
   export let media;
   export let vastUrl;
+  export let advertConsent;
   export let playbackState;
   export let duration;
   export let currentTime;
@@ -126,7 +127,7 @@
     </video>
 
     {#if vastUrl}
-      <VastContainer {onEvent} {vastUrl} {video} {playbackState} bind:duration bind:currentTime {videoBehindWidget} />
+      <VastContainer {onEvent} {vastUrl} {advertConsent} {video} {playbackState} bind:duration bind:currentTime {videoBehindWidget} />
     {/if}
   </div>
 </div>

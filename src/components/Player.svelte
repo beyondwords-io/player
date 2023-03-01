@@ -2,7 +2,6 @@
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
-  import withQueryParams from "../helpers/withQueryParams";
 
   export let playerApiUrl = "https://api.beyondwords.io/v1";
   export let projectId = undefined;
@@ -49,15 +48,10 @@
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
 
   $: activeAdvert = adverts[advertIndex];
+  $: vastUrl = activeAdvert?.vastUrl;
 
   $: media = activeAdvert?.media;
   $: !activeAdvert && (media = content[contentIndex]?.media);
-
-  $: vastUrl = withQueryParams(activeAdvert?.vastUrl, {
-    vad_type: "linear",
-    npa: advertConsent !== "personalized" ? 1 : 0,
-    tfua: advertConsent === "under-the-age-of-consent" ? 1 : 0,
-  });
 </script>
 
 <MediaElement
@@ -65,6 +59,7 @@
   onEvent={e => controller.processEvent(e)}
   {media}
   {vastUrl}
+  {advertConsent}
   {playbackState}
   bind:duration
   bind:currentTime
