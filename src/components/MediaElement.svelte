@@ -34,6 +34,8 @@
   $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
 
+  $: poster = playbackState !== "stopped" && (activeAdvert?.imageUrl || contentItem?.imageUrl);
+
   const handlePlay = () => {
     onEvent(newEvent({
       type: "PlaybackPlaying",
@@ -146,6 +148,7 @@
            bind:duration
            bind:currentTime
            bind:playbackRate
+           poster={poster || ""}
            preload="metadata"
            playsinline
            disablepictureinpicture
