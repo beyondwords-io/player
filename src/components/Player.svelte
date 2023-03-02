@@ -48,10 +48,12 @@
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
 
   $: activeAdvert = adverts[advertIndex];
-  $: vastUrl = activeAdvert?.vastUrl;
 
   $: media = activeAdvert?.media;
   $: !activeAdvert && (media = content[contentIndex]?.media);
+
+  $: vastUrl = activeAdvert?.vastUrl;
+  $: customUrl = activeAdvert?.clickThroughUrl;
 </script>
 
 <MediaElement
@@ -59,6 +61,7 @@
   onEvent={e => controller.processEvent(e)}
   {media}
   {vastUrl}
+  {customUrl}
   {advertConsent}
   {playbackState}
   bind:duration

@@ -7,6 +7,7 @@
   export let media;
   export let vastUrl;
   export let advertConsent;
+  export let customUrl;
   export let playbackState;
   export let duration;
   export let currentTime;
@@ -160,6 +161,10 @@
     {#if vastUrl}
       <VastContainer {onEvent} {vastUrl} {advertConsent} {video} {playbackState} bind:duration bind:currentTime {videoBehindWidget} />
     {/if}
+
+    {#if customUrl}
+      <a class="custom-advert-link" href={customUrl} target="_blank"></a>
+    {/if}
   </div>
 </div>
 
@@ -221,6 +226,14 @@
     margin-left: auto;
     margin-right: auto;
     max-width: min(720px, 100% - 2rem);
+  }
+
+  .custom-advert-link {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 
   @keyframes fly-widget {

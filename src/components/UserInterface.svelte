@@ -436,6 +436,17 @@
     transition: background-color 0.25s;
   }
 
+  .video.advert.playing {
+    pointer-events: none;
+  }
+
+  .video.advert.playing .scroll-to-player,
+  .video.advert.playing .controls,
+  .video.advert.playing .end,
+  .video.advert.playing :global(.playlist) {
+    pointer-events: auto;
+  }
+
   .video.fixed {
     max-width: min(720px, 100% - 2rem);
   }
