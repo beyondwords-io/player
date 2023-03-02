@@ -22,7 +22,9 @@
 
 <div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} style={opacityCss}>
   <div class="inner">
-    {#if isAdvert}
+    {#if isAdvert && currentTime === 0}
+      <!-- -->
+    {:else if isAdvert}
       <CountdownTime text="Ad" remaining={remaining} {scale} {color} />
     {:else if isStopped}
       <DurationInMins {duration} {scale} {color} />
