@@ -150,7 +150,7 @@
   };
 </script>
 
-<svelte:head> <!-- TODO: load script sooner? -->
+<svelte:head>
   <script on:load={initializeIMA} on:error={onScriptError} src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
 </svelte:head>
 
