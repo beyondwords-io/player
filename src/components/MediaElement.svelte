@@ -159,7 +159,7 @@
     </video>
 
     {#if vastUrl}
-      <VastContainer {onEvent} {vastUrl} {advertConsent} {video} {playbackState} bind:duration bind:currentTime {videoBehindWidget} />
+      <VastContainer {onEvent} {vastUrl} {advertConsent} {video} bind:playbackState bind:duration bind:currentTime {videoBehindWidget} />
     {/if}
 
     {#if customUrl}

@@ -63,7 +63,7 @@
   {vastUrl}
   {customUrl}
   {advertConsent}
-  {playbackState}
+  bind:playbackState
   bind:duration
   bind:currentTime
   bind:playbackRate

@@ -44,6 +44,7 @@
     adsManager = adsManagerLoadedEvent.getAdsManager(video);
 
     adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress);
+    adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, onPaused);
     adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
     adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
   };
@@ -80,10 +81,23 @@
     }));
   };
 
+  const onPaused = () => {
+    if (playbackState === "paused") { return; }
+    playbackState = "paused";
+    console.log("pausing");
+
+    onEvent(newEvent({
+      type: "PlaybackPaused",
+      description: "The media became paused at its current playback time.",
+      initiatedBy: "google-ima-sdk",
+      fromWidget: videoBehindWidget,
+    }));
+  };
+
   const onContentResumeRequested = () => {
     onEvent(newEvent({
-      type: "ContentResumeRequested",
-      description: "The vast advert requested the content be resumed.",
+      type: "PlaybackEnded",
+      description: "The media finished playing because it reached the end.",
       initiatedBy: "google-ima-sdk",
       fromWidget: videoBehindWidget,
     }));
