@@ -163,7 +163,7 @@
     {/if}
 
     {#if customUrl}
-      <a class="custom-advert-link" href={customUrl} target="_blank"></a>
+      <a class="custom-advert-link" href={customUrl} target="_blank" rel="noreferrer">&nbsp;</a>
     {/if}
   </div>
 </div>
@@ -234,6 +234,7 @@
     bottom: 0;
     left: 0;
     right: 0;
+    text-decoration: none;
   }
 
   @keyframes fly-widget {
