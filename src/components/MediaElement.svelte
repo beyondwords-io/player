@@ -83,6 +83,19 @@
     }));
   };
 
+  const handleError = (sourceIndex) => () => {
+    const isLastSource = sourceIndex === sources.length - 1;
+    if (!isLastSource) { return; }
+
+    onEvent(newEvent({
+      type: "PlaybackErrored",
+      description: "The media failed to play.",
+      initiatedBy: "media",
+      fromWidget: videoBehindWidget,
+      errorMessage: "The video tag contains sources but none are playable.",
+    }));
+  };
+
   const handleFullScreenChange = () => {
     onEvent(newEvent({
       type: "FullScreenModeUpdated",
@@ -119,8 +132,8 @@
            on:timeupdate={handleTimeUpdate}
            on:ratechange={handleRateChange}>
 
-      {#each sources as { url, contentType }}
-        <source src={url} type={contentType}>
+      {#each sources as { url, contentType }, i}
+        <source src={url} type={contentType} on:error={handleError(i)}>
       {/each}
 
       <track kind="captions">
