@@ -90,7 +90,9 @@ class RootController {
   }
 
   handleIdentifiersChanged() {
-    setPropsFromApi(this.player).then(() => this.#chooseAndSetAdvert());
+    setPropsFromApi(this.player).then(() => {
+      this.#chooseAndSetAdvert({ atTheStart: true })
+    });
   }
 
   handlePlaybackPlaying() {
