@@ -84,7 +84,6 @@
   const onPaused = () => {
     if (playbackState === "paused") { return; }
     playbackState = "paused";
-    console.log("pausing");
 
     onEvent(newEvent({
       type: "PlaybackPaused",

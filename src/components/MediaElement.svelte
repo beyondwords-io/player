@@ -27,7 +27,7 @@
   $: sources = [media].flat().filter(m => m);
   $: hls = loadMedia(sources[0], video, hls, handleHlsError);
 
-  $: sources, playbackState === "playing" ? video?.play() : video?.pause();
+  $: sources, !vastUrl && (playbackState === "playing" ? video?.play() : video?.pause());
 
   const handlePlay = () => {
     onEvent(newEvent({
