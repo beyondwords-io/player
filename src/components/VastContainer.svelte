@@ -104,6 +104,18 @@
     }));
   };
 
+  const onScriptError = () => {
+    onEvent(newEvent({
+      type: "PlaybackErrored",
+      description: "The media failed to play.",
+      initiatedBy: "browser",
+      fromWidget: videoBehindWidget,
+      mediaType: "VAST",
+      mediaUrl: adTagUrl,
+      errorMessage: "The ima3.js script was blocked.",
+    }));
+  };
+
   const onAnimationFrame = () => {
     if (!adContainer) { return; }
 
@@ -126,7 +138,7 @@
 </script>
 
 <svelte:head> <!-- TODO: load script sooner? -->
-  <script on:load={initializeIMA} src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+  <script on:load={initializeIMA} on:error={onScriptError} src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
 </svelte:head>
 
 <div class="vast-container" bind:this={adContainer}></div>
