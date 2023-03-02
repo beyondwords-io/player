@@ -4,10 +4,9 @@
   import loadMedia from "../helpers/loadMedia";
   import newEvent from "../helpers/newEvent";
 
-  export let media;
-  export let vastUrl;
+  export let contentItem;
+  export let activeAdvert;
   export let advertConsent;
-  export let customUrl;
   export let playbackState;
   export let duration;
   export let currentTime;
@@ -21,13 +20,19 @@
   let video;
   let hls = null;
 
-  $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
-  $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
+  $: media = activeAdvert?.media;
+  $: !activeAdvert && (media = contentItem?.media);
 
   $: sources = [media].flat().filter(m => m);
   $: hls = loadMedia(sources[0], video, hls, handleHlsError);
 
+  $: vastUrl = activeAdvert?.vastUrl;
+  $: customUrl = activeAdvert?.clickThroughUrl;
+
   $: sources, !vastUrl && (playbackState === "playing" ? video?.play() : video?.pause());
+
+  $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
+  $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
 
   const handlePlay = () => {
     onEvent(newEvent({
