@@ -17,9 +17,8 @@
   export let widgetWidth;
   export let onEvent = () => {};
 
-  // These are set automatically.
-  export let video;
-  export let hls = null;
+  let video;
+  let hls = null;
 
   $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
