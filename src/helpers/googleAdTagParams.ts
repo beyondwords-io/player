@@ -8,6 +8,10 @@ const googleAdTagParams = (advertConsent) => {
   // Adverts that are "non-linear" show over the top of content that is playing.
   params.vad_type = "linear";
 
+  // Set the description_url to the current page's address.
+  // https://support.google.com/admanager/answer/10678356?hl=en#description_url
+  params.description_url = window.location.href;
+
   // Set the non-personalized advert flag which limits the ads that can play.
   // This will be set for 'non-personalized' and 'under-the-age-of-consent'.
   params.npa = advertConsent !== "personalized" ? 1 : 0;
