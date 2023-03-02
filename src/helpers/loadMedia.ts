@@ -1,6 +1,6 @@
 import Hls from "hls.js/dist/hls.light.js";
 
-const loadMedia = (source, video, hls) => {
+const loadMedia = (source, video, hls, onError) => {
   if (!video) { return; }
 
   const prevPaused = video.paused;
@@ -16,6 +16,8 @@ const loadMedia = (source, video, hls) => {
 
   if (useLibraryHls) {
     hls = hls || new Hls({ enableWorker: false });
+
+    hls.on(Hls.Events.ERROR, onError);
 
     hls.loadSource(source.url);
     hls.attachMedia(video);

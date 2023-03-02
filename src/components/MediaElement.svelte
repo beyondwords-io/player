@@ -24,7 +24,7 @@
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
 
   $: sources = [media].flat().filter(m => m);
-  $: hls = loadMedia(sources[0], video, hls);
+  $: hls = loadMedia(sources[0], video, hls, handleHlsError);
 
   $: sources, playbackState === "playing" ? video?.play() : video?.pause();
 
@@ -82,7 +82,7 @@
     }));
   };
 
-  const handleError = (sourceIndex) => () => {
+  const handleSourceError = (sourceIndex) => () => {
     const isLastSource = sourceIndex === sources.length - 1;
     if (!isLastSource) { return; }
 
@@ -91,7 +91,26 @@
       description: "The media failed to play.",
       initiatedBy: "media",
       fromWidget: videoBehindWidget,
+      mediaType: "native",
+      mediaUrl: sources[0].url,
       errorMessage: "The video tag contains sources but none are playable.",
+    }));
+  };
+
+  const handleHlsError = (event, data) => {
+    if (!data.fatal) { return; }
+
+    hls?.destroy();
+    hls = null;
+
+    onEvent(newEvent({
+      type: "PlaybackErrored",
+      description: "The media failed to play.",
+      initiatedBy: "media",
+      fromWidget: videoBehindWidget,
+      mediaType: "HLS",
+      mediaUrl: sources[0].url,
+      errorMessage: `${data.type} ${data.details}`,
     }));
   };
 
@@ -132,7 +151,7 @@
            on:ratechange={handleRateChange}>
 
       {#each sources as { url, contentType }, i}
-        <source src={url} type={contentType} on:error={handleError(i)}>
+        <source src={url} type={contentType} on:error={handleSourceError(i)}>
       {/each}
 
       <track kind="captions">

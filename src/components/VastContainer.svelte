@@ -98,8 +98,9 @@
       description: "The media failed to play.",
       initiatedBy: "google-ima-sdk",
       fromWidget: videoBehindWidget,
-      errorMessage: adError.getMessage(),
-      errorCode: adError.getErrorCode(),
+      mediaType: "VAST",
+      mediaUrl: adTagUrl,
+      errorMessage: `${adError.getMessage()} (code=${adError.getErrorCode()})`,
     }));
   };
 

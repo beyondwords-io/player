@@ -118,7 +118,9 @@ class RootController {
     this.#setTrack(i => i + 1);
   }
 
-  handlePlaybackErrored() {
+  handlePlaybackErrored({ mediaType, mediaUrl, errorMessage }) {
+    console.warn(`${mediaType} playback error: ${errorMessage} (requesting ${mediaUrl})`);
+
     if (this.#isAdvert()) {
       this.#chooseAndSetAdvert({ errored: true });
     } else {
