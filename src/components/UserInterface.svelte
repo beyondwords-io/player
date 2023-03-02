@@ -115,6 +115,10 @@
 {#if knownPlayerStyle(playerStyle) && content.length > 0}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
     <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
+      {#if isVideo && (posterImage || !videoIsBehind)}
+        <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
+      {/if}
+
       <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
         {#if isLarge || isScreen}
           <LargeImage src={isAdvert && activeAdvert.imageUrl || contentItem.imageUrl} scale={isScreen && !isMobile ? 1.5 : 1} />
@@ -191,10 +195,6 @@
           </div>
         {/if}
       </div>
-
-      {#if isVideo && (posterImage || !videoIsBehind)}
-        <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
-      {/if}
     </Hoverable>
 
     {#if !isSmall && !isScreen}
@@ -454,7 +454,6 @@
     height: 100%;
     border-radius: 0.5rem;
     background: #323232;
-    z-index: -1;
     background-color: black;
     background-size: contain;
     background-repeat: no-repeat;

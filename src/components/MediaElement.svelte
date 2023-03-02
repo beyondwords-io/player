@@ -177,7 +177,6 @@
     overflow: hidden;
     min-width: 360px;
     max-width: 720px;
-    z-index: -1;
   }
 
   .inner {
