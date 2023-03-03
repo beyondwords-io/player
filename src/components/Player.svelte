@@ -32,6 +32,8 @@
   export let backgroundColor = "#F5F5F5";
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let advertConsent = "personalized";
+  export const addEventListener = (...args) => controller.addEventListener(...args);
+  export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
   // These are set automatically.
   export let showWidgetAtBottom = false;

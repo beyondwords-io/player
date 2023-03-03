@@ -1,5 +1,6 @@
 import { validateEventBeforeProcessing, validateEventAfterProcessing } from "../helpers/eventValidation";
 import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
+import { v4 as randomUuid } from "uuid";
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
@@ -10,6 +11,21 @@ class RootController {
   constructor(player, PlayerClass) {
     this.player = player;
     this.PlayerClass = PlayerClass;
+    this.eventListeners = { "<any>": {} };
+  }
+
+  addEventListener(eventType, callback) {
+    const listenerHandle = `listener-handle-${randomUuid()}`;
+
+    this.eventListeners[eventType] = this.eventListeners[eventType] || {};
+    this.eventListeners[eventType][listenerHandle] = callback;
+
+    return listenerHandle;
+  }
+
+  removeEventListener(eventType, listenerHandle) {
+    this.eventListeners[eventType] = this.eventListeners[eventType] || {};
+    delete this.eventListeners[eventType][listenerHandle];
   }
 
   processEvent(event) {
@@ -29,6 +45,14 @@ class RootController {
 
     event.processedAt = new Date().toISOString();
     validateEventAfterProcessing(event);
+
+    this.sendEventToListeners(event.type, event);
+    this.sendEventToListeners("<any>", event);
+  }
+
+  sendEventToListeners(eventType, event) {
+    const typeListeners = this.eventListeners[eventType] || {};
+    Object.values(typeListeners).forEach(f => f(event));
   }
 
   handlePressedPlay()                  { this.player.playbackState = "playing"; }
