@@ -5,13 +5,13 @@ const initiators = ["user", "media", "browser", "google-ima-sdk"];
 const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing"];
 
 export const validateEventBeforeCreation = (props) => {
-  validateProperty(props, "type",        s => s.length > 0);
+  validateProperty(props, "type",        s => isTitleCase(s));
   validateProperty(props, "description", s => s.length > 0);
   validateProperty(props, "initiatedBy", s => initiators.includes(s));
 };
 
 export const validateEventBeforeProcessing = (props) => {
-  validateProperty(props, "type",        s => s.length > 0);
+  validateProperty(props, "type",        s => isTitleCase(s));
   validateProperty(props, "description", s => s.length > 0);
   validateProperty(props, "initiatedBy", s => initiators.includes(s));
   validateProperty(props, "id",          s => isValidUuid(s));
@@ -21,7 +21,7 @@ export const validateEventBeforeProcessing = (props) => {
 };
 
 export const validateEventAfterProcessing = (props) => {
-  validateProperty(props, "type",        s => s.length > 0);
+  validateProperty(props, "type",        s => isTitleCase(s));
   validateProperty(props, "description", s => s.length > 0);
   validateProperty(props, "initiatedBy", s => initiators.includes(s));
   validateProperty(props, "id",          s => isValidUuid(s));
@@ -29,6 +29,15 @@ export const validateEventAfterProcessing = (props) => {
   validateProperty(props, "status",      s => postStatuses.includes(s));
   validateProperty(props, "fromWidget",  b => typeof b === "boolean");
   validateProperty(props, "processedAt", s => isIsoDateString(s));
+};
+
+const isTitleCase = (string) => {
+  string = string || "<invalid>";
+
+  const startsWithCapital = string[0] === string[0].toUpperCase();
+  const hasNonAlphabetic = string.match(/[^a-zA-Z]/);
+
+  return startsWithCapital && !hasNonAlphabetic;
 };
 
 const isIsoDateString = (string) => {
