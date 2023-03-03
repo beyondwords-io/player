@@ -1,4 +1,4 @@
-import { validatePreEvent, validatePostEvent } from "../helpers/eventValidation";
+import { validateEventBeforeProcessing, validateEventAfterProcessing } from "../helpers/eventValidation";
 import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
@@ -13,7 +13,7 @@ class RootController {
   }
 
   processEvent(event) {
-    validatePreEvent(event);
+    validateEventBeforeProcessing(event);
     const handler = this[`handle${event.type}`];
 
     if (this.#ignoreDueToAdvert(event)) {
@@ -28,7 +28,7 @@ class RootController {
     }
 
     event.processedAt = new Date().toISOString();
-    validatePostEvent(event);
+    validateEventAfterProcessing(event);
   }
 
   handlePressedPlay()                  { this.player.playbackState = "playing"; }

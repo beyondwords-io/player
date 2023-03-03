@@ -1,8 +1,8 @@
-import { validatePartialEvent } from "./eventValidation";
+import { validateEventBeforeCreation } from "./eventValidation";
 import { v4 as randomUuid } from "uuid";
 
 const newEvent = (props) => {
-  validatePartialEvent(props);
+  validateEventBeforeCreation(props);
 
   const id = randomUuid();
   const createdAt = new Date().toISOString();
