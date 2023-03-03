@@ -2,7 +2,7 @@ import fetchJson, { postJson } from "../helpers/fetchJson";
 
 class PlayerApiClient {
   constructor(playerApiUrl, projectId) {
-    this.baseUrl = `${playerApiUrl}/projects/${projectId}/player`;
+    this.baseUrl = playerApiUrl.replace("{id}", projectId);
   }
 
   byContentId(id) {

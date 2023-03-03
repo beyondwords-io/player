@@ -3,7 +3,7 @@
   import UserInterface from "./UserInterface.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
 
-  export let playerApiUrl = "https://api.beyondwords.io/v1";
+  export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
   export let analyticsUrl = "https://metrics.beyondwords.io/events";
   export let projectId = undefined;
   export let contentId = undefined;
@@ -11,7 +11,6 @@
   export let sourceId = undefined;
   export let sourceUrl = undefined;
   export let playlist = undefined;
-
   export let showUserInterface = false;
   export let playerStyle = "standard";
   export let callToAction = "Listen to this article";
