@@ -34,7 +34,7 @@ export const validateEventAfterProcessing = (props) => {
   validateProperty(props, "processedAt", s => isIsoDateString(s));
 };
 
-export const validateAnalyticsEvent = (props) => {
+export const validateAnalyticsEvent = (props) => {                        // ClickHouse Types:
   validateProperty(props, "event_type", s => analyticsTypes.includes(s)); // Enum
   validateProperty(props, "device_type", s => deviceTypes.includes(s));   // Enum
   validateProperty(props, "media_type", s => mediaTypes.includes(s));     // Enum
@@ -52,6 +52,8 @@ export const validateAnalyticsEvent = (props) => {
   validateProperty(props, "listen_length_seconds", s => true);            // Int32
   validateProperty(props, "listen_from_start_length_seconds", s => true); // Int32
   validateProperty(props, "speed", s => true);                            // Int32
+  validateProperty(props, "location", s => s.length > 0);                 // Not currently stored
+  validateProperty(props, "referrer", s => typeof s === "string");        // Not currently stored
 };
 
 const isTitleCase = (string) => {
