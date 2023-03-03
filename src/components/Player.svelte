@@ -4,6 +4,7 @@
   import identifiersEvent from "../helpers/identifiersEvent";
 
   export let playerApiUrl = "https://api.beyondwords.io/v1";
+  export let analyticsUrl = "https://metrics.beyondwords.io/events";
   export let projectId = undefined;
   export let contentId = undefined;
   export let playlistId = undefined;
