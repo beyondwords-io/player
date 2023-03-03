@@ -1,6 +1,7 @@
 import PlayerComponent from "./components/Player.svelte";
 import RootController from "./controllers/rootController";
 import resolveTarget from "./helpers/resolveTarget";
+import sendToAnalytics from "./helpers/sendToAnalytics";
 import throwError from "./helpers/throwError";
 
 class Player extends PlayerComponent {
@@ -12,6 +13,7 @@ class Player extends PlayerComponent {
     super({ target: newTarget, props: { showUserInterface, ...props } });
 
     this.controller = new RootController(this, Player);
+    this.addEventListener("<any>", e => sendToAnalytics(this, e));
 
     Player.#instances.push(this);
   }
