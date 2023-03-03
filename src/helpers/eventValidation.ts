@@ -3,6 +3,9 @@ import { validate as isValidUuid } from "uuid";
 
 const initiators = ["user", "media", "browser", "google-ima-sdk"];
 const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing"];
+const analyticsTypes = ["load", "play", "play_progress", "ad_link_click"];
+const deviceTypes = ["desktop", "phone", "tablet", "ios", "android"];
+const mediaTypes = ["podcast", "preroll"];
 
 export const validateEventBeforeCreation = (props) => {
   validateProperty(props, "type",        s => isTitleCase(s));
@@ -31,13 +34,8 @@ export const validateEventAfterProcessing = (props) => {
   validateProperty(props, "processedAt", s => isIsoDateString(s));
 };
 
-
 export const validateAnalyticsEvent = (props) => {
-  const eventTypes = ["load", "play", "play_progress", "pause", "sk-play", "ad_link_click", "ad_logo_click", "speed", "sk-progress", "listenToEnd", "sk-pause", "sk-listen-to-end", "replay", "set-current-time", "progress"];
-  const deviceTypes = ["desktop", "phone", "tablet", "ios", "android"];
-  const mediaTypes = ["podcast", "preroll"];
-
-  validateProperty(props, "event_type", s => eventTypes.includes(s));     // Enum
+  validateProperty(props, "event_type", s => analyticsTypes.includes(s)); // Enum
   validateProperty(props, "device_type", s => deviceTypes.includes(s));   // Enum
   validateProperty(props, "media_type", s => mediaTypes.includes(s));     // Enum
   validateProperty(props, "podcast_id", s => true);                       // String
