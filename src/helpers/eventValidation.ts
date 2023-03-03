@@ -15,9 +15,9 @@ export const validateEventBeforeProcessing = (props) => {
   validateProperty(props, "description", s => s.length > 0);
   validateProperty(props, "initiatedBy", s => initiators.includes(s));
   validateProperty(props, "id",          s => isValidUuid(s));
-  validateProperty(props, "createdAt",   s => s.length > 0);
+  validateProperty(props, "createdAt",   s => isIsoDateString(s));
   validateProperty(props, "status",      s => s === "pending");
-  validateProperty(props, "fromWidget",  b => [true, false].includes(b));
+  validateProperty(props, "fromWidget",  b => typeof b === "boolean");
 };
 
 export const validateEventAfterProcessing = (props) => {
@@ -25,11 +25,20 @@ export const validateEventAfterProcessing = (props) => {
   validateProperty(props, "description", s => s.length > 0);
   validateProperty(props, "initiatedBy", s => initiators.includes(s));
   validateProperty(props, "id",          s => isValidUuid(s));
-  validateProperty(props, "createdAt",   s => s.length > 0);
+  validateProperty(props, "createdAt",   s => isIsoDateString(s));
   validateProperty(props, "status",      s => postStatuses.includes(s));
-  validateProperty(props, "fromWidget",  b => [true, false].includes(b));
-  validateProperty(props, "processedAt", s => s.length > 0);
+  validateProperty(props, "fromWidget",  b => typeof b === "boolean");
+  validateProperty(props, "processedAt", s => isIsoDateString(s));
 };
+
+const isIsoDateString = (string) => {
+  try {
+    const date = new Date(Date.parse(string));
+    return date.toISOString() === string;
+  } catch (error) {
+    return false;
+  }
+}
 
 const validateProperty = (props, name, validationFn) => {
   if (!Object.prototype.hasOwnProperty.call(props, name)) {
