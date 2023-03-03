@@ -31,6 +31,31 @@ export const validateEventAfterProcessing = (props) => {
   validateProperty(props, "processedAt", s => isIsoDateString(s));
 };
 
+
+export const validateAnalyticsEvent = (props) => {
+  const eventTypes = ["load", "play", "play_progress", "pause", "sk-play", "ad_link_click", "ad_logo_click", "speed", "sk-progress", "listenToEnd", "sk-pause", "sk-listen-to-end", "replay", "set-current-time", "progress"];
+  const deviceTypes = ["desktop", "phone", "tablet", "ios", "android"];
+  const mediaTypes = ["podcast", "preroll"];
+
+  validateProperty(props, "event_type", s => eventTypes.includes(s));     // Enum
+  validateProperty(props, "device_type", s => deviceTypes.includes(s));   // Enum
+  validateProperty(props, "media_type", s => mediaTypes.includes(s));     // Enum
+  validateProperty(props, "podcast_id", s => true);                       // String
+  validateProperty(props, "project_id", s => true);                       // Int64
+  validateProperty(props, "publisher_id", s => true);                     // Int64
+  validateProperty(props, "campaign_id", s => true);                      // Int64
+  validateProperty(props, "media_id", s => true);                         // Int64
+  validateProperty(props, "user_id", s => true);                          // String
+  validateProperty(props, "listen_session_id", s => isValidUuid(s));      // UUID
+  validateProperty(props, "created_at_date", s => true);                  // Date
+  validateProperty(props, "created_at_datetime", s => true);              // DateTime
+  validateProperty(props, "duration", s => true);                         // Int32
+  validateProperty(props, "listen_length_percent", s => true);            // Int32
+  validateProperty(props, "listen_length_seconds", s => true);            // Int32
+  validateProperty(props, "listen_from_start_length_seconds", s => true); // Int32
+  validateProperty(props, "speed", s => true);                            // Int32
+};
+
 const isTitleCase = (string) => {
   string = string || "<invalid>";
 
