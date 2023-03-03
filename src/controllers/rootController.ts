@@ -15,6 +15,9 @@ class RootController {
   }
 
   addEventListener(eventType, callback) {
+    const knownType = eventType === "<any>" || this[`handle${eventType}`];
+    if (!knownType) { throwError(`Cannot add listener for unknown event type '${eventType}'.`); }
+
     const listenerHandle = `listener-handle-${randomUuid()}`;
 
     this.eventListeners[eventType] = this.eventListeners[eventType] || {};
