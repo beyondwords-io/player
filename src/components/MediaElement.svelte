@@ -73,6 +73,9 @@
   };
 
   const handleTimeUpdate = () => {
+    // Ensure the correct duration is sent to analytics for vast ads.
+    if (vastUrl) { return; }
+
     onEvent(newEvent({
       type: "CurrentTimeUpdated",
       description: "The media's current time was updated.",

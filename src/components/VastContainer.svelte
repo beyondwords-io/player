@@ -70,6 +70,13 @@
     adData = adEvent.getAdData();
     adData.updatedAt = Date.now();
 
+    onEvent(newEvent({
+      type: "CurrentTimeUpdated",
+      description: "The media's current time was updated.",
+      initiatedBy: "media",
+      fromWidget: videoBehindWidget,
+    }));
+
     if (duration === adData.duration) { return; }
     duration = adData.duration;
 
