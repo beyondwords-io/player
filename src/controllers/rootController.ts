@@ -83,6 +83,7 @@ class RootController {
 
   handlePressedAdvertLink()            { /* Do nothing */ }
   handlePressedAdvertButton()          { /* Do nothing */ }
+  handlePressedAdvertVideo()           { /* Do nothing */ }
   handlePressedBeyondWords()           { /* Do nothing */ }
   handlePressedExternalUrl()           { /* Do nothing */ }
 

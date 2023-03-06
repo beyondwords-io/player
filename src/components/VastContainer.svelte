@@ -44,6 +44,7 @@
     adsManager = adsManagerLoadedEvent.getAdsManager(video);
 
     adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress);
+    adsManager.addEventListener(google.ima.AdEvent.Type.CLICK, onClick);
     adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, onPaused);
     adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, onContentResumeRequested);
     adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, onAdError);
@@ -84,6 +85,15 @@
       type: "DurationUpdated",
       description: "The media's duration was updated.",
       initiatedBy: "google-ima-sdk",
+      fromWidget: videoBehindWidget,
+    }));
+  };
+
+  const onClick = () => {
+    onEvent(newEvent({
+      type: "PressedAdvertVideo",
+      description: "The video background was pressed to open the advert in a new tab.",
+      initiatedBy: "user",
       fromWidget: videoBehindWidget,
     }));
   };

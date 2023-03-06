@@ -30,8 +30,8 @@ const analyticsEventType = (player, playerEventType) => {
   // Emit a 'play_progress' event for each 10%, 20%, ..., 100% of playback reached.
   if (playerEventType === "CurrentTimeUpdated" && isNextPercentage(player)) { return "play_progress"; }
 
-  // TODO: advert click
-  // TODO: make sure works for vast ads
+  // Emit an 'ad_link_click' event when you press on an advert link/button/video.
+  if (playerEventType.startsWith("PressedAdvert")) { return "ad_link_click"; }
 };
 
 const eventFromProps = (player, analyticsEventType) => {
