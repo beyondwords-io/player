@@ -58,13 +58,8 @@ class RootController {
 
     validateEventAfterProcessing(event);
 
-    this.sendEventToListeners(event.type, event);
-    this.sendEventToListeners("<any>", event);
-  }
-
-  sendEventToListeners(eventType, event) {
-    const typeListeners = this.eventListeners[eventType] || {};
-    Object.values(typeListeners).forEach(f => f(event));
+    this.#sendEventToListeners(event.type, event);
+    this.#sendEventToListeners("<any>", event);
   }
 
   handlePressedPlay()                  { this.player.playbackState = "playing"; }
@@ -216,6 +211,11 @@ class RootController {
       type.includes("CurrentTimeUpdated") ||
       type.includes("PlaybackEnded")
     );
+  }
+
+  #sendEventToListeners(eventType, event) {
+    const typeListeners = this.eventListeners[eventType] || {};
+    Object.values(typeListeners).forEach(f => f(event));
   }
 
   #isAdvert() {
