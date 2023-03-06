@@ -38,11 +38,12 @@
   // These are set automatically.
   export let showWidgetAtBottom = false;
   export let isFullScreen = false;
-  export let listenSessionId = undefined;
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = { processEvent: () => {} };
+  export let listenSessionId = undefined;
+  export let emitPlayEvent = undefined;
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;

@@ -6,7 +6,7 @@ const sendToAnalytics = (player, playerEvent) => {
   const client = new AnalyticsClient(player.analyticsUrl);
   if (!player.analyticsUrl) { return; }
 
-  const eventType = analyticsEventType(playerEvent.type);
+  const eventType = analyticsEventType(player, playerEvent.type);
   if (!eventType) { return; }
 
   const alreadyLoaded = !!player.listenSessionId;
@@ -18,12 +18,20 @@ const sendToAnalytics = (player, playerEvent) => {
   return client.sendEvent(analyticsEvent);
 };
 
-const analyticsEventType = (playerEventType) => (
-  playerEventType === "DurationUpdated" ? "load" :
-  playerEventType === "PlaybackPlaying" ? "play" : null
-);
+const analyticsEventType = (player, playerEventType) => {
+  // Emit a 'load' event once only. Wait for the media duration to be known.
+  if (!player.listenSessionId && player.duration) { return "load"; }
 
-const eventFromProps = (player, eventType) => {
+  // Emit a 'play' event after 'PlaybackPlaying' followed by 'CurrentTimeUpdated'.
+  // This ensures player.duration has been updated from the media.
+  if (playerEventType === "PlaybackPlaying") { player.emitPlayEvent = "CurrentTimeUpdated"; }
+  if (playerEventType === player.emitPlayEvent) { delete player.emitPlayEvent; return "play"; }
+
+  // TODO: progress, advert click
+  // TODO: make sure works for vast ads
+};
+
+const eventFromProps = (player, analyticsEventType) => {
   player.listenSessionId = player.listenSessionId || randomUuid();
   localStorage.userId = localStorage.userId || JSON.stringify(randomUuid());
 
@@ -31,7 +39,7 @@ const eventFromProps = (player, eventType) => {
   const contentItem = player.content[player.contentIndex];
 
   return {
-    event_type: eventType,
+    event_type: analyticsEventType,
     device_type: "desktop", // TODO
     media_type: activeAdvert ? "ad" : "content",
     project_id: player.projectId,
