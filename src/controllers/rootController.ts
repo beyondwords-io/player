@@ -45,6 +45,7 @@ class RootController {
       event.status = "ignored-due-to-scrubbing";
     } else if (handler) {
       await handler.call(this, event);
+      this.#playDeferredAdvert();
       event.status = "handled";
     } else {
       throwError("No handler function for event.", event);
@@ -135,8 +136,6 @@ class RootController {
     const playingPlayers = otherPlayers.filter(p => p.playbackState === "playing");
 
     playingPlayers.forEach(p => p.playbackState = "paused");
-
-    this.#playDeferredAdvert();
   }
 
   handlePlaybackEnded() {
@@ -311,6 +310,7 @@ class RootController {
 
   #playDeferredAdvert() {
     if (typeof this.nextAdvert === "undefined") { return; }
+    if (this.player.playbackState !== "playing") { return; }
 
     this.#setAdvert(this.nextAdvert);
     delete this.nextAdvert;
