@@ -70,7 +70,7 @@ const isIsoDateString = (string) => {
   } catch (error) {
     return false;
   }
-}
+};
 
 const validateProperty = (props, name, validationFn) => {
   if (!Object.prototype.hasOwnProperty.call(props, name)) {

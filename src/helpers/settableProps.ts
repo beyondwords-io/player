@@ -6,6 +6,6 @@ const settableProps = (object) => {
   const keyValues = propNames.map(name => [name, object[name]]);
 
   return Object.fromEntries(keyValues);
-}
+};
 
 export default settableProps;
