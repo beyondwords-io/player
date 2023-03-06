@@ -4,6 +4,8 @@ import { v4 as randomUuid } from "uuid";
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
+import settableProps from "../helpers/settableProps";
+import diffObject from "../helpers/diffObject";
 import chooseAdvert from "../helpers/chooseAdvert";
 import chooseWidget from "../helpers/chooseWidget";
 
@@ -31,22 +33,28 @@ class RootController {
     delete this.eventListeners[eventType][listenerHandle];
   }
 
-  processEvent(event) {
+  async processEvent(event) {
     validateEventBeforeProcessing(event);
+
     const handler = this[`handle${event.type}`];
+    const propsBefore = settableProps(this.player);
 
     if (this.#ignoreDueToAdvert(event)) {
       event.status = "ignored-due-to-advert";
     } else if (this.#ignoreDueToScrubbing(event)) {
       event.status = "ignored-due-to-scrubbing";
     } else if (handler) {
-      handler.call(this, event);
+      await handler.call(this, event);
       event.status = "handled";
     } else {
       throwError("No handler function for event.", event);
     }
 
+    const propsAfter = settableProps(this.player);
+
+    event.changedProps = diffObject(propsBefore, propsAfter);
     event.processedAt = new Date().toISOString();
+
     validateEventAfterProcessing(event);
 
     this.sendEventToListeners(event.type, event);

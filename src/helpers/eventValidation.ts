@@ -24,14 +24,15 @@ export const validateEventBeforeProcessing = (props) => {
 };
 
 export const validateEventAfterProcessing = (props) => {
-  validateProperty(props, "type",        s => isTitleCase(s));
-  validateProperty(props, "description", s => s.length > 0);
-  validateProperty(props, "initiatedBy", s => initiators.includes(s));
-  validateProperty(props, "id",          s => isValidUuid(s));
-  validateProperty(props, "createdAt",   s => isIsoDateString(s));
-  validateProperty(props, "status",      s => postStatuses.includes(s));
-  validateProperty(props, "fromWidget",  b => typeof b === "boolean");
-  validateProperty(props, "processedAt", s => isIsoDateString(s));
+  validateProperty(props, "type",         s => isTitleCase(s));
+  validateProperty(props, "description",  s => s.length > 0);
+  validateProperty(props, "initiatedBy",  s => initiators.includes(s));
+  validateProperty(props, "id",           s => isValidUuid(s));
+  validateProperty(props, "createdAt",    s => isIsoDateString(s));
+  validateProperty(props, "status",       s => postStatuses.includes(s));
+  validateProperty(props, "fromWidget",   b => typeof b === "boolean");
+  validateProperty(props, "changedProps", o => typeof o === "object");
+  validateProperty(props, "processedAt",  s => isIsoDateString(s));
 };
 
 export const validateAnalyticsEvent = (props) => {                        // ClickHouse Types:
