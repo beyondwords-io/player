@@ -19,7 +19,8 @@ const sendToAnalytics = (player, playerEvent) => {
 };
 
 const analyticsEventType = (playerEventType) => (
-  playerEventType === "DurationUpdated" ? "load" : null
+  playerEventType === "DurationUpdated" ? "load" :
+  playerEventType === "PlaybackPlaying" ? "play" : null
 );
 
 const eventFromProps = (player, eventType) => {
