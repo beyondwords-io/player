@@ -27,7 +27,10 @@ const analyticsEventType = (player, playerEventType) => {
   if (playerEventType === "PlaybackPlaying") { player.emitPlayEvent = "CurrentTimeUpdated"; }
   if (playerEventType === player.emitPlayEvent) { delete player.emitPlayEvent; return "play"; }
 
-  // TODO: progress, advert click
+  // Emit a 'play_progress' event for each 10%, 20%, ..., 100% of playback reached.
+  if (playerEventType === "CurrentTimeUpdated" && isNextPercentage(player)) { return "play_progress"; }
+
+  // TODO: advert click
   // TODO: make sure works for vast ads
 };
 
@@ -37,6 +40,7 @@ const eventFromProps = (player, analyticsEventType) => {
 
   const activeAdvert = player.adverts[player.advertIndex];
   const contentItem = player.content[player.contentIndex];
+  const percentage = (player.currentTime / player.duration) * 100;
 
   return {
     event_type: analyticsEventType,
@@ -51,11 +55,21 @@ const eventFromProps = (player, analyticsEventType) => {
     listen_session_id: player.listenSessionId,
     duration: player.duration,
     listen_length_seconds: player.currentTime,
-    listen_length_percent: (player.currentTime / player.duration) * 100,
+    listen_length_percent: Math.max(0, Math.min(100, percentage)),
     speed: player.playbackRate,
     location: window.location.href,
     referrer: document.referrer,
   };
+};
+
+const isNextPercentage = (player) => {
+  const nextPercentage = player.prevPercentage + 10;
+  const currentPercentage = (player.currentTime / player.duration) * 100;
+
+  if (currentPercentage >= nextPercentage) {
+    player.prevPercentage = nextPercentage;
+    return true;
+  }
 };
 
 export default sendToAnalytics;

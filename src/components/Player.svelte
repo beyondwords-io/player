@@ -44,6 +44,7 @@
   export let controller = { processEvent: () => {} };
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
+  export let prevPercentage = 0;
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
@@ -65,6 +66,7 @@
   bind:duration
   bind:currentTime
   bind:playbackRate
+  bind:prevPercentage
   {videoBehindWidget}
   {videoBehindStatic}
   {widgetPosition}

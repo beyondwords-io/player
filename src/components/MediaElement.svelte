@@ -11,6 +11,7 @@
   export let duration;
   export let currentTime;
   export let playbackRate;
+  export let prevPercentage;
   export let videoBehindWidget;
   export let videoBehindStatic;
   export let widgetPosition;
@@ -30,6 +31,7 @@
   $: customUrl = activeAdvert?.clickThroughUrl;
 
   $: sources, !vastUrl && (playbackState === "playing" ? video?.play() : video?.pause());
+  $: sources, prevPercentage = 0;
 
   $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
