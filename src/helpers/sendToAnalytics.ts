@@ -1,42 +1,51 @@
 import AnalyticsClient from "../api_clients/analyticsClient";
 import { validateAnalyticsEvent } from "../helpers/eventValidation";
+import { v4 as randomUuid } from "uuid";
 
 const sendToAnalytics = (player, playerEvent) => {
   const client = new AnalyticsClient(player.analyticsUrl);
   if (!player.analyticsUrl) { return; }
 
-  const mappedEvent = mapToAnalyticsEvent(playerEvent);
-  if (!mappedEvent) { return; }
+  const eventType = analyticsEventType(playerEvent.type);
+  if (!eventType) { return; }
 
-  validateAnalyticsEvent(mappedEvent);
-  return client.sendEvent(mappedEvent);
+  const alreadyLoaded = !!player.listenSessionId;
+  if (eventType === "load" && alreadyLoaded) { return; }
+
+  const analyticsEvent = eventFromProps(player, eventType);
+  validateAnalyticsEvent(analyticsEvent);
+
+  return client.sendEvent(analyticsEvent);
 };
 
-import { v4 as randomUuid } from "uuid";
+const analyticsEventType = (playerEventType) => (
+  playerEventType === "DurationUpdated" ? "load" : null
+);
 
-const mapToAnalyticsEvent = (playerEvent) => {
-  return;
+const eventFromProps = (player, eventType) => {
+  player.listenSessionId = player.listenSessionId || randomUuid();
+  localStorage.userId = localStorage.userId || JSON.stringify(randomUuid());
+
+  const activeAdvert = player.adverts[player.advertIndex];
+  const contentItem = player.content[player.contentIndex];
 
   return {
-    event_type: "load",
-    device_type: "desktop",
-    media_type: "podcast",
-    podcast_id: null,
-    project_id: null,
-    publisher_id: null,
-    campaign_id: null,
-    media_id: null,
-    user_id: null,
-    listen_session_id: randomUuid(),
-    created_at_date: null,
-    created_at_datetime: null,
-    duration: null,
-    listen_length_percent: null,
-    listen_length_seconds: null,
-    listen_from_start_length_seconds: null,
-    speed: null,
+    event_type: eventType,
+    device_type: "desktop", // TODO
+    media_type: activeAdvert ? "ad" : "content",
+    project_id: player.projectId,
+    content_id: contentItem?.id,
+    publisher_id: null, // TODO
+    ad_id: activeAdvert?.id,
+    media_id: (activeAdvert || contentItem)?.media[0]?.id, // TODO: reorder content/advert media based on player style?
+    user_id: JSON.parse(localStorage.userId),
+    listen_session_id: player.listenSessionId,
+    duration: player.duration,
+    listen_length_seconds: player.currentTime,
+    listen_length_percent: player.currentTime / player.duration,
+    speed: player.playbackRate,
     location: window.location.href,
-    referrer: "",
+    referrer: document.referrer,
   };
 };
 

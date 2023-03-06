@@ -5,7 +5,7 @@ const initiators = ["user", "media", "browser", "google-ima-sdk"];
 const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing"];
 const analyticsTypes = ["load", "play", "play_progress", "ad_link_click"];
 const deviceTypes = ["desktop", "phone", "tablet", "ios", "android"];
-const mediaTypes = ["podcast", "preroll"];
+const mediaTypes = ["content", "ad"];
 
 export const validateEventBeforeCreation = (props) => {
   validateProperty(props, "type",        s => isTitleCase(s));
@@ -39,19 +39,16 @@ export const validateAnalyticsEvent = (props) => {                        // Cli
   validateProperty(props, "event_type", s => analyticsTypes.includes(s)); // Enum
   validateProperty(props, "device_type", s => deviceTypes.includes(s));   // Enum
   validateProperty(props, "media_type", s => mediaTypes.includes(s));     // Enum
-  validateProperty(props, "podcast_id", s => true);                       // String
+  validateProperty(props, "content_id", s => true);                       // String
   validateProperty(props, "project_id", s => true);                       // Int64
   validateProperty(props, "publisher_id", s => true);                     // Int64
-  validateProperty(props, "campaign_id", s => true);                      // Int64
+  validateProperty(props, "ad_id", s => true);                            // Int64
   validateProperty(props, "media_id", s => true);                         // Int64
   validateProperty(props, "user_id", s => true);                          // String
   validateProperty(props, "listen_session_id", s => isValidUuid(s));      // UUID
-  validateProperty(props, "created_at_date", s => true);                  // Date
-  validateProperty(props, "created_at_datetime", s => true);              // DateTime
   validateProperty(props, "duration", s => true);                         // Int32
   validateProperty(props, "listen_length_percent", s => true);            // Int32
   validateProperty(props, "listen_length_seconds", s => true);            // Int32
-  validateProperty(props, "listen_from_start_length_seconds", s => true); // Int32
   validateProperty(props, "speed", s => true);                            // Int32
   validateProperty(props, "location", s => s.length > 0);                 // Not currently stored
   validateProperty(props, "referrer", s => typeof s === "string");        // Not currently stored
