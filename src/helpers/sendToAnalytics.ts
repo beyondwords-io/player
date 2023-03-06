@@ -42,7 +42,7 @@ const eventFromProps = (player, eventType) => {
     listen_session_id: player.listenSessionId,
     duration: player.duration,
     listen_length_seconds: player.currentTime,
-    listen_length_percent: player.currentTime / player.duration,
+    listen_length_percent: (player.currentTime / player.duration) * 100,
     speed: player.playbackRate,
     location: window.location.href,
     referrer: document.referrer,
