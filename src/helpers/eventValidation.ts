@@ -35,23 +35,23 @@ export const validateEventAfterProcessing = (props) => {
   validateProperty(props, "processedAt",  s => isIsoDateString(s));
 };
 
-export const validateAnalyticsEvent = (props) => {                        // ClickHouse Types:
-  validateProperty(props, "event_type", s => analyticsTypes.includes(s)); // Enum
-  validateProperty(props, "device_type", s => deviceTypes.includes(s));   // Enum
-  validateProperty(props, "media_type", s => mediaTypes.includes(s));     // Enum
-  validateProperty(props, "content_id", s => true);                       // String
-  validateProperty(props, "project_id", s => true);                       // Int64
-  validateProperty(props, "publisher_id", s => true);                     // Int64
-  validateProperty(props, "ad_id", s => true);                            // Int64
-  validateProperty(props, "media_id", s => true);                         // Int64
-  validateProperty(props, "user_id", s => true);                          // String
-  validateProperty(props, "listen_session_id", s => isValidUuid(s));      // UUID
-  validateProperty(props, "duration", s => true);                         // Int32
-  validateProperty(props, "listen_length_percent", s => true);            // Int32
-  validateProperty(props, "listen_length_seconds", s => true);            // Int32
-  validateProperty(props, "speed", s => true);                            // Int32
-  validateProperty(props, "location", s => s.length > 0);                 // Not currently stored
-  validateProperty(props, "referrer", s => typeof s === "string");        // Not currently stored
+export const validateAnalyticsEvent = (props) => {                                   // ClickHouse Types:
+  validateProperty(props, "event_type",            s => analyticsTypes.includes(s)); // Enum
+  validateProperty(props, "device_type",           s => deviceTypes.includes(s));    // Enum
+  validateProperty(props, "media_type",            s => mediaTypes.includes(s));     // Enum
+  validateProperty(props, "content_id",            s => !s || isValidUuid(s));       // String
+  validateProperty(props, "project_id",            n => !n || n > 0);                // Int64
+  validateProperty(props, "publisher_id",          n => !n || n > 0);                // Int64
+  validateProperty(props, "ad_id",                 n => !n || n > 0);                // Int64
+  validateProperty(props, "media_id",              n => !n || n > 0);                // Int64
+  validateProperty(props, "user_id",               s => isValidUuid(s));             // String
+  validateProperty(props, "listen_session_id",     s => isValidUuid(s));             // UUID
+  validateProperty(props, "duration",              n => n >= 0);                     // Int32
+  validateProperty(props, "listen_length_percent", n => n >= 0 && n <= 100);         // Int32
+  validateProperty(props, "listen_length_seconds", n => n >= 0);                     // Int32
+  validateProperty(props, "speed",                 n => n >= 0);                     // Int32
+  validateProperty(props, "location",              s => s.length > 0);               // Not currently stored
+  validateProperty(props, "referrer",              s => typeof s === "string");      // Not currently stored
 };
 
 const isTitleCase = (string) => {
