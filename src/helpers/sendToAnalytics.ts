@@ -9,9 +9,6 @@ const sendToAnalytics = (player, playerEvent) => {
   const eventType = analyticsEventType(player, playerEvent.type);
   if (!eventType) { return; }
 
-  const alreadyLoaded = !!player.listenSessionId;
-  if (eventType === "load" && alreadyLoaded) { return; }
-
   const analyticsEvent = eventFromProps(player, eventType);
   validateAnalyticsEvent(analyticsEvent);
 
