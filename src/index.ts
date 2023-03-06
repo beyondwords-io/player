@@ -9,12 +9,12 @@ class Player extends PlayerComponent {
 
   constructor({ target, ...props }) {
     const { newTarget, showUserInterface } = resolveTarget(target);
-
     super({ target: newTarget, props: { showUserInterface, ...props } });
 
-    this.controller = new RootController(this, Player);
-    this.addEventListener("<any>", e => sendToAnalytics(this, e));
+    const controller = new RootController(this, Player);
+    controller.addEventListener("<any>", e => sendToAnalytics(this, e));
 
+    this.controller = controller;
     Player.#instances.push(this);
   }
 
