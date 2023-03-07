@@ -3,6 +3,8 @@ import { validateAnalyticsEvent } from "../helpers/eventValidation";
 import { v4 as randomUuid } from "uuid";
 
 const sendToAnalytics = (player, playerEvent) => {
+  if (player.analyticsConsent === "none") { return; }
+
   const client = new AnalyticsClient(player.analyticsUrl);
   if (!player.analyticsUrl) { return; }
 
@@ -38,6 +40,7 @@ const eventFromProps = (player, analyticsEventType) => {
   const activeAdvert = player.adverts[player.advertIndex];
   const contentItem = player.content[player.contentIndex];
   const percentage = (player.currentTime / player.duration) * 100;
+  const withoutUuids = player.analyticsConsent === "without-uuids";
 
   return {
     event_type: analyticsEventType,
@@ -47,9 +50,9 @@ const eventFromProps = (player, analyticsEventType) => {
     content_id: contentItem?.id,
     publisher_id: null, // TODO
     ad_id: activeAdvert?.id,
-    media_id: (activeAdvert || contentItem)?.media[0]?.id, // TODO: reorder content/advert media based on player style?
-    local_storage_id: JSON.parse(localStorage.beyondwords),
-    listen_session_id: player.listenSessionId,
+    media_id: (activeAdvert || contentItem)?.media[0]?.id,
+    local_storage_id: withoutUuids ? null : JSON.parse(localStorage.beyondwords),
+    listen_session_id: withoutUuids ? null : player.listenSessionId,
     duration: player.duration,
     listen_length_seconds: player.currentTime,
     listen_length_percent: Math.max(0, Math.min(100, percentage)),

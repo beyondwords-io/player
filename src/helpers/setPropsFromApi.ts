@@ -59,6 +59,7 @@ const setProps = (player, data) => {
   // TODO: share_button_enabled
   // TODO: voice_icon_enabled
   // TODO: logo_icon_enabled
+  player.analyticsConsent = analyticsConsent(data.settings);
 
   player.content = data.content.map((item) => ({
     id: item.id,
@@ -102,6 +103,13 @@ const setProps = (player, data) => {
       })),
     };
   });
+};
+
+const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {
+  if (!analytics_enabled)      { return "none"; }
+  if (!analytics_uuid_enabled) { return "without-uuids"; }
+
+  return "allowed";
 };
 
 export default setPropsFromApi;
