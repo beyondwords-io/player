@@ -1,5 +1,7 @@
 name: CI
 on: [push, pull_request]
+env:
+  HOME: /root # https://github.com/microsoft/playwright/issues/6500
 jobs:
   CI:
     runs-on: ubuntu-latest
