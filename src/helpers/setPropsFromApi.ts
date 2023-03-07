@@ -86,6 +86,7 @@ const setProps = (player, data) => {
     const colors = item[`${theme}_theme`];
 
     return {
+      id: item.id,
       type: item.type,
       placement: item.placement,
       vastUrl: isVast ? item.vast_url : null,
@@ -95,6 +96,7 @@ const setProps = (player, data) => {
       iconColor: colors?.icon_color,
       // TODO: imageUrl
       media: isVast ? [] : item.media.map((media) => ({
+        id: media.id,
         url: media.url,
         contentType: media.content_type,
       })),
