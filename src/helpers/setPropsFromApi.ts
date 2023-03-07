@@ -61,12 +61,14 @@ const setProps = (player, data) => {
   // TODO: logo_icon_enabled
 
   player.content = data.content.map((item) => ({
+    id: item.id,
     title: item.title,
     imageUrl: data.playlist?.image_url || item.image_url,
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
     media: [...item.video, ...item.audio].map((media) => ({
+      id: media.id,
       url: media.url,
       contentType: media.content_type,
     })),
