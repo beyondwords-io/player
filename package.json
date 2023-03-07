@@ -14,7 +14,7 @@
     }
   },
   "devDependencies": {
-    "@fontsource/inter": "^4.5.14",
+    "@fontsource/inter": "^4.5",
     "@playwright/test": "^1.28",
     "@sveltejs/vite-plugin-svelte": "^2.0",
     "@typescript-eslint/eslint-plugin": "^5.45",
@@ -22,11 +22,11 @@
     "eslint": "^8.29",
     "eslint-plugin-svelte3": "^4.0",
     "hls.js": "^1.3",
-    "jsdom": "^20.0",
+    "jsdom": "^21.0",
     "svelte": "^3.53",
     "uuid": "^9.0",
     "vite": "^4.0",
-    "vite-plugin-css-injected-by-js": "^2.1.1",
-    "vitest": "^0.26"
+    "vite-plugin-css-injected-by-js": "^3.0",
+    "vitest": "^0.29"
   }
 }
