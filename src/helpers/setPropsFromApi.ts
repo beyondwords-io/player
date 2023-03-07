@@ -41,6 +41,7 @@ const setProps = (player, data) => {
   const theme = resolveTheme(data.settings.theme);
   const colors = data.settings[`${theme}_theme`];
 
+  player.analyticsUrl = data.settings.analytics_url;
   player.playerStyle = data.settings.player_style;
   player.playerTitle = data.playlist?.title || data.settings.player_title;
   player.callToAction = data.settings.call_to_action;
@@ -60,6 +61,7 @@ const setProps = (player, data) => {
   // TODO: voice_icon_enabled
   // TODO: logo_icon_enabled
   player.analyticsConsent = analyticsConsent(data.settings);
+  player.analyticsId = data.settings.analytics_id;
 
   player.content = data.content.map((item) => ({
     id: item.id,

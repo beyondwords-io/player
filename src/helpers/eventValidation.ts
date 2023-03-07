@@ -41,7 +41,7 @@ export const validateAnalyticsEvent = (props) => {                              
   validateProperty(props, "media_type",            s => mediaTypes.includes(s));     // Enum
   validateProperty(props, "content_id",            s => !s || isValidUuid(s));       // String
   validateProperty(props, "project_id",            n => !n || n > 0);                // Int64
-  validateProperty(props, "publisher_id",          n => !n || n > 0);                // Int64
+  validateProperty(props, "analytics_id",          n => !n || n > 0);                // Int64
   validateProperty(props, "ad_id",                 n => !n || n > 0);                // Int64
   validateProperty(props, "media_id",              n => !n || n > 0);                // Int64
   validateProperty(props, "local_storage_id",      s => !s || isValidUuid(s));       // String

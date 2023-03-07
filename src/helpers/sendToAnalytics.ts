@@ -48,7 +48,7 @@ const eventFromProps = (player, analyticsEventType) => {
     media_type: activeAdvert ? "ad" : "content",
     project_id: player.projectId,
     content_id: contentItem?.id,
-    publisher_id: null, // TODO
+    analytics_id: player.analyticsId,
     ad_id: activeAdvert?.id,
     media_id: (activeAdvert || contentItem)?.media[0]?.id,
     local_storage_id: withoutUuids ? null : JSON.parse(localStorage.beyondwords),
