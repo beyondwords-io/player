@@ -19,7 +19,7 @@ const postJson = (url, data) => (
   fetchJson(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: JSON.stringify(data, (_, v) => v === undefined ? null : v),
   })
 );
 
