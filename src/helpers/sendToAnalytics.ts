@@ -33,7 +33,7 @@ const analyticsEventType = (player, playerEventType) => {
 
 const eventFromProps = (player, analyticsEventType) => {
   player.listenSessionId = player.listenSessionId || randomUuid();
-  localStorage.userId = localStorage.userId || JSON.stringify(randomUuid());
+  localStorage.beyondwords = localStorage.beyondwords || JSON.stringify(randomUuid());
 
   const activeAdvert = player.adverts[player.advertIndex];
   const contentItem = player.content[player.contentIndex];
@@ -48,7 +48,7 @@ const eventFromProps = (player, analyticsEventType) => {
     publisher_id: null, // TODO
     ad_id: activeAdvert?.id,
     media_id: (activeAdvert || contentItem)?.media[0]?.id, // TODO: reorder content/advert media based on player style?
-    user_id: JSON.parse(localStorage.userId),
+    local_storage_id: JSON.parse(localStorage.beyondwords),
     listen_session_id: player.listenSessionId,
     duration: player.duration,
     listen_length_seconds: player.currentTime,
