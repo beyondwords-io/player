@@ -4,7 +4,7 @@ import { validate as isValidUuid } from "uuid";
 const initiators = ["user", "media", "browser", "google-ima-sdk"];
 const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing"];
 const analyticsTypes = ["load", "play", "play_progress", "ad_link_click"];
-const deviceTypes = ["desktop", "phone", "tablet", "ios", "android"];
+const deviceTypes = ["phone", "tablet", "desktop"];
 const mediaTypes = ["content", "ad"];
 
 export const validateEventBeforeCreation = (props) => {

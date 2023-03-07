@@ -41,7 +41,7 @@ const eventFromProps = (player, analyticsEventType) => {
 
   return {
     event_type: analyticsEventType,
-    device_type: "desktop", // TODO
+    device_type: deviceType(),
     media_type: activeAdvert ? "ad" : "content",
     project_id: player.projectId,
     content_id: contentItem?.id,
@@ -68,5 +68,16 @@ const isNextPercentage = (player) => {
     return true;
   }
 };
+
+const deviceType = () => {
+  if (maxDeviceWidth(499)) { return "phone"; }  // Return 'phone' for 0 <= width < 499
+  if (maxDeviceWidth(999)) { return "tablet"; } // Return 'tablet' for 500 <= width < 1000
+
+  return "desktop";                             // Return 'desktop' for 1000 <= width
+};
+
+const maxDeviceWidth = (pixels) => (
+  window.matchMedia && window.matchMedia(`only screen and (max-device-width: ${pixels}px)`).matches
+);
 
 export default sendToAnalytics;
