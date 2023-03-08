@@ -119,7 +119,11 @@ const setProps = (player, data) => {
 
 const set = (player, propName, value, { overridable = true } = {}) => {
   const overriddenByScriptTag = typeof player.initialProps[propName] !== "undefined";
-  if (overridable && overriddenByScriptTag) { return; }
+  if (overriddenByScriptTag && overridable) { return; }
+
+  if (overriddenByScriptTag && !overridable) {
+    console.error(`Property '${propName}' cannot be overridden on your current plan.`); // TODO: extract and add context
+  }
 
   player[propName] = value;
 };

@@ -147,7 +147,7 @@ class RootController {
   }
 
   handlePlaybackErrored({ mediaType, mediaUrl, errorMessage }) {
-    console.warn(`${mediaType} playback error: ${errorMessage} (requesting ${mediaUrl})`);
+    console.error(`${mediaType} playback error: ${errorMessage} (requesting ${mediaUrl})`);
 
     if (this.#isAdvert()) {
       this.#chooseAndSetAdvert({ errored: true });
