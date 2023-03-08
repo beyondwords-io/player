@@ -33,17 +33,18 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
-  export let analyticsId = undefined;
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
   // These are set automatically.
+  export let initialProps = {};
   export let showWidgetAtBottom = false;
   export let isFullScreen = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = { processEvent: () => {} };
+  export let analyticsId = undefined;
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
   export let prevPercentage = 0;

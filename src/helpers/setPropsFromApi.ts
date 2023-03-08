@@ -12,7 +12,12 @@ const setPropsFromApi = async (player) => {
   const data = await fetchData(client, identifiers);
   if (!data) { return; }
 
-  setProps(player, data); // TODO: override initialProps
+  // The player allows you to override props from the API by adding them in the script tag.
+  // For example, you could add { backgroundCollor: "yellow" } to set a different color.
+  //
+  // If player.backgroundColor is changed again later and a new API request is made, this
+  // change will only persist if it was initially overridden in the script tag.
+  setProps(player, data);
 };
 
 const identifiersArray = (player) => {
@@ -41,29 +46,34 @@ const setProps = (player, data) => {
   const theme = resolveTheme(data.settings.theme);
   const colors = data.settings[`${theme}_theme`];
 
-  player.analyticsUrl = data.settings.analytics_url;
-  player.playerStyle = data.settings.player_style;
-  player.playerTitle = data.playlist?.title || data.settings.player_title;
-  player.callToAction = data.settings.call_to_action;
-  player.textColor = colors.text_color;
-  player.backgroundColor = colors.background_color;
-  player.iconColor = colors.icon_color;
+  // TODO: allow overriddable for some fields based on subscription
+  //       e.g. logo_icon_enabled could be overridable if on a premium plan
+  // TODO: how to handle manually setting player.logoIconEnabled ?
+  //       could potentially check this with svelte reactivity and revert
+
+  set(player, "analyticsUrl", data.settings.analytics_url);
+  set(player, "playerStyle", data.settings.player_style);
+  set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
+  set(player, "callToAction", data.settings.call_to_action);
+  set(player, "textColor", colors.text_color);
+  set(player, "backgroundColor", colors.background_color);
+  set(player, "iconColor", colors.icon_color);
   // TODO: title_enabled
   // TODO: image_enabled
-  player.widgetStyle = data.settings.widget_style;
-  player.widgetPosition = data.settings.widget_position;
+  set(player, "widgetStyle", data.settings.widget_style);
+  set(player, "widgetPosition", data.settings.widget_position);
   // TODO: segment_playback_enabled
-  player.skipButtonStyle = data.settings.skip_button_style;
+  set(player, "skipButtonStyle", data.settings.skip_button_style);
   // TODO: paywall_type
   // TODO: paywall_url
   // TODO: download_button_enabled
   // TODO: share_button_enabled
   // TODO: voice_icon_enabled
   // TODO: logo_icon_enabled
-  player.analyticsConsent = analyticsConsent(data.settings);
-  player.analyticsId = data.settings.analytics_id;
+  set(player, "analyticsConsent", analyticsConsent(data.settings), { overridable: false });
+  set(player, "analyticsId", data.settings.analytics_id, { overridable: false });
 
-  player.content = data.content.map((item) => ({
+  set(player, "content", data.content.map((item) => ({
     id: item.id,
     title: item.title,
     imageUrl: data.playlist?.image_url || item.image_url,
@@ -80,9 +90,9 @@ const setProps = (player, data) => {
       startTime: segment.start_time ? segment.start_time / 1000 : 0,
       duration: segment.duration ? segment.duration / 1000 : 0,
     })),
-  }));
+  })));
 
-  player.adverts = data.ads.map((item) => {
+  set(player, "adverts", data.ads.map((item) => {
     const isVast = item.type === "vast";
 
     const theme = resolveTheme(item.theme);
@@ -104,7 +114,14 @@ const setProps = (player, data) => {
         contentType: media.content_type,
       })),
     };
-  });
+  }));
+};
+
+const set = (player, propName, value, { overridable = true } = {}) => {
+  const overriddenByScriptTag = typeof player.initialProps[propName] !== "undefined";
+  if (overridable && overriddenByScriptTag) { return; }
+
+  player[propName] = value;
 };
 
 const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {

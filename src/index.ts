@@ -9,7 +9,9 @@ class Player extends PlayerComponent {
 
   constructor({ target, ...props }) {
     const { newTarget, showUserInterface } = resolveTarget(target);
-    super({ target: newTarget, props: { showUserInterface, ...props } });
+
+    const initialProps = { showUserInterface, ...props };
+    super({ target: newTarget, props: { ...initialProps, initialProps } });
 
     const controller = new RootController(this, Player);
     controller.addEventListener("<any>", e => sendToAnalytics(this, e));
