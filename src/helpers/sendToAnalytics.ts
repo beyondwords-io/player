@@ -14,7 +14,10 @@ const sendToAnalytics = (player, playerEvent) => {
     client.sendToCustomAnalytics(analyticsEvent);
   }
 
-  // TODO: add customAnalyticsUrl to player_settings ?
+  if (player.analyticsCustomUrl && player.analyticsConsent !== "none") {
+    const client = new AnalyticsClient(player.analyticsCustomUrl);
+    client.sendToCustomAnalytics(analyticsEvent);
+  }
 
   if (player.analyticsTag) {
     const client = new AnalyticsClient(player.analyticsTag);

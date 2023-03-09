@@ -34,6 +34,8 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
+  export let analyticsCustomUrl = undefined;
+  export let analyticsTag = undefined;
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
@@ -46,7 +48,6 @@
   export let widgetInterface = undefined;
   export let controller = { processEvent: () => {} };
   export let analyticsId = undefined;
-  export let analyticsTag = undefined;
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
   export let prevPercentage = 0;
