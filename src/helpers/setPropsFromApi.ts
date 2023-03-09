@@ -122,7 +122,7 @@ const set = (player, propName, value, { overridable = true } = {}) => {
   if (overriddenByScriptTag && overridable) { return; }
 
   if (overriddenByScriptTag && !overridable) {
-    console.error(`Property '${propName}' cannot be overridden on your current plan.`); // TODO: extract and add context
+    console.error(`Property '${propName}' cannot be overridden. Please contact support@beyondwords.io.`); // TODO: extract and add context
   }
 
   player[propName] = value;
