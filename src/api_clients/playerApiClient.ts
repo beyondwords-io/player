@@ -1,4 +1,4 @@
-import fetchJson, { postJson } from "../helpers/fetchJson";
+import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
   constructor(playerApiUrl, projectId) {
@@ -21,8 +21,8 @@ class PlayerApiClient {
     return fetchJson(`${this.baseUrl}/by_source_url/${url}`);
   }
 
-  byRequestBody(identifiers) {
-    return postJson(`${this.baseUrl}/by_request_body`, identifiers);
+  byIdentifiers(array) {
+    return fetchJson(`${this.baseUrl}/by_identifiers/${encodeURIComponent(JSON.stringify(array))}`);
   }
 }
 

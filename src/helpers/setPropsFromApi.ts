@@ -35,7 +35,7 @@ const identifiersArray = (player) => {
 const fetchData = (client, identifiers) => {
   const identifier = identifiers[0];
 
-  if (identifiers.length > 1) { return client.byRequestBody(identifiers); }
+  if (identifiers.length > 1) { return client.byIdentifiers(identifiers); }
   if (identifier.content_id)  { return client.byContentId(identifier.content_id); }
   if (identifier.playlist_id) { return client.byPlaylistId(identifier.playlist_id); }
   if (identifier.source_id)   { return client.bySourceId(identifier.source_id); }

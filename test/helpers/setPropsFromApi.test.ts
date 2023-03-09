@@ -60,7 +60,7 @@ describe("setPropsFromApi", () => {
     beforeEach(() => calls = []);
 
     const mockClient = {
-      byRequestBody: arg => { calls.push("byRequestBody", arg); return "result"; },
+      byIdentifiers: arg => { calls.push("byIdentifiers", arg); return "result"; },
       byContentId:   arg => { calls.push("byContentId",   arg); return "result"; },
       byPlaylistId:  arg => { calls.push("byPlaylistId",  arg); return "result"; },
       bySourceId:    arg => { calls.push("bySourceId",    arg); return "result"; },
@@ -70,7 +70,7 @@ describe("setPropsFromApi", () => {
     it("can fetch by request body and returns the result", () => {
       const result = fetchData(mockClient, [{ content_id: 123 }, { playlist_id: 456 }]);
 
-      expect(calls).toEqual(["byRequestBody", [{ content_id: 123 }, { playlist_id: 456 }]]);
+      expect(calls).toEqual(["byIdentifiers", [{ content_id: 123 }, { playlist_id: 456 }]]);
       expect(result).toEqual("result");
     });
 
