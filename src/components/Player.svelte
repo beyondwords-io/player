@@ -1,6 +1,7 @@
 <script>
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
+  import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
 
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -45,6 +46,7 @@
   export let widgetInterface = undefined;
   export let controller = { processEvent: () => {} };
   export let analyticsId = undefined;
+  export let analyticsTag = undefined;
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
   export let prevPercentage = 0;
@@ -119,4 +121,8 @@
     {backgroundColor}
     {iconColor}
     videoIsBehind={videoBehindWidget} />
+{/if}
+
+{#if analyticsTag}
+  <GoogleAnalytics {analyticsTag} />
 {/if}
