@@ -9,8 +9,8 @@ class AnalyticsClient {
     return postJson(this.analyticsSink, data);
   }
 
-  sendToGoogleAnalytics(data) {
-    window.gtag("event", data.event_type, { ...data, send_to: this.analyticsSink });
+  sendToGoogleAnalytics(eventName, data) {
+    window.gtag("event", eventName, { ...data, send_to: this.analyticsSink });
   }
 }
 

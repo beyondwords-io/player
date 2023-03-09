@@ -14,9 +14,11 @@ const sendToAnalytics = (player, playerEvent) => {
     client.sendToCustomAnalytics(analyticsEvent);
   }
 
+  // TODO: add customAnalyticsUrl to player_settings ?
+
   if (player.analyticsTag) {
     const client = new AnalyticsClient(player.analyticsTag);
-    client.sendToGoogleAnalytics(analyticsEvent);
+    client.sendToGoogleAnalytics(gaEventName(analyticsEvent), analyticsEvent);
   }
 };
 
@@ -63,6 +65,16 @@ const eventFromProps = (player, analyticsEventType) => {
     location: window.location.href,
     referrer: document.referrer,
   };
+};
+
+const gaEventName = ({ event_type, listen_length_percent }) => {
+  const percentage = Math.floor(listen_length_percent / 10) * 10;
+
+  if (event_type === "load") { return "Load"; }
+  if (event_type === "play") { return "Play"; }
+  if (event_type === "play_progress" && percentage === 100) { return "Complete"; }
+  if (event_type === "play_progress") { return `${percentage}% listened`; }
+  if (event_type === "ad_link_click") { return "Advert Click"; }
 };
 
 const isNextPercentage = (player) => {
