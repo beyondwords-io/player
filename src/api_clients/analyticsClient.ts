@@ -1,12 +1,16 @@
 import { postJson } from "../helpers/fetchJson";
 
 class AnalyticsClient {
-  constructor(analyticsUrl) {
-    this.analyticsUrl = analyticsUrl;
+  constructor(analyticsSink) {
+    this.analyticsSink = analyticsSink;
   }
 
-  sendEvent(data) {
-    return postJson(this.analyticsUrl, data);
+  sendToCustomAnalytics(data) {
+    return postJson(this.analyticsSink, data);
+  }
+
+  sendToGoogleAnalytics(data) {
+    window.gtag("event", data.event_type, { ...data, send_to: this.analyticsSink });
   }
 }
 

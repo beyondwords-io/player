@@ -3,18 +3,21 @@ import { validateAnalyticsEvent } from "../helpers/eventValidation";
 import { v4 as randomUuid } from "uuid";
 
 const sendToAnalytics = (player, playerEvent) => {
-  if (player.analyticsConsent === "none") { return; }
-
-  const client = new AnalyticsClient(player.analyticsUrl);
-  if (!player.analyticsUrl) { return; }
-
   const eventType = analyticsEventType(player, playerEvent.type);
   if (!eventType) { return; }
 
   const analyticsEvent = eventFromProps(player, eventType);
   validateAnalyticsEvent(analyticsEvent);
 
-  return client.sendEvent(analyticsEvent);
+  if (player.analyticsUrl && player.analyticsConsent !== "none") {
+    const client = new AnalyticsClient(player.analyticsUrl);
+    client.sendToCustomAnalytics(analyticsEvent);
+  }
+
+  if (player.analyticsTag) {
+    const client = new AnalyticsClient(player.analyticsTag);
+    client.sendToGoogleAnalytics(analyticsEvent);
+  }
 };
 
 const analyticsEventType = (player, playerEventType) => {
