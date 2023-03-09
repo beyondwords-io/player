@@ -71,7 +71,9 @@ const setProps = (player, data) => {
   // TODO: voice_icon_enabled
   // TODO: logo_icon_enabled
   set(player, "analyticsConsent", analyticsConsent(data.settings), { overridable: false });
+  set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
   set(player, "analyticsId", data.settings.analytics_id, { overridable: false });
+  set(player, "analyticsTag", data.settings.analytics_tag);
 
   set(player, "content", data.content.map((item) => ({
     id: item.id,
