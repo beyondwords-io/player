@@ -22,19 +22,18 @@ const handleMessage = (onEvent) => (webSocketEvent) => {
 };
 
 const handleStatusChange = (webSocketEvent, onEvent) => {
-  const contentId = webSocketEvent.message.result.content_id;
-  const legacyId = webSocketEvent.message.result.legacy_id;
-  const contentStatus = webSocketEvent.message.result.state;
-  // TODO: also send sourceId and sourceUrl so we can match on those, too?
+  const result = webSocketEvent.message.result;
 
   onEvent(newEvent({
     type: "ContentStatusChanged",
     description: "The processing status of a content item within the project changed.",
     initiatedBy: "websocket",
     fromWidget: false,
-    contentId,
-    legacyId,
-    contentStatus,
+    contentId: result.content_id,
+    legacyId: result.legacy_id,
+    sourceId: result.source_id,
+    sourceUrl: result.source_url,
+    contentStatus: result.state,
   }));
 };
 

@@ -194,7 +194,7 @@ class RootController {
     }
   }
 
-  handleContentStatusChanged({ contentId, legacyId, contentStatus }) {
+  handleContentStatusChanged({ contentId, legacyId, sourceId, sourceUrl, contentStatus }) {
     if (contentStatus !== "processed") { return; }
 
     // Only reload if listening hasn't started yet so that audio isn't interrupted.
@@ -207,8 +207,12 @@ class RootController {
     const matchesIdentifiers =
       this.player.contentId === contentId ||
       this.player.contentId === legacyId ||
-      this.player.playlist?.some(identifier => identifier.contentId === contentId) ||
-      this.player.playlist?.some(identifier => identifier.contentId === legacyId)
+      this.player.sourceId === sourceId ||
+      this.player.sourceUrl === sourceUrl ||
+      this.player.playlist?.some(o => o.contentId === contentId) ||
+      this.player.playlist?.some(o => o.contentId === legacyId) ||
+      this.player.playlist?.some(o => o.sourceId === sourceId) ||
+      this.player.playlist?.some(o => o.sourceUrl === sourceUrl);
 
     if (!matchesIdentifiers) { return; }
 
