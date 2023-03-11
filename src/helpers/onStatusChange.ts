@@ -25,6 +25,7 @@ const handleStatusChange = (webSocketEvent, onEvent) => {
   const contentId = webSocketEvent.message.result.content_id;
   const legacyId = webSocketEvent.message.result.legacy_id;
   const contentStatus = webSocketEvent.message.result.state;
+  // TODO: also send sourceId and sourceUrl so we can match on those, too?
 
   onEvent(newEvent({
     type: "ContentStatusChanged",
