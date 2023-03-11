@@ -204,17 +204,7 @@ class RootController {
 
     // The websocket sends status changes for all content in the project so check
     // that this event is for a content item that is one of the player's identifiers.
-    const matchesIdentifiers =
-      this.player.contentId === contentId ||
-      this.player.contentId === legacyId ||
-      this.player.sourceId === sourceId ||
-      this.player.sourceUrl === sourceUrl ||
-      this.player.playlist?.some(o => o.contentId === contentId) ||
-      this.player.playlist?.some(o => o.contentId === legacyId) ||
-      this.player.playlist?.some(o => o.sourceId === sourceId) ||
-      this.player.playlist?.some(o => o.sourceUrl === sourceUrl);
-
-    if (!matchesIdentifiers) { return; }
+    if (!this.#matchesIdentifiers({ contentId, legacyId, sourceId, sourceUrl })) { return; }
 
     setPropsFromApi(this.player).then(() => {
       this.#chooseAndSetAdvert({ atTheStart: true });
@@ -376,6 +366,17 @@ class RootController {
     delete this.prevTime;
     delete this.prevRate;
     delete this.prevContent;
+  }
+
+  #matchesIdentifiers({ contentId, legacyId, sourceId, sourceUrl }) {
+    return this.player.contentId === contentId ||
+      this.player.contentId === legacyId ||
+      this.player.sourceId === sourceId ||
+      this.player.sourceUrl === sourceUrl ||
+      this.player.playlist?.some(o => o.contentId === contentId) ||
+      this.player.playlist?.some(o => o.contentId === legacyId) ||
+      this.player.playlist?.some(o => o.sourceId === sourceId) ||
+      this.player.playlist?.some(o => o.sourceUrl === sourceUrl);
   }
 }
 
