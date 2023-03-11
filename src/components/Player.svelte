@@ -3,6 +3,7 @@
   import UserInterface from "./UserInterface.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
+  import onStatusChange from "../helpers/onStatusChange";
 
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
   export let analyticsUrl = "https://metrics.beyondwords.io/events";
@@ -36,6 +37,7 @@
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
   export let analyticsTag = undefined;
+  export let writeToken = undefined;
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
@@ -53,6 +55,8 @@
   export let prevPercentage = 0;
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
+  $: onStatusChange(projectId, writeToken, (statusChangeEvent) => controller.processEvent(statusChangeEvent));
+
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
 
   $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !isFullScreen;

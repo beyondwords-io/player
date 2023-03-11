@@ -194,6 +194,10 @@ class RootController {
     }
   }
 
+  handleContentStatusChanged({ contentId, contentStatus }) {
+    console.log("changed", contentId, contentStatus);
+  }
+
   // private
 
   #ignoreDueToAdvert({ type }) {
