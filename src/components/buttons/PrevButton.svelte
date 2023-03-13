@@ -38,7 +38,7 @@
   };
 </script>
 
-<button class="prev-button" on:click={handleClick} on:mouseup={blurElement}>
+<button type="button" class="prev-button" on:click={handleClick} on:mouseup={blurElement}>
   {#if isSeconds}
     <SeekBack seconds={backwardsSeconds} {scale} {color} />
   {:else if isSegments}

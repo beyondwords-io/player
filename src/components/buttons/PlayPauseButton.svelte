@@ -21,7 +21,7 @@
   };
 </script>
 
-<button class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {0.2 * scale}rem">
+<button type="button" class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {0.2 * scale}rem">
   {#if isPlaying}
     <Pause {scale} {color} />
   {:else}

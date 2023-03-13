@@ -41,7 +41,7 @@
   $: style = `width: ${size}; height: ${size}; font-size: ${fontSize}; color: ${color}`;
 </script>
 
-<button class="speed-button" {style} on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown}>
+<button type="button" class="speed-button" {style} on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown}>
   <span>{speed}x</span>
 </button>
 

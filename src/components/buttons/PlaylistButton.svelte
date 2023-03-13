@@ -16,7 +16,7 @@
   };
 </script>
 
-<button class="playlist-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {0.4 * scale}rem">
+<button type="button" class="playlist-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {0.4 * scale}rem">
   <BurgerMenu {scale} {color} />
 </button>
 

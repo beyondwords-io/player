@@ -56,7 +56,7 @@
   <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
     <div class="scrollable" tabindex="-1">
       {#each content as { title, duration }, i}
-        <button class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
+        <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
           {#if i === index}
             <span class="speaker"><VolumeUp color={iconColor} /></span>
           {:else}
