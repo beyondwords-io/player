@@ -9,6 +9,7 @@ class Player extends PlayerComponent {
 
   constructor({ target, ...props }) {
     const { newTarget, showUserInterface } = resolveTarget(target);
+    newTarget.classList.add("beyondwords-player");
 
     const initialProps = { showUserInterface, ...props };
     super({ target: newTarget, props: { ...initialProps, initialProps } });

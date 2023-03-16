@@ -22,7 +22,6 @@ describe("resolveTarget", () => {
     const { newTarget, showUserInterface } = resolveTarget(scriptTag);
 
     expect(newTarget.nodeName.toLowerCase()).toEqual("div");
-    expect(newTarget.classList.contains("beyondwords-player")).toEqual(true);
     expect(newTarget).toEqual(scriptTag.nextSibling);
 
     expect(showUserInterface).toEqual(true);
