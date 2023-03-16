@@ -131,3 +131,22 @@
 {#if analyticsTag}
   <GoogleAnalytics {analyticsTag} />
 {/if}
+
+<style>
+  :global(.beyondwords-player :not(svg *)) {
+    all: initial;
+  }
+
+  :global(.beyondwords-player svg) {
+    fill: transparent;
+  }
+
+  :global(.beyondwords-player div) {
+    display: block;
+  }
+
+  :global(.beyondwords-player button *),
+  :global(.beyondwords-player a *) {
+    cursor: pointer;
+  }
+</style>

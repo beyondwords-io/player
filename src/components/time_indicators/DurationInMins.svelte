@@ -14,6 +14,7 @@
 <style>
   .duration-in-mins {
     font-weight: 300;
+    white-space: nowrap;
   }
 
   .bold {

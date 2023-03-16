@@ -123,6 +123,7 @@
     margin: 0;
     padding: 0;
     padding-right: 10px;
+    box-sizing: border-box;
     text-align: left;
     cursor: pointer;
   }
@@ -146,6 +147,7 @@
   .speaker {
     width: 40px;
     text-align: center;
+    font-size: 10px;
     font-weight: 700;
     flex-shrink: 0;
   }

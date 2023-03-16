@@ -14,5 +14,6 @@
 <style>
   .countdown-time {
     font-weight: 300;
+    white-space: nowrap;
   }
 </style>
