@@ -37,12 +37,10 @@
       initiatedBy: "user",
     }));
   };
-
-  $: style = `width: ${size}; height: ${size}; font-size: ${fontSize}; color: ${color}`;
 </script>
 
-<button type="button" class="speed-button" {style} on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown}>
-  <span>{speed}x</span>
+<button type="button" class="speed-button" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown}>
+  <span style="font-size: {fontSize}; color: {color}">{speed}x</span>
 </button>
 
 <style>
