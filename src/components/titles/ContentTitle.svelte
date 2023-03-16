@@ -3,6 +3,7 @@
   export let maxLines = 1;
   export let maxWidth = undefined;
 
+  export let center;
   export let bold = false;
   export let flex = "0 1 auto";
   export let scale = 1;
@@ -15,7 +16,7 @@
   $: style = `--n: ${maxLines}; font-size: ${fontSize}; max-height: ${maxHeight}; flex: ${flex}; ${maxWidthCss}; color: ${color}`;
 </script>
 
-<div class="content-title" class:bold class:one-line={maxLines === 1} class:n-lines={maxLines > 1} {style}>
+<div class="content-title" class:bold class:one-line={maxLines === 1} class:center class:n-lines={maxLines > 1} {style}>
   {title || ""}
 </div>
 
@@ -43,5 +44,9 @@
 
   .bold {
     font-weight: 500;
+  }
+
+  .center {
+    text-align: center;
   }
 </style>
