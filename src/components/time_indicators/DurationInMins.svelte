@@ -7,7 +7,7 @@
   $: minutes = Math.max(1, Math.round((duration || 0) / 60));
 </script>
 
-<div class="duration-in-mins" class:bold={bold} style="font-size: {0.625 * scale}rem; color: {color}">
+<div class="duration-in-mins" class:bold={bold} style="font-size: {10 * scale}px; color: {color}">
   {minutes} min
 </div>
 

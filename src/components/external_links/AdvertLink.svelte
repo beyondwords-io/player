@@ -18,7 +18,7 @@
   };
 </script>
 
-<a class="advert-link {playerStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {0.75 * scale}rem" on:click={handleClick}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {12 * scale}px" on:click={handleClick}>
   {text || ""}
 </a>
 
@@ -33,19 +33,19 @@
 
   .small {
     position: absolute;
-    top: 0.25rem;
-    left: 2.75rem;
+    top: 4px;
+    left: 44px;
   }
 
   .large {
     position: absolute;
-    left: 6rem;
-    top: 0.5rem;
+    left: 96px;
+    top: 8px;
   }
 
   .screen {
     position: absolute;
-    top: 14.75rem;
+    top: 236px;
   }
 
   a.video {

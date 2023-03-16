@@ -11,7 +11,7 @@
 
 <style>
   text {
-    font-size: 0.7rem;
+    font-size: 11.2px;
     font-weight: 600;
   }
 </style>

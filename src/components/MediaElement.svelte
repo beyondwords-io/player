@@ -191,7 +191,7 @@
     align-items: center;
     justify-content: center;
     background: black;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     overflow: hidden;
     min-width: 360px;
     max-width: 720px;
@@ -223,7 +223,7 @@
     width: 0;
     bottom: 0;
     right: 0;
-    margin: 1rem;
+    margin: 16px;
     animation: fly-widget 0.33s forwards;
     opacity: 0;
     z-index: 999;
@@ -238,7 +238,7 @@
     left: 0;
     margin-left: auto;
     margin-right: auto;
-    max-width: min(720px, 100% - 2rem);
+    max-width: min(720px, 100% - 32px);
   }
 
   .custom-advert-link {

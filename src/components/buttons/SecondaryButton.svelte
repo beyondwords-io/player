@@ -29,13 +29,13 @@
   }
 
   .large.mobile {
-    width: calc(2.5rem * var(--scale));
-    height: calc(2.5rem * var(--scale));
+    width: calc(40px * var(--scale));
+    height: calc(40px * var(--scale));
   }
 
   .screen {
-    width: calc(2.5rem * var(--scale));
-    height: calc(2.5rem * var(--scale));
+    width: calc(40px * var(--scale));
+    height: calc(40px * var(--scale));
   }
 
   .screen.advert {

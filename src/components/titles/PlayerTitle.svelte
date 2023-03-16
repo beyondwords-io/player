@@ -10,7 +10,7 @@
   let element;
 
   $: width = collapsed ? 0 : collapsible && element ? `${element.scrollWidth}px` : "auto";
-  $: style = `font-size: ${0.75 * scale}rem; visibility: ${visible ? "visible" : "hidden"}; width: ${width}; opacity: ${collapsed ? 0 : 1}; color: ${color}`;
+  $: style = `font-size: ${12 * scale}px; visibility: ${visible ? "visible" : "hidden"}; width: ${width}; opacity: ${collapsed ? 0 : 1}; color: ${color}`;
 </script>
 
 <div class="player-title {playerStyle}" {style} bind:this={element}>
@@ -30,21 +30,21 @@
   }
 
   .large {
-    height: 0.9375rem;
-    margin-bottom: 0.3125rem;
+    height: 15px;
+    margin-bottom: 5px;
   }
 
   .standard,
   .small {
     flex-grow: 1;
-    height: 2rem;
+    height: 32px;
     display: flex;
   }
 
   .screen {
-    height: 1.875rem;
+    height: 30px;
     position: relative;
-    bottom: 1.25rem;
+    bottom: 20px;
   }
 
   .video {

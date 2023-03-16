@@ -3,7 +3,7 @@
   export let alt;
   export let scale = 1;
 
-  $: size = `${scale * 5}rem`;
+  $: size = `${scale * 80}px`;
 </script>
 
 <img class="large-image" src={src} alt={alt} style="width: {size}; height: {size}" />
@@ -11,7 +11,7 @@
 <style>
   .large-image {
     background: white;
-    border-radius: 0.375rem;
+    border-radius: 6px;
     overflow: hidden;
     grid-row: 1 / span 2;
   }

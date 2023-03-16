@@ -16,7 +16,7 @@
   };
 </script>
 
-<button type="button" class="maximize-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {0.4 * scale}rem">
+<button type="button" class="maximize-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {6.4 * scale}px">
   <Maximize {scale} {color} />
 </button>
 

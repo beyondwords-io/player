@@ -7,7 +7,7 @@
   export let color = "#323232";
 </script>
 
-<span class="playback-time" style="font-size: {0.625 * scale}rem; color: {color}">
+<span class="playback-time" style="font-size: {10 * scale}px; color: {color}">
   {formatTime(currentTime)} / {formatTime(duration)}
 </span>
 

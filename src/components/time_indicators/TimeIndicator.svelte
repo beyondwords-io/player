@@ -45,7 +45,7 @@
   /* When next to skip buttons */
   .standard:nth-child(5),
   .video:nth-child(5) {
-    margin-left: 0.5rem;
+    margin-left: 8px;
   }
 
   .standard.mobile:nth-child(5) {
@@ -62,14 +62,14 @@
   }
 
   .large {
-    height: 2.5rem;
+    height: 40px;
     position: relative;
   }
 
   .large.stopped,
   .large.advert {
     flex-grow: 0;
-    margin-left: -0.5rem;
+    margin-left: -8px;
   }
 
   .standard.advert {
@@ -82,39 +82,39 @@
 
   .stopped .inner {
     position: absolute;
-    left: 3.25rem;
-    top: 1.75rem;
+    left: 52px;
+    top: 28px;
   }
 
   .small.stopped.mobile .inner,
   .standard.stopped.mobile .inner {
     position: absolute;
-    left: 2.5rem;
-    top: 1.75rem;
+    left: 40px;
+    top: 28px;
   }
 
   .standard.stopped.fixed-right .inner {
     position: absolute;
-    left: 2.25rem;
-    top: 1.75rem;
+    left: 36px;
+    top: 28px;
   }
 
   .standard.stopped.fixed-left .inner {
     position: absolute;
-    left: 3.25rem;
-    top: 1.75rem;
+    left: 52px;
+    top: 28px;
   }
 
   .large .inner {
     position: absolute;
-    left: 0.5rem;
+    left: 8px;
     bottom: 0;
   }
 
   .large.mobile {
     position: absolute;
-    left: 6rem;
-    top: 3.875rem;
+    left: 96px;
+    top: 62px;
     margin-left: 0;
   }
 
@@ -124,31 +124,31 @@
 
   .small .inner {
     position: absolute;
-    left: 2.75rem;
-    top: 1.5rem;
+    left: 44px;
+    top: 24px;
   }
 
   .small.fixed-right .inner {
     position: absolute;
-    left: 1rem;
-    top: 1.5rem;
+    left: 16px;
+    top: 24px;
   }
 
   .small.fixed-right.advert .inner {
     position: absolute;
-    left: 2.75rem;
-    top: 1.5rem;
+    left: 44px;
+    top: 24px;
   }
 
   .screen {
     position: absolute;
-    bottom: 12.25rem;
+    bottom: 196px;
     display: flex;
   }
 
   .screen.mobile {
     position: absolute;
-    bottom: 8rem;
+    bottom: 128px;
     display: flex;
   }
 

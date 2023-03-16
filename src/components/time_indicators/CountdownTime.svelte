@@ -7,7 +7,7 @@
   export let color = "#323232";
 </script>
 
-<span class="countdown-time" style="font-size: {0.625 * scale}rem; color: {color}">
+<span class="countdown-time" style="font-size: {10 * scale}px; color: {color}">
   {text} • {formatTime(remaining)}
 </span>
 

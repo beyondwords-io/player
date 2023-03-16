@@ -87,7 +87,7 @@
   $: playPauseScale = isScreen ? buttonScale * 1.5 : buttonScale;
   $: logoScale = isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1;
   $: closeScale = isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1;
-  $: closeMargin = isScreen && !isMobile ? "0.75rem 0" : isScreen ? "0.25rem 0" : "auto";
+  $: closeMargin = isScreen && !isMobile ? "12px 0" : isScreen ? "4px 0" : "auto";
 
   $: widthStyle = fixedWidth === "auto" ? (isSmall ? "fit-content" : "") : fixedWidth;
   $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
@@ -135,7 +135,7 @@
             <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {playerStyle} scale={isScreen ? 2 : 1} color={activeTextColor} />
 
             {#if isLarge || isScreen || isVideo && !(contentItem.imageUrl && isStopped) && !fixedPosition && !isAdvert}
-              <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 40 : isScreen ? 20 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : activeTextColor} />
+              <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 640 : isScreen ? 320 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : activeTextColor} />
             {/if}
           </div>
         {/if}
@@ -215,8 +215,8 @@
   .fixed {
     position: fixed;
     bottom: 0;
-    margin: 1rem;
-    max-width: calc(100% - 2rem);
+    margin: 16px;
+    max-width: calc(100% - 32px);
     z-index: 1000;
   }
 
@@ -237,7 +237,7 @@
 
   .main {
     box-sizing: border-box;
-    column-gap: 0.5rem;
+    column-gap: 8px;
     transition: padding 0.5s;
   }
 
@@ -250,7 +250,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    column-gap: 0.5rem;
+    column-gap: 8px;
     grid-row: 2;
     grid-column: 2 / span 2;
     min-width: 0;
@@ -292,9 +292,9 @@
   }
 
   .standard .main {
-    height: 3rem;
-    padding: 0.25rem;
-    border-radius: 1.5625rem;
+    height: 48px;
+    padding: 4px;
+    border-radius: 25px;
     display: flex;
     align-items: center;
   }
@@ -305,12 +305,12 @@
   }
 
   .standard .end {
-    margin-right: 0.75rem;
+    margin-right: 12px;
   }
 
   .standard.right-to-left .end,
   .standard.left-to-right-but-swap-ends .end {
-    margin-left: 0.75rem;
+    margin-left: 12px;
     margin-right: 0;
   }
 
@@ -319,9 +319,9 @@
   }
 
   .large .main {
-    height: 6rem;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
+    height: 96px;
+    padding: 8px;
+    border-radius: 8px;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-rows: auto minmax(0, 1fr) auto;
@@ -336,7 +336,7 @@
   }
 
   .large.mobile .main {
-    height: 9rem;
+    height: 144px;
   }
 
   .large.mobile .controls {
@@ -349,19 +349,19 @@
   }
 
   .small .main {
-    height: 2.5rem;
-    padding: 0.25rem;
-    border-radius: 1.25rem;
+    height: 40px;
+    padding: 4px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
   }
 
   .small .end {
-    margin-right: 0.25rem;
+    margin-right: 4px;
   }
 
   .small.left-to-right .main {
-    padding-right: 0.5rem;
+    padding-right: 8px;
   }
 
   .small.collapsed.left-to-right .main {
@@ -369,15 +369,15 @@
   }
 
   .small.right-to-left .main {
-    padding-left: 1rem;
+    padding-left: 16px;
   }
 
   .small.left-to-right.advert .main {
-    padding-right: 0.25rem;
+    padding-right: 4px;
   }
 
   .small.right-to-left.advert .main {
-    padding-left: 0.25rem;
+    padding-left: 4px;
   }
 
   .small.collapsed.right-to-left .main {
@@ -393,12 +393,12 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    row-gap: 2.5rem;
-    padding: 2.5rem;
+    row-gap: 40px;
+    padding: 40px;
   }
 
   .screen.mobile .main {
-    padding: 2rem;
+    padding: 32px;
   }
 
   .screen .summary {
@@ -409,30 +409,30 @@
 
   .screen .controls {
     flex-grow: 0;
-    column-gap: 2.5rem;
-    margin-bottom: 14.5rem;
+    column-gap: 40px;
+    margin-bottom: 232px;
   }
 
   .screen.mobile .controls {
-    column-gap: 0.5rem;
-    margin-top: -0.5rem;
-    margin-bottom: 9.25rem;
+    column-gap: 8px;
+    margin-top: -8px;
+    margin-bottom: 148px;
   }
 
   .screen .end {
     order: -1;
     align-self: flex-end;
-    margin-bottom: -2rem;
+    margin-bottom: -32px;
   }
 
   .screen.mobile .end {
-    margin-bottom: 2rem;
+    margin-bottom: 32px;
   }
 
   .video {
     min-width: 360px;
     max-width: 720px;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     transition: background-color 0.25s;
   }
 
@@ -448,13 +448,13 @@
   }
 
   .video.fixed {
-    max-width: min(720px, 100% - 2rem);
+    max-width: min(720px, 100% - 32px);
   }
 
   .video :global(.hoverable) {
     position: relative;
     padding-bottom: 56.25%;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     overflow: hidden;
     transition: background-color 0.25s;
   }
@@ -463,7 +463,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     background: #323232;
     background-color: black;
     background-size: contain;
@@ -489,7 +489,7 @@
   }
 
   .video .summary {
-    margin: 1rem;
+    margin: 16px;
     cursor: auto;
     display: flex;
   }
@@ -497,16 +497,16 @@
   .video .end {
     grid-row: 1;
     grid-column: 3;
-    margin: 1rem;
+    margin: 16px;
     margin-left: auto;
   }
 
   .video .controls {
     grid-row: 3;
     grid-column: 1 / span 3;
-    padding-bottom: 0.5rem;
+    padding-bottom: 8px;
     position: relative;
-    padding: 0.5rem 1rem;
+    padding: 8px 16px;
     cursor: auto;
   }
 
@@ -528,43 +528,43 @@
 
   .video.advert .controls > :global(.time-indicator) {
     position: absolute;
-    top: -2rem;
-    left: 1rem;
+    top: -32px;
+    left: 16px;
   }
 
   .video.advert .controls > :global(.advert-link) {
     position: absolute;
-    right: 1rem;
-    top: -2.25rem;
+    right: 16px;
+    top: -36px;
   }
 
   .video.advert.mobile .controls > :global(.time-indicator) {
-    left: 0.5rem;
+    left: 8px;
   }
 
   .video.advert.mobile .controls > :global(.advert-link) {
-    right: 0.5rem;
+    right: 8px;
   }
 
   .video.advert.fixed .controls > :global(.time-indicator) {
-    left: 0.75em;
+    left: 12px;
   }
 
   .video.advert.fixed .controls > :global(.advert-link) {
-    right: 0.75rem;
+    right: 12px;
   }
 
   .video :global(.next-button) {
-    margin-left: 0.5rem;
+    margin-left: 8px;
   }
 
   .video.advert .controls {
-    column-gap: 1rem;
+    column-gap: 16px;
   }
 
   .video.stopped .controls {
     pointer-events: none;
-    padding: 1rem;
+    padding: 16px;
   }
 
   .video.stopped.right-to-left .controls {
@@ -577,27 +577,27 @@
   }
 
   .video.mobile .controls {
-    padding: 0.5rem;
+    padding: 8px;
   }
 
   .video.mobile .summary,
   .video.mobile .end {
-    margin: 0.5rem;
+    margin: 8px;
   }
 
   .video.fixed .scroll-to-player,
   .video.fixed .end {
-    margin: 1rem;
+    margin: 16px;
   }
 
   .video.fixed.mobile .scroll-to-player,
   .video.fixed.mobile .end {
-    margin: 0.75rem;
+    margin: 12px;
   }
 
   .video.fixed .controls {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   :global(.beyondwords-player.maximized) .video {

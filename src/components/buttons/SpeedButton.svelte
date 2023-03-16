@@ -7,8 +7,8 @@
   export let color = "#323232";
   export let onEvent = () => {};
 
-  $: size = `${2.5 * scale}rem`;
-  $: fontSize = `${0.75 * scale}rem`;
+  $: size = `${40 * scale}px`;
+  $: fontSize = `${12 * scale}px`;
 
   const handleClick = () => {
     onEvent(newEvent({

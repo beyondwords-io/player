@@ -14,7 +14,7 @@
   };
 </script>
 
-<a class="beyond-words" href="https://beyondwords.io/" target="_blank" rel="noreferrer" on:click={handleClick} style="outline-offset: {0.4 * scale}rem">
+<a class="beyond-words" href="https://beyondwords.io/" target="_blank" rel="noreferrer" on:click={handleClick} style="outline-offset: {6.4 * scale}px">
   <Logo {scale} />
 </a>
 

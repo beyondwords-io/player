@@ -16,7 +16,7 @@
   };
 </script>
 
-<button type="button" class="scroll-to-player-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {0.3 * scale}rem">
+<button type="button" class="scroll-to-player-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {4.8 * scale}px">
   <UpArrow {scale} {color} />
 </button>
 

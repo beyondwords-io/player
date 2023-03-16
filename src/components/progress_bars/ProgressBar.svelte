@@ -74,12 +74,12 @@
 <style>
   .progress-bar {
     flex-grow: 1;
-    height: 0.5rem;
-    border-radius: 0.25rem;
+    height: 8px;
+    border-radius: 4px;
     display: flex;
     cursor: pointer;
     overflow: hidden;
-    outline-offset: 0.2rem;
+    outline-offset: 3.2px;
 
     border: none;
     margin: 0;
@@ -97,8 +97,8 @@
   }
 
   .progress {
-    height: 0.5rem;
-    border-radius: 0.25rem;
+    height: 8px;
+    border-radius: 4px;
     pointer-events: none;
   }
 
@@ -107,7 +107,7 @@
     width: 100%;
     left: 0;
     right: 0;
-    top: -0.5rem;
+    top: -8px;
     border-radius: 0;
   }
 

@@ -78,43 +78,43 @@
 
 <style>
   .playlist {
-    margin-top: 1rem;
-    border-radius: 0.5rem;
+    margin-top: 16px;
+    border-radius: 8px;
   }
 
   .scrollable {
-    padding: 0.2rem 0;
-    padding-left: 0.25rem;
+    padding: 3.2px 0;
+    padding-left: 4px;
     overflow-y: scroll;
-    max-height: calc(2.5rem * var(--desktop-rows));
+    max-height: calc(40px * var(--desktop-rows));
   }
 
   .mobile .scrollable {
     padding-left: 0;
-    max-height: calc(5rem * var(--mobile-rows));
+    max-height: calc(80px * var(--mobile-rows));
   }
 
   .scrollable::-webkit-scrollbar {
-    width: 0.5rem;
+    width: 8px;
   }
 
   .scrollable::-webkit-scrollbar-thumb {
     background: #323232;
-    border-radius: 1rem;
-    border: 0.125rem solid #fafafa;
+    border-radius: 16px;
+    border: 2px solid #fafafa;
   }
 
   .item {
     width: 100%;
-    height: 2.5rem;
+    height: 40px;
 
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-rows: auto;
     align-items: center;
-    column-gap: 0.5rem;
+    column-gap: 8px;
 
-    font-size: 0.625rem;
+    font-size: 10px;
     font-weight: 300;
     line-height: 1.2;
 
@@ -122,7 +122,7 @@
     border: none;
     margin: 0;
     padding: 0;
-    padding-right: 0.625rem;
+    padding-right: 10px;
     text-align: left;
     cursor: pointer;
   }
@@ -136,15 +136,15 @@
   }
 
   .mobile .item {
-    height: 5rem;
+    height: 80px;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;
-    padding-right: 1rem;
+    padding-right: 16px;
   }
 
   .number,
   .speaker {
-    width: 2.5rem;
+    width: 40px;
     text-align: center;
     font-weight: 700;
     flex-shrink: 0;
@@ -168,7 +168,7 @@
   }
 
   .duration {
-    margin: 0.25rem 0;
+    margin: 4px 0;
     white-space: nowrap;
   }
 

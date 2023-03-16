@@ -30,7 +30,7 @@
 
   .screen {
     position: absolute;
-    bottom: 2.5rem;
+    bottom: 40px;
   }
 
   .video {
