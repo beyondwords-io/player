@@ -6,7 +6,6 @@
   import onStatusChange from "../helpers/onStatusChange";
 
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
-  export let analyticsUrl = "https://metrics.beyondwords.io/events";
   export let projectId = undefined;
   export let contentId = undefined;
   export let playlistId = undefined;
@@ -49,6 +48,7 @@
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = { processEvent: () => {} };
+  export let analyticsUrl = undefined;
   export let analyticsId = undefined;
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
