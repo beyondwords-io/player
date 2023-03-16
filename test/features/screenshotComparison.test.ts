@@ -40,7 +40,7 @@ test("screenshot comparison", async ({ page }) => {
     const userInterface = page.locator(`.user-interface${selector}`);
 
     const name = `${screenshotName(params)}.png`;
-    await expect(userInterface).toHaveScreenshot(name, { fullPage: true, maxDiffPixelRatio: 0.02 });
+    await expect(userInterface).toHaveScreenshot(name, { fullPage: true, maxDiffPixelRatio: 0.01 });
 
     process.stdout.write(".");
   }
