@@ -55,10 +55,9 @@ class Player extends PlayerComponent {
   }
 }
 
-const BeyondWords = { Player };
-
 if (typeof window !== "undefined") {
-  window.BeyondWords = BeyondWords;
+  window.BeyondWords ||= {};
+  window.BeyondWords.Player ||= Player;
 }
 
 export default BeyondWords;
