@@ -1,3 +1,4 @@
+import "./helpers/initializeSentry";
 import PlayerComponent from "./components/Player.svelte";
 import RootController from "./controllers/rootController";
 import resolveTarget from "./helpers/resolveTarget";
