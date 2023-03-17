@@ -1,10 +1,11 @@
 import * as Sentry from "@sentry/svelte";
 import * as stackTraceParser from "stacktrace-parser";
 import { version } from "../../package.json";
+import settableProps from "./settableProps";
 
 const initializeSentry = () => {
   const thisFilename = originFilename(new Error());
-  const isDevelopment = thisFilename?.match(/initializeSentry/);
+  const isDevelopment = thisFilename?.match(/initializeSentry/); // Not minified.
   const captureEnabled = thisFilename ? {} : { defaultIntegrations: false };
 
   Sentry.init({
@@ -21,7 +22,7 @@ const initializeSentry = () => {
       const isPlaybackError = error?.message?.match(/request was interrupted/);
 
       const sendToSentry = isDevelopment || originatedFromPlayer || isPlaybackError;
-      if (sendToSentry) { return event; }
+      if (sendToSentry) { return withPlayerProps(event); }
     },
   });
 
@@ -37,5 +38,18 @@ const initializeSentry = () => {
 const originFilename = (error) => (
   stackTraceParser.parse(error?.stack || "")[0]?.file
 );
+
+const withPlayerProps = (event) => {
+  const players = window.BeyondWords?.Player?.instances() || [];
+
+  for (const [i, player] of players.entries()) {
+    const playerKey = `BeyondWords.Player.instances()[${i}]`;
+
+    event.contexts = event.contexts || {};
+    event.contexts[playerKey] = settableProps(player);
+  }
+
+  return event;
+};
 
 initializeSentry();
