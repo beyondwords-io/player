@@ -4,6 +4,7 @@ import RootController from "./controllers/rootController";
 import resolveTarget from "./helpers/resolveTarget";
 import sendToAnalytics from "./helpers/sendToAnalytics";
 import throwError from "./helpers/throwError";
+import { version } from "../package.json";
 
 class Player extends PlayerComponent {
   static #instances = [];
@@ -20,6 +21,10 @@ class Player extends PlayerComponent {
 
     this.controller = controller;
     Player.#instances.push(this);
+  }
+
+  static get version() {
+    return version;
   }
 
   static instances() {

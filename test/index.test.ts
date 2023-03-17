@@ -7,6 +7,12 @@ describe("BeyondWords.Player", () => {
     BeyondWords.Player.destroyAll();
   });
 
+  describe(".version", () => {
+    it("returns the package version", () => {
+      expect(BeyondWords.Player.version).toMatch(/\d+/);
+    });
+  });
+
   describe(".instances", () => {
     it("returns all player instances", () => {
       const player1 = new BeyondWords.Player({});
