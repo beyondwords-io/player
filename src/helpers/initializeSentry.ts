@@ -13,10 +13,13 @@ const initializeSentry = () => {
     environment: isDevelopment ? "development" : "production",
 
     beforeSend(event, { originalException: error }) {
-      const originatedFromPlayer = originFilename(error) === thisFilename;
-      const shouldSendToSentry = originatedFromPlayer || isDevelopment;
+      const errorFilename = originFilename(error);
 
-      if (shouldSendToSentry) { return event; }
+      const originatedFromPlayer = errorFilename === thisFilename;
+      const isPlaybackError = error?.message?.match(/request was interrupted/);
+
+      const sendToSentry = isDevelopment || originatedFromPlayer || isPlaybackError;
+      if (sendToSentry) { return event; }
     },
   });
 
