@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/svelte";
 import * as stackTraceParser from "stacktrace-parser";
+import { version } from "../../package.json";
 
 const initializeSentry = () => {
   const thisFilename = originFilename(new Error());
@@ -11,6 +12,7 @@ const initializeSentry = () => {
 
     dsn: "https://ea2f0f2a070b4934994dc8543b8d16e1@o271781.ingest.sentry.io/4504853792882688",
     environment: isDevelopment ? "development" : "production",
+    release: version,
 
     beforeSend(event, { originalException: error }) {
       const errorFilename = originFilename(error);
