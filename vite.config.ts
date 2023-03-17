@@ -18,6 +18,7 @@ export default defineConfig({
       name: "BeyondWords",
       fileName: format => `${format}.js`,
     },
+    sourcemap: true,
   },
   test: {
     environment: "jsdom",
