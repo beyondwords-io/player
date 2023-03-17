@@ -16,6 +16,7 @@
   "devDependencies": {
     "@fontsource/inter": "^4.5",
     "@playwright/test": "^1.28",
+    "@sentry/svelte": "^7.43",
     "@sveltejs/vite-plugin-svelte": "^2.0",
     "@typescript-eslint/eslint-plugin": "^5.45",
     "@typescript-eslint/parser": "^5.45",
