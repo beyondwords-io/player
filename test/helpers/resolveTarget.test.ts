@@ -1,17 +1,21 @@
 import resolveTarget from "../../src/helpers/resolveTarget";
 
 describe("resolveTarget", () => {
-  it("resolves to document.body and disables the UI when target is null", () => {
+  it("resolves to a new div and disables the UI when target is null", () => {
     const { newTarget, showUserInterface } = resolveTarget(null);
 
-    expect(newTarget).toEqual(document.body);
+    expect(newTarget.nodeName.toLowerCase()).toEqual("div");
+    expect(newTarget.parentNode).toEqual(document.body);
+
     expect(showUserInterface).toEqual(false);
   });
 
-  it("resolves to document.body and disables the UI when target is false", () => {
+  it("resolves to a new div and disables the UI when target is false", () => {
     const { newTarget, showUserInterface } = resolveTarget(false);
 
-    expect(newTarget).toEqual(document.body);
+    expect(newTarget.nodeName.toLowerCase()).toEqual("div");
+    expect(newTarget.parentNode).toEqual(document.body);
+
     expect(showUserInterface).toEqual(false);
   });
 

@@ -2,7 +2,7 @@ import throwError from "./throwError";
 
 const resolveTarget = (target) => {
   if (!target) {
-    return { newTarget: document.body, showUserInterface: false };
+    return { newTarget: appendDivToBody(), showUserInterface: false };
   }
 
   if (isScriptTag(target)) {
@@ -32,6 +32,13 @@ const isIdSelector = (target) => {
 
 const isClassSelector = (target) => {
   return typeof target === "string" && target.startsWith(".");
+};
+
+const appendDivToBody = () => {
+  const div = document.createElement("div");
+  document.body.appendChild(div);
+
+  return div;
 };
 
 const addDivAfter = (target) => {
