@@ -1,6 +1,6 @@
 <script>
   export let src;
-  export let alt;
+  export let alt = "Player Image";
   export let scale = 1;
 
   $: size = `${scale * 80}px`;
