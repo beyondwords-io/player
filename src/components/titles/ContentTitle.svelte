@@ -3,7 +3,7 @@
   export let maxLines = 1;
   export let maxWidth = undefined;
 
-  export let center;
+  export let center = false;
   export let bold = false;
   export let flex = "0 1 auto";
   export let scale = 1;
