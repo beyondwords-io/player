@@ -11,8 +11,8 @@
   export let playlistId = undefined;
   export let sourceId = undefined;
   export let sourceUrl = undefined;
-  export let playlist = undefined;
-  export let showUserInterface = false;
+  export let playlist = [];
+  export let showUserInterface = true;
   export let playerStyle = "standard";
   export let callToAction = "Listen to this article";
   export let skipButtonStyle = "auto";
