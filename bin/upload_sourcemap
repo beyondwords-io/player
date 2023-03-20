@@ -1,0 +1,9 @@
+#!/bin/bash
+
+version=$(npm pkg get version | tr -d '"')
+
+which sentry-cli || curl -sL https://sentry.io/get-cli/ | sh                              && \
+sentry-cli login                                                                          && \
+sentry-cli releases -o lstn-x6 -p player new $version                                     && \
+sentry-cli releases -o lstn-x6 -p player files $version upload-sourcemaps dist/umd.js.map && \
+sentry-cli releases -o lstn-x6 -p player finalize $version
