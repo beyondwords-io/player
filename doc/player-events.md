@@ -2,7 +2,59 @@
 
 ## Player Events
 
-### Events
+The player emits various events that are processed by its
+[RootController](https://github.com/BeyondWords-io/player/blob/main/src/controllers/rootController.ts). You can [listen to these events](./listening-to-events.md) after they are processed.
+
+Events have a set of fields that are always present and some events contain additional fields.
+
+### Example event
+
+```javascript
+{
+  id: "51178a37-d5a7-4d75-9a12-a26eabfe7839",
+  type: "PressedPlaylistItem",
+  description: "A playlist item was pressed.",
+  index: 3,
+  initiatedBy: "user",
+  status: "handled",
+  fromWidget: false,
+  createdAt: "2023-01-01T12:00:00.000Z",
+  processedAt: "2023-01-01T12:00:00.005Z",
+  changedProps: {
+    contentIndex: { previousValue: 0, currentValue: 3 },
+  },
+}
+```
+
+For the above example, the 'index' field additional and is specific to the PressedPlaylistItem event.
+
+All of the other fields are present in every event. Their schema is explained below.
+
+### Event schema
+
+- **id**: a random UUID generated and assigned to the event at creation
+- **type**: the type of event, see the table below for a listing of event types
+- **description**: a short human-readable description of the event
+- **initiatedBy**: who initiated the event, one of: { user, media, browser, google-ima-sdk, websocket }
+- **status**: the status of the event, one of: { handled, ignored-due-to-advert, ignored-due-to-scrubbing }
+- **fromWidget**: whether the event was emitted from the player widget, rather than the inline player
+- **createdAt**: the time when the event was created in simplified extended ISO 8601 format
+- **processedAt**: the time when the event was processed in simplified extended ISO 8601 format
+- **changedProps**: an object listing the player properties that were changed by the event
+
+It is recommended to not depend on `changedProps` and additional event fields
+(e.g. index) since these might change.
+
+Instead, please query the player props directly using the
+[Player SDK](./player-sdk.md) when listening to events.
+
+### Event types
+
+The following table lists all event types emitted by the player.
+
+Initiators denoted with a star (*) can also be initiated by the google-ima-sdk' when VAST adverts are playing.
+
+To inspect the events further, it is recommended you [listen to "\<any\>" event](./listening-to-events.md) and console log them.
 
 | Type                         | Initiator | Description |
 |------------------------------|-----------|-------------|
@@ -54,9 +106,5 @@
 | IdentifiersChanged           | browser   | The Player's content identifiers changed.
 | FullScreenModeUpdated        | browser   | The browser entered or exited full screen mode.
 | ContentStatusChanged         | websocket | The processing status of a content item within the project changed.
-
-Initiators denoted with a star (*) can also be initiated by 'google-ima-sdk' when VAST adverts are playing.
-
-For example, the video is automatically paused when you click on the video background to open the click-through URL.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)
