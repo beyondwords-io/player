@@ -85,7 +85,7 @@ class RootController {
   handlePressedAdvertButton()          { /* Do nothing */ }
   handlePressedAdvertVideo()           { /* Do nothing */ }
   handlePressedBeyondWords()           { /* Do nothing */ }
-  handlePressedExternalUrl()           { /* Do nothing */ }
+  handlePressedSourceUrl()             { /* Do nothing */ }
 
   handleDurationUpdated()              { /* Do nothing */ }
   handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#chooseAndSetAdvert(); }

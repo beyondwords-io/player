@@ -9,8 +9,8 @@
 
   const handleClick = () => {
     onEvent(newEvent({
-      type: "PressedExternalUrl",
-      description: "The external URL button was pressed to open the source article in a new tab.",
+      type: "PressedSourceUrl",
+      description: "The source URL button was pressed to open the source article in a new tab.",
       initiatedBy: "user",
     }));
   };

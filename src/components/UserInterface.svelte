@@ -13,7 +13,7 @@
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import AdvertButton from "./external_links/AdvertButton.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
-  import ExternalUrlButton from "./external_links/ExternalUrlButton.svelte";
+  import SourceUrlButton from "./external_links/SourceUrlButton.svelte";
   import LargeImage from "./LargeImage.svelte";
   import PlayerTitle from "./titles/PlayerTitle.svelte";
   import ContentTitle from "./titles/ContentTitle.svelte";
@@ -177,7 +177,7 @@
               {#if isVideo && canFullScreen()}
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
               {:else if isScreen && contentItem.sourceUrl}
-                <ExternalUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={buttonColor} />
+                <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
                 <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} />
               {/if}
