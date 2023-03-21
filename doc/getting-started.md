@@ -1,3 +1,5 @@
+[< back to README](https://github.com/BeyondWords-io/player#readme)
+
 ## Getting Started
 
 The first step is to [sign up](https://dash.beyondwords.io/auth/signup) for a
@@ -62,3 +64,5 @@ allow more flexibility.
 These settings can also be changed after loading the player by using the [Player SDK](./player-sdk.md).
 
 Please refer to [Player Settings](./player-settings.md) for an explanation of all the settings that can be configured.
+
+[< back to README](https://github.com/BeyondWords-io/player#readme)

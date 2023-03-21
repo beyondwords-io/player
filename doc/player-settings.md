@@ -1,3 +1,5 @@
+[< back to README](https://github.com/BeyondWords-io/player#readme)
+
 ## Player Settings
 
 The table below contains a list of properties that can be configured in the
@@ -50,3 +52,5 @@ table below. This is useful for player demo sites, for example.
 | analyticsCustomUrl  | string                | A custom URL that analytics events should be sent to, in addition to BeyondWords. These events are exactly the same as those sent to BeyondWords. See [Custom Analytics](./custom-analytics.md) for more information.<br/><br/>Default value: undefined
 | analyticsTag        | string                | The Google Measurement ID to use when sending events to Google Analytics. When analyticsTag is set, events will always be sent to Google Analytics, regardless of analyticsConsent.<br/><br/>Default value: undefined
 | writeToken          | string                | The BeyondWords write token for your project. This feature is used by our WordPress plugin during the editing workflow to listen for the 'processed' event and reload the player content is ready.<br/><br/>We strongly recommend you think carefully when using this feature to ensure that writeToken is not leaked to the public since it can be used to modify content within your project. Also, this feature is **unsupported** and we may replace it with a different mechanism in the future.<br/><br/>Default value: undefined
+
+[< back to README](https://github.com/BeyondWords-io/player#readme)

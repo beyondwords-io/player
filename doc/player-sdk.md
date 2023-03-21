@@ -1,3 +1,5 @@
+[< back to README](https://github.com/BeyondWords-io/player#readme)
+
 ## Player SDK
 
 After the player has loaded, it can be controlled programmatically and its state
@@ -69,3 +71,5 @@ available settings that can be configured in the player.
 
 Additionally, please refer to [Listening to Events](./listening-to-events.md) if
 you want to register event listeners for player events.
+
+[< back to README](https://github.com/BeyondWords-io/player#readme)
