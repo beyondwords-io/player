@@ -1,4 +1,4 @@
-## NPM package
+## NPM Package
 
 In the [Getting Started](./getting-started.md) guild we saw how to embed the
 player using a script tag. However, this might not suit your project if you are
