@@ -62,6 +62,8 @@ class RootController {
     this.#sendEventToListeners("<any>", event);
   }
 
+  // Please document all events and keep in-sync with /doc/player-events.md
+
   handlePressedPlay()                  { this.player.playbackState = "playing"; }
   handlePressedPause()                 { this.player.playbackState = "paused"; }
 
