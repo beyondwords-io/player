@@ -1,8 +1,3 @@
 #!/bin/bash
 
-# TODO: check if version bumped - perhaps by checking sentry-cli releases
-
-./bin/build                 && \
-./bin/upload_sourcemap      && \
-echo "TODO: publish to NPM" && \
-echo "TODO: what else?"
+./bin/build && ./bin/upload_sourcemap && npm publish
