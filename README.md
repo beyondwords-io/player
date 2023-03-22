@@ -1,5 +1,9 @@
 ## BeyondWords Player
 
+**DO NOT USE: This is an alpha version of the player and is not officially
+released yet. We are testing the new player internally and will remove this
+notice once it is ready.**
+
 With BeyondWords, you and your team can convert text into engaging audio. This
 repository contains our proprietary player, that can be embedded on your website
 to provide a tailored listening experience for your users. The player integrates
