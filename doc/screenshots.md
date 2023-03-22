@@ -2,6 +2,12 @@
 
 ## Screenshots
 
+TODO: rewrite this page and add screenshots
+
+
+
+
+
 The player contains many features, including:
 
 - **Paragraph playback:** Begin playback by clicking on a paragraph and allow skipping between them
@@ -16,7 +22,5 @@ The player contains many features, including:
 Additionally, the player is fully responsive, follows accessibility standards
 and can be controlled programmatically. It has a rich events system you can hook
 into. It is reactive, meaning its settings can be changed after load.
-
-TODO: add screenshots
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)

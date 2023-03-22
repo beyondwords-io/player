@@ -16,33 +16,31 @@ explanation for each of the player's settings. You can see a demo of the player
 
 The [doc/](doc/) directory contains these useful resources:
 
-1. [Screenshots](./doc/screenshots.md): Some screenshots demonstrating the core
-features and functionality of the player.
-2. [Getting started](./doc/getting-started.md): A guide for how
+1. [Getting started](./doc/getting-started.md): A guide for how
 to embed the player on your website using a `<script>` tag.
-3. [NPM package](./doc/npm-package.md): A guide for how to add the
+2. [NPM package](./doc/npm-package.md): A guide for how to add the
 player to your website using the NPM package.
-4. [Player SDK](./doc/player-sdk.md): An explanation of how to control the
+3. [Player SDK](./doc/player-sdk.md): An explanation of how to control the
 player programmatically by using the SDK.
-5. [Player settings](./doc/player-settings.md): A list of all supported player
+4. [Player settings](./doc/player-settings.md): A list of all supported player
 settings that can be set in the initializer or via the SDK.
-6. [Listening to events](./doc/listening-to-events.md): How to register event
+5. [Listening to events](./doc/listening-to-events.md): How to register event
 listeners that are called when player actions are performed.
-7. [Player events](./doc/player-events.md): A list of all events emitted by
+6. [Player events](./doc/player-events.md): A list of all events emitted by
 the player that can be listened to.
-8. [Custom analytics](./doc/custom-analytics.md): How to send player analytics
+7. [Custom analytics](./doc/custom-analytics.md): How to send player analytics
 events to a custom URL of your choosing.
-9. [Building your own UI](./doc/building-your-own-ui.md): How to build your own
+8. [Building your own UI](./doc/building-your-own-ui.md): How to build your own
 user-interface on top of the BeyondWords player.
-10. [How it works](./doc/how-it-works.md): A technical overview of how the
+9. [How it works](./doc/how-it-works.md): A technical overview of how the
 player works, including API calls that are made.
-11. [Dev setup](./doc/dev-setup.md): How to run this project locally, e.g. if
+10. [Dev setup](./doc/dev-setup.md): How to run this project locally, e.g. if
 you are a developer at BeyondWords.
-12. [Dev workflow](./doc/dev-workflow.md): Useful advice for working on the
+11. [Dev workflow](./doc/dev-workflow.md): Useful advice for working on the
 player, including what all the [./bin](bin/) scripts do.
-13. [Code layout](./doc/code-layout.md): An explanation of the layout of code in
+12. [Code layout](./doc/code-layout.md): An explanation of the layout of code in
 the player. Each major subdirectory is listed.
-14. [Deployment](./doc/deployment.md): How to release a new version of the player
+13. [Deployment](./doc/deployment.md): How to release a new version of the player
 to the public and some things to consider.
 
 ## Contribution
