@@ -1,6 +1,11 @@
 {
   "name": "@beyondwords/player",
   "version": "0.0.0-alpha1",
+  "license": "See license in README.md",
+  "author": "BeyondWords Developers",
+  "homepage": "https://github.com/BeyondWords-io/player",
+  "repository": "github:BeyondWords-io/player",
+  "bugs": "https://github.com/BeyondWords-io/player/issues",
   "type": "module",
   "files": [
     "dist"
