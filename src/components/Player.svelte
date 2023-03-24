@@ -34,6 +34,7 @@
   export let textColor = "#111";
   export let backgroundColor = "#F5F5F5";
   export let iconColor = "rgba(0, 0, 0, 0.8)";
+  export let logoIconEnabled = true;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
@@ -103,6 +104,7 @@
     {textColor}
     {backgroundColor}
     {iconColor}
+    {logoIconEnabled}
     videoIsBehind={videoBehindStatic} />
 {/if}
 
@@ -127,6 +129,7 @@
     {textColor}
     {backgroundColor}
     {iconColor}
+    {logoIconEnabled}
     videoIsBehind={videoBehindWidget} />
 {/if}
 

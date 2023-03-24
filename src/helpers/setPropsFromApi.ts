@@ -69,7 +69,7 @@ const setProps = (player, data) => {
   // TODO: download_button_enabled
   // TODO: share_button_enabled
   // TODO: voice_icon_enabled
-  // TODO: logo_icon_enabled
+  set(player, "logoIconEnabled", data.settings.logo_icon_enabled, { overridable: false });
   set(player, "analyticsConsent", analyticsConsent(data.settings), { overridable: false });
   set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
   set(player, "analyticsId", data.settings.analytics_id, { overridable: false });

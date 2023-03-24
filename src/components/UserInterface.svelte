@@ -47,6 +47,7 @@
   export let textColor = "#111";
   export let backgroundColor = "#F5F5F5";
   export let iconColor = "black";
+  export let logoIconEnabled = true;
   export let onEvent = () => {};
 
   // These are set automatically.
@@ -100,6 +101,9 @@
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && fixedWidth === 0;
   $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
+
+  $: showCloseWidget = fixedPosition && !isSmall && !(isStandard && isAdvert);
+  $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall);
 
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
 
@@ -185,9 +189,9 @@
           {/if}
         </div>
 
-        {#if !isAdvert && !(isSmall && fixedPosition) || isScreen || isVideo}
+        {#if showCloseWidget || showBeyondWords}
           <div class="end">
-            {#if fixedPosition}
+            {#if showCloseWidget}
               <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={buttonColor} />
             {:else}
               <BeyondWords {onEvent} scale={logoScale} />
