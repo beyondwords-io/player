@@ -49,7 +49,7 @@
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
-  export let controller = { processEvent: () => {} };
+  export let controller = undefined;
   export let analyticsUrl = undefined;
   export let analyticsId = undefined;
   export let listenSessionId = undefined;

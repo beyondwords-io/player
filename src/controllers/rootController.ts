@@ -1,6 +1,7 @@
 import { validateEventBeforeProcessing, validateEventAfterProcessing } from "../helpers/eventValidation";
 import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 import { v4 as randomUuid } from "uuid";
+import waitUntil from "../helpers/waitUntil";
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
@@ -34,6 +35,7 @@ class RootController {
   }
 
   async processEvent(event) {
+    await waitUntil(() => this.player);
     validateEventBeforeProcessing(event);
 
     const handler = this[`handle${event.type}`];

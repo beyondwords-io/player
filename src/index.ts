@@ -13,13 +13,13 @@ class Player extends PlayerComponent {
     const { newTarget, showUserInterface } = resolveTarget(target);
     newTarget.classList.add("beyondwords-player");
 
-    const initialProps = { showUserInterface, ...props };
-    super({ target: newTarget, props: { ...initialProps, initialProps } });
-
-    const controller = new RootController(this, Player);
+    const controller = new RootController(null, Player);
     controller.addEventListener("<any>", e => sendToAnalytics(this, e));
 
-    this.controller = controller;
+    const initialProps = { showUserInterface, ...props };
+    super({ target: newTarget, props: { controller, ...initialProps, initialProps } });
+
+    controller.player = this;
     Player.#instances.push(this);
   }
 
