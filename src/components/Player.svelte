@@ -1,5 +1,6 @@
 <script>
   import MediaElement from "./MediaElement.svelte";
+  import StyleReset from "./StyleReset.svelte";
   import UserInterface from "./UserInterface.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
@@ -133,25 +134,6 @@
   <GoogleAnalytics {analyticsTag} />
 {/if}
 
-<style>
-  :global(.beyondwords-player :not(svg *)) {
-    all: initial;
-  }
-
-  :global(.beyondwords-player svg) {
-    fill: transparent;
-  }
-
-  :global(.beyondwords-player div) {
-    display: block;
-  }
-
-  :global(.beyondwords-player button) {
-    background: rgb(239, 239, 239); /* TODO: remove after changing video progress bar */
-  }
-
-  :global(.beyondwords-player button *),
-  :global(.beyondwords-player a *) {
-    cursor: pointer;
-  }
-</style>
+{#if showUserInterface}
+  <StyleReset />
+{/if}
