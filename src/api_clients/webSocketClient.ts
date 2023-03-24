@@ -31,6 +31,16 @@ class WebSocketClient {
 
     this.webSocket.send(jsonData);
   }
+
+  destroy() {
+    this.webSocketToken = null;
+    if (!this.webSocket) { return; }
+
+    this.webSocket.onmessage = () => {};
+    this.webSocket.onerror = () => {};
+    this.webSocket.close();
+    this.webSocket = null;
+  }
 }
 
 export default WebSocketClient;

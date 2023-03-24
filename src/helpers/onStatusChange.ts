@@ -2,11 +2,13 @@ import WebSocketClient from "../api_clients/webSocketClient";
 import newEvent from "../helpers/newEvent";
 import throwError from "../helpers/throwError";
 
-// TODO: this function should not keep being called when Player props change
+let client;
+
 const onStatusChange = async (projectId, writeToken, onEvent) => {
   if (!projectId || !writeToken) { return; }
 
-  const client = new WebSocketClient(projectId, writeToken);
+  client?.destroy();
+  client = new WebSocketClient(projectId, writeToken);
 
   await client.getWebSocketToken();
   await client.establishConnection(handleMessage(onEvent), handleError);
