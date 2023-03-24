@@ -8,7 +8,7 @@ BeyondWords account and generate some content.
 You can then click on the embed button next to the content to add the snippet
 to the `<body>` of your site.
 
-The snippet looks like this:
+The snippet should look like this:
 
 ```html
 <script async defer
@@ -34,7 +34,7 @@ downloads the script code.
 
 The 'onload' attribute initializes a JavaScript class called 'BeyondWords.Player'.
 
-By setting `target: this`, the player will load immediately after the the
+By setting `target: this`, the player will be added immediately after the the
 script tag in the `<body>`.
 
 ## How to configure it
@@ -58,7 +58,7 @@ However, you can also override properties at the script level, for example:
 </script>
 ```
 
-These settings will take precedent over those specified in the dashboard and
+These settings will take precedence over those specified in the dashboard and
 allow more flexibility.
 
 These settings can also be changed after loading the player by using the [Player SDK](./player-sdk.md).
