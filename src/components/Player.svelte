@@ -57,7 +57,7 @@
   export let prevPercentage = 0;
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
-  $: onStatusChange(projectId, writeToken, (statusChangeEvent) => controller.processEvent(statusChangeEvent));
+  $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => controller.processEvent(statusEvent));
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
 

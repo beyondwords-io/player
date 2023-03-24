@@ -4,11 +4,11 @@ import throwError from "../helpers/throwError";
 
 let client;
 
-const onStatusChange = async (projectId, writeToken, onEvent) => {
-  if (!projectId || !writeToken) { return; }
+const onStatusChange = async (playerApiUrl, projectId, writeToken, onEvent) => {
+  if (!playerApiUrl || !projectId || !writeToken) { return; }
 
   client?.destroy();
-  client = new WebSocketClient(projectId, writeToken);
+  client = new WebSocketClient(playerApiUrl, projectId, writeToken);
 
   await client.getWebSocketToken();
   await client.establishConnection(handleMessage(onEvent), handleError);

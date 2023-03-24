@@ -2,20 +2,20 @@ import fetchJson from "../helpers/fetchJson";
 import { v4 as randomUuid } from "uuid";
 
 class WebSocketClient {
-  constructor(projectId, writeToken) {
+  constructor(playerApiUrl, projectId, writeToken) {
+    this.baseUrl = this.#resolveBaseUrl(playerApiUrl);
     this.projectId = projectId;
     this.writeToken = writeToken;
   }
 
   async getWebSocketToken() {
     const headers = { Authorization: `Token token=${this.writeToken}` };
-    const { token } = await fetchJson("https://app.staging-beyondwords.io/api/v4/token/ws", { headers });
-
-    this.webSocketToken = token; // TODO: onError
+    const { token } = await fetchJson(`https://${this.baseUrl}/api/v4/token/ws`, { headers });
+    this.webSocketToken = token;
   }
 
   async establishConnection(onMessage, onError) {
-    const webSocketUrl = `wss://app.staging-beyondwords.io/cable?token=${this.webSocketToken}`;
+    const webSocketUrl = `wss://${this.baseUrl}/cable?token=${this.webSocketToken}`;
     const protocol = "actioncable-v1-json";
 
     this.webSocket = new WebSocket(webSocketUrl, protocol);
@@ -40,6 +40,16 @@ class WebSocketClient {
     this.webSocket.onerror = () => {};
     this.webSocket.close();
     this.webSocket = null;
+  }
+
+  // private
+
+  #resolveBaseUrl(playerApiUrl) {
+    if (playerApiUrl.includes("staging")) {
+      return "app.staging-beyondwords.io";
+    } else {
+      return "app.beyondwords.io";
+    }
   }
 }
 
