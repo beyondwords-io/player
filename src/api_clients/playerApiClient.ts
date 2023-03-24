@@ -2,7 +2,7 @@ import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
   constructor(playerApiUrl, projectId) {
-    this.baseUrl = playerApiUrl.replace("{id}", projectId);
+    this.baseUrl = playerApiUrl?.replace("{id}", projectId);
   }
 
   byContentId(id) {

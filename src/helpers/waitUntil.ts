@@ -2,7 +2,7 @@ const waitUntil = (conditionFn) => {
   if (conditionFn()) { return; }
 
   return new Promise(resolve => {
-    setInterval(() => conditionFn() && resolve(), 10)
+    setInterval(() => conditionFn() && resolve(), 10);
   });
 };
 
