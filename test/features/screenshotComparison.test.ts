@@ -5,7 +5,10 @@ import permutations from "../support/permutations.ts";
 const dimensions = {
   playerStyle: ["large", "screen", "small", "standard", "video"],
   playbackState: ["paused", "playing", "stopped"],
-  adverts: [[{ clickThroughUrl: "https://deliveroo.com", imageUrl: advertImage }]],
+  adverts: [
+    [{ clickThroughUrl: "https://deliveroo.com", imageUrl: advertImage }],
+    [{ clickThroughUrl: "https://advert-without-image.com" }],
+  ],
   advertIndex: [0, -1],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
   contentIndex: [0],
@@ -48,9 +51,13 @@ test("screenshot comparison", async ({ page }) => {
 
 const skipPermutation = (params) => {
   const testingTheWidget = params.widgetPosition;
+  const testingNoImage = !params.adverts[0].imageUrl;
 
   const advertWouldntShow = params.advertIndex === 0 && params.playbackState === "stopped";
   if (advertWouldntShow) { return true; }
+
+  const advertImageIsIrrelevant = testingNoImage && (params.advertIndex === -1 || ["small", "standard"].includes(params.playerStyle));
+  if (advertImageIsIrrelevant) { return true; }
 
   const playlistWouldntShow = (testingTheWidget || params.playerStyle === "small") && params.content.length > 1;
   if (playlistWouldntShow) { return true; }
@@ -66,6 +73,7 @@ const screenshotName = (params) => (
     params.playerStyle,
     params.playbackState,
     params.advertIndex === 0 && "advert",
+    params.advertIndex === 0 && !params.adverts[0].imageUrl && "no-image",
     params.content.length > 1 && "playlist",
     params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`.replace("%", ""),
   ].filter(s => s).join("-")
