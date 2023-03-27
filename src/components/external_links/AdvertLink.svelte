@@ -5,6 +5,7 @@
   export let scale = 1;
   export let playerStyle;
   export let controlsOrder;
+  export let largeImage;
   export let onEvent = () => {};
 
   $: text = href && new URL(href).hostname;
@@ -18,7 +19,7 @@
   };
 </script>
 
-<a class="advert-link {playerStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" style="font-size: {12 * scale}px" on:click={handleClick}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={href} class:no-image={!largeImage} target="_blank" rel="noreferrer" style="font-size: {12 * scale}px" on:click={handleClick}>
   {text || ""}
 </a>
 
@@ -41,6 +42,10 @@
     position: absolute;
     left: 96px;
     top: 8px;
+  }
+
+  .large.no-image {
+    left: auto;
   }
 
   .screen {
