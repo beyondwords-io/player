@@ -13,6 +13,7 @@
   export let isAdvert;
   export let isStopped;
   export let collapsed;
+  export let largeImage;
   export let color = "323232";
 
   $: isScreen = playerStyle === "screen";
@@ -20,7 +21,7 @@
   $: opacityCss = collapsed ? "opacity: 0" : "";
 </script>
 
-<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} style={opacityCss}>
+<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} class:no-image={!largeImage} style={opacityCss}>
   <div class="inner">
     {#if isAdvert && currentTime === 0}
       <!-- -->
@@ -116,6 +117,10 @@
     left: 96px;
     top: 62px;
     margin-left: 0;
+  }
+
+  .large.mobile.no-image {
+    left: auto;
   }
 
   .large.mobile .inner {

@@ -97,6 +97,7 @@
 
   $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
   $: posterImage = isStopped ? contentItem.imageUrl : null;
+  $: largeImage = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && fixedWidth === 0;
@@ -123,9 +124,9 @@
         <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
       {/if}
 
-      <div class="main" data-is-video-main={isVideo} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
-        {#if isLarge || isScreen}
-          <LargeImage src={isAdvert && activeAdvert.imageUrl || contentItem.imageUrl} scale={isScreen && !isMobile ? 1.5 : 1} />
+      <div class="main" data-is-video-main={isVideo} class:no-image={!largeImage} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
+        {#if largeImage && (isLarge || isScreen)}
+          <LargeImage src={largeImage} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
 
         {#if isVideo && fixedPosition}
@@ -165,7 +166,7 @@
             <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
           {/if}
 
-          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} color={isVideo ? buttonColor : activeTextColor} />
+          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} color={isVideo ? buttonColor : activeTextColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
             <ProgressBar {onEvent} {progress} fullWidth={isVideo} color={activeIconColor} />
@@ -260,6 +261,11 @@
     min-width: 0;
   }
 
+  .end {
+    grid-row: 1;
+    grid-column: 3;
+  }
+
   .collapsed .controls {
     column-gap: 0;
     transition: column-gap 1.25s;
@@ -341,6 +347,14 @@
 
   .large.mobile .main {
     height: 144px;
+  }
+
+  .large .no-image .summary {
+    grid-column: 1 / span 2;
+  }
+
+  .large .no-image .controls {
+    grid-column: 1 / span 3;
   }
 
   .large.mobile .controls {
@@ -499,8 +513,6 @@
   }
 
   .video .end {
-    grid-row: 1;
-    grid-column: 3;
     margin: 16px;
     margin-left: auto;
   }
