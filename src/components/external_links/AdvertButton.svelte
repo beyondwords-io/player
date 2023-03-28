@@ -4,6 +4,7 @@
 
   export let href;
   export let scale = 1;
+  export let color = "#323232";
   export let playerStyle;
   export let controlsOrder;
   export let onEvent = () => {};
@@ -20,7 +21,7 @@
 </script>
 
 <a class="advert-button {playerStyle} {controlsOrder}" class:hidden={!href} href={href} target="_blank" rel="noreferrer" on:click={handleClick}>
-  <OpenNewTab color={playerStyle === "video" ? "rgba(250, 250, 250, 0.8)" : "#00cdbc"} {scale} />
+  <OpenNewTab {color} {scale} />
 </a>
 
 <style>

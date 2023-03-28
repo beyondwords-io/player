@@ -3,12 +3,14 @@
 
   export let href;
   export let scale = 1;
+  export let color = "#00cdbc";
   export let playerStyle;
   export let controlsOrder;
   export let largeImage;
   export let onEvent = () => {};
 
   $: text = href && new URL(href).hostname;
+  $: style = `font-size: ${12 * scale}px; color: ${color}; border-color: ${color}`;
 
   const handleClick = () => {
     onEvent(newEvent({
@@ -19,7 +21,7 @@
   };
 </script>
 
-<a class="advert-link {playerStyle} {controlsOrder}" href={href} class:no-image={!largeImage} target="_blank" rel="noreferrer" style="font-size: {12 * scale}px" on:click={handleClick}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={href} {style} class:no-image={!largeImage} target="_blank" rel="noreferrer" on:click={handleClick}>
   {text || ""}
 </a>
 
@@ -27,8 +29,8 @@
   a.advert-link {
     font-weight: 500;
     text-decoration: none;
-    color: #00cdbc;
-    border-bottom: 1px solid #00cdbc;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     white-space: nowrap;
   }
 
@@ -56,8 +58,6 @@
   a.video {
     margin-left: auto;
     margin-right: 0;
-    color: rgba(250, 250, 250, 0.8);
-    border-color: rgba(250, 250, 250, 0.8);
   }
 
   a.video.right-to-left {
