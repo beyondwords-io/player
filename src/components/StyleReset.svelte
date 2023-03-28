@@ -20,6 +20,8 @@
     background: rgb(239, 239, 239); /* TODO: remove after changing video progress bar */
   }
 
+  :global(.beyondwords-player button),
+  :global(.beyondwords-player a),
   :global(.beyondwords-player button *),
   :global(.beyondwords-player a *) {
     cursor: pointer;
