@@ -5,7 +5,7 @@ import throwError from "./throwError";
 const modules = import.meta.glob("../translations/*", { eager: true });
 const pairs = Object.entries(modules).map(([k, v]) => [basename(k), v.default]);
 
-const locales = Object.fromEntries(pairs);
+const locales = Object.fromEntries(pairs.filter(([k, _]) => k.includes("-")));
 const languages = Object.fromEntries(pairs.filter(([_, v]) => v.isDefaultForLanguage).map(([k, v]) => [k.split("-")[0], v]));
 
 validateTranslations(locales, languages);
