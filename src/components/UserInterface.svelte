@@ -109,7 +109,12 @@
 
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
 
-  const handleMouseDown = () => {
+  const handleMouseDown = (event) => {
+    if (!isVideo) { return; }
+
+    const clickedOnMain = event.target.classList.contains("main");
+    if (!clickedOnMain) { return; }
+
     onEvent(newEvent({
       type: "PressedVideoBackground",
       description: "The video background was pressed.",
@@ -125,7 +130,7 @@
         <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
       {/if}
 
-      <div class="main" data-is-video-main={isVideo} class:no-image={!largeImage} on:mousedown={e => e.target.dataset.isVideoMain && handleMouseDown()} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
+      <div class="main" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
         {#if largeImage && (isLarge || isScreen)}
           <LargeImage src={largeImage} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
