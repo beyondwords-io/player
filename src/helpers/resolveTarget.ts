@@ -9,12 +9,8 @@ const resolveTarget = (target) => {
     return { newTarget: addDivAfter(target), showUserInterface: true };
   }
 
-  if (isIdSelector(target)) {
-    return { newTarget: findById(target), showUserInterface: true };
-  }
-
-  if (isClassSelector(target)) {
-    return { newTarget: findByClass(target), showUserInterface: true };
+  if (typeof target === "string") {
+    return { newTarget: findByQuery(target), showUserInterface: true };
   }
 
   return { newTarget: target, showUserInterface: true };
@@ -24,14 +20,6 @@ const resolveTarget = (target) => {
 
 const isScriptTag = (target) => {
   return typeof target === "object" && target.nodeName.toLowerCase() === "script";
-};
-
-const isIdSelector = (target) => {
-  return typeof target === "string" && target.startsWith("#");
-};
-
-const isClassSelector = (target) => {
-  return typeof target === "string" && target.startsWith(".");
 };
 
 const appendDivToBody = () => {
@@ -48,26 +36,18 @@ const addDivAfter = (target) => {
   return div;
 };
 
-const findById = (target) => {
-  const id = target.slice(1);
-  const element = document.getElementById(id);
+const findByQuery = (target) => {
+  const elements = document.querySelectorAll(target);
 
-  if (!element) {
-    throwError("Failed to initialize player because the target could not be found.", { target, id });
+  if (elements.length === 0) {
+    throwError("Failed to initialize player because the target could not be found.", { target, elements });
   }
 
-  return element;
-};
-
-const findByClass = (target) => {
-  const className = target.slice(1);
-  const element = document.getElementsByClassName(className)[0];
-
-  if (!element) {
-    throwError("Failed to initialize player because the target could not be found.", { target, className });
+  if (elements.length > 1) {
+    throwError(`Failed to initialize player because the target is ambiguous. (${elements.length} elements match)`, { target, elements });
   }
 
-  return element;
+  return elements[0];
 };
 
 export default resolveTarget;

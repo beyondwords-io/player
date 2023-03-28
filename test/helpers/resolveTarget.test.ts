@@ -31,7 +31,7 @@ describe("resolveTarget", () => {
     expect(showUserInterface).toEqual(true);
   });
 
-  it("resolves to an element and enables the UI when target is an id selector", () => {
+  it("resolves to an element and enables the UI when target is a query string", () => {
     const element = document.createElement("div");
     element.id = "something";
     document.body.appendChild(element);
@@ -42,23 +42,20 @@ describe("resolveTarget", () => {
     expect(showUserInterface).toEqual(true);
   });
 
-  it("throws an error if the id selector is for a node that doesn't exist", () => {
-    expect(() => resolveTarget("#missing")).toThrowError(/target could not be found/);
-  });
-
-  it("resolves to an element and enables the UI when target is a class selector", () => {
-    const element = document.createElement("div");
-    element.classList.add("something");
-    document.body.appendChild(element);
-
-    const { newTarget, showUserInterface } = resolveTarget(".something");
-
-    expect(newTarget).toEqual(element);
-    expect(showUserInterface).toEqual(true);
-  });
-
-  it("throws an error if the class selector is for a node that doesn't exist", () => {
+  it("throws an error if the query string is for a node that doesn't exist", () => {
     expect(() => resolveTarget(".missing")).toThrowError(/target could not be found/);
+  });
+
+  it("throws an error if the query string is ambiguous", () => {
+    const element1 = document.createElement("div");
+    element1.id = "identical";
+    document.body.appendChild(element1);
+
+    const element2 = document.createElement("div");
+    element2.id = "identical";
+    document.body.appendChild(element2);
+
+    expect(() => resolveTarget("#identical")).toThrowError(/2 elements match/);
   });
 
   it("resolves to the given element and enables the UI when target is a DOM node", () => {
