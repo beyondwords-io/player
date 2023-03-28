@@ -63,6 +63,8 @@ const CustomUserInterface = ({ player }) => {
 
 In this example, the component is forced to re-render when the counter is updated.
 
+Note that the counter isn't actually displayed, we are just using it to force the component to rerender.
+
 ## Using JavaScript
 
 If you're using plain Javascript, here's a working example that implements the above technique.
