@@ -3,6 +3,11 @@
     all: initial;
   }
 
+  :global(.beyondwords-player :focus) {
+    outline: 1px dotted blue;
+    outline: 5px auto -webkit-focus-ring-color;
+  }
+
   :global(.beyondwords-player svg) {
     fill: transparent;
   }
