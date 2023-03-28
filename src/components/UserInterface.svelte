@@ -28,6 +28,7 @@
   import findSegmentIndex from "../helpers/findSegmentIndex";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import newEvent from "../helpers/newEvent";
+  import translate from "../helpers/translate";
   import { canFullScreen } from "../helpers/fullScreen";
 
   export let playerStyle = "standard";
@@ -153,7 +154,7 @@
           </Visibility>
 
           {#if isStandard && isStopped || isSmall}
-            <PlayerTitle title={callToAction || ""} visible={!isAdvert} {playerStyle} {collapsible} {collapsed} color={activeTextColor} />
+            <PlayerTitle title={callToAction || translate("listenToThisArticle")} visible={!isAdvert} {playerStyle} {collapsible} {collapsed} color={activeTextColor} />
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}

@@ -16,10 +16,10 @@
   export let playlist = [];
   export let showUserInterface = true;
   export let playerStyle = "standard";
-  export let callToAction = "Listen to this article";
+  export let playerTitle = undefined;
+  export let callToAction = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
-  export let playerTitle = undefined;
   export let content = [];
   export let contentIndex = 0;
   export let adverts = [];
