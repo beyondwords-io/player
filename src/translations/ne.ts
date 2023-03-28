@@ -1,4 +1,4 @@
 export default {
   isDefaultForLanguage: true,
-  listenToThisArticle: "Listen to this article",
+  listenToThisArticle: "यो लेख सुन्नुहोस्",
 };

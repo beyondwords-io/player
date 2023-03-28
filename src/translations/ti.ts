@@ -1,4 +1,4 @@
 export default {
   isDefaultForLanguage: true,
-  listenToThisArticle: "Listen to this article",
+  listenToThisArticle: "ነዚ ጽሑፍ ስምዑዎ።",
 };

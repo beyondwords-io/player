@@ -1,4 +1,4 @@
 export default {
   isDefaultForLanguage: true,
-  listenToThisArticle: "Listen to this article",
+  listenToThisArticle: "இந்தக் கட்டுரையைக் கேளுங்கள்",
 };
