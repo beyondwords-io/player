@@ -8,7 +8,7 @@ const validateTranslations = (locales, languages) => {
 
 const validateAtLeastOneDefault = (locales, languages) => {
   for (const locale of Object.keys(locales)) {
-    const language = locale.slice(0, 2);
+    const language = locale.split("-")[0];
     if (languages[language]) { continue; }
 
     throwError([
@@ -22,7 +22,7 @@ const validateAtMostOneDefault = (locales) => {
   const defaults = {};
 
   for (const [locale, translations] of Object.entries(locales)) {
-    const language = locale.slice(0, 2);
+    const language = locale.split("-")[0];
     if (!translations.isDefaultForLanguage) { continue; }
 
     defaults[language] ||= [];
