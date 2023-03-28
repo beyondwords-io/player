@@ -29,6 +29,10 @@ const translationsForBrowserPreference = (locale = null) => {
   for (const locale of localesToTry) {
     const language = locale.slice(0, 2);
 
+    // navigator.languages can return both locales (en-GB) and languages (en).
+    // It doesn't mattter in this case because locales["en"] will be undefined
+    // and we're explicitly fetching the language translations separately below.
+
     if (locales[locale]) { return locales[locale]; }
     if (languages[language]) { return languages[language]; }
   }
