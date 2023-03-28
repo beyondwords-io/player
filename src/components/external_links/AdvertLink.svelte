@@ -7,6 +7,7 @@
   export let playerStyle;
   export let controlsOrder;
   export let largeImage;
+  export let isMobile;
   export let onEvent = () => {};
 
   $: text = href && new URL(href).hostname;
@@ -21,7 +22,7 @@
   };
 </script>
 
-<a class="advert-link {playerStyle} {controlsOrder}" href={href} {style} class:no-image={!largeImage} target="_blank" rel="noreferrer" on:click={handleClick}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={href} {style} class:no-image={!largeImage} class:mobile={isMobile} target="_blank" rel="noreferrer" on:click={handleClick}>
   {text || ""}
 </a>
 
@@ -53,6 +54,14 @@
   .screen {
     position: absolute;
     top: 236px;
+  }
+
+  .screen.no-image {
+    top: 52px;
+  }
+
+  .screen.no-image.mobile {
+    top: 100px;
   }
 
   a.video {

@@ -174,7 +174,7 @@
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
-            <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen ? 2 : 1} {controlsOrder} color={buttonColor} {largeImage} />
+            <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen ? 2 : 1} {controlsOrder} color={buttonColor} {largeImage} {isMobile} />
             <AdvertButton {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
           {/if}
 
