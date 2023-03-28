@@ -196,7 +196,7 @@
             {#if showCloseWidget}
               <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={buttonColor} />
             {:else}
-              <BeyondWords {onEvent} scale={logoScale} opacity={isHovering || isPlaying || isPaused ? 1 : 0} />
+              <BeyondWords {onEvent} scale={logoScale} visible={isHovering || isPlaying || isPaused} />
             {/if}
           </div>
         {/if}
@@ -534,6 +534,7 @@
   }
 
   :global(.hoverable):focus-within .controls > :global(*),
+  :global(.hoverable):focus-within .end > :global(.beyond-words),
   .video.stopped .controls > :global(*),
   .video.paused .controls > :global(*),
   .video.hovering .controls > :global(*),
