@@ -534,7 +534,7 @@
   }
 
   :global(.hoverable):focus-within .controls > :global(*),
-  :global(.hoverable):focus-within .end > :global(.beyond-words),
+  :global(.hoverable):focus-within .end > :global(.beyondwords),
   .video.stopped .controls > :global(*),
   .video.paused .controls > :global(*),
   .video.hovering .controls > :global(*),

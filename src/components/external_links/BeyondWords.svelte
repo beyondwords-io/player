@@ -15,12 +15,12 @@
   };
 </script>
 
-<a class="beyond-words" href="https://beyondwords.io/" target="_blank" rel="noreferrer" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px">
+<a class="beyondwords" href="https://beyondwords.io/" target="_blank" rel="noreferrer" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px">
   <Logo {scale} />
 </a>
 
 <style>
-  .beyond-words {
+  .beyondwords {
     display: flex;
     transition: opacity 0.5s;
     opacity: 0;
@@ -30,7 +30,7 @@
     opacity: 1;
   }
 
-  .beyond-words:hover {
+  .beyondwords:hover {
     opacity: 0.8;
     transition: none;
   }
