@@ -3,7 +3,7 @@
 
   export let href;
   export let scale = 1;
-  export let color = "#00cdbc";
+  export let color = "#323232";
   export let playerStyle;
   export let controlsOrder;
   export let largeImage;
