@@ -3,7 +3,7 @@
     all: initial;
   }
 
-  :global(.beyondwords-player :focus) {
+  :global(.beyondwords-player :focus-visible) {
     outline: 1px dotted blue;
     outline: 5px auto -webkit-focus-ring-color;
   }
