@@ -538,8 +538,8 @@
     pointer-events: none;
   }
 
-  :global(.hoverable):focus-within .controls > :global(*),
-  :global(.hoverable):focus-within .end > :global(.beyondwords),
+  :global(.video .hoverable):focus-within .controls > :global(*),
+  :global(.video .hoverable):focus-within .end > :global(.beyondwords),
   .video.stopped .controls > :global(*),
   .video.paused .controls > :global(*),
   .video.hovering .controls > :global(*),
@@ -551,22 +551,37 @@
 
   .video.advert .controls > :global(.time-indicator) {
     position: absolute;
-    top: -32px;
     left: 16px;
+    bottom: 16px;
+    transition: bottom 0.5s;
   }
 
   .video.advert .controls > :global(.advert-link) {
     position: absolute;
     right: 16px;
-    top: -36px;
+    bottom: 16px;
+    transition: bottom 0.5s;
+  }
+
+  :global(.video.advert .hoverable):focus-within .controls > :global(.time-indicator),
+  .video.advert.stopped .controls > :global(.time-indicator),
+  .video.advert.paused .controls > :global(.time-indicator),
+  .video.advert.hovering .controls > :global(.time-indicator),
+  :global(.video.advert .hoverable):focus-within .controls > :global(.advert-link),
+  .video.advert.stopped .controls > :global(.advert-link),
+  .video.advert.paused .controls > :global(.advert-link),
+  .video.advert.hovering .controls > :global(.advert-link) {
+    bottom: 76px;
   }
 
   .video.advert.mobile .controls > :global(.time-indicator) {
     left: 8px;
+    margin-bottom: -4px;
   }
 
   .video.advert.mobile .controls > :global(.advert-link) {
     right: 8px;
+    margin-bottom: -4px;
   }
 
   .video.advert.fixed .controls > :global(.time-indicator) {
