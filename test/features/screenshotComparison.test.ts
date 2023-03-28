@@ -20,6 +20,7 @@ const dimensions = {
   widgetPosition: [null, "auto", "center", "left", "right"],
   widgetStyle: ["none"],
   widgetWidth: [0, "50%", "auto"],
+  playlistStyle: ["auto"],
 };
 
 test("screenshot comparison", async ({ page }) => {
