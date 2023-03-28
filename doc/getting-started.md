@@ -34,8 +34,9 @@ downloads the script code.
 
 The 'onload' attribute initializes a JavaScript class called 'BeyondWords.Player'.
 
-By setting `target: this`, the player will be added immediately after the the
-script tag in the `<body>`.
+By setting `target: this`, the player will be added immediately after the
+script tag in the `<body>`. That means it will appear at the position where
+you copy the script tag into your page.
 
 ## How to configure it
 
