@@ -24,7 +24,7 @@ const translate = (key, { locale } = {}) => {
 };
 
 const translationsForBrowserPreference = (locale = null) => {
-  const localesToTry = [locale, ...navigator.languages, "en-US"].filter(s => s);
+  const localesToTry = [locale, ...navigator.languages, "en"].filter(s => s);
 
   for (const locale of localesToTry) {
     const language = locale.split("-")[0];
