@@ -1,7 +1,6 @@
 <script>
   import { onDestroy } from "svelte";
 
-  export let enabled;
   export let exitDelay = 0;
   export let idleDelay = Infinity;
   export let isHovering = false;
@@ -11,7 +10,7 @@
   let exitTimeout;
   let idleTimeout;
 
-  $: isHovering = enabled && !isExit && !isIdle;
+  $: isHovering = !isExit && !isIdle;
 
   const onEnter = () => {
     if (exitTimeout) { clearTimeout(exitTimeout); }
@@ -42,9 +41,9 @@
 </script>
 
 <div class="hoverable"
-     on:mouseenter={enabled && onEnter}
-     on:mouseleave={enabled && onLeave}
-     on:mousemove={enabled && idleDelay !== Infinity && onMove}>
+     on:mouseenter={onEnter}
+     on:mouseleave={onLeave}
+     on:mousemove={idleDelay !== Infinity && onMove}>
 
   <slot></slot>
 </div>

@@ -3,6 +3,7 @@
   import newEvent from "../../helpers/newEvent";
 
   export let scale = 1;
+  export let opacity = 1;
   export let onEvent = () => {};
 
   const handleClick = () => {
@@ -14,13 +15,14 @@
   };
 </script>
 
-<a class="beyond-words" href="https://beyondwords.io/" target="_blank" rel="noreferrer" on:click={handleClick} style="outline-offset: {6.4 * scale}px">
+<a class="beyond-words" href="https://beyondwords.io/" target="_blank" rel="noreferrer" on:click={handleClick} style="outline-offset: {6.4 * scale}px; opacity: {opacity}">
   <Logo {scale} />
 </a>
 
 <style>
   .beyond-words {
     display: flex;
+    transition: opacity 0.5s;
   }
 
   .beyond-words:hover {

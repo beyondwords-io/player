@@ -119,7 +119,7 @@
 
 {#if knownPlayerStyle(playerStyle) && content.length > 0}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
-    <Hoverable bind:isHovering enabled={collapsible || isVideo} exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
+    <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
       {#if isVideo && (posterImage || !videoIsBehind)}
         <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
       {/if}
@@ -195,7 +195,7 @@
             {#if showCloseWidget}
               <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={buttonColor} />
             {:else}
-              <BeyondWords {onEvent} scale={logoScale} />
+              <BeyondWords {onEvent} scale={logoScale} opacity={isHovering || isPlaying || isPaused ? 1 : 0} />
             {/if}
           </div>
         {/if}
