@@ -196,7 +196,7 @@
             {#if showCloseWidget}
               <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={buttonColor} />
             {:else}
-              <BeyondWords {onEvent} scale={logoScale} visible={isHovering || isPlaying || isPaused} />
+              <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying || isPaused} />
             {/if}
           </div>
         {/if}
