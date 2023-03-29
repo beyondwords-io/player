@@ -2,11 +2,9 @@
 
 ## Getting Started
 
-The first step is to [sign up](https://dash.beyondwords.io/auth/signup) for a
-BeyondWords account and generate some content.
+The first step is to [sign up](https://dash.beyondwords.io/auth/signup) for a BeyondWords account and generate some content.
 
-You can then click on the embed button next to the content to add the snippet
-to the `<body>` of your site.
+You can then click on the embed button next to the content to add the script tag to the `<body>` of your site.
 
 The snippet should look like this:
 
@@ -17,8 +15,7 @@ The snippet should look like this:
 </script>
 ```
 
-You will need to replace the `<ID>` placeholders with the real identifiers for
-your project and content.
+You will need to replace the `<ID>` placeholders with the real identifiers for your project and content.
 
 After refreshing the page, the player should load:
 
@@ -26,22 +23,17 @@ After refreshing the page, the player should load:
 
 ## How it works
 
-The script tag downloads the code for BeyondWords player and instantiates a new
-player instance.
+The script tag downloads the code for BeyondWords player and instantiates a new player instance.
 
-The 'async' and 'defer' attributes mean that the browser won't stall while it
-downloads the script code.
+The 'async' and 'defer' attributes mean that the browser won't stall while it downloads the script code.
 
 The 'onload' attribute initializes a JavaScript class called 'BeyondWords.Player'.
 
-By setting `target: this`, the player will be added immediately after the
-script tag in the `<body>`. That means it will appear at the position where
-you copy the script tag into your page.
+By setting `target: this`, the player will be added immediately after the script tag in the `<body>`. That means it will appear at the position where you copy the script tag into your page.
 
 ## How to configure it
 
-The preferred way to configure the player is by logging into the BeyondWords
-dashboard and changing its settings.
+The preferred way to configure the player is by logging into the BeyondWords dashboard, going to the Player tab, and changing its settings.
 
 However, you can also override properties at the script level, for example:
 
@@ -59,8 +51,7 @@ However, you can also override properties at the script level, for example:
 </script>
 ```
 
-These settings will take precedence over those specified in the dashboard and
-allow more flexibility.
+These settings will take precedence over those specified in the dashboard and allow more flexibility.
 
 These settings can also be changed after loading the player by using the [Player SDK](./player-sdk.md).
 
