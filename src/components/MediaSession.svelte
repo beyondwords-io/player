@@ -38,8 +38,10 @@
   $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
 </script>
 
-{#each imageSizes as size, i}
-  <div bind:this={fallbackSvgs[i]} style="display: none">
-    <VolumeUp fill={background} color={foreground} scale={size / 18} zoom={0.65} />
-  </div>
-{/each}
+<div class="media-session">
+  {#each imageSizes as size, i}
+    <div bind:this={fallbackSvgs[i]} style="display: none">
+      <VolumeUp fill={background} color={foreground} scale={size / 18} zoom={0.65} />
+    </div>
+  {/each}
+</div>
