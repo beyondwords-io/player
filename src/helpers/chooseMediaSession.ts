@@ -3,6 +3,7 @@ const chooseMediaSession = (Player) => {
 
   const allowOverride = Player.instances().some(p => p.mediaSession === "override");
   if (navigator.mediaSession.metadata && !allowOverride) { return; } // TODO: ignore if from one of our players
+  // TODO: check empty metadata according to W3C spec
 
   let bestSoFar;
   let bestState = -Infinity;

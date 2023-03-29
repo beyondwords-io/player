@@ -1,8 +1,9 @@
 <script>
   import MediaElement from "./MediaElement.svelte";
-  import StyleReset from "./StyleReset.svelte";
   import UserInterface from "./UserInterface.svelte";
+  import MediaSession from "./MediaSession.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
+  import StyleReset from "./StyleReset.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
 
@@ -88,6 +89,8 @@
   {widgetWidth} />
 
 {#if showUserInterface}
+  <StyleReset />
+
   <UserInterface
     bind:this={userInterface}
     onEvent={e => controller.processEvent({ ...e, fromWidget: false })}
@@ -135,10 +138,10 @@
     videoIsBehind={videoBehindWidget} />
 {/if}
 
-{#if analyticsTag}
-  <GoogleAnalytics {analyticsTag} />
+{#if showMediaSession}
+  <MediaSession {contentItem} {activeAdvert} {playbackState} />
 {/if}
 
-{#if showUserInterface}
-  <StyleReset />
+{#if analyticsTag}
+  <GoogleAnalytics {analyticsTag} />
 {/if}
