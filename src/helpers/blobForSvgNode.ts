@@ -1,5 +1,5 @@
-const blobForSvgNode = (svgElement, width, height) => {
-  if (!svgElement) { return; }
+const blobForSvgNode = async (svgElement, width, height) => {
+  svgElement = await svgElement;
 
   const html = svgElement.innerHTML;
   const src = `data:image/svg+xml,${encodeURIComponent(html)}`;

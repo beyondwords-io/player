@@ -1,4 +1,5 @@
 <script>
+  import { tick } from "svelte";
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
   import blobForImageUrl from "../helpers/blobForImageUrl";
   import blobForSvgNode from "../helpers/blobForSvgNode";
@@ -12,20 +13,22 @@
 
   let artwork = [];
   let fallbackSvgs = imageSizes.map(() => undefined);
+  let renderedSvgs = imageSizes.map(() => undefined);
 
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
 
-  $: activeBackgroundColor = isAdvert && activeAdvert?.backgroundColor || backgroundColor;
-  $: activeIconColor = isAdvert && activeAdvert?.iconColor || iconColor;
+  $: background = isAdvert && activeAdvert?.backgroundColor || backgroundColor;
+  $: foreground = isAdvert && activeAdvert?.iconColor || iconColor;
+  $: background, foreground, renderedSvgs = imageSizes.map((_, i) => tick().then(() => fallbackSvgs[i]));
 
   $: imageUrl = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl;
 
   $: pngArtworks = imageUrl ? imageSizes.map(s => blobForImageUrl(imageUrl, s, s)) : [];
   $: urlArtworks = imageUrl ? [{ src: imageUrl, sizes: "any" }] : [];
-  $: svgArtworks = imageUrl ? [] : imageSizes.map((s, i) => blobForSvgNode(fallbackSvgs[i], s, s));
+  $: svgArtworks = imageUrl ? [] : imageSizes.map((s, i) => blobForSvgNode(renderedSvgs[i], s, s));
 
-  $: artworks = Promise.all([...pngArtworks, ...urlArtworks, ...svgArtworks.filter(a => a)]);
+  $: artworks = Promise.all([...pngArtworks, ...urlArtworks, ...svgArtworks]);
 
   $: title = contentItem?.title || "";
   $: artworks.then(arr => artwork = arr);
@@ -37,6 +40,6 @@
 
 {#each imageSizes as size, i}
   <div bind:this={fallbackSvgs[i]} style="display: none">
-    <VolumeUp fill={activeBackgroundColor} color={activeIconColor} scale={size / 18} zoom={0.65} />
+    <VolumeUp fill={background} color={foreground} scale={size / 18} zoom={0.65} />
   </div>
 {/each}
