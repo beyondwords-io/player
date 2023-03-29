@@ -2,7 +2,8 @@
 
 ## Player Events
 
-The player emits various events that are processed by its [RootController](https://github.com/BeyondWords-io/player/blob/main/src/controllers/rootController.ts). You can [listen to these events](./listening-to-events.md) after they are processed.
+The player emits various events that are processed by its
+[RootController](https://github.com/BeyondWords-io/player/blob/main/src/controllers/rootController.ts). You can [listen to these events](./listening-to-events.md) after they are processed.
 
 Events have a set of fields that are always present and some events contain additional fields.
 
@@ -41,9 +42,11 @@ All of the other fields are present in every event. Their schema is explained be
 - **processedAt**: the time when the event was processed in simplified extended ISO 8601 format
 - **changedProps**: an object listing the player properties that were changed by the event
 
-It is recommended to not depend on `changedProps` and additional event fields (e.g. index) since these might change.
+It is recommended to not depend on `changedProps` and additional event fields
+(e.g. index) since these might change.
 
-Instead, please query the player props directly using the [Player SDK](./player-sdk.md) when listening to events.
+Instead, please query the player props directly using the
+[Player SDK](./player-sdk.md) when listening to events.
 
 ### Event types
 
