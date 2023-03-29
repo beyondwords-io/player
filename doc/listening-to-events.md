@@ -53,6 +53,7 @@ onMount(() => {
 });
 ```
 
-Otherwise, the callback function will continue to be called which may result in an error in your application.
+Otherwise, the callback function will continue to be called which may result in
+an error in your application.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)

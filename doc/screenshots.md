@@ -19,6 +19,8 @@ The player contains many features, including:
 - **Playlist support:** Listen to a playlist of content related to a particular topic or subject matter
 - **Waveform videos:** Watch your content being read out line-by-line while its audio waveform is shown
 
-Additionally, the player is fully responsive, follows accessibility standards and can be controlled programmatically. It has a rich events system you can hook into. It is reactive, meaning its settings can be changed after load.
+Additionally, the player is fully responsive, follows accessibility standards
+and can be controlled programmatically. It has a rich events system you can hook
+into. It is reactive, meaning its settings can be changed after load.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)
