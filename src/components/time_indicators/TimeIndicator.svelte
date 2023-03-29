@@ -19,9 +19,10 @@
   $: isScreen = playerStyle === "screen";
   $: scale = isScreen && !isMobile ? 3 : isScreen ? 2 : 1;
   $: opacityCss = collapsed ? "opacity: 0" : "";
+  $: noTransition = !isAdvert && currentTime < 0.1;
 </script>
 
-<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} class:no-image={!largeImage} style={opacityCss}>
+<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} class:no-image={!largeImage} class:no-transition={noTransition} style={opacityCss}>
   <div class="inner">
     {#if isAdvert && currentTime === 0}
       <!-- -->
@@ -171,5 +172,9 @@
 
   .video.stopped {
     display: none;
+  }
+
+  .video.time-indicator.no-transition {
+    transition: none;
   }
 </style>
