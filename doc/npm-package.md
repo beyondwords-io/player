@@ -2,10 +2,7 @@
 
 ## NPM Package
 
-In the [Getting Started](./getting-started.md) guild we saw how to embed the
-player using a script tag. However, this might not suit your project if you are
-using something like Webpack. This guide explains how to add the player to your
-build pipeline.
+In the [Getting Started](./getting-started.md) guide we saw how to embed the player using a script tag. However, this might not suit your project if you are using something like Webpack. This guide explains how to add the player to your build pipeline.
 
 First, add the player NPM package:
 
@@ -33,18 +30,15 @@ After reloading your app, the player should load:
 
 ## How it works
 
-The initialization is almost identical to the Getting Started guide except we
-set `target: '#something'`.
+The initialization is almost identical to the Getting Started guide except we set `target: '#something'`.
 
 This instructs the player to initialize inside the DOM node with id='something'.
 
-Note that the DOM node must be on the page when the initializer is called or
-the player won't load.
+Note that the DOM node must be on the page when the initializer is called or the player won't load.
 
 ## How to configure it
 
-The preferred way to configure the player is by logging into the BeyondWords
-dashboard and changing its settings.
+The preferred way to configure the player is by logging into the BeyondWords dashboard and changing its settings.
 
 However, you can also override properties in the initializer, for example:
 

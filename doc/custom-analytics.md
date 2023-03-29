@@ -2,9 +2,9 @@
 
 ## Custom Analytics
 
-The player sends analytics to events to BeyondWords which are used to track user engagement levels.
+The player sends analytics events to BeyondWords which are used to track user engagement levels.
 
-An aggregation of these events can be seen on the 'Analytics' tab in the BeyondWords dashboard.
+An aggregation of these events can be seen on the 'Analytics' tab in the BeyondWords dashboard or fetched via the BeyondWords API.
 
 You can optionally provide your own analyticsCustomUrl to receive the same events.
 
