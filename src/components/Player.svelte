@@ -20,6 +20,7 @@
   export let callToAction = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
+  export let mediaSession = "auto";
   export let content = [];
   export let contentIndex = 0;
   export let adverts = [];
@@ -46,6 +47,7 @@
   // These are set automatically.
   export let initialProps = {};
   export let showWidgetAtBottom = false;
+  export let showMediaSession = false;
   export let isFullScreen = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;
