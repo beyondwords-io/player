@@ -179,7 +179,7 @@
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
-            <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={buttonColor} {largeImage} {isMobile} />
+            <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={isVideo ? "rgba(250, 250, 250, 0.8)" : activeTextColor} {largeImage} {isMobile} />
             <AdvertButton {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
           {/if}
 

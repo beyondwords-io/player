@@ -6,7 +6,7 @@ const dimensions = {
   playerStyle: ["large", "screen", "small", "standard", "video"],
   playbackState: ["paused", "playing", "stopped"],
   adverts: [
-    [{ clickThroughUrl: "https://deliveroo.com", imageUrl: advertImage }],
+    [{ clickThroughUrl: "https://deliveroo.com", imageUrl: advertImage, iconColor: "#00cdbc" }],
     [{ clickThroughUrl: "https://advert-without-image.com" }],
   ],
   advertIndex: [0, -1],
