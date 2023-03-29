@@ -16,6 +16,9 @@
   // $: navigator.mediaSession.metadata.artist = projectTitle; // TODO: maybe add later
   // $: navigator.mediaSession.metadata.album = playlistTitle; // TODO: maybe add later
 
-  $: artwork = Promise.all(imageSizes.map(s => imageBlobForUrl(imageUrl, s, s)));
-  $: artwork.then(blobs => navigator.mediaSession.metadata.artwork = blobs);
+  $: blobArtworks = imageSizes.map(s => imageBlobForUrl(imageUrl, s, s));
+  $: urlArtwork = { src: imageUrl, sizes: "any" };
+
+  $: artworks = Promise.all([...blobArtworks, urlArtwork]);
+  $: artworks.then(arr => navigator.mediaSession.metadata.artwork = arr);
 </script>
