@@ -10,6 +10,7 @@
   export let backgroundColor;
   export let iconColor;
 
+  let artwork = [];
   let fallbackSvgs = imageSizes.map(() => undefined);
 
   $: isStopped = playbackState === "stopped";
@@ -20,17 +21,18 @@
 
   $: imageUrl = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl;
 
-  $: navigator.mediaSession.metadata ||= new MediaMetadata();
-  $: navigator.mediaSession.metadata.title = "content title";
-  // $: navigator.mediaSession.metadata.artist = projectTitle; // TODO: maybe add later
-  // $: navigator.mediaSession.metadata.album = playlistTitle; // TODO: maybe add later
-
   $: pngArtworks = imageUrl ? imageSizes.map(s => blobForImageUrl(imageUrl, s, s)) : [];
   $: urlArtworks = imageUrl ? [{ src: imageUrl, sizes: "any" }] : [];
   $: svgArtworks = imageUrl ? [] : imageSizes.map((s, i) => blobForSvgNode(fallbackSvgs[i], s, s));
 
   $: artworks = Promise.all([...pngArtworks, ...urlArtworks, ...svgArtworks.filter(a => a)]);
-  $: artworks.then(arr => navigator.mediaSession.metadata.artwork = arr);
+
+  $: title = contentItem?.title || "";
+  $: artworks.then(arr => artwork = arr);
+  $: artist = ""; // TODO: maybe set to projectTitle
+  $: album = ""; // TODO: maybe set to playlistTitle
+
+  $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
 </script>
 
 {#each imageSizes as size, i}
