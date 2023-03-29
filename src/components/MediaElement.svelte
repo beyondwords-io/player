@@ -193,7 +193,7 @@
     background: black;
     border-radius: 8px;
     overflow: hidden;
-    min-width: 360px;
+    min-width: 300px;
     max-width: 720px;
   }
 

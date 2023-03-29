@@ -454,7 +454,7 @@
   }
 
   .video {
-    min-width: 360px;
+    min-width: 300px;
     max-width: 720px;
     border-radius: 8px;
     transition: background-color 0.25s;
