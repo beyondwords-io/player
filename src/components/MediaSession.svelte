@@ -10,7 +10,7 @@
   export let backgroundColor;
   export let iconColor;
 
-  let fallbackSvg;
+  let fallbackSvgs = imageSizes.map(() => undefined);
 
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
@@ -27,12 +27,14 @@
 
   $: pngArtworks = imageUrl ? imageSizes.map(s => blobForImageUrl(imageUrl, s, s)) : [];
   $: urlArtworks = imageUrl ? [{ src: imageUrl, sizes: "any" }] : [];
-  $: svgArtworks = imageUrl ? [] : imageSizes.map(s => blobForSvgNode(fallbackSvg, s, s));
+  $: svgArtworks = imageUrl ? [] : imageSizes.map((s, i) => blobForSvgNode(fallbackSvgs[i], s, s));
 
   $: artworks = Promise.all([...pngArtworks, ...urlArtworks, ...svgArtworks.filter(a => a)]);
-  $: artworks.then(arr =>{ console.log(arr); navigator.mediaSession.metadata.artwork = arr });
+  $: artworks.then(arr => navigator.mediaSession.metadata.artwork = arr);
 </script>
 
-<div bind:this={fallbackSvg} style="display: none">
-  <VolumeUp fill={activeBackgroundColor} color={activeIconColor} scale={9} zoom={0.65} />
-</div>
+{#each imageSizes as size, i}
+  <div bind:this={fallbackSvgs[i]} style="display: none">
+    <VolumeUp fill={activeBackgroundColor} color={activeIconColor} scale={size / 18} zoom={0.65} />
+  </div>
+{/each}
