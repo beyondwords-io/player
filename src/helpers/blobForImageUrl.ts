@@ -1,4 +1,4 @@
-const imageBlobForUrl = (imageUrl, width, height) => {
+const blobForImageUrl = (imageUrl, width, height) => {
   const image = new Image();
   image.setAttribute("crossorigin", "anonymous");
 
@@ -17,7 +17,7 @@ const handleLoad = (image, width, height, resolve) => () => {
   canvas.height = height;
 
   context.drawImage(image, 0, 0, width, height);
-  canvas.toBlob(handleToBlob(width, height, resolve));
+  canvas.toBlob(handleToBlob(width, height, resolve)); // png by default.
 };
 
 const handleToBlob = (width, height, resolve) => (blob) => {
@@ -28,4 +28,4 @@ const handleToBlob = (width, height, resolve) => (blob) => {
   resolve({ src, sizes: `${width}x${height}`, type: "image/png" });
 };
 
-export default imageBlobForUrl;
+export default blobForImageUrl;

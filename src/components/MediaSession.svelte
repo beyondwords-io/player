@@ -1,24 +1,38 @@
 <script>
-  import imageBlobForUrl from "../helpers/imageBlobForUrl";
+  import VolumeUp from "./svg_icons/VolumeUp.svelte";
+  import blobForImageUrl from "../helpers/blobForImageUrl";
+  import blobForSvgNode from "../helpers/blobForSvgNode";
   const imageSizes = [96, 128, 192, 256, 384, 512];
 
   export let contentItem;
   export let activeAdvert;
   export let playbackState;
+  export let backgroundColor;
+  export let iconColor;
+
+  let fallbackSvg;
 
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
 
-  $: imageUrl = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl; // TODO: fallback image?
+  $: activeBackgroundColor = isAdvert && activeAdvert?.backgroundColor || backgroundColor;
+  $: activeIconColor = isAdvert && activeAdvert?.iconColor || iconColor;
+
+  $: imageUrl = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl;
 
   $: navigator.mediaSession.metadata ||= new MediaMetadata();
   $: navigator.mediaSession.metadata.title = "content title";
   // $: navigator.mediaSession.metadata.artist = projectTitle; // TODO: maybe add later
   // $: navigator.mediaSession.metadata.album = playlistTitle; // TODO: maybe add later
 
-  $: blobArtworks = imageSizes.map(s => imageBlobForUrl(imageUrl, s, s));
-  $: urlArtwork = { src: imageUrl, sizes: "any" };
+  $: pngArtworks = imageUrl ? imageSizes.map(s => blobForImageUrl(imageUrl, s, s)) : [];
+  $: urlArtworks = imageUrl ? [{ src: imageUrl, sizes: "any" }] : [];
+  $: svgArtworks = imageUrl ? [] : imageSizes.map(s => blobForSvgNode(fallbackSvg, s, s));
 
-  $: artworks = Promise.all([...blobArtworks, urlArtwork]);
-  $: artworks.then(arr => navigator.mediaSession.metadata.artwork = arr);
+  $: artworks = Promise.all([...pngArtworks, ...urlArtworks, ...svgArtworks.filter(a => a)]);
+  $: artworks.then(arr =>{ console.log(arr); navigator.mediaSession.metadata.artwork = arr });
 </script>
+
+<div bind:this={fallbackSvg} style="display: none">
+  <VolumeUp fill={activeBackgroundColor} color={activeIconColor} scale={9} zoom={0.65} />
+</div>

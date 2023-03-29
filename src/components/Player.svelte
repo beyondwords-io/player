@@ -139,7 +139,13 @@
 {/if}
 
 {#if showMediaSession}
-  <MediaSession {contentItem} {activeAdvert} {playbackState} />
+  <MediaSession
+    {contentItem}
+    {activeAdvert}
+    {playbackState}
+    {backgroundColor}
+    {iconColor}
+  />
 {/if}
 
 {#if analyticsTag}
