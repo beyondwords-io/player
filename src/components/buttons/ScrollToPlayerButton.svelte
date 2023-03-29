@@ -31,7 +31,9 @@
     padding: 0;
   }
 
-  .scroll-to-player-button:hover {
-    opacity: 0.8;
+  @media (hover: hover) and (pointer: fine) {
+    .scroll-to-player-button:hover {
+      opacity: 0.8;
+    }
   }
 </style>

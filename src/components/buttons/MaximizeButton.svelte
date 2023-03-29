@@ -31,7 +31,9 @@
     padding: 0;
   }
 
-  .maximize-button:hover {
-    opacity: 0.8;
+  @media (hover: hover) and (pointer: fine) {
+    .maximize-button:hover {
+      opacity: 0.8;
+    }
   }
 </style>

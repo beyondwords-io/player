@@ -25,7 +25,9 @@
     display: flex;
   }
 
-  .external-url-button:hover {
-    opacity: 0.8;
+  @media (hover: hover) and (pointer: fine) {
+    .external-url-button:hover {
+      opacity: 0.8;
+    }
   }
 </style>

@@ -38,8 +38,10 @@
     margin-left: auto;
   }
 
-  .advert-button:hover :global(svg) {
-    opacity: 0.8;
+  @media (hover: hover) and (pointer: fine) {
+    .advert-button:hover :global(svg) {
+      opacity: 0.8;
+    }
   }
 
   .hidden :global(svg),

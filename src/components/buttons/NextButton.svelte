@@ -59,7 +59,9 @@
     padding: 0;
   }
 
-  .next-button:hover :global(svg) {
-    opacity: 0.8;
+  @media (hover: hover) and (pointer: fine) {
+    .next-button:hover :global(svg) {
+      opacity: 0.8;
+    }
   }
 </style>

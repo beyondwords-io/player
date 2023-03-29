@@ -57,7 +57,9 @@
     padding: 0;
   }
 
-  .speed-button:hover span {
-    opacity: 0.7;
+  @media (hover: hover) and (pointer: fine) {
+    .speed-button:hover span {
+      opacity: 0.7;
+    }
   }
 </style>

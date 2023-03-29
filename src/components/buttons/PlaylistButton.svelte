@@ -31,7 +31,9 @@
     padding: 0;
   }
 
-  .playlist-button:hover {
-    opacity: 0.7;
+  @media (hover: hover) and (pointer: fine) {
+    .playlist-button:hover {
+      opacity: 0.7;
+    }
   }
 </style>

@@ -30,8 +30,10 @@
     opacity: 1;
   }
 
-  .beyondwords:hover {
-    opacity: 0.8;
-    transition: none;
+  @media (hover: hover) and (pointer: fine) {
+    .beyondwords:hover {
+      opacity: 0.8;
+      transition: none;
+    }
   }
 </style>

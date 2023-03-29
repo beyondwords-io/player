@@ -41,7 +41,9 @@
     padding: 0;
   }
 
-  .play-pause-button:hover {
-    opacity: 0.8;
+  @media (hover: hover) and (pointer: fine) {
+    .play-pause-button:hover {
+      opacity: 0.8;
+    }
   }
 </style>

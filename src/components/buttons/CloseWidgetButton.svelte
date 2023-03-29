@@ -32,7 +32,9 @@
     padding: 0;
   }
 
-  .close-widget-button:hover {
-    opacity: 0.8;
+  @media (hover: hover) and (pointer: fine) {
+    .close-widget-button:hover {
+      opacity: 0.8;
+    }
   }
 </style>
