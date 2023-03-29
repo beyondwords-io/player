@@ -8,6 +8,7 @@ import findSegmentIndex from "../helpers/findSegmentIndex";
 import settableProps from "../helpers/settableProps";
 import diffObject from "../helpers/diffObject";
 import chooseAdvert from "../helpers/chooseAdvert";
+import chooseMediaSession from "../helpers/chooseMediaSession";
 import chooseWidget from "../helpers/chooseWidget";
 
 class RootController {
@@ -136,6 +137,7 @@ class RootController {
     const playingPlayers = otherPlayers.filter(p => p.playbackState === "playing");
 
     playingPlayers.forEach(p => p.playbackState = "paused");
+    chooseMediaSession(this.PlayerClass);
   }
 
   handlePlaybackEnded() {
