@@ -52,14 +52,16 @@ Instead, please query the player props directly using the
 
 The following table lists all event types emitted by the player.
 
-Initiators denoted with a star (*) can also be initiated by the google-ima-sdk' when VAST adverts are playing.
+Initiators denoted with a plus (+) can also be initiated by media-session-api, e.g. using playback controls on a phone lock screen.
+
+Initiators denoted with a star (*) can also be initiated by google-ima-sdk when VAST adverts are playing.
 
 To inspect the events further, it is recommended you [listen to "\<any\>" event](./listening-to-events.md) and console log them.
 
 | Type                         | Initiator | Description |
 |------------------------------|-----------|-------------|
-| PressedPlay                  | user      | The play button was pressed.
-| PressedPause                 | user      | The pause button was pressed.
+| PressedPlay                  | user+     | The play button was pressed.
+| PressedPause                 | user+     | The pause button was pressed.
 | PressedChangeSpeed           | user      | The change speed button was pressed.
 | PressedEnterOnChangeSpeed    | user      | The enter key was pressed while change speed was focussed.
 | PressedSpaceOnChangeSpeed    | user      | The space key was pressed while change speed was focussed.
@@ -69,10 +71,10 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PressedLeftOnChangeSpeed     | user      | The left key was pressed while change speed was focussed.
 | PressedPrevSegment           | user      | The previous segment button was pressed.
 | PressedNextSegment           | user      | The next segment button was pressed.
-| PressedSeekBack              | user      | The seek backward button was pressed.
-| PressedSeekAhead             | user      | The seek ahead button was pressed.
-| PressedPrevTrack             | user      | The previous track button was pressed.
-| PressedNextTrack             | user      | The next track button was pressed.
+| PressedSeekBack              | user+     | The seek backward button was pressed.
+| PressedSeekAhead             | user+     | The seek ahead button was pressed.
+| PressedPrevTrack             | user+     | The previous track button was pressed.
+| PressedNextTrack             | user+     | The next track button was pressed.
 | PressedAdvertLink            | user      | The advert link was pressed to open the click-through URL in a new tab.
 | PressedAdvertButton          | user      | The advert button was pressed to open the click-through URL in a new tab.
 | PressedAdvertVideo           | user      | The video background was pressed to open the advert in a new tab.
@@ -90,7 +92,7 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PressedLeftOnProgressCircle  | user      | The left key was pressed while the progress circle was focussed.
 | PressedRightOnProgressCircle | user      | The right key was pressed while the progress circle was focussed.
 | PressedProgressBar           | user      | The progress bar was pressed at some ratio.
-| ScrubbedProgressBar          | user      | The user pressed on the progress bar then dragged.
+| ScrubbedProgressBar          | user+     | The user pressed on the progress bar then dragged.
 | FinishedScrubbingProgressBar | user      | The user let go after scrubbing the progress bar.
 | PressedMaximize              | user      | The maximize button was pressed.
 | PressedPlaylistItem          | user      | A playlist item was pressed.

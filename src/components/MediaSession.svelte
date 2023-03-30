@@ -129,7 +129,6 @@
   } : null);
 
   // TODO: maybe set playbackState/positionState if it isn't working for VAST ads.
-  // TODO: update event docs with alternative initiator for these events
   // TODO: if skipButtonStyle is tracks but there's only one track, should we change it?
 </script>
 
