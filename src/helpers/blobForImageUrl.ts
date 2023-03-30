@@ -5,14 +5,14 @@ const blobForImageUrl = (imageUrl, width, height) => {
   image.setAttribute("crossorigin", "anonymous");
 
   return new Promise((resolve, reject) => {
-    image.addEventListener("load", handleLoad(image, width, height, resolve));
+    image.addEventListener("load", handleLoad(image, width, height, resolve, reject));
     image.addEventListener("error", reject);
 
     image.src = imageUrl;
   });
 };
 
-const handleLoad = (image, width, height, resolve) => () => {
+const handleLoad = (image, width, height, resolve, reject) => () => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
 
@@ -20,13 +20,14 @@ const handleLoad = (image, width, height, resolve) => () => {
   canvas.height = height;
 
   context.drawImage(image, 0, 0, width, height);
-  canvas.toBlob(handleToBlob(image, width, height, resolve)); // png by default.
+  canvas.toBlob(handleToBlob(image, width, height, resolve, reject)); // png by default.
 };
 
 const objectUrls = {};
 
-const handleToBlob = (image, width, height, resolve) => (blob) => {
-  // TODO: handle null if blob creation fails
+const handleToBlob = (image, width, height, resolve, reject) => (blob) => {
+  if (!blob) { reject(); }
+
   const src = URL.createObjectURL(blob);
 
   objectUrls[image.src] ||= [];
