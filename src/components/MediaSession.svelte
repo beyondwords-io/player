@@ -12,6 +12,8 @@
   export let iconColor;
 
   let artwork = [];
+  let failedUrls = new Set();
+
   let fallbackSvgs = imageSizes.map(() => undefined);
   let renderedSvgs = imageSizes.map(() => undefined);
 
@@ -22,16 +24,18 @@
   $: foreground = isAdvert && activeAdvert?.iconColor || iconColor;
   $: background, foreground, renderedSvgs = imageSizes.map((_, i) => tick().then(() => fallbackSvgs[i]));
 
-  $: imageUrl = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl;
+  $: imageUrl_ = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl;
+  $: imageUrl = failedUrls.has(imageUrl_) ? null : imageUrl_;
 
   $: pngArtworks = imageUrl ? imageSizes.map(s => blobForImageUrl(imageUrl, s, s)) : [];
   $: urlArtworks = imageUrl ? [{ src: imageUrl, sizes: "any" }] : [];
   $: svgArtworks = imageUrl ? [] : imageSizes.map((s, i) => blobForSvgNode(renderedSvgs[i], s, s));
 
   $: artworks = Promise.all([...pngArtworks, ...urlArtworks, ...svgArtworks]);
+  const onReject = () => failedUrls = failedUrls.add(imageUrl);
 
   $: title = contentItem?.title || "";
-  $: artworks.then(arr => artwork = arr);
+  $: artworks.then(arr => artwork = arr).catch(onReject);
   $: artist = ""; // TODO: maybe set to projectTitle
   $: album = ""; // TODO: maybe set to playlistTitle
 

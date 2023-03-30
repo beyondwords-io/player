@@ -2,10 +2,11 @@ const blobForImageUrl = (imageUrl, width, height) => {
   const image = new Image();
   image.setAttribute("crossorigin", "anonymous");
 
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     image.addEventListener("load", handleLoad(image, width, height, resolve));
+    image.addEventListener("error", reject);
+
     image.src = imageUrl;
-    // TODO: reject promise if fails to load image?
   });
 };
 
@@ -21,6 +22,7 @@ const handleLoad = (image, width, height, resolve) => () => {
 };
 
 const handleToBlob = (width, height, resolve) => (blob) => {
+  // TODO: handle null if blob creation fails
   const src = URL.createObjectURL(blob);
 
   // TODO: how to revoke URLs? Multiple might be in use at the same time.
