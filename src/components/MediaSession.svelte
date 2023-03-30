@@ -14,6 +14,7 @@
   export let content = [];
   export let contentIndex = 0;
   export let activeAdvert = undefined;
+  export let duration = 0;
   export let playbackState = "stopped";
   export let skipButtonStyle = "auto";
   export let backgroundColor = "#F5F5F5";
@@ -38,6 +39,7 @@
 
   $: showSeekButtons = !isAdvert && skipStyle !== "tracks";
   $: showTrackButtons = !isAdvert && skipStyle === "tracks";
+  $: allowScrubbing = !isAdvert;
 
   $: background = isAdvert && activeAdvert?.backgroundColor || backgroundColor;
   $: foreground = isAdvert && activeAdvert?.iconColor || iconColor;
@@ -83,9 +85,14 @@
     }));
   });
 
-  $: navigator.mediaSession.setActionHandler("seekto", () => {
-    // TODO
-  });
+  $: navigator.mediaSession.setActionHandler("seekto", allowScrubbing ? ({ seekTime }) => {
+    onEvent(newEvent({
+      type: "ScrubbedProgressBar",
+      description: "The mouse was pressed on the progress bar then dragged.",
+      initiatedBy: "media-session-api",
+      ratio: Math.max(0, Math.min(1, seekTime / duration)),
+    }));
+  } : null);
 
   $: navigator.mediaSession.setActionHandler("seekbackward", showSeekButtons ? ({ seekOffset }) => {
     onEvent(newEvent({

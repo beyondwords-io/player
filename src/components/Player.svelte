@@ -146,6 +146,7 @@
     {content}
     {contentIndex}
     {activeAdvert}
+    {duration}
     {playbackState}
     {skipButtonStyle}
     {backgroundColor}
