@@ -95,21 +95,37 @@
   } : null);
 
   $: navigator.mediaSession.setActionHandler("seekbackward", showSeekButtons ? ({ seekOffset }) => {
-    onEvent(newEvent({
-      type: "PressedSeekBack",
-      description: "The seek backward button was pressed.",
-      initiatedBy: "media-session-api",
-      seconds: seekOffset || backwardsSeconds,
-    }));
+    if (skipStyle === "seconds" || seekOffset) {
+      onEvent(newEvent({
+        type: "PressedSeekBack",
+        description: "The seek backward button was pressed.",
+        initiatedBy: "media-session-api",
+        seconds: seekOffset || backwardsSeconds,
+      }));
+    } else {
+      onEvent(newEvent({
+        type: "PressedPrevSegment",
+        description: "The previous segment button was pressed.",
+        initiatedBy: "media-session-api",
+      }));
+    }
   } : null);
 
   $: navigator.mediaSession.setActionHandler("seekforward", showSeekButtons ? ({ seekOffset }) => {
-    onEvent(newEvent({
-      type: "PressedSeekAhead",
-      description: "The seek ahead button was pressed.",
-      initiatedBy: "media-session-api",
-      seconds: seekOffset || forwardsSeconds,
-    }));
+    if (skipStyle === "seconds" || seekOffset) {
+      onEvent(newEvent({
+        type: "PressedSeekAhead",
+        description: "The seek ahead button was pressed.",
+        initiatedBy: "media-session-api",
+        seconds: seekOffset || forwardsSeconds,
+      }));
+    } else {
+      onEvent(newEvent({
+        type: "PressedNextSegment",
+        description: "The next segment button was pressed.",
+        initiatedBy: "media-session-api",
+      }));
+    }
   } : null);
 
   $: navigator.mediaSession.setActionHandler("previoustrack", showTrackButtons ? () => {

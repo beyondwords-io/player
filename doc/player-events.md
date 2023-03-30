@@ -69,8 +69,8 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PressedRightOnChangeSpeed    | user      | The right key was pressed while change speed was focussed.
 | PressedDownOnChangeSpeed     | user      | The down key was pressed while change speed was focussed.
 | PressedLeftOnChangeSpeed     | user      | The left key was pressed while change speed was focussed.
-| PressedPrevSegment           | user      | The previous segment button was pressed.
-| PressedNextSegment           | user      | The next segment button was pressed.
+| PressedPrevSegment           | user+     | The previous segment button was pressed.
+| PressedNextSegment           | user+     | The next segment button was pressed.
 | PressedSeekBack              | user+     | The seek backward button was pressed.
 | PressedSeekAhead             | user+     | The seek ahead button was pressed.
 | PressedPrevTrack             | user+     | The previous track button was pressed.
