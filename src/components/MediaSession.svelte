@@ -88,7 +88,7 @@
   $: navigator.mediaSession.setActionHandler("seekto", allowScrubbing ? ({ seekTime }) => {
     onEvent(newEvent({
       type: "ScrubbedProgressBar",
-      description: "The mouse was pressed on the progress bar then dragged.",
+      description: "The user pressed on the progress bar then dragged.",
       initiatedBy: "media-session-api",
       ratio: Math.max(0, Math.min(1, seekTime / duration)),
     }));

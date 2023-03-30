@@ -31,7 +31,7 @@
 
     onEvent(newEvent({
       type: "ScrubbedProgressBar",
-      description: "The mouse was pressed on the progress bar then dragged.",
+      description: "The user pressed on the progress bar then dragged.",
       initiatedBy: "user",
       ratio: getMouseRatio(event),
     }));
@@ -43,7 +43,7 @@
 
     onEvent(newEvent({
       type: "FinishedScrubbingProgressBar",
-      description: "The mouse was released after scrubbing the progress bar.",
+      description: "The user let go after scrubbing the progress bar.",
       initiatedBy: "user",
     }));
   };

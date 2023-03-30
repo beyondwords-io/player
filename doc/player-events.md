@@ -90,8 +90,8 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PressedLeftOnProgressCircle  | user      | The left key was pressed while the progress circle was focussed.
 | PressedRightOnProgressCircle | user      | The right key was pressed while the progress circle was focussed.
 | PressedProgressBar           | user      | The progress bar was pressed at some ratio.
-| ScrubbedProgressBar          | user      | The mouse was pressed on the progress bar then dragged.
-| FinishedScrubbingProgressBar | user      | The mouse was released after scrubbing the progress bar.
+| ScrubbedProgressBar          | user      | The user pressed on the progress bar then dragged.
+| FinishedScrubbingProgressBar | user      | The user let go after scrubbing the progress bar.
 | PressedMaximize              | user      | The maximize button was pressed.
 | PressedPlaylistItem          | user      | A playlist item was pressed.
 | PressedTogglePlaylist        | user      | The toggle playlist button was pressed.
