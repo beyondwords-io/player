@@ -4,7 +4,12 @@
   import blobForImageUrl from "../helpers/blobForImageUrl";
   import blobForSvgNode from "../helpers/blobForSvgNode";
   import newEvent from "../helpers/newEvent";
+
+  // Use these sizes: https://developer.mozilla.org/en-US/docs/Web/API/MediaMetadata
   const imageSizes = [96, 128, 192, 256, 384, 512];
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler
+  const actionTypes = ["hangup", "nextslide", "nexttrack", "pause", "play", "previousslide", "previoustrack", "seekbackward", "seekforward", "seekto", "skipad", "stop", "togglecamera", "togglemicrophone"];
 
   export let content = [];
   export let contentIndex = 0;
@@ -53,8 +58,11 @@
   $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
   $: navigator.mediaSession.setByPlayer = true;
 
-  // TODO: clear existing handlers
-  // TODO: update event docs with alternative initiator for these events
+  // Remove existing handlers, e.g. set by the user's website or other players.
+  $: actionTypes.forEach(type => {
+    // Chrome doesn't support the 'skipad' action type and throws an error.
+    try { navigator.mediaSession.setActionHandler(type, null); } catch (e) { /* Ignore */ }
+  });
 
   $: navigator.mediaSession.setActionHandler("play", () => {
     onEvent(newEvent({
@@ -76,41 +84,42 @@
     // TODO
   });
 
-  $: showSeekButtons && navigator.mediaSession.setActionHandler("seekbackward", () => {
+  $: navigator.mediaSession.setActionHandler("seekbackward", showSeekButtons ? () => {
     onEvent(newEvent({
       type: "PressedSeekBack",
       description: "The seek backward button was pressed.",
       initiatedBy: "media-session-api",
       seconds: 10, // TODO
     }));
-  });
+  } : null);
 
-  $: showSeekButtons && navigator.mediaSession.setActionHandler("seekforward", () => {
+  $: navigator.mediaSession.setActionHandler("seekforward", showSeekButtons ? () => {
     onEvent(newEvent({
       type: "PressedSeekAhead",
       description: "The seek ahead button was pressed.",
       initiatedBy: "media-session-api",
       seconds: 10, // TODO
     }));
-  });
+  } : null);
 
-  $: showTrackButtons && navigator.mediaSession.setActionHandler("previoustrack", () => {
+  $: navigator.mediaSession.setActionHandler("previoustrack", showTrackButtons ? () => {
     onEvent(newEvent({
       type: "PressedPrevTrack",
       description: "The previous track button was pressed.",
       initiatedBy: "media-session-api",
     }));
-  });
+  } : null);
 
-  $: showTrackButtons && navigator.mediaSession.setActionHandler("nexttrack", () => {
+  $: navigator.mediaSession.setActionHandler("nexttrack", showTrackButtons ? () => {
     onEvent(newEvent({
       type: "PressedNextTrack",
       description: "The next track button was pressed.",
       initiatedBy: "media-session-api",
     }));
-  });
+  } : null);
 
   // TODO: maybe set playbackState/positionState if it isn't working for VAST ads.
+  // TODO: update event docs with alternative initiator for these events
 </script>
 
 <div class="media-session">
