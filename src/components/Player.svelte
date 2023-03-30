@@ -60,21 +60,23 @@
   export let emitPlayEvent = undefined;
   export let prevPercentage = 0;
 
-  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, controller.processEvent(identifiersEvent());
-  $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => controller.processEvent(statusEvent));
+  $: activeAdvert = adverts[advertIndex];
+  $: contentItem = content[contentIndex];
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
 
   $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
 
-  $: activeAdvert = adverts[advertIndex];
-  $: contentItem = content[contentIndex];
+  const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
+
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
+  $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 </script>
 
 <MediaElement
   bind:this={mediaElement}
-  onEvent={e => controller.processEvent(e)}
+  {onEvent}
   {contentItem}
   {activeAdvert}
   {advertConsent}
@@ -93,7 +95,7 @@
 
   <UserInterface
     bind:this={userInterface}
-    onEvent={e => controller.processEvent({ ...e, fromWidget: false })}
+    {onEvent}
     playerStyle={interfaceStyle}
     {callToAction}
     {skipButtonStyle}
@@ -116,7 +118,7 @@
 {#if showWidgetAtBottom}
   <UserInterface
     bind:this={widgetInterface}
-    onEvent={e => controller.processEvent({ ...e, fromWidget: true })}
+    {onEvent}
     playerStyle={widgetStyle}
     {callToAction}
     {skipButtonStyle}
@@ -140,6 +142,7 @@
 
 {#if showMediaSession}
   <MediaSession
+    {onEvent}
     {contentItem}
     {activeAdvert}
     {playbackState}

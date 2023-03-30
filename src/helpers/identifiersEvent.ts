@@ -5,7 +5,6 @@ const identifiersEvent = () => (
     type: "IdentifiersChanged",
     description: "The Player's content identifiers changed.",
     initiatedBy: "browser",
-    fromWidget: false,
   })
 );
 

@@ -30,7 +30,6 @@ const handleStatusChange = (webSocketEvent, onEvent) => {
     type: "ContentStatusChanged",
     description: "The processing status of a content item within the project changed.",
     initiatedBy: "websocket",
-    fromWidget: false,
     contentId: result.content_id,
     legacyId: result.legacy_id,
     sourceId: result.source_id,

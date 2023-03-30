@@ -43,7 +43,6 @@
       type: "PlaybackPlaying",
       description: "The media began playing from its current playback time.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -52,7 +51,6 @@
       type: "PlaybackPaused",
       description: "The media became paused at its current playback time.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -61,7 +59,6 @@
       type: "PlaybackEnded",
       description: "The media finished playing because it reached the end.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -70,7 +67,6 @@
       type: "DurationUpdated",
       description: "The media's duration was updated.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -82,7 +78,6 @@
       type: "CurrentTimeUpdated",
       description: "The media's current time was updated.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -91,7 +86,6 @@
       type: "PlaybackRateUpdated",
       description: "The media's playback rate was updated.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -103,7 +97,6 @@
       type: "PlaybackErrored",
       description: "The media failed to play.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
       mediaType: "native",
       mediaUrl: sources[0].url,
       errorMessage: "The video tag contains sources but none are playable.",
@@ -120,7 +113,6 @@
       type: "PlaybackErrored",
       description: "The media failed to play.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
       mediaType: "HLS",
       mediaUrl: sources[0].url,
       errorMessage: `${data.type} ${data.details}`,
@@ -132,7 +124,6 @@
       type: "FullScreenModeUpdated",
       description: "The browser entered or exited full screen mode.",
       initiatedBy: "browser",
-      fromWidget: videoBehindWidget,
     }));
   };
 

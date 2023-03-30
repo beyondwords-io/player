@@ -9,7 +9,6 @@
   export let playbackState;
   export let duration;
   export let currentTime;
-  export let videoBehindWidget;
   export let onEvent = () => {};
 
   let adContainer;
@@ -75,7 +74,6 @@
       type: "CurrentTimeUpdated",
       description: "The media's current time was updated.",
       initiatedBy: "media",
-      fromWidget: videoBehindWidget,
     }));
 
     if (duration === adData.duration) { return; }
@@ -85,7 +83,6 @@
       type: "DurationUpdated",
       description: "The media's duration was updated.",
       initiatedBy: "google-ima-sdk",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -94,7 +91,6 @@
       type: "PressedAdvertVideo",
       description: "The video background was pressed to open the advert in a new tab.",
       initiatedBy: "user",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -106,7 +102,6 @@
       type: "PlaybackPaused",
       description: "The media became paused at its current playback time.",
       initiatedBy: "google-ima-sdk",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -115,7 +110,6 @@
       type: "PlaybackEnded",
       description: "The media finished playing because it reached the end.",
       initiatedBy: "google-ima-sdk",
-      fromWidget: videoBehindWidget,
     }));
   };
 
@@ -127,7 +121,6 @@
       type: "PlaybackErrored",
       description: "The media failed to play.",
       initiatedBy: "google-ima-sdk",
-      fromWidget: videoBehindWidget,
       mediaType: "VAST",
       mediaUrl: adTagUrl,
       errorMessage: `${adError.getMessage()} (code=${adError.getErrorCode()})`,
@@ -139,7 +132,6 @@
       type: "PlaybackErrored",
       description: "The media failed to play.",
       initiatedBy: "browser",
-      fromWidget: videoBehindWidget,
       mediaType: "VAST",
       mediaUrl: adTagUrl,
       errorMessage: "The ima3.js script was blocked.",
