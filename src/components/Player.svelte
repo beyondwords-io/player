@@ -143,9 +143,11 @@
 {#if showMediaSession}
   <MediaSession
     {onEvent}
-    {contentItem}
+    {content}
+    {contentIndex}
     {activeAdvert}
     {playbackState}
+    {skipButtonStyle}
     {backgroundColor}
     {iconColor}
   />
