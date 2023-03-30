@@ -33,6 +33,9 @@
   $: contentItem = content[contentIndex];
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
 
+  $: backwardsSeconds = parseFloat(skipStyle.split("-")[1] || 10);
+  $: forwardsSeconds = parseFloat(skipStyle.split("-")[2] || backwardsSeconds);
+
   $: showSeekButtons = !isAdvert && skipStyle !== "tracks";
   $: showTrackButtons = !isAdvert && skipStyle === "tracks";
 
@@ -84,21 +87,21 @@
     // TODO
   });
 
-  $: navigator.mediaSession.setActionHandler("seekbackward", showSeekButtons ? () => {
+  $: navigator.mediaSession.setActionHandler("seekbackward", showSeekButtons ? ({ seekOffset }) => {
     onEvent(newEvent({
       type: "PressedSeekBack",
       description: "The seek backward button was pressed.",
       initiatedBy: "media-session-api",
-      seconds: 10, // TODO
+      seconds: seekOffset || backwardsSeconds,
     }));
   } : null);
 
-  $: navigator.mediaSession.setActionHandler("seekforward", showSeekButtons ? () => {
+  $: navigator.mediaSession.setActionHandler("seekforward", showSeekButtons ? ({ seekOffset }) => {
     onEvent(newEvent({
       type: "PressedSeekAhead",
       description: "The seek ahead button was pressed.",
       initiatedBy: "media-session-api",
-      seconds: 10, // TODO
+      seconds: seekOffset || forwardsSeconds,
     }));
   } : null);
 
@@ -120,6 +123,7 @@
 
   // TODO: maybe set playbackState/positionState if it isn't working for VAST ads.
   // TODO: update event docs with alternative initiator for these events
+  // TODO: if skipButtonStyle is tracks but there's only one track, should we change it?
 </script>
 
 <div class="media-session">

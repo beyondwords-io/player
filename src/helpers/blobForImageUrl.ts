@@ -19,6 +19,8 @@ const handleLoad = (image, width, height, resolve, reject) => () => {
   canvas.width = width;
   canvas.height = height;
 
+  // TODO: get image dimensions and preserve aspect ratio?
+
   context.drawImage(image, 0, 0, width, height);
   canvas.toBlob(handleToBlob(image, width, height, resolve, reject)); // png by default.
 };
