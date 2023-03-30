@@ -35,7 +35,7 @@ All of the other fields are present in every event. Their schema is explained be
 - **id**: a random UUID generated and assigned to the event at creation
 - **type**: the type of event, see the table below for a listing of event types
 - **description**: a short human-readable description of the event
-- **initiatedBy**: who initiated the event, one of: { user, media, browser, google-ima-sdk, websocket }
+- **initiatedBy**: who initiated the event, one of: { user, media, browser, media-session-api, google-ima-sdk, websocket }
 - **status**: the status of the event, one of: { handled, ignored-due-to-advert, ignored-due-to-scrubbing }
 - **fromWidget**: whether the event was emitted from the player widget, rather than the inline player
 - **createdAt**: the time when the event was created in simplified extended ISO 8601 format

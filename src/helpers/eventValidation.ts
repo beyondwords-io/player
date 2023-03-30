@@ -1,7 +1,7 @@
 import throwError from "./throwError";
 import { validate as isValidUuid } from "uuid";
 
-const initiators = ["user", "media", "browser", "google-ima-sdk", "websocket"];
+const initiators = ["user", "media", "browser", "media-session-api", "google-ima-sdk", "websocket"];
 const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing"];
 const analyticsTypes = ["load", "play", "play_progress", "ad_link_click"];
 const deviceTypes = ["phone", "tablet", "desktop"];

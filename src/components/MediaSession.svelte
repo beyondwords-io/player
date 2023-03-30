@@ -28,6 +28,9 @@
   $: contentItem = content[contentIndex];
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
 
+  $: showSeekButtons = !isAdvert && skipStyle !== "tracks";
+  $: showTrackButtons = !isAdvert && skipStyle === "tracks";
+
   $: background = isAdvert && activeAdvert?.backgroundColor || backgroundColor;
   $: foreground = isAdvert && activeAdvert?.iconColor || iconColor;
   $: background, foreground, renderedSvgs = imageSizes.map((_, i) => tick().then(() => fallbackSvgs[i]));
@@ -50,32 +53,61 @@
   $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
   $: navigator.mediaSession.setByPlayer = true;
 
-  $: navigator.mediaSession.setActionHandler("play", () => {
+  // TODO: clear existing handlers
+  // TODO: update event docs with alternative initiator for these events
 
+  $: navigator.mediaSession.setActionHandler("play", () => {
+    onEvent(newEvent({
+      type: "PressedPlay",
+      description: "The play button was pressed.",
+      initiatedBy: "media-session-api",
+    }));
   });
 
   $: navigator.mediaSession.setActionHandler("pause", () => {
-
+    onEvent(newEvent({
+      type: "PressedPause",
+      description: "The pause button was pressed.",
+      initiatedBy: "media-session-api",
+    }));
   });
 
   $: navigator.mediaSession.setActionHandler("seekto", () => {
-
+    // TODO
   });
 
-  $: skipStyle === "tracks" && navigator.mediaSession.setActionHandler("previoustrack", () => {
-
+  $: showSeekButtons && navigator.mediaSession.setActionHandler("seekbackward", () => {
+    onEvent(newEvent({
+      type: "PressedSeekBack",
+      description: "The seek backward button was pressed.",
+      initiatedBy: "media-session-api",
+      seconds: 10, // TODO
+    }));
   });
 
-  $: skipStyle === "tracks" && navigator.mediaSession.setActionHandler("nexttrack", () => {
-
+  $: showSeekButtons && navigator.mediaSession.setActionHandler("seekforward", () => {
+    onEvent(newEvent({
+      type: "PressedSeekAhead",
+      description: "The seek ahead button was pressed.",
+      initiatedBy: "media-session-api",
+      seconds: 10, // TODO
+    }));
   });
 
-  $: skipStyle !== "tracks" && navigator.mediaSession.setActionHandler("seekbackward", () => {
-
+  $: showTrackButtons && navigator.mediaSession.setActionHandler("previoustrack", () => {
+    onEvent(newEvent({
+      type: "PressedPrevTrack",
+      description: "The previous track button was pressed.",
+      initiatedBy: "media-session-api",
+    }));
   });
 
-  $: skipStyle !== "tracks" && navigator.mediaSession.setActionHandler("seekforward", () => {
-
+  $: showTrackButtons && navigator.mediaSession.setActionHandler("nexttrack", () => {
+    onEvent(newEvent({
+      type: "PressedNextTrack",
+      description: "The next track button was pressed.",
+      initiatedBy: "media-session-api",
+    }));
   });
 
   // TODO: maybe set playbackState/positionState if it isn't working for VAST ads.
