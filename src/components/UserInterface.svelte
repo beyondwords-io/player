@@ -32,7 +32,7 @@
   import { canFullScreen } from "../helpers/fullScreen";
 
   export let playerStyle = "standard";
-  export let callToAction = "Listen to this article";
+  export let callToAction = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playerTitle = undefined;
