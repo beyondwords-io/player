@@ -2,8 +2,7 @@ const chooseMediaSession = (Player) => {
   if (!navigator.mediaSession) { return; }
 
   const allowOverride = Player.instances().some(p => p.mediaSession === "override");
-  if (navigator.mediaSession.metadata && !allowOverride) { return; } // TODO: ignore if from one of our players
-  // TODO: check empty metadata according to W3C spec
+  if (websiteHasSetTheMediaSession() && !allowOverride) { return; }
 
   let bestSoFar;
   let bestState = -Infinity;
@@ -32,5 +31,13 @@ const chooseMediaSession = (Player) => {
 
 const stateScores = { playing: 1, paused: 0, stopped: 0 };
 const showingScores = { true: 1, false: 0 };
+
+const websiteHasSetTheMediaSession = () => {
+  const metadata = navigator.mediaSession.metadata;
+  if (!metadata || navigator.mediaSession.setByPlayer) { return false; }
+
+  const { title, artist, album, artwork } = metadata;
+  return title || artist || album || artwork?.length;
+};
 
 export default chooseMediaSession;

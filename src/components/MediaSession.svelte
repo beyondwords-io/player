@@ -36,6 +36,7 @@
   $: album = ""; // TODO: maybe set to playlistTitle
 
   $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
+  $: navigator.mediaSession.setByPlayer = true;
 </script>
 
 <div class="media-session">
