@@ -48,8 +48,6 @@ const setProps = (player, data) => {
 
   // TODO: allow overriddable for some fields based on subscription
   //       e.g. logo_icon_enabled could be overridable if on a premium plan
-  // TODO: how to handle manually setting player.logoIconEnabled ?
-  //       could potentially check this with svelte reactivity and revert
 
   set(player, "analyticsUrl", data.settings.analytics_url);
   set(player, "playerStyle", data.settings.player_style);
