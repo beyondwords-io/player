@@ -19,11 +19,28 @@ const handleLoad = (image, width, height, resolve, reject) => () => {
   canvas.width = width;
   canvas.height = height;
 
-  // TODO: get image dimensions and preserve aspect ratio?
-
-  context.drawImage(image, 0, 0, width, height);
+  const [x, y, w, h] = preserveAspectInTheMiddle(image, canvas);
+  context.drawImage(image, x, y, w, h);
   canvas.toBlob(handleToBlob(image, width, height, resolve, reject)); // png by default.
 };
+
+const preserveAspectInTheMiddle = (image, canvas) => {
+  const imageAspect = image.width / image.height;
+  const canvasAspect = canvas.width / canvas.height;
+
+  let width = 0;
+  let height = 0;
+  let xOffset = 0;
+  let yOffset = 0;
+
+  if (imageAspect > canvasAspect) {
+    return [0, (canvas.height - height) / 2, canvas.width, width / imageAspect];
+  } else {
+    return [(canvas.width - width) / 2, 0, height * imageAspect, canvas.height];
+  }
+
+  return { width, height, xOffset, yOffset };
+}
 
 const objectUrls = {};
 
