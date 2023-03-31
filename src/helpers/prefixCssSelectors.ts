@@ -2,17 +2,16 @@ import postcss from "postcss";
 
 const prefixCssSelectors = (prefix) => ({
   name: "prefixCssSelectors",
-  transform: (src, id) => {
+  transform: async (src, id) => {
     if (!id.endsWith(".css")) { return; }
     if (!id.includes("src/components")) { return; }
 
-    return { code: applyPrefix(prefix, src) };
+    const options = { from: id, map: { inline: false, prev: false } };
+    const result = await postcss([postcssPlugin(prefix)]).process(src, options);
+
+    return { code: result.css, map: result.map.toJSON() };
   }
 });
-
-const applyPrefix = (prefix, css) => (
-  postcss([postcssPlugin(prefix)]).process(css).css
-);
 
 const postcssPlugin = (prefix) => (root) => {
   root.walkRules(r => r.selectors = r.selectors.map(s => newSelector(prefix, s)));
