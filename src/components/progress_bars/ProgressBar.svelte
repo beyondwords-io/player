@@ -109,6 +109,7 @@
     right: 0;
     top: -8px;
     border-radius: 0;
+    background: rgb(239, 239, 239);
   }
 
   .full-width .progress {
