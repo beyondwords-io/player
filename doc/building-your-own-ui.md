@@ -138,28 +138,17 @@ For example, if you don't want the rounded corners, you could add a CSS rule to 
 }
 ```
 
-However, this technique **will not work** unless you wrap the player with two outer containers:
+However, this technique **will not work** because the player styles are extremely defensive against accidental overrides.
+
+To intentionally change the player styles, you must use this very long selector that contains 15 classes:
 
 ```css
-.container1 .container2 .beyondwords-player .main {
+.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp .main {
   border-radius: 0;
 }
 ```
 
-This is by design. The style rules of the player are defensive to avoid accidentally being overridden by your styles.
-
-If you want to do this on purpose, then wrap the player in two outer divs and use style rules like the one above.
-
-```html
-<div class="container1">
-  <div class="container2">
-    <script async defer
-      src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'
-      onload='new BeyondWords.Player({ target: this, projectId: <ID>, contentId: "<ID>" })'>
-    </script>
-  </div>
-</div>
-```
+This will ensure that your style selectors have a higher specificity than those that are built into the player.
 
 Please note that the player styles might change in the future which could mean your overrides stop working.
 
