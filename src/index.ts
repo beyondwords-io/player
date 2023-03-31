@@ -11,7 +11,7 @@ class Player extends PlayerComponent {
 
   constructor({ target, ...props }) {
     const { newTarget, showUserInterface } = resolveTarget(target);
-    newTarget.classList.add("beyondwords-player");
+    newTarget.classList.add("beyondwords-player", "bwp");
 
     const controller = new RootController(null, Player);
     controller.addEventListener("<any>", e => sendToAnalytics(this, e));
