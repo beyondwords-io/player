@@ -19,8 +19,11 @@ const postcssPlugin = (prefix) => (root) => {
 };
 
 const newSelector = (prefix, selector) => {
+  const isKeyframe = ["from", "to"].includes(selector) || selector.endsWith("%");
+  if (isKeyframe) { return selector; }
+
   const isRoot = selector.startsWith(".beyondwords-player");
-  return [prefix, isRoot ? "" : " ", selector].join("")
+  return [prefix, isRoot ? "" : " ", selector].join("");
 };
 
 export default prefixCssSelectors;
