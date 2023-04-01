@@ -46,6 +46,8 @@ const setProps = (player, data) => {
   const theme = resolveTheme(data.settings.theme);
   const colors = data.settings[`${theme}_theme`];
 
+  const imageEnabled = data.settings.image_enabled;
+
   // TODO: allow overriddable for some fields based on subscription
   //       e.g. logo_icon_enabled could be overridable if on a premium plan
 
@@ -57,7 +59,6 @@ const setProps = (player, data) => {
   set(player, "backgroundColor", colors.background_color);
   set(player, "iconColor", colors.icon_color);
   // TODO: title_enabled
-  // TODO: image_enabled
   set(player, "widgetStyle", data.settings.widget_style);
   set(player, "widgetPosition", data.settings.widget_position);
   // TODO: segment_playback_enabled
@@ -76,7 +77,7 @@ const setProps = (player, data) => {
   set(player, "content", data.content.map((item) => ({
     id: item.id,
     title: item.title,
-    imageUrl: data.playlist?.image_url || item.image_url,
+    imageUrl: imageEnabled && (data.playlist?.image_url || item.image_url || data.settings.image_url),
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
@@ -104,10 +105,10 @@ const setProps = (player, data) => {
       placement: item.placement,
       vastUrl: isVast ? item.vast_url : null,
       clickThroughUrl: !isVast ? item.click_through_url : null,
+      imageUrl: imageEnabled && item.imageUrl, // TODO: add to API
       textColor: colors?.text_color,
       backgroundColor: colors?.background_color,
       iconColor: colors?.icon_color,
-      // TODO: imageUrl
       media: isVast ? [] : item.media.map((media) => ({
         id: media.id,
         url: media.url,
