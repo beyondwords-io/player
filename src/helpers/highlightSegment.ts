@@ -76,3 +76,4 @@ const moveChildren = ({ fromElement, toElement }) => {
 };
 
 export default highlightSegment;
+export { attribute };

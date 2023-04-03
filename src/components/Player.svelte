@@ -61,6 +61,7 @@
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
   export let prevPercentage = 0;
+  export const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
 
   $: activeAdvert = adverts[advertIndex];
   $: contentItem = content[contentIndex];
@@ -69,8 +70,6 @@
 
   $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
-
-  const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
