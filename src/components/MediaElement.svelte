@@ -5,7 +5,8 @@
   import newEvent from "../helpers/newEvent";
   import findSegmentIndex from "../helpers/findSegmentIndex";
 
-  export let contentItem;
+  export let content;
+  export let contentIndex;
   export let activeAdvert;
   export let advertConsent;
   export let playbackState;
@@ -21,6 +22,9 @@
 
   let video;
   let hls = null;
+
+  $: contentItem = content[contentIndex];
+  $: segments = contentItem?.segments || [];
 
   $: media = activeAdvert?.media;
   $: !activeAdvert && (media = contentItem?.media);
@@ -41,8 +45,6 @@
 
   $: isAdvert = activeAdvert && playbackState !== "stopped";
   $: isStopped = playbackState === "stopped";
-
-  $: segments = contentItem?.segments || [];
 
   $: segmentIndex = isAdvert || isStopped ? -1 : findSegmentIndex(segments, currentTime);
   $: segmentIndex, handleSegmentUpdate();
@@ -95,7 +97,8 @@
       type: "CurrentSegmentUpdated",
       description: "The media's current segment was updated.",
       initiatedBy: "media",
-      index: segmentIndex,
+      contentIndex,
+      segmentIndex,
     }));
   };
 

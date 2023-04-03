@@ -79,7 +79,8 @@
 <MediaElement
   bind:this={mediaElement}
   {onEvent}
-  {contentItem}
+  {content}
+  {contentIndex}
   {activeAdvert}
   {advertConsent}
   bind:playbackState
