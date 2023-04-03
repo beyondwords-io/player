@@ -6,24 +6,24 @@
     <title>BeyondWords Player</title>
   </head>
   <body>
-    <h1>BeyondWords Player</h1>
+    <h1 data-beyondwords-marker="a4bf775c-4283-445d-8145-c56e46848fb4">
+      BeyondWords Player
+    </h1>
 
     <script async defer type="module" src="src/index.ts" onload='new BeyondWords.Player({
       target: this,
-      playerTitle: "BeyondWords Player",
-      content: [{ title: "This is an example page that contains the BeyondWords Player", duration: 100 }],
-      currentTime: 30,
-      playbackState: "paused",
+      projectId: 26027,
+      contentId: 6590099,
     })'>
     </script>
 
-    <p>
+    <p data-beyondwords-marker="dd78bccf-bb04-45fd-82ca-48db10c232be">
       This is an example page that contains the BeyondWords Player. It is used
       during the development of the player to test the effects of code changes
       in this repository.
     </p>
 
-    <p>
+    <p data-beyondwords-marker="37ac781a-04f2-4377-b01f-1dba1c45363a">
       You can use this page to test different styles of player by running the
       <span class="code">./bin/server</span> script on your computer and then
       editing the <span class="code">index.html</span> file in the root of this
@@ -31,14 +31,14 @@
       page and takes various options.
     </p>
 
-    <p>
+    <p data-beyondwords-marker="492dcc81-d1e6-421b-a7d8-e754eb65bd94">
       For example, you could pass the <span class="code">playerStyle: "small"</span>
       option to change the style of player. You can also make changes in a
       JavaScript console, without having to run the project locally, e.g.
       <span class="code">BeyondWords.Player.instances()[0].playerStyle = "small"</span>
     </p>
 
-    <p>
+    <p data-beyondwords-marker="28e3f9ba-1d47-426e-b0a5-181607dd81dd">
       The automated tests in this project also use this page. They take
       screenshots of the player's user interface and compare them against
       previous images for regressions.
