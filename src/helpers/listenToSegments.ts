@@ -28,6 +28,7 @@ const handleMouseDown = (event) => {
       initiatedBy: "user",
       contentIndex,
       segmentIndex,
+      segment,
     }));
   });
 };

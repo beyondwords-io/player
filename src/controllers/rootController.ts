@@ -150,6 +150,16 @@ class RootController {
     highlightSegment(currentSegment, "current-segment", this.player.highlightColor);
   }
 
+  handlePressedArticleSegment({ contentIndex, segment }) {
+    if (!["enabled", "only-click"].includes(this.player.segmentPlayback)) { return; }
+
+    const changeTrack = contentIndex !== this.player.contentIndex;
+    if (changeTrack) { this.#setTrack(() => contentIndex); }
+
+    this.player.currentTime = segment.startTime;
+    this.player.playbackState = "playing";
+  }
+
   handlePlaybackEnded() {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
 
