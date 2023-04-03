@@ -107,6 +107,9 @@
   const handleMouseDown = (event) => {
     if (!isVideo) { return; }
 
+    const isLeftClick = event.button === 0;
+    if (!isLeftClick) { return; }
+
     const clickedOnMain = event.target.classList.contains("main");
     if (!clickedOnMain) { return; }
 
