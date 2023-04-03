@@ -87,6 +87,7 @@
   bind:currentTime
   bind:playbackRate
   bind:prevPercentage
+  {segmentPlayback}
   {videoBehindWidget}
   {videoBehindStatic}
   {widgetPosition}

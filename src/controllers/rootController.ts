@@ -141,13 +141,9 @@ class RootController {
     chooseMediaSession(this.PlayerClass);
   }
 
-  handleCurrentSegmentUpdated({ contentIndex, segmentIndex }) {
-    if (!["enabled", "only-highlight"].includes(this.player.segmentPlayback)) { return; }
-
-    const contentItem = this.player.content[this.player.contentIndex];
-    const currentSegment = contentItem?.segments?.[segmentIndex];
-
-    highlightSegment(currentSegment, "current-segment", this.player.highlightColor);
+  handleCurrentSegmentUpdated({ segment }) {
+    const isEnabled = ["enabled", "only-highlight"].includes(this.player.segmentPlayback);
+    highlightSegment(isEnabled ? segment : null, "current-segment", this.player.highlightColor);
   }
 
   handlePressedArticleSegment({ contentIndex, segment }) {
