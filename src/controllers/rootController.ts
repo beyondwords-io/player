@@ -142,10 +142,10 @@ class RootController {
   }
 
   handleCurrentSegmentUpdated({ index }) {
-    const segments = this.player.content[this.player.contentIndex]?.segments;
-    const segment = segments?.[index]; // TODO: not if stopped?
+    const contentItem = this.player.content[this.player.contentIndex];
+    const currentSegment = contentItem?.segments?.[index];
 
-    highlightSegment(segment, "current-segment");
+    highlightSegment(currentSegment, "current-segment");
   }
 
   handlePlaybackEnded() {

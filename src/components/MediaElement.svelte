@@ -40,9 +40,11 @@
   $: poster = playbackState !== "stopped" && (activeAdvert?.imageUrl || contentItem?.imageUrl);
 
   $: isAdvert = activeAdvert && playbackState !== "stopped";
+  $: isStopped = playbackState === "stopped";
+
   $: segments = contentItem?.segments || [];
 
-  $: segmentIndex = isAdvert ? -1 : findSegmentIndex(segments, currentTime);
+  $: segmentIndex = isAdvert || isStopped ? -1 : findSegmentIndex(segments, currentTime);
   $: segmentIndex, handleSegmentUpdate();
 
   const handlePlay = () => {
