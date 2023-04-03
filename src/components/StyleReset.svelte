@@ -22,4 +22,10 @@
   :global(.beyondwords-player a *) {
     cursor: pointer;
   }
+
+  :global(.beyondwords-highlight) {
+    color: initial;
+    margin: 0;
+    padding: 0;
+  }
 </style>

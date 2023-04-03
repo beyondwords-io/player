@@ -22,7 +22,13 @@ const newSelector = (prefix, selector) => {
   if (isKeyframe) { return selector; }
 
   const isRoot = selector.startsWith(".beyondwords-player");
-  return [prefix, isRoot ? "" : " ", selector].join("");
+  const isHighlight = selector.startsWith(".beyondwords-highlight");
+
+  if (isRoot || isHighlight) {
+    return `${prefix}${selector}`;
+  } else {
+    return `${prefix} ${selector}`;
+  }
 };
 
 export default prefixCssSelectors;
