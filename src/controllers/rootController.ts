@@ -142,7 +142,7 @@ class RootController {
   }
 
   handleCurrentSegmentUpdated({ index }) {
-    if (!this.player.segmentPlaybackEnabled) { return; }
+    if (!["enabled", "only-highlight"].includes(this.player.segmentPlayback)) { return; }
 
     const contentItem = this.player.content[this.player.contentIndex];
     const currentSegment = contentItem?.segments?.[index];

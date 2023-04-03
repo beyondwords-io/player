@@ -38,7 +38,7 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
   export let logoIconEnabled = true;
-  export let segmentPlaybackEnabled = true;
+  export let segmentPlayback = "enabled";
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
