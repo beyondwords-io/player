@@ -6,6 +6,8 @@
   import StyleReset from "./StyleReset.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
+  import findSegmentIndex from "../helpers/findSegmentIndex";
+  import highlightSegment from "../helpers/highlightSegment";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -24,6 +26,7 @@
   export let mediaSession = "auto";
   export let content = [];
   export let contentIndex = 0;
+  export let segmentIndex = -1;
   export let adverts = [];
   export let advertIndex = -1;
   export let duration = 0;
@@ -63,8 +66,13 @@
   export let prevPercentage = 0;
   export const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
 
+  $: atStart = currentTime === 0;
+
   $: activeAdvert = adverts[advertIndex];
   $: contentItem = content[contentIndex];
+
+  $: segments = contentItem?.segments || [];
+  $: segmentIndex = atStart ? -1 : activeAdvert ? segmentIndex : findSegmentIndex(segments, currentTime);
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
 
@@ -73,6 +81,9 @@
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
+
+  $: highlightEnabled = ["enabled", "only-highlight"].includes(segmentPlayback);
+  $: highlightSegment(highlightEnabled && segments?.[segmentIndex], "current-segment", highlightColor);
 </script>
 
 <MediaElement
@@ -87,7 +98,6 @@
   bind:currentTime
   bind:playbackRate
   bind:prevPercentage
-  {segmentPlayback}
   {videoBehindWidget}
   {videoBehindStatic}
   {widgetPosition}

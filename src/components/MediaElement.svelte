@@ -3,7 +3,6 @@
   import VastContainer from "./VastContainer.svelte";
   import loadMedia from "../helpers/loadMedia";
   import newEvent from "../helpers/newEvent";
-  import findSegmentIndex from "../helpers/findSegmentIndex";
 
   export let content;
   export let contentIndex;
@@ -14,7 +13,6 @@
   export let currentTime;
   export let playbackRate;
   export let prevPercentage;
-  export let segmentPlayback;
   export let videoBehindWidget;
   export let videoBehindStatic;
   export let widgetPosition;
@@ -25,7 +23,6 @@
   let hls = null;
 
   $: contentItem = content[contentIndex];
-  $: segments = contentItem?.segments || [];
 
   $: media = activeAdvert?.media;
   $: !activeAdvert && (media = contentItem?.media);
@@ -46,9 +43,6 @@
 
   $: isAdvert = activeAdvert && playbackState !== "stopped";
   $: isStopped = playbackState === "stopped";
-
-  $: segmentIndex = findSegmentIndex(segments, currentTime);
-  $: segmentIndex, segmentPlayback, handleSegmentUpdate();
 
   const handlePlay = () => {
     onEvent(newEvent({
@@ -90,17 +84,6 @@
       type: "CurrentTimeUpdated",
       description: "The media's current time was updated.",
       initiatedBy: "media",
-    }));
-  };
-
-  const handleSegmentUpdate = () => {
-    onEvent(newEvent({
-      type: "CurrentSegmentUpdated",
-      description: "The media's current segment was updated.",
-      initiatedBy: "media",
-      segment: segments[segmentIndex],
-      contentIndex,
-      segmentIndex,
     }));
   };
 

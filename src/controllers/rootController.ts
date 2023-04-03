@@ -141,18 +141,14 @@ class RootController {
     chooseMediaSession(this.PlayerClass);
   }
 
-  handleCurrentSegmentUpdated({ segment }) {
-    const isEnabled = ["enabled", "only-highlight"].includes(this.player.segmentPlayback);
-    highlightSegment(isEnabled ? segment : null, "current-segment", this.player.highlightColor);
-  }
-
-  handlePressedArticleSegment({ contentIndex, segment }) {
+  handlePressedArticleSegment({ segment, segmentIndex, contentIndex }) {
     if (!["enabled", "only-click"].includes(this.player.segmentPlayback)) { return; }
 
     const changeTrack = contentIndex !== this.player.contentIndex;
     if (changeTrack) { this.#setTrack(() => contentIndex); }
 
-    this.player.currentTime = segment.startTime;
+    this.#setTime(() => segment.startTime, contentIndex);
+    this.player.segmentIndex = segmentIndex;
     this.player.playbackState = "playing";
   }
 
@@ -314,28 +310,27 @@ class RootController {
     const tryIndex = indexFn(this.player.contentIndex);
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.content.length;
 
+    this.#setTime(() => 0);
+    this.player.segmentIndex = -1;
+
     if (outOfBounds) {
       this.player.playbackState = "stopped";
-      this.#setTime(() => 0);
     } else {
       this.player.contentIndex = tryIndex;
 
-      if (!this.#isAdvert()) {
-        this.#setTime(() => 0);
-        this.midrollPlayed = false;
-      }
-
+      if (!this.#isAdvert()) { this.midrollPlayed = false; }
       this.#chooseAndSetAdvert({ atTheStart: true });
     }
   }
 
-  #setTime(timeFn) {
-    const duration = this.player.duration || 0;
-
-    const newTime = timeFn(this.player.currentTime, duration);
-    const maxTime = this.player.duration - 0.001;
-
-    this.player.currentTime = Math.max(0, Math.min(maxTime, newTime));
+  #setTime(timeFn, contentIndex) {
+    if (this.#isAdvert()) {
+      this.prevTime = timeFn();
+      this.prevContent = contentIndex;
+    } else {
+      const duration = this.player.duration || 0;
+      this.player.currentTime = timeFn(this.player.currentTime, duration);
+    }
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd, errored } = {}) {
