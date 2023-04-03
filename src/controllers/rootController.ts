@@ -145,7 +145,7 @@ class RootController {
     const contentItem = this.player.content[this.player.contentIndex];
     const currentSegment = contentItem?.segments?.[index];
 
-    highlightSegment(currentSegment, "current-segment");
+    highlightSegment(currentSegment, "current-segment", this.player.highlightColor);
   }
 
   handlePlaybackEnded() {

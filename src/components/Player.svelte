@@ -36,6 +36,7 @@
   export let textColor = "#111";
   export let backgroundColor = "#F5F5F5";
   export let iconColor = "rgba(0, 0, 0, 0.8)";
+  export let highlightColor = "#eee";
   export let logoIconEnabled = true;
   export let segmentPlaybackEnabled = true;
   export let advertConsent = "personalized";

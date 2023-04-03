@@ -1,19 +1,21 @@
 const attribute = "data-beyondwords-marker";
 const markClasses = ["beyondwords-highlight", "bwp"];
 
-const highlightSegment = (segment, className) => {
+const highlightSegment = (segment, className, background) => {
   const markersToHighlight = new Set(findMarkers(segment));
   const markersToUnhighlight = findAllMarkers().filter(m => !markersToHighlight.has(m));
 
-  highlight(markersToHighlight, className);
+  highlight(markersToHighlight, className, background);
   unhighlight(markersToUnhighlight, className);
-}
+};
 
-const highlight = (markers, className) => {
+const highlight = (markers, className, background) => {
   for (const marker of markers) {
     const mark = findInnerMark(marker) || createInnerMark(marker);
 
     mark.classList.add(className);
+    mark.style.background = background;
+
     moveChildren({ fromElement: marker, toElement: mark });
   }
 };
@@ -70,7 +72,7 @@ const moveChildren = ({ fromElement, toElement }) => {
 
     toElement.appendChild(child);
     i -= 1;
-  };
+  }
 };
 
 export default highlightSegment;
