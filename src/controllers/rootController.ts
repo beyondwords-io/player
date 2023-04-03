@@ -5,6 +5,7 @@ import waitUntil from "../helpers/waitUntil";
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
+import highlightSegment from "../helpers/highlightSegment";
 import settableProps from "../helpers/settableProps";
 import diffObject from "../helpers/diffObject";
 import chooseAdvert from "../helpers/chooseAdvert";
@@ -138,6 +139,13 @@ class RootController {
 
     playingPlayers.forEach(p => p.playbackState = "paused");
     chooseMediaSession(this.PlayerClass);
+  }
+
+  handleCurrentSegmentUpdated({ index }) {
+    const segments = this.player.content[this.player.contentIndex]?.segments;
+    const segment = segments?.[index]; // TODO: not if stopped?
+
+    highlightSegment(segment, "current-segment");
   }
 
   handlePlaybackEnded() {
