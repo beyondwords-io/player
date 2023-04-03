@@ -25,6 +25,7 @@ const dimensions = {
 
 test("screenshot comparison", async ({ page }) => {
   await page.goto("http://localhost:8000");
+  await resetPlayerProps(page);
 
   for (const params of permutations(dimensions)) {
     if (skipPermutation(params)) { continue; }
@@ -49,6 +50,14 @@ test("screenshot comparison", async ({ page }) => {
     process.stdout.write(".");
   }
 });
+
+const resetPlayerProps = async (page) => {
+  await page.evaluate(async () => {
+    BeyondWords.Player.destroyAll();
+    new BeyondWords.Player({ target: ".beyondwords-player" });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  });
+};
 
 const skipPermutation = (params) => {
   const testingTheWidget = params.widgetPosition;
