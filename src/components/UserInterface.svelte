@@ -25,7 +25,6 @@
   import Visibility from "./helpers/Visibility.svelte";
   import belowBreakpoint from "../helpers/belowBreakpoint";
   import controlsOrderFn from "../helpers/controlsOrder";
-  import findSegmentIndex from "../helpers/findSegmentIndex";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
@@ -71,11 +70,7 @@
   $: isMobile = belowBreakpoint({ playerStyle, width });
 
   $: contentItem = content[contentIndex] || {};
-  $: segments = contentItem.segments || [];
-
   $: progress = currentTime / duration;
-  $: segmentIndex = isAdvert ? -1 : findSegmentIndex(segments, currentTime);
-  $: currentSegment = segments[segmentIndex];
 
   $: activeTextColor = isAdvert && activeAdvert?.textColor || textColor;
   $: activeBackgroundColor = isAdvert && activeAdvert?.backgroundColor || backgroundColor;
@@ -164,8 +159,8 @@
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
             <SpeedButton {onEvent} speed={playbackRate} scale={buttonScale} color={buttonColor} />
-            <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} disabled={skipStyle === "segments" && segmentIndex <= 0} />
-            <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} disabled={skipStyle === "segments" && segmentIndex >= segments.length - 1} />
+            <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
+            <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
           {/if}
 
           {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}

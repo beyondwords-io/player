@@ -8,7 +8,6 @@
   export let style = "segments";
   export let scale = 1;
   export let color = "#323232";
-  export let disabled = false;
   export let onEvent = () => {};
 
   $: backwardsSeconds = style.split("-")[1] || 10;
@@ -19,7 +18,6 @@
   $: isTracks = style === "tracks";
 
   const handleClick = () => {
-    if (disabled) { return; }
     let type, description, props;
 
     if (isSegments) {
