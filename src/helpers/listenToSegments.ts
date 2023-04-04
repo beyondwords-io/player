@@ -63,6 +63,9 @@ const markerElement = (target) => {
   while (target && target.hasAttribute) {
     if (target.hasAttribute(attribute)) { return target; }
 
+    if (target.onclick || target.onmousedown) { return; }
+    if (target.nodeName.toLowerCase() === "a") { return; }
+
     target = target.parentNode;
   }
 };
