@@ -89,6 +89,7 @@
   {contentIndex}
   {activeAdvert}
   {advertConsent}
+  {segmentPlayback}
   bind:playbackState
   bind:duration
   bind:currentTime

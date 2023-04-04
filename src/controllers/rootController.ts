@@ -219,7 +219,11 @@ class RootController {
   }
 
   handleCurrentSegmentUpdated({ segmentIndex }) {
-    if (!this.#isAdvert()) { this.player.segmentIndex = segmentIndex; }
+    if (this.#isAdvert() && !this.segmentClicked) {
+      this.player.segmentIndex = -1;
+    } else if (!this.#isAdvert()) {
+      this.player.segmentIndex = segmentIndex;
+    }
   }
 
   handlePressedArticleSegment({ segment, segmentIndex, contentIndex }) {
@@ -231,6 +235,7 @@ class RootController {
     this.#setTime(() => segment.startTime, contentIndex);
     this.player.segmentIndex = segmentIndex;
     this.player.playbackState = "playing";
+    this.segmentClicked = true;
   }
 
   // private
@@ -323,6 +328,7 @@ class RootController {
       if (!this.#isAdvert()) {
         this.#setTime(() => 0);
         this.midrollPlayed = false;
+        this.segmentClicked = false;
       }
 
       this.#chooseAndSetAdvert({ atTheStart: true });
