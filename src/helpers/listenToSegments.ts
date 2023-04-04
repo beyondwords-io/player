@@ -4,6 +4,7 @@ import newEvent from "./newEvent";
 const listenToSegments = () => {
   addEventListener("mousemove", handleMouseMove);
   addEventListener("mousedown", handleMouseDown);
+  addEventListener("mouseup", handleMouseUp);
 };
 
 const handleMouseMove = (event) => {
@@ -11,8 +12,13 @@ const handleMouseMove = (event) => {
 };
 
 const handleMouseDown = (event) => {
-  const isLeftClick = event.button === 0;
-  if (!isLeftClick) { return; }
+  startX = event.pageX;
+  startY = event.pageY;
+}
+
+const handleMouseUp = (event) => {
+  if (mouseDragged(event)) { return; }
+  if (event.button !== 0) { return; }
 
   const markersClicked = new Set(findClickedMarkers(event.target));
   if (markersClicked.size === 0) { return; }
@@ -31,6 +37,16 @@ const handleMouseDown = (event) => {
       segment,
     }));
   });
+};
+
+let startX, startY;
+
+const mouseDragged = (event) => {
+  const movedX = event.pageX - startX;
+  const movedY = event.pageY - startY;
+
+  const moved = Math.sqrt(movedX * movedX + movedY * movedY);
+  return moved > 5;
 };
 
 const findClickedMarkers = (target) => {
