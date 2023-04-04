@@ -238,6 +238,10 @@ class RootController {
     this.segmentClicked = true;
   }
 
+  handleHoveredArticleSegment({ segment, segmentIndex, contentIndex }) {
+    console.log(segment);
+  }
+
   // private
 
   #ignoreDueToAdvert({ type }) {

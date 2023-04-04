@@ -8,7 +8,29 @@ const listenToSegments = () => {
 };
 
 const handleMouseMove = (event) => {
-  // TODO
+  let hovered = document.elementFromPoint(event.clientX, event.clientY);
+
+  while (hovered && hovered.hasAttribute) {
+    const marker = hovered.getAttribute(attribute);
+    hovered = hovered.parentNode;
+
+    if (!marker) { continue; }
+    // TODO: if multiple players?
+
+    for (const player of BeyondWords.Player.instances()) {
+      const { segment, contentIndex, segmentIndex } = chooseSegment(player, marker);
+      if (!segment) { continue; }
+
+      player.onEvent(newEvent({
+        type: "HoveredArticleSegment",
+        description: "The user hovered over a segment in the article.",
+        initiatedBy: "user",
+        segment,
+        contentIndex,
+        segmentIndex,
+      }));
+    }
+  }
 };
 
 let startX, startY;
