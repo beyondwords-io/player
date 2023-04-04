@@ -28,4 +28,8 @@
     margin: 0;
     padding: 0;
   }
+
+  :global(.beyondwords-clickable) {
+    cursor: pointer;
+  }
 </style>

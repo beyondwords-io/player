@@ -23,8 +23,9 @@ const newSelector = (prefix, selector) => {
 
   const isRoot = selector.startsWith(".beyondwords-player");
   const isHighlight = selector.startsWith(".beyondwords-highlight");
+  const isClickable = selector.startsWith(".beyondwords-clickable");
 
-  if (isRoot || isHighlight) {
+  if (isRoot || isHighlight || isClickable) {
     return `${prefix}${selector}`;
   } else {
     return `${prefix} ${selector}`;

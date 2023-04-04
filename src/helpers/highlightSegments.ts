@@ -1,5 +1,6 @@
 const attribute = "data-beyondwords-marker";
 const markClasses = ["beyondwords-highlight", "bwp"];
+const markerClasses = ["beyondwords-clickable", "bwp"];
 
 const highlightSegments = (currentSegment, hoveredSegment, highlightColor, segmentPlayback, segmentHighlight) => {
   const currentEnabled = playbackEnabled(currentSegment, segmentPlayback);
@@ -9,22 +10,22 @@ const highlightSegments = (currentSegment, hoveredSegment, highlightColor, segme
   const highlightHovered = ["both", "hovered"].includes(segmentHighlight) || segmentHighlight === "auto" && hoveredEnabled;
 
   highlightSegment(highlightCurrent && currentSegment, "current-segment", highlightColor);
-  highlightSegment(highlightHovered && hoveredSegment, "hovered-segment", highlightColor);
+  highlightSegment(highlightHovered && hoveredSegment, "hovered-segment", highlightColor, hoveredEnabled);
 };
 
 const playbackEnabled = (segment, segmentPlayback) => (
   segment?.section === "body" && segmentPlayback === "body" || segmentPlayback === "auto"
 );
 
-const highlightSegment = (segment, className, background) => {
+const highlightSegment = (segment, className, background, setMarkerClasses) => {
   const markersToHighlight = new Set(findMarkers(segment));
   const markersToUnhighlight = findAllMarkers().filter(m => !markersToHighlight.has(m));
 
-  highlight(markersToHighlight, className, background);
+  highlight(markersToHighlight, className, background, setMarkerClasses);
   unhighlight(markersToUnhighlight, className);
 };
 
-const highlight = (markers, className, background) => {
+const highlight = (markers, className, background, setMarkerClasses) => {
   for (const marker of markers) {
     const mark = findInnerMark(marker) || createInnerMark(marker);
 
@@ -32,6 +33,10 @@ const highlight = (markers, className, background) => {
     mark.style.background = background;
 
     moveChildren({ fromElement: marker, toElement: mark });
+
+    if (setMarkerClasses) {
+      markerClasses.forEach(name => marker.classList.add(name));
+    }
   }
 };
 
@@ -46,6 +51,7 @@ const unhighlight = (markers, className) => {
     } else if (mark) {
       moveChildren({ fromElement: mark, toElement: marker });
       mark.remove();
+      markerClasses.forEach(name => marker.classList.remove(name));
     }
   }
 };
