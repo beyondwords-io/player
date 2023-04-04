@@ -2,9 +2,38 @@ import { attribute } from "./highlightSegment";
 import newEvent from "./newEvent";
 
 const listenToSegments = () => {
-  addEventListener("mousemove", handleMouseMove);
   addEventListener("mousedown", handleMouseDown);
   addEventListener("mouseup", handleMouseUp);
+  addEventListener("mousemove", handleMouseMove);
+};
+
+const handleMouseDown = (event) => {
+  startX = event.pageX;
+  startY = event.pageY;
+};
+
+const handleMouseUp = (event) => {
+  if (draggedMouse(event)) { return; }
+  if (event.button !== 0) { return; }
+
+  const marker = event.target.getAttribute(attribute); // TODO: still not quite right: needs to check ancestors
+  if (!marker) { return; }
+
+  for (const player of BeyondWords.Player.instances()) {
+    const { segment, contentIndex, segmentIndex } = chooseSegment(player, marker);
+    if (!segment) { continue; }
+
+    // TODO: if multiple players then prefer the one that's playing?
+
+    player.onEvent(newEvent({
+      type: "PressedArticleSegment",
+      description: "The user pressed on a segment in the article.",
+      initiatedBy: "user",
+      segment,
+      contentIndex,
+      segmentIndex,
+    }));
+  }
 };
 
 const handleMouseMove = (event) => {
@@ -36,44 +65,6 @@ const handleMouseMove = (event) => {
   }
 };
 
-let startX, startY;
-
-const handleMouseDown = (event) => {
-  startX = event.pageX;
-  startY = event.pageY;
-};
-
-const handleMouseUp = (event) => {
-  const movedX = event.pageX - startX;
-  const movedY = event.pageY - startY;
-  const moved = Math.sqrt(movedX * movedX + movedY * movedY);
-
-  const isDragged = moved > 5;
-  if (isDragged) { return; }
-
-  const isLeftClick = event.button === 0;
-  if (!isLeftClick) { return; }
-
-  const marker = event.target.getAttribute(attribute); // TODO: still not quite right: needs to check ancestors
-  if (!marker) { return; }
-
-  for (const player of BeyondWords.Player.instances()) {
-    const { segment, contentIndex, segmentIndex } = chooseSegment(player, marker);
-    if (!segment) { continue; }
-
-    // TODO: if multiple players then prefer the one that's playing?
-
-    player.onEvent(newEvent({
-      type: "PressedArticleSegment",
-      description: "The user pressed on a segment in the article.",
-      initiatedBy: "user",
-      segment,
-      contentIndex,
-      segmentIndex,
-    }));
-  }
-};
-
 const chooseSegment = (player, marker) => {
   if (!marker) { return {}; }
 
@@ -95,6 +86,16 @@ const chooseSegment = (player, marker) => {
   }
 
   return bestSoFar;
+};
+
+let startX, startY;
+
+const draggedMouse = (event) => {
+  const movedX = event.pageX - startX;
+  const movedY = event.pageY - startY;
+
+  const moved = Math.sqrt(movedX * movedX + movedY * movedY);
+  return moved > 5;
 };
 
 const previousIndexes = {};
