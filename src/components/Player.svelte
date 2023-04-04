@@ -79,8 +79,10 @@
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
   $: highlightEnabled = ["enabled", "only-highlight"].includes(segmentPlayback);
+  $: playbackEnabled = ["enabled", "only-playback"].includes(segmentPlayback);
+
   $: highlightSegment(highlightEnabled && currentSegment, "current-segment", highlightColor);
-  $: highlightSegment(highlightEnabled && hoveredSegment, "hovered-segment", highlightColor);
+  $: highlightSegment(playbackEnabled && hoveredSegment, "hovered-segment", highlightColor);
 </script>
 
 <MediaElement

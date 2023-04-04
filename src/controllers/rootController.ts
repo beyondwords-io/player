@@ -227,7 +227,7 @@ class RootController {
   }
 
   handlePressedArticleSegment({ segment, segmentIndex, contentIndex }) {
-    if (!["enabled", "only-click"].includes(this.player.segmentPlayback)) { return; }
+    if (!["enabled", "only-playback"].includes(this.player.segmentPlayback)) { return; }
 
     const changeTrack = contentIndex !== this.player.contentIndex;
     if (changeTrack) { this.#setTrack(() => contentIndex); }
