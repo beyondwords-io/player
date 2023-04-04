@@ -79,10 +79,10 @@
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
-  $: playbackEnabled = segmentPlayback === "auto"; // TODO: add support for 'body' setting
+  const autoEnabled = segment => segment?.section === "body" && segmentPlayback === "body" || segmentPlayback === "auto";
 
-  $: highlightCurrent = ["auto", "both", "current"].includes(segmentHighlight);
-  $: highlightHovered = ["both", "hovered"].includes(segmentHighlight) || segmentHighlight === "auto" && playbackEnabled;
+  $: highlightCurrent = ["both", "current"].includes(segmentHighlight) || segmentHighlight === "auto" && autoEnabled(currentSegment);
+  $: highlightHovered = ["both", "hovered"].includes(segmentHighlight) || segmentHighlight === "auto" && autoEnabled(hoveredSegment);
 
   $: highlightSegment(highlightCurrent && currentSegment, "current-segment", highlightColor);
   $: highlightSegment(highlightHovered && hoveredSegment, "hovered-segment", highlightColor);
