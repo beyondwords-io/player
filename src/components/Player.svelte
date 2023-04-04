@@ -7,7 +7,7 @@
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
   import findSegmentIndex from "../helpers/findSegmentIndex";
-  import highlightSegment from "../helpers/highlightSegment";
+  import highlightSegments from "../helpers/highlightSegments";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -79,13 +79,7 @@
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
-  const autoEnabled = segment => segment?.section === "body" && segmentPlayback === "body" || segmentPlayback === "auto";
-
-  $: highlightCurrent = ["both", "current"].includes(segmentHighlight) || segmentHighlight === "auto" && autoEnabled(currentSegment);
-  $: highlightHovered = ["both", "hovered"].includes(segmentHighlight) || segmentHighlight === "auto" && autoEnabled(hoveredSegment);
-
-  $: highlightSegment(highlightCurrent && currentSegment, "current-segment", highlightColor);
-  $: highlightSegment(highlightHovered && hoveredSegment, "hovered-segment", highlightColor);
+  $: highlightSegments(currentSegment, hoveredSegment, highlightColor, segmentPlayback, segmentHighlight);
 </script>
 
 <MediaElement

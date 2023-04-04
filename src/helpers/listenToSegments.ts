@@ -1,4 +1,4 @@
-import { attribute } from "./highlightSegment";
+import { attribute } from "./highlightSegments";
 import newEvent from "./newEvent";
 
 const listenToSegments = () => {
