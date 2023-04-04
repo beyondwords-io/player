@@ -218,11 +218,11 @@ class RootController {
     });
   }
 
-  handleCurrentSegmentUpdated({ segmentIndex }) {
+  handleCurrentSegmentUpdated({ segment, segmentIndex, contentIndex }) {
     if (this.#isAdvert() && !this.segmentClicked) {
-      this.player.segmentIndex = -1;
+      this.player.currentSegment = null;
     } else if (!this.#isAdvert()) {
-      this.player.segmentIndex = segmentIndex;
+      this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
     }
   }
 
@@ -233,7 +233,7 @@ class RootController {
     if (changeTrack) { this.#setTrack(() => contentIndex); }
 
     this.#setTime(() => segment.startTime, contentIndex);
-    this.player.segmentIndex = segmentIndex;
+    this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
     this.player.playbackState = "playing";
     this.segmentClicked = true;
   }

@@ -26,7 +26,6 @@
   export let mediaSession = "auto";
   export let content = [];
   export let contentIndex = 0;
-  export let segmentIndex = -1;
   export let adverts = [];
   export let advertIndex = -1;
   export let duration = 0;
@@ -42,6 +41,7 @@
   export let highlightColor = "#eee";
   export let logoIconEnabled = true;
   export let segmentPlayback = "enabled";
+  export let currentSegment = undefined;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
@@ -68,7 +68,6 @@
 
   $: activeAdvert = adverts[advertIndex];
   $: contentItem = content[contentIndex];
-  $: segments = contentItem?.segments || [];
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
 
@@ -79,7 +78,7 @@
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
   $: highlightEnabled = ["enabled", "only-highlight"].includes(segmentPlayback);
-  $: highlightSegment(highlightEnabled && segments?.[segmentIndex], "current-segment", highlightColor);
+  $: highlightSegment(highlightEnabled && currentSegment, "current-segment", highlightColor);
 </script>
 
 <MediaElement

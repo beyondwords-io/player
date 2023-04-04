@@ -54,7 +54,7 @@ const handleMouseUp = (event) => {
   const isLeftClick = event.button === 0;
   if (!isLeftClick) { return; }
 
-  const marker = event.target.getAttribute(attribute);
+  const marker = event.target.getAttribute(attribute); // TODO: still not quite right: needs to check ancestors
   if (!marker) { return; }
 
   for (const player of BeyondWords.Player.instances()) {
