@@ -3,7 +3,7 @@ import newEvent from "./newEvent";
 
 const listenToSegments = () => {
   addEventListener("mousedown", handleMouseDown);
-  addEventListener("mouseup", handleMouseUp);
+  addEventListener("click", handleMouseUp);
   addEventListener("mousemove", handleMouseMove);
 };
 
@@ -13,6 +13,7 @@ const handleMouseDown = (event) => {
 };
 
 const handleMouseUp = (event) => {
+  if (event.defaultPrevented) { return; }
   if (draggedMouse(event)) { return; }
   if (event.button !== 0) { return; }
 
