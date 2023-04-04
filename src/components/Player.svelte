@@ -7,7 +7,7 @@
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
   import findSegmentIndex from "../helpers/findSegmentIndex";
-  import highlightSegments from "../helpers/highlightSegments";
+  import highlightSegment from "../helpers/highlightSegment";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -40,8 +40,9 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
   export let logoIconEnabled = true;
-  export let segmentPlayback = "auto";
-  export let segmentHighlight = "auto";
+  export let segmentPlayback = "all";
+  export let highlightCurrent = "auto";
+  export let highlightHovered = "auto";
   export let currentSegment = undefined;
   export let hoveredSegment = undefined;
   export let advertConsent = "personalized";
@@ -79,7 +80,14 @@
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
-  $: highlightSegments(currentSegment, hoveredSegment, highlightColor, segmentPlayback, segmentHighlight);
+  $: currentMode = highlightCurrent === "auto" ? segmentPlayback : highlightCurrent;
+  $: hoveredMode = highlightHovered === "auto" ? segmentPlayback : highlightHovered;
+
+  $: currentEnabled = currentMode === "all" || currentMode === "body" && currentSegment?.section === "body";
+  $: hoveredEnabled = hoveredMode === "all" || hoveredMode === "body" && hoveredSegment?.section === "body";
+
+  $: highlightSegment(currentEnabled && currentSegment, "current-segment", highlightColor);
+  $: highlightSegment(hoveredEnabled && hoveredSegment, "hovered-segment", highlightColor, true);
 </script>
 
 <MediaElement

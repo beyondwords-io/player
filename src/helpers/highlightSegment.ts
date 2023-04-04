@@ -2,21 +2,6 @@ const attribute = "data-beyondwords-marker";
 const markClasses = ["beyondwords-highlight", "bwp"];
 const markerClasses = ["beyondwords-clickable", "bwp"];
 
-const highlightSegments = (currentSegment, hoveredSegment, highlightColor, segmentPlayback, segmentHighlight) => {
-  const currentEnabled = playbackEnabled(currentSegment, segmentPlayback);
-  const hoveredEnabled = playbackEnabled(hoveredSegment, segmentPlayback);
-
-  const highlightCurrent = ["both", "current"].includes(segmentHighlight) || segmentHighlight === "auto" && currentEnabled;
-  const highlightHovered = ["both", "hovered"].includes(segmentHighlight) || segmentHighlight === "auto" && hoveredEnabled;
-
-  highlightSegment(highlightCurrent && currentSegment, "current-segment", highlightColor);
-  highlightSegment(highlightHovered && hoveredSegment, "hovered-segment", highlightColor, hoveredEnabled);
-};
-
-const playbackEnabled = (segment, segmentPlayback) => (
-  segment?.section === "body" && segmentPlayback === "body" || segmentPlayback === "auto"
-);
-
 const highlightSegment = (segment, className, background, setMarkerClasses) => {
   const markersToHighlight = new Set(findMarkers(segment));
   const markersToUnhighlight = findAllMarkers().filter(m => !markersToHighlight.has(m));
@@ -96,5 +81,5 @@ const moveChildren = ({ fromElement, toElement }) => {
   }
 };
 
-export default highlightSegments;
+export default highlightSegment;
 export { attribute };

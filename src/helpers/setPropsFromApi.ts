@@ -61,8 +61,7 @@ const setProps = (player, data) => {
   // TODO: title_enabled
   set(player, "widgetStyle", data.settings.widget_style);
   set(player, "widgetPosition", data.settings.widget_position);
-  set(player, "segmentPlayback", data.settings.segment_playback_enabled ? "auto" : "none");
-  set(player, "segmentHighlight", data.settings.segment_playback_enabled ? "auto" : "none"); // TODO: separate setting
+  set(player, "segmentPlayback", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   // TODO: paywall_type
   // TODO: paywall_url
