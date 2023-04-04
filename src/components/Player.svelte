@@ -66,13 +66,9 @@
   export let prevPercentage = 0;
   export const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
 
-  $: atStart = currentTime === 0;
-
   $: activeAdvert = adverts[advertIndex];
   $: contentItem = content[contentIndex];
-
   $: segments = contentItem?.segments || [];
-  $: segmentIndex = atStart ? -1 : activeAdvert ? segmentIndex : findSegmentIndex(segments, currentTime);
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
 

@@ -141,17 +141,6 @@ class RootController {
     chooseMediaSession(this.PlayerClass);
   }
 
-  handlePressedArticleSegment({ segment, segmentIndex, contentIndex }) {
-    if (!["enabled", "only-click"].includes(this.player.segmentPlayback)) { return; }
-
-    const changeTrack = contentIndex !== this.player.contentIndex;
-    if (changeTrack) { this.#setTrack(() => contentIndex); }
-
-    this.#setTime(() => segment.startTime, contentIndex);
-    this.player.segmentIndex = segmentIndex;
-    this.player.playbackState = "playing";
-  }
-
   handlePlaybackEnded() {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
 
@@ -227,6 +216,21 @@ class RootController {
     setPropsFromApi(this.player).then(() => {
       this.#chooseAndSetAdvert({ atTheStart: true });
     });
+  }
+
+  handleCurrentSegmentUpdated({ segmentIndex }) {
+    if (!this.#isAdvert()) { this.player.segmentIndex = segmentIndex; }
+  }
+
+  handlePressedArticleSegment({ segment, segmentIndex, contentIndex }) {
+    if (!["enabled", "only-click"].includes(this.player.segmentPlayback)) { return; }
+
+    const changeTrack = contentIndex !== this.player.contentIndex;
+    if (changeTrack) { this.#setTrack(() => contentIndex); }
+
+    this.#setTime(() => segment.startTime, contentIndex);
+    this.player.segmentIndex = segmentIndex;
+    this.player.playbackState = "playing";
   }
 
   // private
@@ -310,15 +314,17 @@ class RootController {
     const tryIndex = indexFn(this.player.contentIndex);
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.content.length;
 
-    this.#setTime(() => 0);
-    this.player.segmentIndex = -1;
-
     if (outOfBounds) {
       this.player.playbackState = "stopped";
+      this.#setTime(() => 0);
     } else {
       this.player.contentIndex = tryIndex;
 
-      if (!this.#isAdvert()) { this.midrollPlayed = false; }
+      if (!this.#isAdvert()) {
+        this.#setTime(() => 0);
+        this.midrollPlayed = false;
+      }
+
       this.#chooseAndSetAdvert({ atTheStart: true });
     }
   }
