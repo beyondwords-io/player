@@ -11,7 +11,7 @@ const languages = Object.fromEntries(pairs.filter(([_, v]) => v.isDefaultForLang
 validateTranslations(locales, languages);
 
 const translate = (key, { locale } = {}) => {
-  const translations = translationsForBrowserPreference();
+  const translations = translationsForBrowserPreference(locale);
 
   if (!translations[key]) {
     throwError([

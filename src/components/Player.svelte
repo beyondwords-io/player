@@ -1,3 +1,4 @@
+<!-- svelte-ignore unused-export-let -->
 <script>
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
@@ -6,7 +7,6 @@
   import StyleReset from "./StyleReset.svelte";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
-  import findSegmentIndex from "../helpers/findSegmentIndex";
   import highlightSegment from "../helpers/highlightSegment";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md

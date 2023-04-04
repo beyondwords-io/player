@@ -34,7 +34,10 @@ module.exports = {
     "eqeqeq": ["error", "always"],
     "@typescript-eslint/no-empty-function": [
       "error", { "allow": ["arrowFunctions", "methods"] }
-    ]
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn", { "argsIgnorePattern": "_" }
+    ],
   },
   "settings": {
     "svelte3/typescript": true

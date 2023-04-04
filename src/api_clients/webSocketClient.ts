@@ -1,5 +1,4 @@
 import fetchJson from "../helpers/fetchJson";
-import { v4 as randomUuid } from "uuid";
 
 class WebSocketClient {
   constructor(playerApiUrl, projectId, writeToken) {

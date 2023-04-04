@@ -39,7 +39,7 @@ const validateAtMostOneDefault = (locales) => {
   }
 };
 
-const validateTranslationKeys = (locales, languages) => {
+const validateTranslationKeys = (locales) => {
   const allKeys = Object.values(locales).map(Object.keys).flat();
   const uniqKeys = new Set(allKeys.filter(k => k !== "isDefaultForLanguage"));
 
