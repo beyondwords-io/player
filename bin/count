@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Counts lines of code in the project.
+
+which cloc || brew install cloc
+cloc --vcs=git --exclude-list-file=.clocignore .
