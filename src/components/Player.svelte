@@ -42,6 +42,7 @@
   export let logoIconEnabled = true;
   export let segmentPlayback = "enabled";
   export let currentSegment = undefined;
+  export let hoveredSegment = undefined;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
@@ -79,6 +80,7 @@
 
   $: highlightEnabled = ["enabled", "only-highlight"].includes(segmentPlayback);
   $: highlightSegment(highlightEnabled && currentSegment, "current-segment", highlightColor);
+  $: highlightSegment(highlightEnabled && hoveredSegment, "hovered-segment", highlightColor);
 </script>
 
 <MediaElement

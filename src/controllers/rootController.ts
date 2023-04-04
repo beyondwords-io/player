@@ -239,7 +239,7 @@ class RootController {
   }
 
   handleHoveredArticleSegment({ segment, segmentIndex, contentIndex }) {
-    console.log(segment);
+    this.player.hoveredSegment = { ...segment, segmentIndex, contentIndex };
   }
 
   // private
