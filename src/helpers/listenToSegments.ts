@@ -9,18 +9,21 @@ const listenToSegments = () => {
 
 const handleMouseMove = (event) => {
   let hovered = document.elementFromPoint(event.clientX, event.clientY);
+  let marker;
 
   while (hovered && hovered.hasAttribute) {
-    const marker = hovered.getAttribute(attribute);
+    marker = hovered.getAttribute(attribute);
+    if (marker) { break; }
+
     hovered = hovered.parentNode;
+  }
 
-    if (!marker) { continue; }
-    // TODO: if multiple players?
+  // TODO: if multiple players?
 
-    for (const player of BeyondWords.Player.instances()) {
-      const { segment, contentIndex, segmentIndex } = chooseSegment(player, marker);
-      if (!segment) { continue; }
+  for (const player of BeyondWords.Player.instances()) {
+    const { segment, contentIndex, segmentIndex } = chooseSegment(player, marker);
 
+    if (changed(player, contentIndex, segmentIndex)) {
       player.onEvent(newEvent({
         type: "HoveredArticleSegment",
         description: "The user hovered over a segment in the article.",
@@ -72,6 +75,8 @@ const handleMouseUp = (event) => {
 };
 
 const chooseSegment = (player, marker) => {
+  if (!marker) { return {}; }
+
   let bestSoFar = {};
   let bestContent = -Infinity;
 
@@ -90,6 +95,21 @@ const chooseSegment = (player, marker) => {
   }
 
   return bestSoFar;
+};
+
+const previousIndexes = {};
+
+const changed = (player, contentIndex, segmentIndex) => {
+  previousIndexes[player] ||= {};
+  const previous = previousIndexes[player];
+
+  if (previous.contentIndex === contentIndex && previous.segmentIndex === segmentIndex) {
+    return false;
+  } else {
+    previous.contentIndex = contentIndex;
+    previous.segmentIndex = segmentIndex;
+    return true;
+  }
 };
 
 listenToSegments();
