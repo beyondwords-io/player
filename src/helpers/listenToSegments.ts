@@ -17,7 +17,7 @@ const handleMouseUp = (event) => {
   if (draggedMouse(event)) { return; }
   if (event.button !== 0) { return; }
 
-  const marker = event.target.getAttribute(attribute); // TODO: still not quite right: needs to check ancestors
+  const marker = markerElement(event.target)?.getAttribute(attribute);
   if (!marker) { return; }
 
   for (const player of BeyondWords.Player.instances()) {
@@ -38,15 +38,8 @@ const handleMouseUp = (event) => {
 };
 
 const handleMouseMove = (event) => {
-  let hovered = document.elementFromPoint(event.clientX, event.clientY);
-  let marker;
-
-  while (hovered && hovered.hasAttribute) {
-    marker = hovered.getAttribute(attribute);
-    if (marker) { break; }
-
-    hovered = hovered.parentNode;
-  }
+  const target = document.elementFromPoint(event.clientX, event.clientY);
+  const marker = markerElement(target)?.getAttribute(attribute);
 
   // TODO: if multiple players?
 
@@ -63,6 +56,14 @@ const handleMouseMove = (event) => {
         segmentIndex,
       }));
     }
+  }
+};
+
+const markerElement = (target) => {
+  while (target && target.hasAttribute) {
+    if (target.hasAttribute(attribute)) { return target; }
+
+    target = target.parentNode;
   }
 };
 
