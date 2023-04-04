@@ -14,7 +14,6 @@
   export let currentTime;
   export let playbackRate;
   export let prevPercentage;
-  export let segmentPlayback;
   export let videoBehindWidget;
   export let videoBehindStatic;
   export let widgetPosition;
@@ -48,7 +47,7 @@
   $: isStopped = playbackState === "stopped";
 
   $: segmentIndex = isAdvert || isStopped ? -1 : findSegmentIndex(segments, currentTime);
-  $: segmentIndex, segmentPlayback, handleSegmentUpdate();
+  $: segmentIndex, handleSegmentUpdate();
 
   const handlePlay = () => {
     onEvent(newEvent({

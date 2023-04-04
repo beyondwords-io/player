@@ -40,7 +40,8 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
   export let logoIconEnabled = true;
-  export let segmentPlayback = "enabled";
+  export let segmentPlayback = "auto";
+  export let segmentHighlight = "auto";
   export let currentSegment = undefined;
   export let hoveredSegment = undefined;
   export let advertConsent = "personalized";
@@ -78,11 +79,13 @@
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
-  $: highlightEnabled = ["enabled", "only-highlight"].includes(segmentPlayback);
-  $: playbackEnabled = ["enabled", "only-playback"].includes(segmentPlayback);
+  $: playbackEnabled = segmentPlayback === "auto"; // TODO: add support for 'body' setting
 
-  $: highlightSegment(highlightEnabled && currentSegment, "current-segment", highlightColor);
-  $: highlightSegment(playbackEnabled && hoveredSegment, "hovered-segment", highlightColor);
+  $: highlightCurrent = ["auto", "both", "current"].includes(segmentHighlight);
+  $: highlightHovered = ["both", "hovered"].includes(segmentHighlight) || segmentHighlight === "auto" && playbackEnabled;
+
+  $: highlightSegment(highlightCurrent && currentSegment, "current-segment", highlightColor);
+  $: highlightSegment(highlightHovered && hoveredSegment, "hovered-segment", highlightColor);
 </script>
 
 <MediaElement
@@ -92,7 +95,6 @@
   {contentIndex}
   {activeAdvert}
   {advertConsent}
-  {segmentPlayback}
   bind:playbackState
   bind:duration
   bind:currentTime

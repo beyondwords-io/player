@@ -227,7 +227,7 @@ class RootController {
   }
 
   handlePressedArticleSegment({ segment, segmentIndex, contentIndex }) {
-    if (!["enabled", "only-playback"].includes(this.player.segmentPlayback)) { return; }
+    if (this.player.segmentPlayback !== "auto") { return; } // TODO: add support for 'body' setting
 
     const changeTrack = contentIndex !== this.player.contentIndex;
     if (changeTrack) { this.#setTrack(() => contentIndex); }
