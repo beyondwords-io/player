@@ -98,6 +98,9 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PressedPlaylistItem          | user      | A playlist item was pressed.
 | PressedTogglePlaylist        | user      | The toggle playlist button was pressed.
 | PressedCloseWidget           | user      | The close widget button was pressed.
+| PressedSegment               | user      | The user pressed on a segment in the article.
+| HoveredSegmentUpdated        | user      | The user hovered over a different segment in the article.
+| CurrentSegmentUpdated        | media     | The media's current segment was updated.
 | DurationUpdated              | media*    | The media's duration was updated.
 | CurrentTimeUpdated           | media     | The media's current time was updated.
 | PlaybackPaused               | media*    | The media became paused at its current playback time.
