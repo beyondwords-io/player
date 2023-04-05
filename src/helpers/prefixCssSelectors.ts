@@ -6,7 +6,7 @@ const prefixCssSelectors = (prefix) => ({
     if (!id.endsWith(".css")) { return; }
     if (!id.includes("src/components")) { return; }
 
-    const options = { from: id, map: { inline: false, prev: false } };
+    const options = { from: id, map: { inline: false, prev: false, annotation: false } };
     const result = await postcss([postcssPlugin(prefix)]).process(src, options);
 
     return { code: result.css, map: result.map.toJSON() };
