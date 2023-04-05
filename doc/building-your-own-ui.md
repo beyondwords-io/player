@@ -156,10 +156,12 @@ Because of this, we'd discourage this technique, but you're welcome to use it if
 
 ## Direct API calls
 
-We'd strongly recommend you use one of techniques if you want to customize the user-interface of the player.
+We'd strongly recommend using one of techniques above if you want to customize the user-interface of the player.
 
-However, if you don't want to use any existing player code yourself and instead want direct access to the data then you can use our APIs.
+However, if you don't want to use any existing player code yourself and instead want direct access to the data then you can use [our APIs](https://api.beyondwords.io/docs).
 
-Please [contact us](mailto:support@beyondwords.io) if you want to use this approach and we can provide documentation on the /player API.
+Currently, all of the data for the player comes from the /player endpoint which is public and cached for five minutes. You could call this yourself and build your own user-interface on top of this data.
+
+However, please keep in mind that you will lose out on many key features of the player, such as BeyondWords Analytics, Google Analytics, support for adverts, [Segments Playback](./doc/segments-playback.md), Media Session API support, etc.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)
