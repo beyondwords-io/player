@@ -238,6 +238,9 @@ class RootController {
     const bodyEnabled = this.player.segmentPlayback === "body" && segment.section === "body";
     if (!allEnabled && !bodyEnabled) { return; }
 
+    const hasChanged = this.#currentSegmentChanged({ contentIndex, segmentIndex });
+    if (!hasChanged && !this.#isAdvert()) { this.#playOrPause(); return; }
+
     const changeTrack = contentIndex !== this.player.contentIndex;
     if (changeTrack) { this.#setTrack(() => contentIndex); }
 
@@ -415,6 +418,13 @@ class RootController {
       this.player.playlist?.some(o => o.contentId === legacyId) ||
       this.player.playlist?.some(o => o.sourceId === sourceId) ||
       this.player.playlist?.some(o => o.sourceUrl === sourceUrl);
+  }
+
+  #currentSegmentChanged({ contentIndex, segmentIndex }) {
+    return (
+      this.player.currentSegment?.contentIndex !== contentIndex ||
+      this.player.currentSegment?.segmentIndex !== segmentIndex
+    );
   }
 }
 
