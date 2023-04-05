@@ -225,7 +225,15 @@ class RootController {
     }
   }
 
-  handlePressedArticleSegment({ segment, segmentIndex, contentIndex }) {
+  handleHoveredSegmentUpdated({ segment, segmentIndex, contentIndex }) {
+    if (segment) {
+      this.player.hoveredSegment = { ...segment, segmentIndex, contentIndex };
+    } else {
+      this.player.hoveredSegment = null;
+    }
+  }
+
+  handlePressedSegment({ segment, segmentIndex, contentIndex }) {
     const allEnabled = this.player.segmentPlayback === "all";
     const bodyEnabled = this.player.segmentPlayback === "body" && segment.section === "body";
     if (!allEnabled && !bodyEnabled) { return; }
@@ -237,10 +245,6 @@ class RootController {
     this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
     this.player.playbackState = "playing";
     this.segmentClicked = true;
-  }
-
-  handleHoveredArticleSegment({ segment, segmentIndex, contentIndex }) {
-    this.player.hoveredSegment = { ...segment, segmentIndex, contentIndex };
   }
 
   // private

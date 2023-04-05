@@ -27,7 +27,7 @@ const handleMouseUp = (event) => {
     // TODO: if multiple players then prefer the one that's playing?
 
     player.onEvent(newEvent({
-      type: "PressedArticleSegment",
+      type: "PressedSegment",
       description: "The user pressed on a segment in the article.",
       initiatedBy: "user",
       segment,
@@ -48,8 +48,8 @@ const handleMouseMove = (event) => {
 
     if (changed(player, contentIndex, segmentIndex)) {
       player.onEvent(newEvent({
-        type: "HoveredArticleSegment",
-        description: "The user hovered over a segment in the article.",
+        type: "HoveredSegmentUpdated",
+        description: "The user hovered over a different segment in the article.",
         initiatedBy: "user",
         segment,
         contentIndex,
