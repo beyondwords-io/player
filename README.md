@@ -34,19 +34,21 @@ settings that can be set in the initializer or via the SDK.
 listeners that are called when player actions are performed.
 6. [Player events](./doc/player-events.md): A list of all events emitted by
 the player that can be listened to.
-7. [Custom analytics](./doc/custom-analytics.md): How to send player analytics
+7. [Segments playback](./doc/segments-playback.md): How to add support for
+the 'Playback from Segments' feature to your website.
+8. [Custom analytics](./doc/custom-analytics.md): How to send player analytics
 events to a custom URL of your choosing.
-8. [Building your own UI](./doc/building-your-own-ui.md): How to build your own
+9. [Building your own UI](./doc/building-your-own-ui.md): How to build your own
 user-interface on top of the BeyondWords player.
-9. [How it works](./doc/how-it-works.md): A technical overview of how the
+10. [How it works](./doc/how-it-works.md): A technical overview of how the
 player works, including API calls that are made.
-10. [Dev setup](./doc/dev-setup.md): How to run this project locally, e.g. if
+11. [Dev setup](./doc/dev-setup.md): How to run this project locally, e.g. if
 you are a developer at BeyondWords.
-11. [Dev workflow](./doc/dev-workflow.md): Useful advice for working on the
+12. [Dev workflow](./doc/dev-workflow.md): Useful advice for working on the
 player, including what all the [./bin](bin/) scripts do.
-12. [Code layout](./doc/code-layout.md): An explanation of the layout of code in
+13. [Code layout](./doc/code-layout.md): An explanation of the layout of code in
 the player. Each major subdirectory is listed.
-13. [Deployment](./doc/deployment.md): How to release a new version of the player
+14. [Deployment](./doc/deployment.md): How to release a new version of the player
 to the public and some things to consider.
 
 ## Contribution
