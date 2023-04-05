@@ -45,7 +45,7 @@
   export let playbackRate = 1;
   export let activeAdvert = undefined;
   export let textColor = "#111";
-  export let backgroundColor = "#F5F5F5";
+  export let backgroundColor = "#f5f5f5";
   export let iconColor = "black";
   export let logoIconEnabled = true;
   export let onEvent = () => {};

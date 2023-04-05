@@ -17,7 +17,7 @@
   export let duration = 0;
   export let playbackState = "stopped";
   export let skipButtonStyle = "auto";
-  export let backgroundColor = "#F5F5F5";
+  export let backgroundColor = "#f5f5f5";
   export let iconColor = "black";
   export let onEvent = () => {};
 

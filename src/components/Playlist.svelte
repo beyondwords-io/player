@@ -7,7 +7,7 @@
 
   export let style = "auto";
   export let textColor = "#111";
-  export let backgroundColor = "#F5F5F5";
+  export let backgroundColor = "#f5f5f5";
   export let iconColor = "#000";
   export let content = [];
   export let index = 0;

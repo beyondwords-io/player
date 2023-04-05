@@ -36,7 +36,7 @@
   export let widgetPosition = "auto";
   export let widgetWidth = "auto";
   export let textColor = "#111";
-  export let backgroundColor = "#F5F5F5";
+  export let backgroundColor = "#f5f5f5";
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
   export let logoIconEnabled = true;
