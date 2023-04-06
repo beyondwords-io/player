@@ -40,10 +40,16 @@ const applyToExternalCssFiles = async (src, id) => {
 };
 
 const postcssPlugin = (root) => {
-  root.walkRules(r => r.nodes = r.nodes.map(n => newNode(n)));
+  root.walkRules(r => r.nodes = r.nodes.map(n => newNode(n, r.selector)));
 };
 
-const newNode = (node) => {
+const newNode = (node, selector) => {
+  const isKeyframe = ["from", "to"].includes(selector) || selector.endsWith("%");
+  if (isKeyframe) { return node; }
+
+  const isExcluded = node.raws.value?.raw.includes("~!important");
+  if (isExcluded) { return node; }
+
   if (node.important) {
     throwError([
       "The styles should not use !important because it will be ignored.",
