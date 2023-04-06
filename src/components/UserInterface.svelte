@@ -55,7 +55,7 @@
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
-  let width, isHovering;
+  let width, isHovering, timeout;
 
   $: isSmall = playerStyle === "small";
   $: isStandard = playerStyle === "standard";
@@ -103,6 +103,12 @@
   $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall);
 
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
+  $: fixedPosition && animate();
+
+  const animate = () => {
+    if (timeout) { clearTimeout(timeout); }
+    timeout = setTimeout(() => timeout = null, 500);
+  };
 
   const handleMouseDown = (event) => {
     if (!isVideo) { return; }
@@ -122,7 +128,7 @@
 </script>
 
 {#if knownPlayerStyle(playerStyle) && content.length > 0}
-  <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} transition:flyWidget>
+  <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget on:outrostart={animate}>
     <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
       {#if isVideo && (posterImage || !videoIsBehind)}
         <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
