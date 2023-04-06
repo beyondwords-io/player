@@ -50,9 +50,17 @@ const findMarkers = (segment) => {
   return document.querySelectorAll(`[${attribute}="${segment.marker}"]`);
 };
 
-const findInnerMark = (element) => (
-  element.querySelector(`mark.${markClasses.join(".")}`)
-);
+const findInnerMark = (element) => {
+  for (const child of element.children) {
+    const isMark = child.nodeName.toLowerCase() === "mark";
+    if (!isMark) { continue; }
+
+    const isClass = markClasses.every(s => child.classList.contains(s));
+    if (!isClass) { continue; }
+
+    return child;
+  }
+};
 
 const createInnerMark = (element) => {
   const mark = document.createElement("mark");
