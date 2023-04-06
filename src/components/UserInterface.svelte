@@ -105,7 +105,7 @@
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
   $: fixedPosition && animate();
 
-  const animate = () => {
+  const animate = () => { // TODO: extract?
     if (timeout) { clearTimeout(timeout); }
     timeout = setTimeout(() => timeout = null, 500);
   };

@@ -21,7 +21,7 @@ const applyToInlineStyleTags = (src, id) => {
   const code = `
     const _set_style = (node, k, v) => set_style(node, k, v, 1);
     const _attr_dev = (node, k, v) => attr_dev(node, k, k === "style" ? _important(v) : v);
-    const _important = value => value.split(";").map(s => s + " !important").join(";");
+    const _important = value => value.split(/;[^base64]/).map(s => s + " !important").join(";");
 
     ${src.replaceAll("set_style(", "_set_style(").replaceAll("attr_dev(", "_attr_dev(")}
   `;
