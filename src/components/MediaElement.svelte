@@ -22,6 +22,7 @@
 
   let video;
   let hls = null;
+  let timeout;
 
   $: contentItem = content[contentIndex];
   $: segments = contentItem?.segments || [];
@@ -48,6 +49,13 @@
 
   $: segmentIndex = isAdvert || isStopped ? -1 : findSegmentIndex(segments, currentTime);
   $: segmentIndex, handleSegmentUpdate();
+
+  $: videoBehindWidget && animate();
+
+  const animate = () => {
+    if (timeout) { clearTimeout(timeout); }
+    timeout = setTimeout(() => timeout = null, 500);
+  };
 
   const handlePlay = () => {
     onEvent(newEvent({
@@ -160,7 +168,7 @@
   });
 </script>
 
-<div class="media-element {position}" class:behind-static={videoBehindStatic} class:behind-widget={videoBehindWidget} {style}>
+<div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic} class:behind-widget={videoBehindWidget} {style}>
   <div class="inner">
     <video bind:this={video}
            bind:duration
@@ -234,12 +242,17 @@
     display: flex;
     position: fixed;
     width: 0;
-    bottom: 0;
+    bottom: -100px /* ~!important */;
     right: 0;
     margin: 16px;
     animation: fly-widget 0.33s forwards;
-    opacity: 0;
+    opacity: 0 /* ~!important */;
     z-index: 999;
+  }
+
+  .behind-widget:not(.animating) {
+    bottom: 0;
+    opacity: 1;
   }
 
   .fixed-left {
