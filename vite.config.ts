@@ -8,7 +8,8 @@ import inlineCssIntoScript from "vite-plugin-css-injected-by-js";
 export default defineConfig({
   plugins: [
     svelte({ emitCss: true, compilerOptions: { accessors: true } }),
-    makeCssImportant(),
+    makeCssImportant({ type: "inline-styles" }),
+    makeCssImportant({ type: "style-tags" }),
     prefixCssSelectors(".bwp".repeat(12)),
     inlineCssIntoScript(),
   ],

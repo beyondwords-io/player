@@ -1,5 +1,5 @@
 <style>
-  :global(.beyondwords-player :not(svg *)) {
+  :global(.beyondwords-player :not(svg *, iframe)) {
     all: initial;
   }
 

@@ -1,18 +1,43 @@
 import postcss from "postcss";
 import throwError from "./throwError";
 
-const makeCssImportant = () => ({
-  name: "makeCssImportant",
-  transform: async (src, id) => {
-    if (!id.endsWith(".css")) { return; }
-    if (!id.includes("src/components")) { return; }
+const makeCssImportant = ({ type }) => {
+  const name = `makeCssImportant ${type}`;
 
-    const options = { from: id, map: { inline: false, prev: false, annotation: false } };
-    const result = await postcss([postcssPlugin]).process(src, options);
-
-    return { code: result.css, map: result.map.toJSON() };
+  if (type === "inline-styles") {
+    return { name, transform: applyToInlineStyleTags };
+  } else {
+    return { name, transform: applyToExternalCssFiles };
   }
-});
+};
+
+const applyToInlineStyleTags = (src, id) => {
+  if (!id.includes("src/components")) { return; }
+  if (!id.endsWith(".svelte")) { return; }
+
+  // TODO: error if already important
+  // TODO: check that svelte function names haven't changed by looking for them in UserInterface.svelte (error otherwise)
+
+  const code = `
+    const _set_style = (node, k, v) => set_style(node, k, v, 1);
+    const _attr_dev = (node, k, v) => attr_dev(node, k, k === "style" ? _important(v) : v);
+    const _important = value => value.split(";").map(s => s + " !important").join(";");
+
+    ${src.replaceAll("set_style(", "_set_style(").replaceAll("attr_dev(", "_attr_dev(")}
+  `;
+
+  return { code, map: null }; // TODO: use magic-string
+};
+
+const applyToExternalCssFiles = async (src, id) => {
+  if (!id.includes("src/components")) { return; }
+  if (!id.endsWith(".css")) { return; }
+
+  const options = { from: id, map: { inline: false, prev: false, annotation: false } };
+  const result = await postcss([postcssPlugin]).process(src, options);
+
+  return { code: result.css, map: result.map.toJSON() };
+};
 
 const postcssPlugin = (root) => {
   root.walkRules(r => r.nodes = r.nodes.map(n => newNode(n)));
