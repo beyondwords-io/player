@@ -144,7 +144,7 @@ To intentionally change the player styles, you must use this very long selector 
 
 ```css
 .bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp .main {
-  border-radius: 0;
+  border-radius: 0 !important;
 }
 ```
 
