@@ -26,7 +26,7 @@ The markers need to match the segments within the BeyondWords content or Playbac
 
 The easiest way to do this is to to supply the markers yourself when you create content in the [BeyondWords API](https://api.beyondwords.io/docs). You could then store these markers in your CMS and render them as data attributes on your published article.
 
-Alternatively, if a segment marker is not provided, BeyondWords will generate one for you. You can retrieve these from the /player endpoint (see [example response](https://api.beyondwords.io/v1/projects/26027/player/by_content_id/6590099)) and add them to the HTML of your article.
+Alternatively, if a segment marker is not provided, BeyondWords will generate one for you. You can retrieve these from the /player endpoint (see [example response](https://api.beyondwords.io/v1/projects/26027/player/by_content_id/6590099)) or content and add them to the HTML of your article.
 
 It is recommended to generate UUIDs as markers to avoid duplicates, in case there are multiple players on the same page.
 

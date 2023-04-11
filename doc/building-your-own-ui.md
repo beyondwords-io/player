@@ -162,6 +162,6 @@ However, if you don't want to use any existing player code yourself and instead 
 
 Currently, all of the data for the player comes from the /player endpoint which is public and cached for five minutes. You could call this yourself and build your own user-interface on top of this data.
 
-However, please keep in mind that you will lose out on many key features of the player, such as BeyondWords Analytics, Google Analytics, support for adverts, [Segments Playback](./doc/segments-playback.md), Media Session API support, etc.
+However, please keep in mind that you will lose out on many key features of the player, such as BeyondWords Analytics, support for Google Analytics, support for adverts, [Segments Playback](./doc/segments-playback.md), Media Session API support, etc.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)
