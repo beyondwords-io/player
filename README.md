@@ -14,7 +14,7 @@ the player scripts inside the BeyondWords CMS. However, for those who wish to
 customize the player further, this documentation provides helpful guides and a
 detailed explanation for each of the player's settings. You can see a demo of
 the player
-[here](https://beyondwords-io.github.io/playback-from-paragraphs-prototype/).
+[here](https://beyondwords-core.github.io/playback-from-paragraphs-prototype/).
 
 ## Documentation
 
