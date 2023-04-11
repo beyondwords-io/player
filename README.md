@@ -1,8 +1,6 @@
 ## BeyondWords Player
 
-**DO NOT USE: This is an alpha version of the player and is not officially
-released yet. We are testing the new player internally and will remove this
-notice once it is ready.**
+**Note:** This is a beta version of the new player that we’re sharing with customers as we finalize its documentation.
 
 BeyondWords is an AI voice and audio CMS that enables publishers to transform their content into natural-sounding and captivating audio experiences for their audiences.
 This repository includes the BeyondWords player, which seamlessly integrates with the BeyondWords audio CMS and can be easily embedded into your website or app. You can create an account
