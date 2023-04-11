@@ -51,28 +51,36 @@ const setProps = (player, data) => {
   // TODO: allow overriddable for some fields based on subscription
   //       e.g. logo_icon_enabled could be overridable if on a premium plan
 
-  set(player, "analyticsUrl", data.settings.analytics_url);
   set(player, "playerStyle", data.settings.player_style);
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
   set(player, "callToAction", data.settings.call_to_action);
+  set(player, "skipButtonStyle", data.settings.skip_button_style);
+  set(player, "contentIndex", 0);
+  set(player, "advertIndex", -1);
+  set(player, "duration", 0);
+  set(player, "currentTime", 0);
+  set(player, "playbackState", "stopped");
+  set(player, "widgetStyle", data.settings.widget_style);
+  set(player, "widgetPosition", data.settings.widget_position);
   set(player, "textColor", colors.text_color);
   set(player, "backgroundColor", colors.background_color);
   set(player, "iconColor", colors.icon_color);
-  // TODO: title_enabled
-  set(player, "widgetStyle", data.settings.widget_style);
-  set(player, "widgetPosition", data.settings.widget_position);
-  set(player, "segmentPlayback", data.settings.segment_playback_enabled ? "all" : "none");
-  set(player, "skipButtonStyle", data.settings.skip_button_style);
-  // TODO: paywall_type
-  // TODO: paywall_url
-  // TODO: download_button_enabled
-  // TODO: share_button_enabled
-  // TODO: voice_icon_enabled
+  // TODO: add support for highlightColor
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled, { overridable: false });
+  set(player, "segmentPlayback", data.settings.segment_playback_enabled ? "all" : "none");
+  set(player, "currentSegment", undefined);
+  set(player, "hoveredSegment", undefined);
   set(player, "analyticsConsent", analyticsConsent(data.settings), { overridable: false });
   set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
-  set(player, "analyticsId", data.settings.analytics_id, { overridable: false });
   set(player, "analyticsTag", data.settings.analytics_tag);
+  set(player, "analyticsUrl", data.settings.analytics_url);
+  set(player, "analyticsId", data.settings.analytics_id, { overridable: false });
+  // TODO: add support for title_enabled
+  // TODO: add support for paywall_type
+  // TODO: add support for paywall_url
+  // TODO: add support for download_button_enabled
+  // TODO: add support for share_button_enabled
+  // TODO: add support for voice_icon_enabled
 
   set(player, "content", data.content.map((item) => ({
     id: item.id,
