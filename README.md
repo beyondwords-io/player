@@ -4,11 +4,10 @@
 released yet. We are testing the new player internally and will remove this
 notice once it is ready.**
 
-BeyondWords is an AI voice and audio CMS that enables publishers to transform
-their content into natural-sounding and captivating audio experiences for their
-audiences.  This repository includes the BeyondWords player, which seamlessly
-integrates with the BeyondWords audio CMS and can be easily embedded into your
-website or app. You can create an account [here](https://dash.beyondwords.io/auth/signup).
+BeyondWords is an AI voice and audio CMS that enables publishers to transform their content into natural-sounding and captivating audio experiences for their audiences.
+This repository includes the BeyondWords player, which seamlessly integrates with the BeyondWords audio CMS and can be easily embedded into your website or app. You can create an account
+[here](https://dash.beyondwords.io/auth/signup).
+
 
 The easiest way to embed the BeyondWords player into your website is by copying
 the player scripts inside the BeyondWords CMS. However, for those who wish to
