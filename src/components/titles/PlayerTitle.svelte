@@ -14,7 +14,7 @@
 </script>
 
 <div class="player-title {playerStyle}" {style} bind:this={element}>
-  {title || ""}
+  {@html title?.replaceAll(/<[^>]+>/gi, "") || ""}
 </div>
 
 <style>

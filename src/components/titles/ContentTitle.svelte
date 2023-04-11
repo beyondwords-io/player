@@ -17,7 +17,7 @@
 </script>
 
 <div class="content-title" class:bold class:one-line={maxLines === 1} class:center class:n-lines={maxLines > 1} {style}>
-  {title || ""}
+  {@html title?.replaceAll(/<[^>]+>/gi, "") || ""}
 </div>
 
 <style>
