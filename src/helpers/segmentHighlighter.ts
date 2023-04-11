@@ -32,6 +32,9 @@ class SegmentHighlighter {
       let node;
 
       while ((node = walker.nextNode())) {
+        const isEmpty = /^\s*$/.test(node.nodeValue);
+        if (isEmpty) { continue; }
+
         const isLink = node.parentNode.nodeName.toLowerCase() === "a";
         if (isLink) { node = node.parentNode; }
 
