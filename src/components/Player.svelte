@@ -5,9 +5,9 @@
   import MediaSession from "./MediaSession.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import StyleReset from "./StyleReset.svelte";
+  import SegmentHighlighter from "../helpers/segmentHighlighter";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
-  import highlightSegment from "../helpers/highlightSegment";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -67,6 +67,7 @@
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
   export let prevPercentage = 0;
+  export let highlighter = new SegmentHighlighter();
   export const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
 
   $: activeAdvert = adverts[advertIndex];
@@ -80,14 +81,8 @@
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
-  $: currentMode = highlightCurrent === "auto" ? segmentPlayback : highlightCurrent;
-  $: hoveredMode = highlightHovered === "auto" ? segmentPlayback : highlightHovered;
-
-  $: currentEnabled = currentMode === "all" || currentMode === "body" && currentSegment?.section === "body";
-  $: hoveredEnabled = hoveredMode === "all" || hoveredMode === "body" && hoveredSegment?.section === "body";
-
-  $: highlightSegment(currentEnabled && currentSegment, "current-segment", highlightColor);
-  $: highlightSegment(hoveredEnabled && hoveredSegment, "hovered-segment", highlightColor, true);
+  $: highlighter.highlight("current", currentSegment, highlightCurrent, segmentPlayback, highlightColor);
+  $: highlighter.highlight("hovered", hoveredSegment, highlightHovered, segmentPlayback, highlightColor);
 </script>
 
 <MediaElement
