@@ -24,7 +24,7 @@
   }
 
   :global(.beyondwords-highlight) {
-    color: initial;
+    color: inherit;
     margin: 0;
     padding: 0;
   }

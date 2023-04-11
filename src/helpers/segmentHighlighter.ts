@@ -29,16 +29,19 @@ class SegmentHighlighter {
 
     for (const element of markerElements) {
       const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-      let textNode;
+      let node;
 
-      while ((textNode = walker.nextNode())) {
+      while ((node = walker.nextNode())) {
+        const isLink = node.parentNode.nodeName.toLowerCase() === "a";
+        if (isLink) { node = node.parentNode; }
+
         const mark = document.createElement("mark");
 
         mark.classList.add(...markClasses(marker));
         mark.style.background = background;
 
-        textNode.parentNode.insertBefore(mark, textNode);
-        mark.appendChild(textNode);
+        node.parentNode.insertBefore(mark, node);
+        mark.appendChild(node);
       }
 
       element.classList.add(...markerClasses);
