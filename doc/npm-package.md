@@ -16,7 +16,7 @@ npm add @beyondwords/player
 Then, add a div someone in your app:
 
 ```html
-<div id='something'></div>
+<div id='beyondwords-player'></div>
 ```
 
 And initialize the player with:
@@ -24,7 +24,7 @@ And initialize the player with:
 ```javascript
 import BeyondWords from '@beyondwords/player';
 
-new BeyondWords.Player({ target: '#something', projectID: <ID>, contentId: '<ID>' });
+new BeyondWords.Player({ target: '#beyondwords-player', projectID: <ID>, contentId: '<ID>' });
 ```
 
 After reloading your app, the player should load:
@@ -34,9 +34,9 @@ After reloading your app, the player should load:
 ## How it works
 
 The initialization is almost identical to the Getting Started guide except we
-set `target: '#something'`.
+set `target: '#beyondwords-player'`.
 
-This instructs the player to initialize inside the DOM node with id='something'.
+This instructs the player to initialize inside the DOM node with id='beyondwords-player'.
 
 Note that the DOM node must be on the page when the initializer is called or
 the player won't load.
@@ -50,7 +50,7 @@ However, you can also override properties in the initializer, for example:
 
 ```javascript
 new BeyondWords.Player({
-  target: '#something',
+  target: '#beyondwords-player',
   projectID: <ID>,
   contentId: '<ID>',
   playerStyle: 'large',
