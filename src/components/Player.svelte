@@ -91,8 +91,10 @@
   $: highlighter.highlight("current", currentSegment, highlightCurrent, segmentPlayback, highlightColor);
   $: highlighter.highlight("hovered", hoveredSegment, highlightHovered, segmentPlayback, highlightColor);
 
+  $: lastHovered = hoveredSegment || lastHovered;
+
   $: containers.addOrRemove("current", currentSegment, playbackCurrent, segmentPlayback);
-  //$: containers.addOrRemove("hovered", hoveredSegment, playbackHovered, segmentPlayback);
+  $: containers.addOrRemove("hovered", lastHovered, playbackHovered, segmentPlayback);
 </script>
 
 <MediaElement
