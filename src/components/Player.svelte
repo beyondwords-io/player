@@ -6,6 +6,7 @@
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import StyleReset from "./StyleReset.svelte";
   import SegmentHighlighter from "../helpers/segmentHighlighter";
+  import SegmentUIContainers from "../helpers/segmentUIContainers";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
 
@@ -53,6 +54,9 @@
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
+  $: playbackCurrent = highlightCurrent; // TODO: add settings
+  $: playbackHovered = highlightHovered; // TODO: add settings
+
   // These are set automatically.
   export let initialProps = {};
   export let showWidgetAtBottom = false;
@@ -67,7 +71,9 @@
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
   export let prevPercentage = 0;
+  export let segmentUIs = [];
   export let highlighter = new SegmentHighlighter();
+  export let containers = new SegmentUIContainers(arr => segmentUIs = arr);
   export const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
 
   $: activeAdvert = adverts[advertIndex];
@@ -83,6 +89,9 @@
 
   $: highlighter.highlight("current", currentSegment, highlightCurrent, segmentPlayback, highlightColor);
   $: highlighter.highlight("hovered", hoveredSegment, highlightHovered, segmentPlayback, highlightColor);
+
+  $: containers.addOrRemove("current", currentSegment, playbackCurrent, segmentPlayback);
+  //$: containers.addOrRemove("hovered", hoveredSegment, playbackHovered, segmentPlayback);
 </script>
 
 <MediaElement
@@ -126,6 +135,29 @@
     {logoIconEnabled}
     videoIsBehind={videoBehindStatic} />
 {/if}
+
+{#each segmentUIs as container}
+  <UserInterface
+    bind:this={userInterface}
+    {onEvent}
+    playerStyle={interfaceStyle}
+    {callToAction}
+    {skipButtonStyle}
+    {playlistStyle}
+    {playerTitle}
+    {content}
+    {contentIndex}
+    {duration}
+    {currentTime}
+    {playbackState}
+    {playbackRate}
+    {activeAdvert}
+    {textColor}
+    {backgroundColor}
+    {iconColor}
+    {logoIconEnabled}
+    videoIsBehind={videoBehindStatic} />
+{/each}
 
 {#if showWidgetAtBottom}
   <UserInterface

@@ -24,12 +24,13 @@ const newSelector = (className, times, rule, selector) => {
   const isRoot = selector.startsWith(".beyondwords-player");
   const isHighlight = selector.startsWith(".beyondwords-highlight");
   const isClickable = selector.startsWith(".beyondwords-clickable");
+  const isSegmentUI = selector.startsWith(".beyondwords-segment-ui");
 
   // Make the style reset rule lower precedence than the other styles.
   const isReset = rule.nodes.some(n => n.prop === "all");
   const prefix = className.repeat(isReset ? times - 1 : times);
 
-  if (isRoot || isHighlight || isClickable) {
+  if (isRoot || isHighlight || isClickable || isSegmentUI) {
     return `${prefix}${selector}`;
   } else {
     return `${prefix} ${selector}`;

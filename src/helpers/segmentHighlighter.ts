@@ -7,8 +7,8 @@ const markerClasses = ["beyondwords-clickable", "bwp"];
 class SegmentHighlighter {
   static #mediator = new OwnershipMediator(this.#highlight, this.#unhighlight);
 
-  highlight(type, segment, highlightMode, playbackMode, background) {
-    const mode = highlightMode === "auto" ? playbackMode : highlightMode;
+  highlight(type, segment, highlightMode, modeWhenAuto, background) {
+    const mode = highlightMode === "auto" ? modeWhenAuto : highlightMode;
     const enabled = mode === "all" || mode === "body" && segment?.section === "body";
 
     const current = enabled ? segment?.marker : null;
