@@ -43,10 +43,10 @@ const handleMouseMove = (event) => {
 
   // TODO: if multiple players?
 
-  for (const player of BeyondWords.Player.instances()) {
+  for (const [i, player] of BeyondWords.Player.instances().entries()) {
     const { segment, contentIndex, segmentIndex } = chooseSegment(player, marker);
 
-    if (changed(player, contentIndex, segmentIndex)) {
+    if (changed(i, contentIndex, segmentIndex)) {
       player.onEvent(newEvent({
         type: "HoveredSegmentUpdated",
         description: "The user hovered over a different segment in the article.",
@@ -105,9 +105,9 @@ const draggedMouse = (event) => {
 
 const previousIndexes = {};
 
-const changed = (player, contentIndex, segmentIndex) => {
-  previousIndexes[player] ||= {};
-  const previous = previousIndexes[player];
+const changed = (playerIndex, contentIndex, segmentIndex) => {
+  previousIndexes[playerIndex] ||= {};
+  const previous = previousIndexes[playerIndex];
 
   if (previous.contentIndex === contentIndex && previous.segmentIndex === segmentIndex) {
     return false;
