@@ -31,7 +31,7 @@ class SegmentUIContainers {
       const container = document.createElement("div");
 
       container.classList.add(...containerClasses(marker));
-      element.parentNode.insertBefore(container, element.nextSibling);
+      element.appendChild(container);
 
       self.containers.push(container);
     }
