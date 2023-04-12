@@ -18,13 +18,13 @@ class SegmentHighlighter {
 
     if (current === previous) { return; }
 
-    SegmentHighlighter.#markers.reference(current, () => this.#highlight(type, current, background));
+    SegmentHighlighter.#markers.reference(current, () => this.#highlight(current, background));
     SegmentHighlighter.#markers.unreference(previous, () => this.#unhighlight(previous));
 
     this[`prev${type}`] = segment?.marker;
   }
 
-  #highlight(type, marker, background) {
+  #highlight(marker, background) {
     const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
 
     for (const element of markerElements) {
