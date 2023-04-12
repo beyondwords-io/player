@@ -2,6 +2,7 @@
 <script>
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
+  import MountInside from "./helpers/MountInside.svelte";
   import MediaSession from "./MediaSession.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import StyleReset from "./StyleReset.svelte";
@@ -112,8 +113,6 @@
   {widgetWidth} />
 
 {#if showUserInterface}
-  <StyleReset />
-
   <UserInterface
     bind:this={userInterface}
     {onEvent}
@@ -135,29 +134,6 @@
     {logoIconEnabled}
     videoIsBehind={videoBehindStatic} />
 {/if}
-
-{#each segmentUIs as container}
-  <UserInterface
-    bind:this={userInterface}
-    {onEvent}
-    playerStyle={interfaceStyle}
-    {callToAction}
-    {skipButtonStyle}
-    {playlistStyle}
-    {playerTitle}
-    {content}
-    {contentIndex}
-    {duration}
-    {currentTime}
-    {playbackState}
-    {playbackRate}
-    {activeAdvert}
-    {textColor}
-    {backgroundColor}
-    {iconColor}
-    {logoIconEnabled}
-    videoIsBehind={videoBehindStatic} />
-{/each}
 
 {#if showWidgetAtBottom}
   <UserInterface
@@ -184,6 +160,29 @@
     videoIsBehind={videoBehindWidget} />
 {/if}
 
+{#each segmentUIs as root (root)}
+  <MountInside {root}>
+    <UserInterface
+      {onEvent}
+      playerStyle="small"
+      {callToAction}
+      {skipButtonStyle}
+      {playlistStyle}
+      {playerTitle}
+      {content}
+      {contentIndex}
+      {duration}
+      {currentTime}
+      {playbackState}
+      {playbackRate}
+      {activeAdvert}
+      {textColor}
+      {backgroundColor}
+      {iconColor}
+      {logoIconEnabled} />
+  </MountInside>
+{/each}
+
 {#if showMediaSession}
   <MediaSession
     {onEvent}
@@ -201,3 +200,5 @@
 {#if analyticsTag}
   <GoogleAnalytics {analyticsTag} />
 {/if}
+
+<StyleReset />
