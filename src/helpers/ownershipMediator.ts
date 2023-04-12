@@ -1,7 +1,7 @@
 // This class is responsible for selecting which consumer is the current owner
 // of a resource. It uses a simple strategy that grants ownership to the
-// consumer that most recently registered interest. When a consumer is no longer
-// interested, ownership reverts to the next-most-recent consumer, and so on.
+// consumer that most recently added interest. When a consumer removes interest
+// ownership reverts to the next-most-recent consumer, and so on.
 //
 // If two owners call onSelected with exactly the same arguments then the
 // OwnershipMediator avoids calling onSelected unnecessarily. The current owner
@@ -14,22 +14,21 @@ class OwnershipMediator {
     this.consumers = {};
   }
 
-  registerInterest(resourceId, consumerId, ...args) {
+  addInterest(resourceId, consumerId, ...args) {
     this.consumers[resourceId] ||= [];
     const last = this.consumers[resourceId].slice(-1)[0];
 
-    this.consumers[resourceId] = this.consumers[resourceId].filter(o => o.consumerId !== consumerId);
     this.consumers[resourceId].push({ consumerId, args });
 
     if (last && this.#arraysEqual(args, last.args)) { return; }
     this.onSelected(resourceId, ...args);
   }
 
-  deregisterInterest(resourceId, consumerId) {
+  removeInterest(resourceId, consumerId) {
     this.consumers[resourceId] ||= [];
     const last = this.consumers[resourceId].slice(-1)[0];
 
-    this.consumers[resourceId] = this.consumers[resourceId].filter(o => o.consumerId !== consumerId);
+    this.#removeLast(this.consumers[resourceId], o => o.consumerId === consumerId);
 
     const wasSelected = last && consumerId === last.consumerId;
     if (!wasSelected) { return; }
@@ -45,6 +44,15 @@ class OwnershipMediator {
 
   #arraysEqual(arr1, arr2) {
     return arr1.length === arr2.length && arr1.every((e, i) => e === arr2[i]);
+  }
+
+  #removeLast(array, conditionFn) {
+    for (let i = array.length - 1; i >= 0; i -= 1) {
+      if (!conditionFn(array[i])) { continue; }
+
+      array.splice(i, 1);
+      return;
+    }
   }
 }
 

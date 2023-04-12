@@ -14,8 +14,8 @@ class SegmentHighlighter {
     const current = enabled ? segment?.marker : null;
     const previous = this[`prev${type}`];
 
-    SegmentHighlighter.#mediator.registerInterest(current, this, background);
-    SegmentHighlighter.#mediator.deregisterInterest(previous, this);
+    if (current) { SegmentHighlighter.#mediator.addInterest(current, this, background); }
+    if (previous) { SegmentHighlighter.#mediator.removeInterest(previous, this); }
 
     this[`prev${type}`] = current;
   }
