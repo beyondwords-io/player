@@ -21,6 +21,8 @@ class OwnershipMediator {
     this.consumers[resourceId].push({ consumerId, args });
 
     if (last && this.#arraysEqual(args, last.args)) { return; }
+
+    if (last) { this.onDeselected(resourceId, ...last.args); }
     this.onSelected(resourceId, ...args);
   }
 
@@ -36,8 +38,8 @@ class OwnershipMediator {
     const nextLast = this.consumers[resourceId].slice(-1)[0];
     if (nextLast && this.#arraysEqual(last.args, nextLast.args)) { return; }
 
-    this.onDeselected(resourceId, last.args);
-    if (nextLast) { this.onSelected(resourceId, nextLast.args); }
+    this.onDeselected(resourceId, ...last.args);
+    if (nextLast) { this.onSelected(resourceId, ...nextLast.args); }
   }
 
   // private
