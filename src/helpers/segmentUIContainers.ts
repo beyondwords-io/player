@@ -1,6 +1,8 @@
 import OwnershipMediator from "./ownershipMediator";
 import { attribute } from "./segmentHighlighter";
 
+const containerClasses = (m) => ["beyondwords-segment-ui", "bwp", `marker-${m}`];
+
 class SegmentUIContainers {
   static #mediator = new OwnershipMediator(this.#addContainers, this.#removeContainers);
 
@@ -25,22 +27,31 @@ class SegmentUIContainers {
   static #addContainers(marker, self) {
     const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
 
-    const newElements = [...markerElements].filter(e => !self.containers.includes(e));
-    if (newElements.length === 0) { return; }
+    for (const element of markerElements) {
+      const container = document.createElement("div");
 
-    // TODO: add adjacent container?
+      container.classList.add(...containerClasses(marker));
+      element.parentNode.insertBefore(container, element.nextSibling);
 
-    self.containers = self.containers.concat(newElements);
+      self.containers.push(container);
+    }
+
     self.onUpdate(self.containers);
   }
 
   static #removeContainers(marker, self) {
-    const oldElements = self.containers.filter(e => marker === e.getAttribute(attribute));
-    if (oldElements.length === 0) { return; }
+    const classes = containerClasses(marker);
 
-    // TODO: add remove adjacent container?
+    for (let i = 0; i < self.containers.length; i += 1) {
+      const isMatch = classes.every(c => self.containers[i].classList.contains(c));
+      if (!isMatch) { continue; }
 
-    self.containers = self.containers.filter(e => !oldElements.includes(e));
+      self.containers[i].remove();
+      self.containers.splice(i, 1);
+
+      i -= 1;
+    }
+
     self.onUpdate(self.containers);
   }
 }
