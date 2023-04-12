@@ -1,13 +1,11 @@
-import ReferenceCount from "./referenceCount";
+import OwnershipMediator from "./ownershipMediator";
 
 const attribute = "data-beyondwords-marker";
 const markClasses = (m) => ["beyondwords-highlight", "bwp", `marker-${m}`];
 const markerClasses = ["beyondwords-clickable", "bwp"];
 
 class SegmentHighlighter {
-  // Use a reference counting pattern to avoid unnecessary updates to the DOM.
-  // This is static in case multiple players want to highlight the same segment.
-  static #markers = new ReferenceCount();
+  static #mediator = new OwnershipMediator(this.#highlight, this.#unhighlight);
 
   highlight(type, segment, highlightMode, playbackMode, background) {
     const mode = highlightMode === "auto" ? playbackMode : highlightMode;
@@ -16,15 +14,13 @@ class SegmentHighlighter {
     const current = enabled ? segment?.marker : null;
     const previous = this[`prev${type}`];
 
-    if (current === previous) { return; }
+    SegmentHighlighter.#mediator.registerInterest(current, this, background);
+    SegmentHighlighter.#mediator.deregisterInterest(previous, this);
 
-    SegmentHighlighter.#markers.reference(current, () => this.#highlight(current, background));
-    SegmentHighlighter.#markers.unreference(previous, () => this.#unhighlight(previous));
-
-    this[`prev${type}`] = segment?.marker;
+    this[`prev${type}`] = current;
   }
 
-  #highlight(marker, background) {
+  static #highlight(marker, background) {
     const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
 
     for (const element of markerElements) {
@@ -51,7 +47,7 @@ class SegmentHighlighter {
     }
   }
 
-  #unhighlight(marker) {
+  static #unhighlight(marker) {
     const markElements = document.querySelectorAll(`[${attribute}="${marker}"] mark.${markClasses(marker)}`);
 
     for (const element of markElements) {
