@@ -165,21 +165,17 @@
     <UserInterface
       {onEvent}
       playerStyle="small"
-      {callToAction}
-      {skipButtonStyle}
-      {playlistStyle}
-      {playerTitle}
+      fixedWidth={0}
+      logoIconEnabled={false}
       {content}
       {contentIndex}
       {duration}
       {currentTime}
       {playbackState}
-      {playbackRate}
       {activeAdvert}
       {textColor}
       {backgroundColor}
-      {iconColor}
-      {logoIconEnabled} />
+      {iconColor} />
   </MountInside>
 {/each}
 
