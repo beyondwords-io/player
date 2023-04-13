@@ -96,7 +96,7 @@
   const resetHovered = () => lastHovered = hoveredSegment;
 
   $: widgetSegment = lastHovered || currentSegment;
-  $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker || activeAdvert;
+  $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker;
 
   $: segmentContainers.update(widgetSegment, playbackHovered, segmentPlayback); // TODO: change playbackHovered
   $: segmentClickables.update(hoveredSegment, playbackHovered, segmentPlayback);
@@ -173,15 +173,15 @@
 {#each segmentWidgets as root (root)}
   <MountInside {root}>
     <UserInterface
-      onEvent={e => onEvent({...e, emittedFrom: "segment-widget" })}
+      onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
       playerStyle="small"
       fixedWidth={0}
       logoIconEnabled={false}
       {content}
       {contentIndex}
       {duration}
-      currentTime={widgetIsCurrent ? currentTime : widgetSegment.startTime}
-      playbackState={widgetIsCurrent ? playbackState : "paused"}
+      currentTime={widgetIsCurrent || activeAdvert ? currentTime : widgetSegment.startTime}
+      playbackState={widgetIsCurrent || activeAdvert ? playbackState : "paused"}
       {activeAdvert}
       {textColor}
       {backgroundColor}
