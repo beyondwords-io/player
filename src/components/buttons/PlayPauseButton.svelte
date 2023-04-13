@@ -10,7 +10,8 @@
   export let color = "#323232";
   export let onEvent = () => {};
 
-  const handleClick = () => {
+  const handleClick = (event) => {
+    event.preventDefault();
     const name = isPlaying ? "Pause" : "Play";
 
     onEvent(newEvent({
