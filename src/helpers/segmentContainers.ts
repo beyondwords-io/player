@@ -1,8 +1,9 @@
 import OwnershipMediator from "./ownershipMediator";
 import { dataAttribute } from "./segmentHighlights";
+import { safelyRemoveClasses } from "./segmentClickables";
 
 const containerClasses = (m) => ["beyondwords-segment-widget", "bwp", `marker-${m}`];
-const markerClasses = ["beyondwords-relative", "bwp"];
+const markerClasses = ["beyondwords-relative", "bwp"]; // Also set by SegmentClickables.
 
 class SegmentContainers {
   static #mediator = new OwnershipMediator(this.#addContainers, this.#removeContainers);
@@ -51,7 +52,7 @@ class SegmentContainers {
       if (!isMatch) { continue; }
 
       const element = self.containers[i].parentNode;
-      element?.classList?.remove(...markerClasses);
+      safelyRemoveClasses(element, markerClasses);
 
       self.containers[i].remove();
       self.containers.splice(i, 1);

@@ -1,7 +1,7 @@
 import OwnershipMediator from "./ownershipMediator";
 import { dataAttribute } from "./segmentHighlights";
 
-const markerClasses = ["beyondwords-clickable", "bwp"];
+const markerClasses = ["beyondwords-clickable", "bwp"]; // Also set by SegmentContainers.
 
 class SegmentClickables {
   static #mediator = new OwnershipMediator(this.#addClasses, this.#removeClasses);
@@ -31,9 +31,22 @@ class SegmentClickables {
     const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
-      element.classList.remove(...markerClasses);
+      safelyRemoveClasses(element, markerClasses);
     }
   }
 }
 
+// Remove all classes but leave the .bwp in place if there are other .beyondwords-* classes.
+// This ensures the prefixed CSS rules continue to target the element from the other updaters.
+const safelyRemoveClasses = (element, classes) => {
+  if (!element) { return; }
+
+  const otherClasses = [...element.classList].filter(c => !classes.includes(c));
+  const hasOtherClass = otherClasses.some(c => c.startsWith("beyondwords-"));
+
+  const classesToRemove = hasOtherClass ? classes.filter(c => c !== "bwp") : classes;
+  element.classList.remove(...classesToRemove);
+}
+
 export default SegmentClickables;
+export { safelyRemoveClasses };
