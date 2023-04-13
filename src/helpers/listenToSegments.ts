@@ -1,4 +1,4 @@
-import { attribute } from "./segmentHighlights";
+import { dataAttribute } from "./segmentHighlights";
 import newEvent from "./newEvent";
 
 const listenToSegments = () => {
@@ -17,7 +17,7 @@ const handleMouseUp = (event) => {
   if (draggedMouse(event)) { return; }
   if (event.button !== 0) { return; }
 
-  const marker = markerElement(event.target)?.getAttribute(attribute);
+  const marker = markerElement(event.target)?.getAttribute(dataAttribute);
   if (!marker) { return; }
 
   for (const player of BeyondWords.Player.instances()) {
@@ -39,7 +39,7 @@ const handleMouseUp = (event) => {
 
 const handleMouseMove = (event) => {
   const target = document.elementFromPoint(event.clientX, event.clientY);
-  const marker = markerElement(target)?.getAttribute(attribute);
+  const marker = markerElement(target)?.getAttribute(dataAttribute);
 
   // TODO: if multiple players?
 
@@ -61,7 +61,7 @@ const handleMouseMove = (event) => {
 
 const markerElement = (target) => {
   while (target && target.hasAttribute) {
-    if (target.hasAttribute(attribute)) { return target; }
+    if (target.hasAttribute(dataAttribute)) { return target; }
 
     if (target.onclick || target.onmousedown) { return; }
     if (target.nodeName.toLowerCase() === "a") { return; }

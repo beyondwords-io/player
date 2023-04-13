@@ -1,6 +1,6 @@
 import OwnershipMediator from "./ownershipMediator";
 
-const attribute = "data-beyondwords-marker";
+const dataAttribute = "data-beyondwords-marker";
 const markClasses = (m) => ["beyondwords-highlight", "bwp", `marker-${m}`];
 const markerClasses = ["beyondwords-clickable", "bwp"];
 
@@ -25,7 +25,7 @@ class SegmentHighlights {
   }
 
   static #addHighlights(marker, background, clickable) {
-    const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
+    const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
       if (clickable) { element.classList.add(...markerClasses); }
@@ -53,7 +53,7 @@ class SegmentHighlights {
   }
 
   static #removeHighlights(marker, background, clickable) {
-    const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
+    const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
       if (clickable) { element.classList.remove(...markerClasses); }
@@ -72,4 +72,4 @@ class SegmentHighlights {
 }
 
 export default SegmentHighlights;
-export { attribute };
+export { dataAttribute };

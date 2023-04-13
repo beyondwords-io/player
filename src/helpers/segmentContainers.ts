@@ -1,5 +1,5 @@
 import OwnershipMediator from "./ownershipMediator";
-import { attribute } from "./segmentHighlights";
+import { dataAttribute } from "./segmentHighlights";
 
 const containerClasses = (m) => ["beyondwords-segment-widget", "bwp", `marker-${m}`];
 const markerClasses = ["beyondwords-something", "bwp"];
@@ -28,7 +28,7 @@ class SegmentContainers {
   }
 
   static #addContainers(marker, self) {
-    const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
+    const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
       const container = document.createElement("div");
