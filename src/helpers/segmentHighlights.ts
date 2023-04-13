@@ -2,23 +2,18 @@ import OwnershipMediator from "./ownershipMediator";
 
 const dataAttribute = "data-beyondwords-marker";
 const markClasses = (m) => ["beyondwords-highlight", "bwp", `marker-${m}`];
-const markerClasses = ["beyondwords-clickable", "bwp"];
 
 class SegmentHighlights {
   static #mediator = new OwnershipMediator(this.#addHighlights, this.#removeHighlights);
 
-  update(type, segment, highlightMode, segmentPlayback, background) {
-    if (highlightMode === "auto") { highlightMode = segmentPlayback; }
-
-    const highlight = highlightMode === "all" || highlightMode === "body" && segment?.section === "body";
-    const clickable = segmentPlayback === "all" || segmentPlayback === "body" && segment?.section === "body";
-
-    if (!highlight) { background = null; }
+  update(type, segment, highlightMode, modeWhenAuto, background) {
+    const mode = highlightMode === "auto" ? modeWhenAuto : highlightMode;
+    const enabled = mode === "all" || mode === "body" && segment?.section === "body";
 
     const previous = this[`prev${type}`];
-    const current = background || clickable ? segment?.marker : null;
+    const current = enabled ? segment?.marker : null;
 
-    if (current) { SegmentHighlights.#mediator.addInterest(current, this, background, clickable); }
+    if (current) { SegmentHighlights.#mediator.addInterest(current, this, background); }
     if (previous) { SegmentHighlights.#mediator.removeInterest(previous, this); }
 
     this[`prev${type}`] = current;
@@ -28,9 +23,6 @@ class SegmentHighlights {
     const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
-      if (clickable) { element.classList.add(...markerClasses); }
-      if (!background) { continue; } // Don't add marks if no background.
-
       const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
       let node;
 
@@ -56,9 +48,6 @@ class SegmentHighlights {
     const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
-      if (clickable) { element.classList.remove(...markerClasses); }
-      if (!background) { continue; } // There are no marks to remove.
-
       const markElements = element.querySelectorAll(`mark.${markClasses(marker)}`);
 
       for (const mark of markElements) {

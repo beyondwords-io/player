@@ -6,8 +6,9 @@
   import MediaSession from "./MediaSession.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import StyleReset from "./StyleReset.svelte";
-  import SegmentHighlights from "../helpers/segmentHighlights";
   import SegmentContainers from "../helpers/segmentContainers";
+  import SegmentClickables from "../helpers/segmentClickables";
+  import SegmentHighlights from "../helpers/segmentHighlights";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
 
@@ -73,6 +74,7 @@
   export let prevPercentage = 0;
   export let segmentWidgets = [];
   export let segmentContainers = new SegmentContainers(arr => segmentWidgets = arr);
+  export let segmentClickables = new SegmentClickables();
   export let segmentHighlights = new SegmentHighlights();
   export const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
 
@@ -88,11 +90,13 @@
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
   $: lastHovered = hoveredSegment || lastHovered;
-  $: currentSegment, resetHovered();
+  $: widgetSegment = lastHovered || currentSegment;
 
+  $: currentSegment, resetHovered();
   const resetHovered = () => lastHovered = hoveredSegment;
 
-  $: segmentContainers.update(lastHovered || currentSegment, playbackHovered, segmentPlayback);
+  $: segmentContainers.update(widgetSegment, playbackHovered, segmentPlayback); // TODO: change playbackHovered
+  $: segmentClickables.update(hoveredSegment, playbackHovered, segmentPlayback);
 
   $: segmentHighlights.update("current", currentSegment, highlightCurrent, segmentPlayback, highlightColor);
   $: segmentHighlights.update("hovered", hoveredSegment, highlightHovered, segmentPlayback, highlightColor);
