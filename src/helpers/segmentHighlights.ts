@@ -19,7 +19,7 @@ class SegmentHighlights {
     this[`prev${type}`] = current;
   }
 
-  static #addHighlights(marker, background, clickable) {
+  static #addHighlights(marker, background) {
     const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
@@ -44,7 +44,7 @@ class SegmentHighlights {
     }
   }
 
-  static #removeHighlights(marker, background, clickable) {
+  static #removeHighlights(marker) {
     const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
