@@ -67,9 +67,6 @@ class RootController {
 
   // Please document all events and keep in-sync with /doc/player-events.md
 
-  handlePressedPlay()                  { this.player.playbackState = "playing"; }
-  handlePressedPause()                 { this.player.playbackState = "paused"; }
-
   handlePressedChangeSpeed()           { this.#setSpeed(i => i + 1, { cycle: true }); }
   handlePressedEnterOnChangeSpeed()    { this.#setSpeed(i => i + 1, { cycle: true }); }
   handlePressedSpaceOnChangeSpeed()    { this.#setSpeed(i => i + 1, { cycle: true }); }
@@ -130,6 +127,18 @@ class RootController {
     setPropsFromApi(this.player).then(() => {
       this.#chooseAndSetAdvert({ atTheStart: true });
     });
+  }
+
+  handlePressedPlay({ emittedFrom, widgetSegment, widgetIsCurrent }) {
+    if (emittedFrom === "segment-widget" && !widgetIsCurrent) {
+      this.#playFromSegment(widgetSegment);
+    } else {
+      this.player.playbackState = "playing";
+    }
+  }
+
+  handlePressedPause() {
+    this.player.playbackState = "paused";
   }
 
   handlePlaybackPlaying() {
@@ -218,7 +227,7 @@ class RootController {
   }
 
   handleCurrentSegmentUpdated({ segment, segmentIndex, contentIndex }) {
-    if (this.#isAdvert() && !this.segmentClicked) {
+    if (this.#isAdvert() && !this.segmentPlayed) {
       this.player.currentSegment = null;
     } else if (!this.#isAdvert()) {
       this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
@@ -244,10 +253,7 @@ class RootController {
     const changeTrack = contentIndex !== this.player.contentIndex;
     if (changeTrack) { this.#setTrack(() => contentIndex); }
 
-    this.#setTime(() => segment.startTime, contentIndex);
-    this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
-    this.player.playbackState = "playing";
-    this.segmentClicked = true;
+    this.#playFromSegment({ segmentIndex, contentIndex, ...segment });
   }
 
   // private
@@ -297,6 +303,13 @@ class RootController {
     }
   }
 
+  #playFromSegment({ segmentIndex, contentIndex, ...segment }) {
+    this.#setTime(() => segment.startTime, contentIndex);
+    this.player.currentSegment = { segmentIndex, contentIndex, ...segment };
+    this.player.playbackState = "playing";
+    this.segmentPlayed = true;
+  }
+
   #setSpeed(indexFn, { cycle } = {}) {
     const availableSpeeds = [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 2.5, 3];
     const maxIndex = availableSpeeds.length - 1;
@@ -340,7 +353,7 @@ class RootController {
       if (!this.#isAdvert()) {
         this.#setTime(() => 0);
         this.midrollPlayed = false;
-        this.segmentClicked = false;
+        this.segmentPlayed = false;
       }
 
       this.#chooseAndSetAdvert({ atTheStart: true });
