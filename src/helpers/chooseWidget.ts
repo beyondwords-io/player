@@ -35,7 +35,7 @@ const chooseWidget = (Player) => {
   }
 
   for (const player of Player.instances()) {
-    player.showWidgetAtBottom = player === bestSoFar;
+    player.showBottomWidget = player === bestSoFar;
   }
 };
 

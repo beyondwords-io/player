@@ -60,7 +60,7 @@
 
   // These are set automatically.
   export let initialProps = {};
-  export let showWidgetAtBottom = false;
+  export let showBottomWidget = false;
   export let showMediaSession = false;
   export let isFullScreen = false;
   export let mediaElement = undefined;
@@ -84,7 +84,7 @@
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
-  $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !isFullScreen;
+  $: videoBehindWidget = showBottomWidget && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
@@ -145,7 +145,7 @@
     videoIsBehind={videoBehindStatic} />
 {/if}
 
-{#if showWidgetAtBottom}
+{#if showBottomWidget}
   <UserInterface
     bind:this={widgetInterface}
     {onEvent}

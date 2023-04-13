@@ -6,7 +6,7 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock] });
 
-    expect(mock.showWidgetAtBottom).toEqual(true);
+    expect(mock.showBottomWidget).toEqual(true);
   });
 
   it("does not choose players with an unknown widget style", () => {
@@ -14,7 +14,7 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock] });
 
-    expect(mock.showWidgetAtBottom).toEqual(false);
+    expect(mock.showBottomWidget).toEqual(false);
   });
 
   it("does not choose players that are visible", () => {
@@ -22,7 +22,7 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock] });
 
-    expect(mock.showWidgetAtBottom).toEqual(false);
+    expect(mock.showBottomWidget).toEqual(false);
   });
 
   it("does not choose players that are within/below the viewport", () => {
@@ -30,7 +30,7 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock] });
 
-    expect(mock.showWidgetAtBottom).toEqual(false);
+    expect(mock.showBottomWidget).toEqual(false);
   });
 
   it("prefers to choose players that are playing", () => {
@@ -40,9 +40,9 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock1, mock2, mock3] });
 
-    expect(mock1.showWidgetAtBottom).toEqual(false);
-    expect(mock2.showWidgetAtBottom).toEqual(true);
-    expect(mock3.showWidgetAtBottom).toEqual(false);
+    expect(mock1.showBottomWidget).toEqual(false);
+    expect(mock2.showBottomWidget).toEqual(true);
+    expect(mock3.showBottomWidget).toEqual(false);
   });
 
   it("prefers to choose players that are paused if none are playing", () => {
@@ -52,9 +52,9 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock1, mock2, mock3] });
 
-    expect(mock1.showWidgetAtBottom).toEqual(false);
-    expect(mock2.showWidgetAtBottom).toEqual(true);
-    expect(mock3.showWidgetAtBottom).toEqual(false);
+    expect(mock1.showBottomWidget).toEqual(false);
+    expect(mock2.showBottomWidget).toEqual(true);
+    expect(mock3.showBottomWidget).toEqual(false);
   });
 
   it("prefers to choose players that are lower on the page", () => {
@@ -64,9 +64,9 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock1, mock2, mock3] });
 
-    expect(mock1.showWidgetAtBottom).toEqual(false);
-    expect(mock2.showWidgetAtBottom).toEqual(true);
-    expect(mock3.showWidgetAtBottom).toEqual(false);
+    expect(mock1.showBottomWidget).toEqual(false);
+    expect(mock2.showBottomWidget).toEqual(true);
+    expect(mock3.showBottomWidget).toEqual(false);
   });
 
   it("primarily chooses based on playbackState, and secondarily chooses based on absoluteY", () => {
@@ -76,9 +76,9 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock1, mock2, mock3] });
 
-    expect(mock1.showWidgetAtBottom).toEqual(false);
-    expect(mock2.showWidgetAtBottom).toEqual(false);
-    expect(mock3.showWidgetAtBottom).toEqual(true);
+    expect(mock1.showBottomWidget).toEqual(false);
+    expect(mock2.showBottomWidget).toEqual(false);
+    expect(mock3.showBottomWidget).toEqual(true);
   });
 
   it("does not choose a player if any are visible and all above are stopped", () => {
@@ -88,8 +88,8 @@ describe("chooseWidget", () => {
 
     chooseWidget({ instances: () => [mock1, mock2, mock3] });
 
-    expect(mock1.showWidgetAtBottom).toEqual(false);
-    expect(mock2.showWidgetAtBottom).toEqual(false);
-    expect(mock3.showWidgetAtBottom).toEqual(false);
+    expect(mock1.showBottomWidget).toEqual(false);
+    expect(mock2.showBottomWidget).toEqual(false);
+    expect(mock3.showBottomWidget).toEqual(false);
   });
 });
