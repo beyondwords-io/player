@@ -76,12 +76,13 @@
   export let segmentContainers = new SegmentContainers(arr => segmentWidgets = arr);
   export let segmentClickables = new SegmentClickables();
   export let segmentHighlights = new SegmentHighlights();
-  export const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
+  export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
   $: activeAdvert = adverts[advertIndex];
   $: contentItem = content[contentIndex];
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
+  $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
   $: videoBehindWidget = showWidgetAtBottom && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
@@ -172,7 +173,7 @@
 {#each segmentWidgets as root (root)}
   <MountInside {root}>
     <UserInterface
-      {onEvent}
+      onEvent={e => onEvent({...e, emittedFrom: "segment-widget" })}
       playerStyle="small"
       fixedWidth={0}
       logoIconEnabled={false}

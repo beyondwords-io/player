@@ -16,8 +16,8 @@ Events have a set of fields that are always present and some events contain addi
   description: "A playlist item was pressed.",
   index: 3,
   initiatedBy: "user",
+  emittedFrom: "inline-player",
   status: "handled",
-  fromWidget: false,
   createdAt: "2023-01-01T12:00:00.000Z",
   processedAt: "2023-01-01T12:00:00.005Z",
   changedProps: {
@@ -36,8 +36,8 @@ All of the other fields are present in every event. Their schema is explained be
 - **type**: the type of event, see the table below for a listing of event types
 - **description**: a short human-readable description of the event
 - **initiatedBy**: who initiated the event, one of: { user, media, browser, media-session-api, google-ima-sdk, websocket }
+- **emittedFrom**: which interface emitted the event, one of: { inline-player, bottom-widget, segment, segment-widget }
 - **status**: the status of the event, one of: { handled, ignored-due-to-advert, ignored-due-to-scrubbing }
-- **fromWidget**: whether the event was emitted from the player widget, rather than the inline player
 - **createdAt**: the time when the event was created in simplified extended ISO 8601 format
 - **processedAt**: the time when the event was processed in simplified extended ISO 8601 format
 - **changedProps**: an object listing the player properties that were changed by the event

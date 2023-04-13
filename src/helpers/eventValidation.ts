@@ -2,6 +2,7 @@ import throwError from "./throwError";
 import { validate as isValidUuid } from "uuid";
 
 const initiators = ["user", "media", "browser", "media-session-api", "google-ima-sdk", "websocket"];
+const emitters = ["inline-player", "bottom-widget", "segment", "segment-widget"];
 const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing"];
 const analyticsTypes = ["load", "play", "play_progress", "ad_link_click"];
 const deviceTypes = ["phone", "tablet", "desktop"];
@@ -17,20 +18,20 @@ export const validateEventBeforeProcessing = (props) => {
   validateProperty(props, "type",        s => isTitleCase(s));
   validateProperty(props, "description", s => s.length > 0);
   validateProperty(props, "initiatedBy", s => initiators.includes(s));
+  validateProperty(props, "emittedFrom", s => emitters.includes(s));
   validateProperty(props, "id",          s => isValidUuid(s));
   validateProperty(props, "createdAt",   s => isIsoDateString(s));
   validateProperty(props, "status",      s => s === "pending");
-  validateProperty(props, "fromWidget",  b => typeof b === "boolean");
 };
 
 export const validateEventAfterProcessing = (props) => {
   validateProperty(props, "type",         s => isTitleCase(s));
   validateProperty(props, "description",  s => s.length > 0);
   validateProperty(props, "initiatedBy",  s => initiators.includes(s));
+  validateProperty(props, "emittedFrom",  s => emitters.includes(s));
   validateProperty(props, "id",           s => isValidUuid(s));
   validateProperty(props, "createdAt",    s => isIsoDateString(s));
   validateProperty(props, "status",       s => postStatuses.includes(s));
-  validateProperty(props, "fromWidget",   b => typeof b === "boolean");
   validateProperty(props, "changedProps", o => typeof o === "object");
   validateProperty(props, "processedAt",  s => isIsoDateString(s));
 };
