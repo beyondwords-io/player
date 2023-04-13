@@ -45,6 +45,8 @@
   export let segmentPlayback = "all";
   export let highlightCurrent = "auto";
   export let highlightHovered = "auto";
+  export let playbackCurrent = "body"; // TODO: redesign settings? probably shouldn't default to body if segmentPlayback is none
+  export let playbackHovered = "body";
   export let currentSegment = undefined;
   export let hoveredSegment = undefined;
   export let advertConsent = "personalized";
@@ -54,9 +56,6 @@
   export let writeToken = undefined;
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
-
-  $: playbackCurrent = highlightCurrent; // TODO: add settings
-  $: playbackHovered = highlightHovered; // TODO: add settings
 
   // These are set automatically.
   export let initialProps = {};
