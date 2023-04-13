@@ -44,4 +44,8 @@
   :global(.beyondwords-relative) {
     position: relative;
   }
+
+  :global(.beyondwords-segment-widget) {
+    position: relative;
+  }
 </style>
