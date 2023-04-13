@@ -90,10 +90,12 @@
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
   $: lastHovered = hoveredSegment || lastHovered;
-  $: widgetSegment = lastHovered || currentSegment;
-
   $: currentSegment, resetHovered();
+
   const resetHovered = () => lastHovered = hoveredSegment;
+
+  $: widgetSegment = lastHovered || currentSegment;
+  $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker || activeAdvert;
 
   $: segmentContainers.update(widgetSegment, playbackHovered, segmentPlayback); // TODO: change playbackHovered
   $: segmentClickables.update(hoveredSegment, playbackHovered, segmentPlayback);
@@ -178,7 +180,7 @@
       {contentIndex}
       {duration}
       {currentTime}
-      {playbackState}
+      playbackState={widgetIsCurrent ? playbackState : "paused"}
       {activeAdvert}
       {textColor}
       {backgroundColor}
