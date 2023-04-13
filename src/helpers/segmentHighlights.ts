@@ -4,10 +4,10 @@ const attribute = "data-beyondwords-marker";
 const markClasses = (m) => ["beyondwords-highlight", "bwp", `marker-${m}`];
 const markerClasses = ["beyondwords-clickable", "bwp"];
 
-class SegmentHighlighter {
-  static #mediator = new OwnershipMediator(this.#highlight, this.#unhighlight);
+class SegmentHighlights {
+  static #mediator = new OwnershipMediator(this.#addHighlights, this.#removeHighlights);
 
-  highlight(type, segment, highlightMode, segmentPlayback, background) {
+  update(type, segment, highlightMode, segmentPlayback, background) {
     if (highlightMode === "auto") { highlightMode = segmentPlayback; }
 
     const highlight = highlightMode === "all" || highlightMode === "body" && segment?.section === "body";
@@ -18,13 +18,13 @@ class SegmentHighlighter {
     const previous = this[`prev${type}`];
     const current = background || clickable ? segment?.marker : null;
 
-    if (current) { SegmentHighlighter.#mediator.addInterest(current, this, background, clickable); }
-    if (previous) { SegmentHighlighter.#mediator.removeInterest(previous, this); }
+    if (current) { SegmentHighlights.#mediator.addInterest(current, this, background, clickable); }
+    if (previous) { SegmentHighlights.#mediator.removeInterest(previous, this); }
 
     this[`prev${type}`] = current;
   }
 
-  static #highlight(marker, background, clickable) {
+  static #addHighlights(marker, background, clickable) {
     const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
 
     for (const element of markerElements) {
@@ -52,7 +52,7 @@ class SegmentHighlighter {
     }
   }
 
-  static #unhighlight(marker, background, clickable) {
+  static #removeHighlights(marker, background, clickable) {
     const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
 
     for (const element of markerElements) {
@@ -71,5 +71,5 @@ class SegmentHighlighter {
   }
 }
 
-export default SegmentHighlighter;
+export default SegmentHighlights;
 export { attribute };

@@ -1,9 +1,10 @@
 import OwnershipMediator from "./ownershipMediator";
-import { attribute } from "./segmentHighlighter";
+import { attribute } from "./segmentHighlights";
 
-const containerClasses = (m) => ["beyondwords-segment-ui", "bwp", `marker-${m}`];
+const containerClasses = (m) => ["beyondwords-segment-widget", "bwp", `marker-${m}`];
+const markerClasses = ["beyondwords-something", "bwp"];
 
-class SegmentUIContainers {
+class SegmentContainers {
   static #mediator = new OwnershipMediator(this.#addContainers, this.#removeContainers);
 
   constructor(onUpdate) {
@@ -11,7 +12,7 @@ class SegmentUIContainers {
     this.containers = [];
   }
 
-  addOrRemove(segment, playbackMode, modeWhenAuto) {
+  update(segment, playbackMode, modeWhenAuto) {
     const mode = playbackMode === "auto" ? modeWhenAuto : playbackMode;
     const enabled = mode === "all" || mode === "body" && segment?.section === "body";
 
@@ -20,8 +21,8 @@ class SegmentUIContainers {
     const previous = this.previous;
     const current = (enabled && segment?.marker) || (sticky && previous);
 
-    if (current) { SegmentUIContainers.#mediator.addInterest(current, this, this); }
-    if (previous) { SegmentUIContainers.#mediator.removeInterest(previous, this); }
+    if (current) { SegmentContainers.#mediator.addInterest(current, this, this); }
+    if (previous) { SegmentContainers.#mediator.removeInterest(previous, this); }
 
     this.previous = current;
   }
@@ -32,9 +33,10 @@ class SegmentUIContainers {
     for (const element of markerElements) {
       const container = document.createElement("div");
 
+      element.classList.add(...markerClasses);
       container.classList.add(...containerClasses(marker));
-      element.appendChild(container);
 
+      element.appendChild(container);
       self.containers.push(container);
     }
 
@@ -48,6 +50,9 @@ class SegmentUIContainers {
       const isMatch = classes.every(c => self.containers[i].classList.contains(c));
       if (!isMatch) { continue; }
 
+      const element = self.containers[i].parentNode;
+      element?.classList?.remove(...markerClasses);
+
       self.containers[i].remove();
       self.containers.splice(i, 1);
 
@@ -58,4 +63,4 @@ class SegmentUIContainers {
   }
 }
 
-export default SegmentUIContainers;
+export default SegmentContainers;

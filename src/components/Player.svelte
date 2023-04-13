@@ -6,8 +6,8 @@
   import MediaSession from "./MediaSession.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import StyleReset from "./StyleReset.svelte";
-  import SegmentHighlighter from "../helpers/segmentHighlighter";
-  import SegmentUIContainers from "../helpers/segmentUIContainers";
+  import SegmentHighlights from "../helpers/segmentHighlights";
+  import SegmentContainers from "../helpers/segmentContainers";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
 
@@ -71,9 +71,9 @@
   export let listenSessionId = undefined;
   export let emitPlayEvent = undefined;
   export let prevPercentage = 0;
-  export let segmentUIs = [];
-  export let highlighter = new SegmentHighlighter();
-  export let containers = new SegmentUIContainers(arr => segmentUIs = arr);
+  export let segmentWidgets = [];
+  export let segmentContainers = new SegmentContainers(arr => segmentWidgets = arr);
+  export let segmentHighlights = new SegmentHighlights();
   export const onEvent = e => controller.processEvent({ ...e, fromWidget: videoBehindWidget });
 
   $: activeAdvert = adverts[advertIndex];
@@ -87,15 +87,15 @@
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
-  $: highlighter.highlight("current", currentSegment, highlightCurrent, segmentPlayback, highlightColor);
-  $: highlighter.highlight("hovered", hoveredSegment, highlightHovered, segmentPlayback, highlightColor);
-
-  const resetHovered = () => lastHovered = hoveredSegment;
-
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, resetHovered();
 
-  $: containers.addOrRemove(lastHovered || currentSegment, playbackHovered, segmentPlayback);
+  const resetHovered = () => lastHovered = hoveredSegment;
+
+  $: segmentContainers.update(lastHovered || currentSegment, playbackHovered, segmentPlayback);
+
+  $: segmentHighlights.update("current", currentSegment, highlightCurrent, segmentPlayback, highlightColor);
+  $: segmentHighlights.update("hovered", hoveredSegment, highlightHovered, segmentPlayback, highlightColor);
 </script>
 
 <MediaElement
@@ -163,7 +163,7 @@
     videoIsBehind={videoBehindWidget} />
 {/if}
 
-{#each segmentUIs as root (root)}
+{#each segmentWidgets as root (root)}
   <MountInside {root}>
     <UserInterface
       {onEvent}

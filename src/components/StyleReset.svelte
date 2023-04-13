@@ -1,22 +1,22 @@
 <style>
   :global(.beyondwords-player :not(svg *, iframe, .animating)),
-  :global(.beyondwords-segment-ui :not(svg *, iframe, .animating)) {
+  :global(.beyondwords-segment-widget :not(svg *, iframe, .animating)) {
     all: initial;
   }
 
   :global(.beyondwords-player :focus-visible),
-  :global(.beyondwords-segment-ui :focus-visible) {
+  :global(.beyondwords-segment-widget :focus-visible) {
     outline: 1px dotted blue;
     outline: 5px auto -webkit-focus-ring-color;
   }
 
   :global(.beyondwords-player svg),
-  :global(.beyondwords-segment-ui svg) {
+  :global(.beyondwords-segment-widget svg) {
     fill: transparent;
   }
 
   :global(.beyondwords-player div),
-  :global(.beyondwords-segment-ui div) {
+  :global(.beyondwords-segment-widget div) {
     display: block;
   }
 
@@ -24,10 +24,10 @@
   :global(.beyondwords-player button *),
   :global(.beyondwords-player a),
   :global(.beyondwords-player a *),
-  :global(.beyondwords-segment-ui button),
-  :global(.beyondwords-segment-ui button *),
-  :global(.beyondwords-segment-ui a),
-  :global(.beyondwords-segment-ui a *) {
+  :global(.beyondwords-segment-widget button),
+  :global(.beyondwords-segment-widget button *),
+  :global(.beyondwords-segment-widget a),
+  :global(.beyondwords-segment-widget a *) {
     cursor: pointer;
   }
 
