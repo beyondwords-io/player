@@ -48,13 +48,19 @@ class SegmentHighlighter {
   }
 
   static #unhighlight(marker) {
-    const markElements = document.querySelectorAll(`[${attribute}="${marker}"] mark.${markClasses(marker)}`);
+    const markerElements = document.querySelectorAll(`[${attribute}="${marker}"]`);
 
-    for (const element of markElements) {
-      for (const child of element.childNodes) {
-        element.parentNode.insertBefore(child, element);
-        element.remove();
+    for (const element of markerElements) {
+      const markElements = element.querySelectorAll(`mark.${markClasses(marker)}`);
+
+      for (const mark of markElements) {
+        for (const child of mark.childNodes) {
+          mark.parentNode.insertBefore(child, mark);
+          mark.remove();
+        }
       }
+
+      element.classList.remove(...markerClasses);
     }
   }
 }
