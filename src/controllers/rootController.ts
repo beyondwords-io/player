@@ -228,6 +228,7 @@ class RootController {
 
   handleCurrentSegmentUpdated({ segment, segmentIndex, contentIndex }) {
     if (this.#isAdvert() && !this.segmentPlayed) {
+      this.player.segmentContainers.reset();
       this.player.currentSegment = null;
     } else if (!this.#isAdvert()) {
       this.player.currentSegment = { ...segment, segmentIndex, contentIndex };

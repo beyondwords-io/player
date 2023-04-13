@@ -28,6 +28,10 @@ class SegmentContainers {
     this.previous = current;
   }
 
+  reset() {
+    this.update(null, "none", "none");
+  }
+
   static #addContainers(marker, self) {
     const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
