@@ -179,7 +179,7 @@
       {content}
       {contentIndex}
       {duration}
-      {currentTime}
+      currentTime={widgetIsCurrent ? currentTime : widgetSegment.startTime}
       playbackState={widgetIsCurrent ? playbackState : "paused"}
       {activeAdvert}
       {textColor}
