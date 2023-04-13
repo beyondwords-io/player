@@ -93,8 +93,8 @@
 
   $: lastHovered = hoveredSegment || lastHovered;
 
-  $: containers.addOrRemove("current", currentSegment, playbackCurrent, segmentPlayback);
-  $: containers.addOrRemove("hovered", lastHovered, playbackHovered, segmentPlayback);
+  $: containers.addOrRemove(currentSegment, playbackCurrent, segmentPlayback);
+  $: containers.addOrRemove(lastHovered, playbackHovered, segmentPlayback);
 </script>
 
 <MediaElement

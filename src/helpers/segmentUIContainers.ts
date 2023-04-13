@@ -11,17 +11,17 @@ class SegmentUIContainers {
     this.containers = [];
   }
 
-  addOrRemove(type, segment, playbackMode, modeWhenAuto) {
+  addOrRemove(segment, playbackMode, modeWhenAuto) {
     const mode = playbackMode === "auto" ? modeWhenAuto : playbackMode;
     const enabled = mode === "all" || mode === "body" && segment?.section === "body";
 
     const current = enabled ? segment?.marker : null;
-    const previous = this[`prev${type}`];
+    const previous = this.previous;
 
     if (current) { SegmentUIContainers.#mediator.addInterest(current, this, this); }
     if (previous) { SegmentUIContainers.#mediator.removeInterest(previous, this); }
 
-    this[`prev${type}`] = current;
+    this.previous = current;
   }
 
   static #addContainers(marker, self) {
