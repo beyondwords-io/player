@@ -2,7 +2,7 @@ import OwnershipMediator from "./ownershipMediator";
 import { dataAttribute } from "./segmentHighlights";
 
 const containerClasses = (m) => ["beyondwords-segment-widget", "bwp", `marker-${m}`];
-const markerClasses = ["beyondwords-something", "bwp"];
+const markerClasses = ["beyondwords-relative", "bwp"];
 
 class SegmentContainers {
   static #mediator = new OwnershipMediator(this.#addContainers, this.#removeContainers);

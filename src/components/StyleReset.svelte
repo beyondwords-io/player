@@ -40,4 +40,8 @@
   :global(.beyondwords-clickable) {
     cursor: pointer;
   }
+
+  :global(.beyondwords-relative) {
+    position: relative;
+  }
 </style>
