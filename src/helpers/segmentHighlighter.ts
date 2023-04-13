@@ -11,8 +11,8 @@ class SegmentHighlighter {
     const mode = highlightMode === "auto" ? modeWhenAuto : highlightMode;
     const enabled = mode === "all" || mode === "body" && segment?.section === "body";
 
-    const current = enabled ? segment?.marker : null;
     const previous = this[`prev${type}`];
+    const current = enabled ? segment?.marker : null;
 
     if (current) { SegmentHighlighter.#mediator.addInterest(current, this, background); }
     if (previous) { SegmentHighlighter.#mediator.removeInterest(previous, this); }

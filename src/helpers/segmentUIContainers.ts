@@ -15,8 +15,10 @@ class SegmentUIContainers {
     const mode = playbackMode === "auto" ? modeWhenAuto : playbackMode;
     const enabled = mode === "all" || mode === "body" && segment?.section === "body";
 
-    const current = enabled ? segment?.marker : null;
+    const sticky = ["all", "body"].includes(mode);
+
     const previous = this.previous;
+    const current = (enabled && segment?.marker) || (sticky && previous);
 
     if (current) { SegmentUIContainers.#mediator.addInterest(current, this, this); }
     if (previous) { SegmentUIContainers.#mediator.removeInterest(previous, this); }
