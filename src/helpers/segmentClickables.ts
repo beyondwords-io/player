@@ -3,6 +3,14 @@ import { dataAttribute } from "./segmentHighlights";
 
 const markerClasses = ["beyondwords-clickable", "bwp"]; // Also set by SegmentContainers.
 
+// This class only adds/removes a className to show 'cursor: pointer' when hovering.
+// An event is always emitted when you click on a segment and RootController
+// decides whether to act on it by checking if its section is in clickableSections.
+//
+// We don't add 'cursor: pointer' to all data-beyondwords-marker elements becuase
+// some might not be clickable if the marker isn't in the content's segments. It
+// would be confusing if the pointer icon showed but nothing happened when clicking.
+
 class SegmentClickables {
   static #mediator = new OwnershipMediator(this.#addClasses, this.#removeClasses);
 
