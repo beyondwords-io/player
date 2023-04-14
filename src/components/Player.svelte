@@ -102,7 +102,7 @@
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
   $: segmentHighlights.update("current", currentSegment, highlightSections, highlightColor);
-  $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor); // TODO: how to distinguish current/hovered? Still needed?
+  $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor);
 </script>
 
 <MediaElement

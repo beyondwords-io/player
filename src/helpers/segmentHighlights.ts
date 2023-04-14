@@ -7,7 +7,8 @@ class SegmentHighlights {
   static #mediator = new OwnershipMediator(this.#addHighlights, this.#removeHighlights);
 
   update(type, segment, sections, background) {
-    const enabled = sections === "all" || sections === "body" && segment?.section === "body";
+    const typeSections = this.#sectionsForType(type, sections);
+    const enabled = typeSections === "all" || typeSections === "body" && segment?.section === "body";
 
     const previous = this[`prev${type}`];
     const current = enabled ? segment?.marker : null;
@@ -55,6 +56,18 @@ class SegmentHighlights {
           mark.remove();
         }
       }
+    }
+  }
+
+  // private
+
+  #sectionsForType(type, sections) {
+    let [currentSections, hoveredSections] = sections.split("-");
+
+    if (type === "current") {
+      return currentSections;
+    } else {
+      return hoveredSections || currentSections;
     }
   }
 }
