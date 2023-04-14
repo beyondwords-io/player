@@ -172,7 +172,7 @@
             <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
           {/if}
 
-          {#if isStandard && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
+          {#if isStandard && fixedPosition && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
             <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
           {/if}
 
