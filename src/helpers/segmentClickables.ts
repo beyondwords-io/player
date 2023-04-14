@@ -46,7 +46,7 @@ const safelyRemoveClasses = (element, classes) => {
 
   const classesToRemove = hasOtherClass ? classes.filter(c => c !== "bwp") : classes;
   element.classList.remove(...classesToRemove);
-}
+};
 
 export default SegmentClickables;
 export { safelyRemoveClasses };
