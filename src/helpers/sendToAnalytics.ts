@@ -44,7 +44,7 @@ const analyticsEventType = (player, playerEventType) => {
 
 const eventFromProps = (player, analyticsEventType) => {
   player.listenSessionId = player.listenSessionId || randomUuid();
-  player.sessionCreatedAt = player.sessionCreatedAt || new Date().toISOString();
+  player.sessionCreatedAt = player.sessionCreatedAt || Date.now();
 
   localStorage.beyondwords = localStorage.beyondwords || JSON.stringify(randomUuid());
 

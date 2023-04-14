@@ -26,7 +26,7 @@ You can inspect the events that are sent by finding them in the Network tab in y
   "media_id": 555,
   "local_storage_id": "bef9218d-3871-450e-a7fa-5da65102f532",
   "listen_session_id": "839ff785-0cb8-4e74-a061-506f571c79ce",
-  "session_created_at": "2023-01-01T00:00:00.000Z",
+  "session_created_at": 1672531200,
   "duration": 123.45,
   "listen_length_seconds": 0.2,
   "listen_length_percent": 0.1620089105,
@@ -54,7 +54,7 @@ Events are simple JSON objects with the following fields:
 | media_id              | integer           | The numeric ID of the content or advert media field that is currently loaded into the player. This field is null when VAST adverts are playing.
 | local_storage_id      | string            | A string UUID associated with the current user that is stored in local storage in their browser under the 'beyondwords' key. This field is null if advertConsent is set to 'without-uuids'.
 | listen_session_id     | string            | A string UUID associated with the current player instance. This ID changes after the page is reloaded. This field is null if advertConsent is set to 'without-uuids'.
-| session_created_at    | string            | The time at which the first analytics event was sent from the current player instance.
+| session_created_at    | integer           | The unix time at which the first analytics event was sent from the current player instance.
 | duration              | float             | The duration in seconds of the content or advert media currently loaded into the player.
 | listen_length_seconds | float             | The duration in seconds that the user has listened to of the currently loaded media.
 | listen_length_percent | float             | The percentage that the user has listened to of the currently loaded media.

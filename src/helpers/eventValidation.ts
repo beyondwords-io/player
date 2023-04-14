@@ -47,7 +47,7 @@ export const validateAnalyticsEvent = (props) => {                              
   validateProperty(props, "media_id",              n => !n || n > 0);                // Int64
   validateProperty(props, "local_storage_id",      s => !s || isValidUuid(s));       // String
   validateProperty(props, "listen_session_id",     s => !s || isValidUuid(s));       // UUID
-  validateProperty(props, "session_created_at",    s => isIsoDateString(s));         // DateTime
+  validateProperty(props, "session_created_at",    n => n >= 0);                     // DateTime
   validateProperty(props, "duration",              n => n >= 0);                     // Int32
   validateProperty(props, "listen_length_percent", n => n >= 0 && n <= 100);         // Int32
   validateProperty(props, "listen_length_seconds", n => n >= 0);                     // Int32
