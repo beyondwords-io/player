@@ -2,8 +2,8 @@
 
 ## Getting Started
 
-The first step is to [create an account](https://dash.beyondwords.io/auth/signup) for a
-BeyondWords account and generate some content.
+The first step is to [create an account](https://dash.beyondwords.io/auth/signup)
+and generate some content.
 
 You can then click on the embed button next to the content to add the script tag
 to the `<body>` of your site.
