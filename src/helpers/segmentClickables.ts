@@ -6,9 +6,8 @@ const markerClasses = ["beyondwords-clickable", "bwp"]; // Also set by SegmentCo
 class SegmentClickables {
   static #mediator = new OwnershipMediator(this.#addClasses, this.#removeClasses);
 
-  update(segment, clickableMode, modeWhenAuto) {
-    const mode = clickableMode === "auto" ? modeWhenAuto : clickableMode;
-    const enabled = mode === "all" || mode === "body" && segment?.section === "body";
+  update(segment, sections) {
+    const enabled = sections === "all" || sections === "body" && segment?.section === "body";
 
     const previous = this.previous;
     const current = enabled ? segment?.marker : null;

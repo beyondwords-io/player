@@ -67,8 +67,10 @@ const setProps = (player, data) => {
   set(player, "iconColor", colors.icon_color);
   // TODO: add support for highlightColor
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled, { overridable: false });
-  set(player, "segmentPlayback", data.settings.segment_playback_enabled ? "all" : "none");
-  set(player, "currentSegment", undefined);
+  set(player, "highlightSections", data.settings.segment_playback_enabled ? "all" : "none");
+  set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
+  set(player, "segmentWidgetSections", data.settings.segment_playback_enabled ? "none" : "none");
+  set(player, "currentSegment", undefined);                          // TODO: set ^ to "body" after more testing
   set(player, "hoveredSegment", undefined);
   set(player, "analyticsConsent", analyticsConsent(data.settings), { overridable: false });
   set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);

@@ -13,11 +13,9 @@ class SegmentContainers {
     this.containers = [];
   }
 
-  update(segment, playbackMode, modeWhenAuto) {
-    const mode = playbackMode === "auto" ? modeWhenAuto : playbackMode;
-    const enabled = mode === "all" || mode === "body" && segment?.section === "body";
-
-    const sticky = ["all", "body"].includes(mode);
+  update(segment, sections) {
+    const enabled = sections === "all" || sections === "body" && segment?.section === "body";
+    const sticky = ["all", "body"].includes(sections);
 
     const previous = this.previous;
     const current = (enabled && segment?.marker) || (sticky && previous?.marker);
@@ -29,7 +27,7 @@ class SegmentContainers {
   }
 
   reset() {
-    this.update(null, "none", "none");
+    this.update(null, "none");
   }
 
   static #addContainers(marker, self) {

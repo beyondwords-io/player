@@ -43,11 +43,10 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
   export let logoIconEnabled = true;
-  export let segmentPlayback = "all";
-  export let highlightCurrent = "auto";
-  export let highlightHovered = "auto";
-  export let playbackCurrent = "body"; // TODO: redesign settings? probably shouldn't default to body if segmentPlayback is none
-  export let playbackHovered = "body";
+  export let highlightSections = "all";
+  export let clickableSections = "all";
+  export let segmentWidgetSections = "body";
+  export let segmentWidgetPosition = "7-oclock";
   export let currentSegment = undefined;
   export let hoveredSegment = undefined;
   export let advertConsent = "personalized";
@@ -99,11 +98,11 @@
   $: widgetSegment = lastHovered || currentSegment;
   $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker;
 
-  $: segmentContainers.update(widgetSegment, playbackHovered, segmentPlayback); // TODO: change playbackHovered
-  $: segmentClickables.update(hoveredSegment, playbackHovered, segmentPlayback);
+  $: segmentContainers.update(widgetSegment, segmentWidgetSections);
+  $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: segmentHighlights.update("current", currentSegment, highlightCurrent, segmentPlayback, highlightColor);
-  $: segmentHighlights.update("hovered", hoveredSegment, highlightHovered, segmentPlayback, highlightColor);
+  $: segmentHighlights.update("current", currentSegment, highlightSections, highlightColor);
+  $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor); // TODO: how to distinguish current/hovered? Still needed?
 </script>
 
 <MediaElement

@@ -244,9 +244,9 @@ class RootController {
   }
 
   handlePressedSegment({ segment, segmentIndex, contentIndex }) {
-    const allEnabled = this.player.segmentPlayback === "all";
-    const bodyEnabled = this.player.segmentPlayback === "body" && segment.section === "body";
-    if (!allEnabled && !bodyEnabled) { return; }
+    const sections = this.player.clickableSections;
+    const enabled = sections === "all" || sections === "body" && segment?.section === "body";
+    if (!enabled) { return; }
 
     const hasChanged = this.#currentSegmentChanged({ contentIndex, segmentIndex });
     if (!hasChanged && !this.#isAdvert()) { this.#playOrPause(); return; }

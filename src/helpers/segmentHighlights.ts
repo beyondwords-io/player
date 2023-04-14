@@ -6,9 +6,8 @@ const markClasses = (m) => ["beyondwords-highlight", "bwp", `marker-${m}`];
 class SegmentHighlights {
   static #mediator = new OwnershipMediator(this.#addHighlights, this.#removeHighlights);
 
-  update(type, segment, highlightMode, modeWhenAuto, background) {
-    const mode = highlightMode === "auto" ? modeWhenAuto : highlightMode;
-    const enabled = mode === "all" || mode === "body" && segment?.section === "body";
+  update(type, segment, sections, background) {
+    const enabled = sections === "all" || sections === "body" && segment?.section === "body";
 
     const previous = this[`prev${type}`];
     const current = enabled ? segment?.marker : null;
