@@ -87,6 +87,10 @@ const chooseSegment = (player, marker) => {
       const thisContent = player.contentIndex === i ? 1 : 0;
       if (thisContent < bestContent) { continue; }
 
+      // If the marker appears in the segments more than once then choose the first
+      // segment so that playback starts from the earliest segment.
+      if (thisContent === bestContent && bestSoFar?.segment) { continue; }
+
       bestSoFar = { contentIndex: i, segmentIndex: j, segment };
       bestContent = thisContent;
     }
