@@ -32,6 +32,8 @@ You can inspect the events that are sent by finding them in the Network tab in y
   "speed": 1,
   "location": "https://example.com",
   "referrer": "https://example.com"
+  "player_version": "1",
+  "player_npm_version": "1.2.3",
 }
 ```
 
@@ -57,5 +59,7 @@ Events are simple JSON objects with the following fields:
 | speed                 | float             | The speed at which the user is listening to the media, e.g. 0.5, 1 or 2.
 | location              | string            | The value of window.location.href when the event was emitted.
 | referrer              | string            | The value of document.referrer when the event was emitted.
+| player_version        | string            | This will always be the string "1" but we may use this later, e.g. to run A/B tests.
+| player_npm_version    | string            | The version of the NPM package as specified in the package.json file.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)

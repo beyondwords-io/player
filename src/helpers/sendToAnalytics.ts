@@ -1,6 +1,7 @@
 import AnalyticsClient from "../api_clients/analyticsClient";
 import { validateAnalyticsEvent } from "../helpers/eventValidation";
 import { v4 as randomUuid } from "uuid";
+import { version } from "../../package.json";
 
 const sendToAnalytics = (player, playerEvent) => {
   const eventType = analyticsEventType(player, playerEvent.type);
@@ -67,6 +68,8 @@ const eventFromProps = (player, analyticsEventType) => {
     speed: player.playbackRate,
     location: window.location.href,
     referrer: document.referrer,
+    player_version: "1",
+    player_npm_version: version,
   };
 };
 
