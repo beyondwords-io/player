@@ -44,6 +44,8 @@ const analyticsEventType = (player, playerEventType) => {
 
 const eventFromProps = (player, analyticsEventType) => {
   player.listenSessionId = player.listenSessionId || randomUuid();
+  player.sessionCreatedAt = player.sessionCreatedAt || new Date().toISOString();
+
   localStorage.beyondwords = localStorage.beyondwords || JSON.stringify(randomUuid());
 
   const activeAdvert = player.adverts[player.advertIndex];
@@ -62,6 +64,7 @@ const eventFromProps = (player, analyticsEventType) => {
     media_id: (activeAdvert || contentItem)?.media?.[0]?.id,
     local_storage_id: withoutUuids ? null : JSON.parse(localStorage.beyondwords),
     listen_session_id: withoutUuids ? null : player.listenSessionId,
+    session_created_at: player.sessionCreatedAt,
     duration: player.duration,
     listen_length_seconds: player.currentTime,
     listen_length_percent: Math.max(0, Math.min(100, percentage)),
