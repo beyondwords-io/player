@@ -11,6 +11,7 @@
   import SegmentHighlights from "../helpers/segmentHighlights";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
+  import sectionEnabled from "../helpers/sectionEnabled";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -95,7 +96,10 @@
 
   const resetHovered = () => lastHovered = hoveredSegment;
 
-  $: widgetSegment = lastHovered || currentSegment;
+  $: currentAllowedInWidget = sectionEnabled("current", currentSegment, segmentWidgetSections);
+  $: hoveredAllowedInWidget = sectionEnabled("hovered", hoveredSegment, segmentWidgetSections);
+
+  $: widgetSegment = (hoveredAllowedInWidget && lastHovered) || (currentAllowedInWidget && currentSegment);
   $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker;
 
   $: segmentContainers.update(widgetSegment, segmentWidgetSections);
