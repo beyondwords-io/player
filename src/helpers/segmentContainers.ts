@@ -20,7 +20,7 @@ class SegmentContainers {
     const sticky = ["all", "body"].includes(mode);
 
     const previous = this.previous;
-    const current = (enabled && segment?.marker) || (sticky && previous);
+    const current = (enabled && segment?.marker) || (sticky && previous?.marker);
 
     if (current) { SegmentContainers.#mediator.addInterest(current, this, this); }
     if (previous) { SegmentContainers.#mediator.removeInterest(previous, this); }
