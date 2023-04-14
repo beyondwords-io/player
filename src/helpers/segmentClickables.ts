@@ -1,4 +1,5 @@
 import OwnershipMediator from "./ownershipMediator";
+import sectionEnabled from "./sectionEnabled";
 import { dataAttribute } from "./segmentHighlights";
 
 const markerClasses = ["beyondwords-clickable", "bwp"]; // Also set by SegmentContainers.
@@ -15,7 +16,7 @@ class SegmentClickables {
   static #mediator = new OwnershipMediator(this.#addClasses, this.#removeClasses);
 
   update(segment, sections) {
-    const enabled = sections === "all" || sections === "body" && segment?.section === "body";
+    const enabled = sectionEnabled("hovered", segment, sections);
 
     const previous = this.previous;
     const current = enabled ? segment?.marker : null;

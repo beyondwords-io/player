@@ -7,6 +7,7 @@ import setPropsFromApi from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
 import settableProps from "../helpers/settableProps";
 import diffObject from "../helpers/diffObject";
+import sectionEnabled from "../helpers/sectionEnabled";
 import chooseAdvert from "../helpers/chooseAdvert";
 import chooseMediaSession from "../helpers/chooseMediaSession";
 import chooseWidget from "../helpers/chooseWidget";
@@ -244,8 +245,7 @@ class RootController {
   }
 
   handlePressedSegment({ segment, segmentIndex, contentIndex }) {
-    const sections = this.player.clickableSections;
-    const enabled = sections === "all" || sections === "body" && segment?.section === "body";
+    const enabled = sectionEnabled("hovered", segment, this.player.clickableSections);
     if (!enabled) { return; }
 
     const hasChanged = this.#currentSegmentChanged({ contentIndex, segmentIndex });
