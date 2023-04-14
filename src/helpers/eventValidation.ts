@@ -53,6 +53,8 @@ export const validateAnalyticsEvent = (props) => {                              
   validateProperty(props, "speed",                 n => n >= 0);                     // Int32
   validateProperty(props, "location",              s => s.length > 0);               // Not currently stored
   validateProperty(props, "referrer",              s => typeof s === "string");      // Not currently stored
+  validateProperty(props, "player_version",        s => s.length > 0);               // Not currently stored
+  validateProperty(props, "player_npm_version",    s => s.length > 0);               // Not currently stored
 };
 
 const isTitleCase = (string) => {
