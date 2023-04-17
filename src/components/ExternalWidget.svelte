@@ -1,6 +1,4 @@
 <script>
-  import { findByQuery } from "../helpers/resolveTarget";
-
   export let root = undefined;
 
   let element;
