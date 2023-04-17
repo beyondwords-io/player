@@ -43,15 +43,15 @@ const analyticsEventType = (player, playerEventType) => {
 };
 
 const eventFromProps = (player, analyticsEventType) => {
-  player.listenSessionId = player.listenSessionId || randomUuid();
-  player.sessionCreatedAt = player.sessionCreatedAt || Date.now();
+  player.listenSessionId ||= randomUuid();
+  player.sessionCreatedAt ||= Date.now();
 
-  localStorage.beyondwords = localStorage.beyondwords || JSON.stringify(randomUuid());
+  const withoutStorage = player.analyticsConsent === "without-local-storage";
+  if (!withoutStorage) { localStorage.beyondwords ||= JSON.stringify(randomUuid()); }
 
   const activeAdvert = player.adverts[player.advertIndex];
   const contentItem = player.content[player.contentIndex];
   const percentage = (player.currentTime / player.duration) * 100;
-  const withoutUuids = player.analyticsConsent === "without-uuids";
 
   return {
     event_type: analyticsEventType,
@@ -62,8 +62,8 @@ const eventFromProps = (player, analyticsEventType) => {
     analytics_id: player.analyticsId,
     ad_id: activeAdvert?.id,
     media_id: (activeAdvert || contentItem)?.media?.[0]?.id,
-    local_storage_id: withoutUuids ? null : JSON.parse(localStorage.beyondwords),
-    listen_session_id: withoutUuids ? null : player.listenSessionId,
+    local_storage_id: withoutStorage ? null : JSON.parse(localStorage.beyondwords),
+    listen_session_id: player.listenSessionId,
     session_created_at: player.sessionCreatedAt,
     duration: player.duration,
     listen_length_seconds: player.currentTime,

@@ -142,7 +142,7 @@ const set = (player, propName, value, { overridable = true } = {}) => {
 
 const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {
   if (!analytics_enabled)      { return "none"; }
-  if (!analytics_uuid_enabled) { return "without-uuids"; }
+  if (!analytics_uuid_enabled) { return "without-local-storage"; }
 
   return "allowed";
 };

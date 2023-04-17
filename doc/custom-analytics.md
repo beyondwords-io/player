@@ -52,8 +52,8 @@ Events are simple JSON objects with the following fields:
 | analytics_id          | integer           | A numeric ID used by BeyondWords for associating this event with your project. This field might be null if content wasn't fetched from the API and is instead set manually in the player.
 | ad_id                 | integer           | The numeric ID of the advert that is currently loaded into the player. This field is null when an advert isn't playing, i.e. when content is playing.
 | media_id              | integer           | The numeric ID of the content or advert media field that is currently loaded into the player. This field is null when VAST adverts are playing.
-| local_storage_id      | string            | A string UUID associated with the current user that is stored in local storage in their browser under the 'beyondwords' key. This field is null if advertConsent is set to 'without-uuids'.
-| listen_session_id     | string            | A string UUID associated with the current player instance. This ID changes after the page is reloaded. This field is null if advertConsent is set to 'without-uuids'.
+| local_storage_id      | string            | A string UUID associated with the current user and stored in local storage under the 'beyondwords' key. This field is null if advertConsent is set to 'without-local-storage'.
+| listen_session_id     | string            | A string UUID associated with the current player instance. This ID changes after the page is reloaded and is different for each player instance.
 | session_created_at    | integer           | The unix time at which the first analytics event was sent from the current player instance.
 | duration              | float             | The duration in seconds of the content or advert media currently loaded into the player.
 | listen_length_seconds | float             | The duration in seconds that the user has listened to of the currently loaded media.
