@@ -12,6 +12,7 @@
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
   import sectionEnabled from "../helpers/sectionEnabled";
+  import { findByQuery }  from "../helpers/resolveTarget";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -85,6 +86,8 @@
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
+
+  $: widgetTarget = findByQuery(widgetTarget);
 
   $: videoBehindWidget = showBottomWidget && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;

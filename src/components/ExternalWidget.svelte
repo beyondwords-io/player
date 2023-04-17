@@ -5,7 +5,7 @@
 
   let element;
 
-  $: target = typeof root === "string" ? findByQuery(root, "widget") : root;
+  $: target = typeof root === "string" ? null : root;
   $: target && element && target.appendChild(element);
 </script>
 

@@ -37,6 +37,8 @@ const addDivAfter = (target) => {
 };
 
 const findByQuery = (target, type = "player") => {
+  if (typeof target !== "string") { return target; }
+
   const elements = document.querySelectorAll(target);
 
   if (elements.length === 0) {
