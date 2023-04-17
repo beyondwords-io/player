@@ -2,7 +2,7 @@
 <script>
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
-  import MountInside from "./helpers/MountInside.svelte";
+  import ExternalWidget from "./ExternalWidget.svelte";
   import MediaSession from "./MediaSession.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import StyleReset from "./StyleReset.svelte";
@@ -174,8 +174,8 @@
     videoIsBehind={videoBehindWidget} />
 {/if}
 
-{#each segmentWidgets as root (root)}
-  <MountInside {root}>
+{#each segmentWidgets as target (target)}
+  <ExternalWidget {target}>
     <UserInterface
       onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
       playerStyle="small"
@@ -190,7 +190,7 @@
       {textColor}
       {backgroundColor}
       {iconColor} />
-  </MountInside>
+  </ExternalWidget>
 {/each}
 
 {#if showMediaSession}

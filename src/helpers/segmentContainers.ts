@@ -2,7 +2,7 @@ import OwnershipMediator from "./ownershipMediator";
 import { dataAttribute } from "./segmentHighlights";
 import { safelyRemoveClasses } from "./segmentClickables";
 
-const containerClasses = (m) => ["beyondwords-segment-widget", "bwp", `marker-${m}`];
+const containerClasses = (m) => [`segment-widget-marker-${m}`];
 const markerClasses = ["beyondwords-relative", "bwp"]; // Also set by SegmentClickables.
 
 class SegmentContainers {
