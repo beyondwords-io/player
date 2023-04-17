@@ -151,7 +151,7 @@
 {/if}
 
 {#if showBottomWidget || widgetTarget}
-  <ExternalWidget target={widgetTarget}>
+  <ExternalWidget root={widgetTarget}>
     <UserInterface
       bind:this={widgetInterface}
       {onEvent}
@@ -177,8 +177,8 @@
   </ExternalWidget>
 {/if}
 
-{#each segmentWidgets as target (target)}
-  <ExternalWidget {target}>
+{#each segmentWidgets as root (root)}
+  <ExternalWidget {root}>
     <UserInterface
       onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
       playerStyle="small"

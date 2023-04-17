@@ -36,18 +36,19 @@ const addDivAfter = (target) => {
   return div;
 };
 
-const findByQuery = (target) => {
+const findByQuery = (target, type = "player") => {
   const elements = document.querySelectorAll(target);
 
   if (elements.length === 0) {
-    throwError("Failed to initialize player because the target could not be found.", { target, elements });
+    throwError(`Failed to initialize ${type} because the target could not be found.`, { target, elements });
   }
 
   if (elements.length > 1) {
-    throwError(`Failed to initialize player because the target is ambiguous. (${elements.length} elements match)`, { target, elements });
+    throwError(`Failed to initialize ${type} because the target is ambiguous. (${elements.length} elements match)`, { target, elements });
   }
 
   return elements[0];
 };
 
 export default resolveTarget;
+export { findByQuery };

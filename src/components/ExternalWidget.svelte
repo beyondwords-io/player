@@ -1,8 +1,11 @@
 <script>
-  export let target;
+  import { findByQuery } from "../helpers/resolveTarget";
+
+  export let root = undefined;
 
   let element;
 
+  $: target = typeof root === "string" ? findByQuery(root, "widget") : root;
   $: target && element && target.appendChild(element);
 </script>
 
