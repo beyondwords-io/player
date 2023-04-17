@@ -6,6 +6,7 @@
 
   export let progress = 0;
   export let fullWidth = false;
+  export let readonly = false;
   export let color = "#323232";
   export let onEvent = () => {};
 
@@ -66,7 +67,7 @@
   });
 </script>
 
-<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement}>
+<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement}>
   <div class="background" style="{backgroundStyle}"></div>
   <div class="progress" style="{backgroundStyle}; width: {progress * 100}%"></div>
 </button>
@@ -85,6 +86,11 @@
     margin: 0;
     padding: 0;
     position: relative;
+  }
+
+  .readonly,
+  .readonly * {
+    cursor: not-allowed;
   }
 
   .background {

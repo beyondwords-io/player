@@ -179,7 +179,7 @@
           <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} color={isVideo ? buttonColor : activeTextColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
-            <ProgressBar {onEvent} {progress} fullWidth={isVideo} color={activeIconColor} />
+            <ProgressBar {onEvent} {progress} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
