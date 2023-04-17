@@ -106,7 +106,7 @@
   $: widgetSegment = (hoveredAllowedInWidget && lastHovered) || (currentAllowedInWidget && currentSegment);
   $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker;
 
-  $: segmentContainers.update(widgetSegment, segmentWidgetSections);
+  $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
   $: segmentHighlights.update("current", currentSegment, highlightSections, highlightColor);

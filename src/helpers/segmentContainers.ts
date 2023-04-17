@@ -2,7 +2,7 @@ import OwnershipMediator from "./ownershipMediator";
 import { dataAttribute } from "./segmentHighlights";
 import { safelyRemoveClasses } from "./segmentClickables";
 
-const containerClasses = (m) => [`segment-widget-marker-${m}`];
+const containerClasses = (m, p) => ["beyondwords-widget", "bwp", `marker-${m}`, `position-${p}`];
 const markerClasses = ["beyondwords-relative", "bwp"]; // Also set by SegmentClickables.
 
 class SegmentContainers {
@@ -13,13 +13,13 @@ class SegmentContainers {
     this.containers = [];
   }
 
-  update(segment, sections) {
+  update(segment, sections, position) {
     const sticky = sections.includes("all") || sections.includes("body");
 
     const previous = this.previous;
     const current = segment?.marker || (sticky && previous?.marker);
 
-    if (current) { SegmentContainers.#mediator.addInterest(current, this, this); }
+    if (current) { SegmentContainers.#mediator.addInterest(current, this, this, position); }
     if (previous) { SegmentContainers.#mediator.removeInterest(previous, this); }
 
     this.previous = current;
@@ -29,24 +29,31 @@ class SegmentContainers {
     this.update(null, "none");
   }
 
-  static #addContainers(marker, self) {
+  static #addContainers(marker, self, position) {
     const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
 
     for (const element of markerElements) {
       const container = document.createElement("div");
 
       element.classList.add(...markerClasses);
-      container.classList.add(...containerClasses(marker));
+      container.classList.add(...containerClasses(marker, position));
 
-      element.appendChild(container);
+      const insertBefore = ["11-oclock", "12-oclock", "1-oclock"].includes(position);
+
+      if (insertBefore) {
+        element.insertBefore(container, element.firstChild);
+      } else {
+        element.appendChild(container);
+      }
+
       self.containers.push(container);
     }
 
     self.onUpdate(self.containers);
   }
 
-  static #removeContainers(marker, self) {
-    const classes = containerClasses(marker);
+  static #removeContainers(marker, self, position) {
+    const classes = containerClasses(marker, position);
 
     for (let i = 0; i < self.containers.length; i += 1) {
       const isMatch = classes.every(c => self.containers[i].classList.contains(c));
