@@ -30,7 +30,11 @@
 
     const observer = new IntersectionObserver(callback, { threshold: 0.5 });
     observer.observe(element);
-    return () => observer.unobserve(element);
+
+    return () => {
+      observer.unobserve(element);
+      callback([{ isIntersecting: true, boundingClientRect: { y: Infinity } }]);
+    };
   });
 </script>
 
