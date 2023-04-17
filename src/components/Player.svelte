@@ -39,6 +39,7 @@
   export let widgetStyle = "standard";
   export let widgetPosition = "auto";
   export let widgetWidth = "auto";
+  export let widgetTarget = undefined;
   export let textColor = "#111";
   export let backgroundColor = "#f5f5f5";
   export let iconColor = "rgba(0, 0, 0, 0.8)";
@@ -149,29 +150,31 @@
     videoIsBehind={videoBehindStatic} />
 {/if}
 
-{#if showBottomWidget}
-  <UserInterface
-    bind:this={widgetInterface}
-    {onEvent}
-    playerStyle={widgetStyle}
-    {callToAction}
-    {skipButtonStyle}
-    playlistStyle="hide"
-    {playerTitle}
-    fixedPosition={widgetPosition}
-    fixedWidth={widgetWidth}
-    {content}
-    {contentIndex}
-    {duration}
-    {currentTime}
-    {playbackState}
-    {playbackRate}
-    {activeAdvert}
-    {textColor}
-    {backgroundColor}
-    {iconColor}
-    {logoIconEnabled}
-    videoIsBehind={videoBehindWidget} />
+{#if showBottomWidget || widgetTarget}
+  <ExternalWidget target={widgetTarget}>
+    <UserInterface
+      bind:this={widgetInterface}
+      {onEvent}
+      playerStyle={widgetStyle}
+      {callToAction}
+      {skipButtonStyle}
+      playlistStyle="hide"
+      {playerTitle}
+      fixedPosition={!widgetTarget && widgetPosition}
+      fixedWidth={!widgetTarget && widgetWidth}
+      {content}
+      {contentIndex}
+      {duration}
+      {currentTime}
+      {playbackState}
+      {playbackRate}
+      {activeAdvert}
+      {textColor}
+      {backgroundColor}
+      {iconColor}
+      {logoIconEnabled}
+      videoIsBehind={videoBehindWidget} />
+  </ExternalWidget>
 {/if}
 
 {#each segmentWidgets as target (target)}
