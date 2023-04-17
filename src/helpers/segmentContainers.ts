@@ -35,7 +35,11 @@ class SegmentContainers {
     for (const element of markerElements) {
       const container = document.createElement("div");
 
-      element.classList.add(...markerClasses);
+      // Don't add 'position: relative' to the data-beyondwords-marker element
+      // if we can help it to reduce interference on the publisher's webpage.
+      const needsRelative = ["2-oclock", "3-oclock", "4-oclock", "8-oclock", "9-oclock", "10-oclock"].includes(position);
+
+      if (needsRelative) { element.classList.add(...markerClasses); }
       container.classList.add(...containerClasses(marker, position, playerStyle));
 
       const insertBefore = ["11-oclock", "12-oclock", "1-oclock"].includes(position);
