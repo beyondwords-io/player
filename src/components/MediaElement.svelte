@@ -23,6 +23,10 @@
   let video;
   let hls = null;
   let timeout;
+  let time = 0;
+
+  const setTime = (t) => time = currentTime;
+  $: !activeAdvert && setTime(currentTime);
 
   $: contentItem = content[contentIndex];
   $: segments = contentItem?.segments || [];
@@ -172,7 +176,7 @@
   <div class="inner">
     <video bind:this={video}
            bind:duration
-           bind:currentTime
+           bind:currentTime={time}
            bind:playbackRate
            poster={poster || ""}
            preload="metadata"
