@@ -65,7 +65,7 @@ const setProps = (player, data) => {
   set(player, "textColor", colors.text_color);
   set(player, "backgroundColor", colors.background_color);
   set(player, "iconColor", colors.icon_color);
-  // TODO: add support for highlightColor
+  set(player, "highlightColor", colors.highlight_color);
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled, { overridable: false });
   set(player, "highlightSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
