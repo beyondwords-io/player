@@ -62,6 +62,7 @@
     try {
       adsManager.init(video.clientWidth, video.clientHeight, google.ima.ViewMode.NORMAL);
       adsManager.start();
+      makeStylesImportant();
       onAnimationFrame();
     } catch (adError) {
       onAdError(null, adError);
@@ -138,6 +139,18 @@
       mediaUrl: adTagUrl,
       errorMessage: "The ima3.js script was blocked.",
     }));
+  };
+
+  const makeStylesImportant = () => {
+    const walker = document.createTreeWalker(adContainer);
+    let node;
+
+    while ((node = walker.nextNode())) {
+      const rules = node.style.cssText.split(/;[^base64]/).filter(s => s);
+      const styles = rules.map(s => s.includes("!important") ? s : `${s} !important`);
+
+      node.style.cssText = styles.join(";");
+    }
   };
 
   const onAnimationFrame = () => {
