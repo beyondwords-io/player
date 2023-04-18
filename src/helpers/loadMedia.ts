@@ -22,6 +22,7 @@ const loadMedia = (source, video, hls, onError) => {
     hls.loadSource(source.url);
     hls.attachMedia(video);
   } else {
+    video.removeAttribute("src");
     video.load();
   }
 
