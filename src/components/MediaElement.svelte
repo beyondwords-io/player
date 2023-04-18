@@ -26,7 +26,9 @@
   let time = 0;
 
   const setTime = (t) => time = currentTime;
+
   $: !activeAdvert && setTime(currentTime);
+  $: currentTime = time;
 
   $: contentItem = content[contentIndex];
   $: segments = contentItem?.segments || [];
