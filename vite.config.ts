@@ -10,7 +10,7 @@ export default defineConfig({
     svelte({ emitCss: true, compilerOptions: { accessors: true } }),
     makeCssImportant({ type: "inline-styles" }),
     makeCssImportant({ type: "style-tags" }),
-    prefixCssSelectors(".bwp", 12),
+    prefixCssSelectors(".bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp"),
     inlineCssIntoScript(),
   ],
   build: {
