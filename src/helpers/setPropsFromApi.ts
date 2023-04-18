@@ -116,7 +116,7 @@ const setProps = (player, data) => {
       placement: item.placement,
       vastUrl: isVast ? item.vast_url : null,
       clickThroughUrl: !isVast ? item.click_through_url : null,
-      imageUrl: imageEnabled && item.imageUrl, // TODO: add to API
+      imageUrl: imageEnabled && item.imageUrl,
       textColor: colors?.text_color,
       backgroundColor: colors?.background_color,
       iconColor: colors?.icon_color,
