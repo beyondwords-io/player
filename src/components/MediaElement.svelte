@@ -25,7 +25,7 @@
   let timeout;
   let time = 0;
 
-  const setTime = (t) => time = currentTime;
+  const setTime = (t) => time = t;
 
   $: !activeAdvert && setTime(currentTime);
   $: currentTime = time;
