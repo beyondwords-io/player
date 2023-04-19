@@ -20,9 +20,13 @@
   };
 </script>
 
-<a class="advert-button {playerStyle} {controlsOrder}" class:hidden={!href} href={href} target="_blank" rel="noreferrer" on:click={handleClick}>
-  <OpenNewTab {color} {scale} />
-</a>
+{#if href}
+  <a class="advert-button {playerStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" on:click={handleClick}>
+    <OpenNewTab {color} {scale} />
+  </a>
+{:else}
+  <div></div>
+{/if}
 
 <style>
   .advert-button {
@@ -42,10 +46,5 @@
     .advert-button:hover :global(svg) {
       opacity: 0.8;
     }
-  }
-
-  .hidden :global(svg),
-  .hidden:hover :global(svg) {
-    opacity: 0;
   }
 </style>
