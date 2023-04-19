@@ -647,6 +647,10 @@
     padding-right: 12px;
   }
 
+  :global(.beyondwords-player.maximized) .fixed {
+    display: none;
+  }
+
   :global(.beyondwords-player.maximized) .video {
     max-width: none;
     width: 100%;
