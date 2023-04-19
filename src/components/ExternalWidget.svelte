@@ -1,24 +1,24 @@
 <script>
-  import { onMount } from "svelte";
-
   export let root = undefined;
 
-  let outer, inner;
-
-  onMount(() => inner = outer.firstChild);
+  let element;
 
   $: target = typeof root === "string" ? null : root;
-  $: target && inner && target.appendChild(inner);
+  $: target && element && target.appendChild(element);
 
   // Ensure the styles apply when widgetTarget is set.
   $: target?.classList?.add("beyondwords-widget", "bwp");
 </script>
 
-<div bind:this={outer}>
+<div bind:this={element} class="external-widget">
   <slot></slot>
 </div>
 
 <style>
+  .external-widget {
+    position: relative;
+  }
+
   :global(.beyondwords-widget.position-11-oclock > *) { margin-left: 3px; margin-bottom: 10px }
   :global(.beyondwords-widget.position-12-oclock > *) { margin: auto; margin-bottom: 10px }
   :global(.beyondwords-widget.position-1-oclock > *) { margin-left: auto; margin-bottom: 10px }
