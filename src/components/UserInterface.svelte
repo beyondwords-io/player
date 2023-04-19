@@ -464,14 +464,19 @@
     transition: background-color 0.25s;
   }
 
-  .video.advert.playing {
+  .video.advert.playing,
+  .video.advert.playing :global(*) {
     pointer-events: none;
   }
 
   .video.advert.playing .scroll-to-player,
+  .video.advert.playing .scroll-to-player :global(*),
   .video.advert.playing .controls,
+  .video.advert.playing .controls :global(*),
   .video.advert.playing .end,
-  .video.advert.playing :global(.playlist) {
+  .video.advert.playing .end :global(*),
+  .video.advert.playing :global(.playlist),
+  .video.advert.playing :global(.playlist *) {
     pointer-events: auto;
   }
 
