@@ -90,7 +90,7 @@
 
   .readonly,
   .readonly * {
-    cursor: not-allowed;
+    cursor: auto;
   }
 
   .background {
