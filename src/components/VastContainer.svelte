@@ -146,7 +146,9 @@
     let node;
 
     while ((node = walker.nextNode())) {
-      const rules = node.style.cssText.split(/;[^base64]/).filter(s => s);
+      const cssRegex = /;(?!([^()]*\([^()]*\))*[^()]*\))/; // Match semicolons not inside parentheses.
+
+      const rules = node.style.cssText.split(cssRegex).filter(s => s);
       const styles = rules.map(s => s.includes("!important") ? s : `${s} !important`);
 
       node.style.cssText = styles.join(";");
