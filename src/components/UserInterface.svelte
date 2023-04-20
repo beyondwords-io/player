@@ -96,11 +96,11 @@
   $: largeImage = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
-  $: forcedCollapsed = isSmall && fixedWidth === 0;
+  $: forcedCollapsed = isSmall && fixedWidth === 0 || fixedWidth === "0";
   $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
 
   $: showCloseWidget = fixedPosition && !isSmall && !(isStandard && isAdvert);
-  $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall);
+  $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall) && !forcedCollapsed;
 
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
   $: fixedPosition && animate();
