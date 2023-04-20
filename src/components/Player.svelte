@@ -164,7 +164,7 @@
       playlistStyle="hide"
       {playerTitle}
       fixedPosition={!widgetTarget && widgetPosition}
-      fixedWidth={!widgetTarget && widgetWidth}
+      fixedWidth={widgetWidth}
       {content}
       {contentIndex}
       {duration}
