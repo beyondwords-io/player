@@ -147,7 +147,7 @@
 
         {#if isLarge || isScreen || isVideo}
           <div class="summary">
-            <PlayerTitle title={playerTitle} visible={!isAdvert && !isScreen} {playerStyle} scale={isScreen ? 2 : 1} color={activeTextColor} />
+            <PlayerTitle title={playerTitle} visible={!isAdvert} {playerStyle} scale={isScreen ? 2 : 1} color={activeTextColor} />
 
             {#if isLarge || isScreen || isVideo && !(contentItem.imageUrl && isStopped) && !fixedPosition && !isAdvert}
               <ContentTitle title={contentItem.title} maxLines={(isMobile || isScreen) && !isVideo ? 3 : 1} center={isScreen} scale={isScreen ? 2 : isVideo && !isMobile ? 1.6 : isVideo ? 1.2 : 1} maxWidth={isScreen && !isMobile ? 640 : isScreen ? 320 : null} color={isVideo ? "rgba(217, 217, 217, 0.9)" : activeTextColor} />
