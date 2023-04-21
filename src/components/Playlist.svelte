@@ -6,6 +6,7 @@
   import blurElement from "../helpers/blurElement";
 
   export let style = "auto";
+  export let larger = false;
   export let textColor = "#111";
   export let backgroundColor = "#f5f5f5";
   export let iconColor = "#000";
@@ -18,6 +19,8 @@
 
   $: mobileRows = mobileRows || desktopRows || 4;
   $: desktopRows = desktopRows || 5;
+
+  $: scale = larger ? 1.25 : 1;
 
   const handleClick = (i) => () => {
     onEvent(newEvent({
@@ -53,22 +56,22 @@
 </script>
 
 {#if mode === "show" || mode === "auto" && content.length > 1}
-  <div class="playlist" class:mobile={isMobile} style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
+  <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
     <div class="scrollable" tabindex="-1">
       {#each content as { title, duration }, i}
         <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
           {#if i === index}
-            <span class="speaker"><VolumeUp color={iconColor} /></span>
+            <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
           {:else}
             <span class="number" style="color: {textColor}">{i + 1}</span>
           {/if}
 
           <span class="title">
-            <ContentTitle {title} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
+            <ContentTitle {title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
           </span>
 
           <span class="duration">
-            <DurationInMins {duration} bold={i === index} color={textColor} />
+            <DurationInMins {duration} {scale} bold={i === index} color={textColor} />
           </span>
         </button>
       {/each}
@@ -87,6 +90,13 @@
     padding-left: 4px;
     overflow-y: scroll;
     max-height: calc(40px * var(--desktop-rows));
+  }
+
+  .larger .scrollable {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    max-height: calc(50px * var(--desktop-rows));
   }
 
   .mobile .scrollable {
@@ -128,6 +138,10 @@
     cursor: pointer;
   }
 
+  .larger .item {
+    height: 50px;
+  }
+
   .item:hover :global(.content-title) {
     font-weight: 500;
   }
@@ -152,6 +166,11 @@
     flex-shrink: 0;
   }
 
+  .larger .number,
+  .larger .speaker {
+    font-size: 12.5px;
+  }
+
   .mobile .number,
   .mobile .speaker {
     grid-row: 1 / span 2;
@@ -172,6 +191,10 @@
   .duration {
     margin: 4px 0;
     white-space: nowrap;
+  }
+
+  .larger .duration {
+    margin: 8px 0;
   }
 
   .mobile .duration {

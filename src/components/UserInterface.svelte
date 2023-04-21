@@ -213,7 +213,16 @@
     </Hoverable>
 
     {#if !isSmall}
-      <Playlist {onEvent} style={playlistStyle} {content} index={contentIndex} isMobile={isMobile} textColor={activeTextColor} backgroundColor={activeBackgroundColor} iconColor={activeIconColor} />
+      <Playlist
+        {onEvent}
+        style={playlistStyle}
+        larger={isScreen && !isMobile}
+        {content}
+        index={contentIndex}
+        isMobile={isMobile}
+        textColor={activeTextColor}
+        backgroundColor={activeBackgroundColor}
+        iconColor={activeIconColor} />
     {/if}
   </div>
 {/if}
