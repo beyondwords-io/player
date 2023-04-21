@@ -5,7 +5,7 @@
   export let scale;
 </script>
 
-<div class="secondary-button {playerStyle}" class:mobile={isMobile} class:advert={isAdvert} style="--scale: {scale}">
+<div class="secondary-button {playerStyle}" class:mobile={isMobile} class:advert_={isAdvert} style="--scale: {scale}">
   <slot></slot>
 </div>
 
@@ -16,7 +16,7 @@
     justify-content: center;
   }
 
-  .advert {
+  .advert_ {
     display: none;
   }
 
@@ -38,7 +38,7 @@
     height: calc(40px * var(--scale));
   }
 
-  .screen.advert {
+  .screen.advert_ {
     display: flex;
   }
 
@@ -46,7 +46,7 @@
     margin-left: auto;
   }
 
-  .video.advert {
+  .video.advert_ {
     margin-left: 0;
     display: flex;
   }

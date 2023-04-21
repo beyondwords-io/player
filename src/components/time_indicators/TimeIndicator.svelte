@@ -22,7 +22,7 @@
   $: noTransition = !isAdvert && currentTime < 0.1;
 </script>
 
-<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert={isAdvert} class:stopped={isStopped} class:no-image={!largeImage} class:no-transition={noTransition} style={opacityCss}>
+<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert_={isAdvert} class:stopped={isStopped} class:no-image={!largeImage} class:no-transition={noTransition} style={opacityCss}>
   <div class="inner">
     {#if isAdvert && currentTime === 0}
       <!-- -->
@@ -69,16 +69,16 @@
   }
 
   .large.stopped,
-  .large.advert {
+  .large.advert_ {
     flex-grow: 0;
     margin-left: -8px;
   }
 
-  .standard.advert {
+  .standard.advert_ {
     justify-content: flex-end;
   }
 
-  .standard.fixed-left.advert {
+  .standard.fixed-left.advert_ {
     justify-content: flex-start;
   }
 
@@ -140,7 +140,7 @@
     top: 24px;
   }
 
-  .small.fixed-right.advert .inner {
+  .small.fixed-right.advert_ .inner {
     position: absolute;
     left: 44px;
     top: 24px;
@@ -162,7 +162,7 @@
     position: static;
   }
 
-  .video.advert {
+  .video.advert_ {
     flex-grow: 0;
   }
 

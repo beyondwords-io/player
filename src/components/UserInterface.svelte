@@ -128,7 +128,7 @@
 </script>
 
 {#if knownPlayerStyle(playerStyle) && content.length > 0}
-  <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget on:outrostart={animate}>
+  <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget on:outrostart={animate}>
     <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
       {#if isVideo && (posterImage || !videoIsBehind)}
         <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
@@ -300,7 +300,7 @@
 
   .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }
 
-  .advert .controls {
+  .advert_ .controls {
     justify-content: space-between;
   }
 
@@ -348,7 +348,7 @@
     grid-template-rows: auto minmax(0, 1fr) auto;
   }
 
-  .large.advert .controls {
+  .large.advert_ .controls {
     justify-content: space-between;
   }
 
@@ -401,11 +401,11 @@
     padding-left: 16px;
   }
 
-  .small.left-to-right.advert .main {
+  .small.left-to-right.advert_ .main {
     padding-right: 4px;
   }
 
-  .small.right-to-left.advert .main {
+  .small.right-to-left.advert_ .main {
     padding-left: 4px;
   }
 
@@ -465,19 +465,19 @@
     transition: background-color 0.25s;
   }
 
-  .video.advert.playing,
-  .video.advert.playing :global(*) {
+  .video.advert_.playing,
+  .video.advert_.playing :global(*) {
     pointer-events: none;
   }
 
-  .video.advert.playing .scroll-to-player,
-  .video.advert.playing .scroll-to-player :global(*),
-  .video.advert.playing .controls,
-  .video.advert.playing .controls :global(*),
-  .video.advert.playing .end,
-  .video.advert.playing .end :global(*),
-  .video.advert.playing :global(.playlist),
-  .video.advert.playing :global(.playlist *) {
+  .video.advert_.playing .scroll-to-player,
+  .video.advert_.playing .scroll-to-player :global(*),
+  .video.advert_.playing .controls,
+  .video.advert_.playing .controls :global(*),
+  .video.advert_.playing .end,
+  .video.advert_.playing .end :global(*),
+  .video.advert_.playing :global(.playlist),
+  .video.advert_.playing :global(.playlist *) {
     pointer-events: auto;
   }
 
@@ -553,52 +553,52 @@
   .video.stopped .controls > :global(*),
   .video.paused .controls > :global(*),
   .video.hovering .controls > :global(*),
-  .video.advert .controls > :global(.time-indicator),
-  .video.advert .controls > :global(.advert-link) {
+  .video.advert_ .controls > :global(.time-indicator),
+  .video.advert_ .controls > :global(.advert-link) {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .video.advert .controls > :global(.time-indicator) {
+  .video.advert_ .controls > :global(.time-indicator) {
     position: absolute;
     left: 16px;
     bottom: 16px;
     transition: bottom 0.5s;
   }
 
-  .video.advert .controls > :global(.advert-link) {
+  .video.advert_ .controls > :global(.advert-link) {
     position: absolute;
     right: 16px;
     bottom: 16px;
     transition: bottom 0.5s;
   }
 
-  :global(.video.advert .hoverable):focus-within .controls > :global(.time-indicator),
-  .video.advert.stopped .controls > :global(.time-indicator),
-  .video.advert.paused .controls > :global(.time-indicator),
-  .video.advert.hovering .controls > :global(.time-indicator),
-  :global(.video.advert .hoverable):focus-within .controls > :global(.advert-link),
-  .video.advert.stopped .controls > :global(.advert-link),
-  .video.advert.paused .controls > :global(.advert-link),
-  .video.advert.hovering .controls > :global(.advert-link) {
+  :global(.video.advert_ .hoverable):focus-within .controls > :global(.time-indicator),
+  .video.advert_.stopped .controls > :global(.time-indicator),
+  .video.advert_.paused .controls > :global(.time-indicator),
+  .video.advert_.hovering .controls > :global(.time-indicator),
+  :global(.video.advert_ .hoverable):focus-within .controls > :global(.advert-link),
+  .video.advert_.stopped .controls > :global(.advert-link),
+  .video.advert_.paused .controls > :global(.advert-link),
+  .video.advert_.hovering .controls > :global(.advert-link) {
     bottom: 76px;
   }
 
-  .video.advert.mobile .controls > :global(.time-indicator) {
+  .video.advert_.mobile .controls > :global(.time-indicator) {
     left: 8px;
     margin-bottom: -4px;
   }
 
-  .video.advert.mobile .controls > :global(.advert-link) {
+  .video.advert_.mobile .controls > :global(.advert-link) {
     right: 8px;
     margin-bottom: -4px;
   }
 
-  .video.advert.fixed .controls > :global(.time-indicator) {
+  .video.advert_.fixed .controls > :global(.time-indicator) {
     left: 12px;
   }
 
-  .video.advert.fixed .controls > :global(.advert-link) {
+  .video.advert_.fixed .controls > :global(.advert-link) {
     right: 12px;
   }
 
@@ -606,7 +606,7 @@
     margin-left: 8px;
   }
 
-  .video.advert .controls {
+  .video.advert_ .controls {
     column-gap: 16px;
   }
 
