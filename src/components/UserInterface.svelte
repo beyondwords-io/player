@@ -449,12 +449,20 @@
   .screen .controls {
     flex-grow: 0;
     column-gap: 40px;
+    margin-bottom: 90px;
+  }
+
+  .screen.advert_ .controls {
     margin-bottom: 232px;
   }
 
   .screen.mobile .controls {
     column-gap: 8px;
     margin-top: -8px;
+    margin-bottom: 60px;
+  }
+
+  .screen.mobile.advert_ .controls {
     margin-bottom: 148px;
   }
 

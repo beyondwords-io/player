@@ -148,14 +148,20 @@
 
   .screen {
     position: absolute;
-    bottom: 196px;
+    bottom: 54px;
     display: flex;
   }
 
+  .screen.advert_ {
+    bottom: 196px;
+  }
+
   .screen.mobile {
-    position: absolute;
+    bottom: 40px;
+  }
+
+  .screen.mobile.advert_ {
     bottom: 128px;
-    display: flex;
   }
 
   .screen .inner {
