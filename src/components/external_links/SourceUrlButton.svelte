@@ -16,7 +16,7 @@
   };
 </script>
 
-<a class="external-url-button" href={href} target="_blank" rel="noreferrer" on:click={handleClick}>
+<a class="external-url-button" href={href} target="_blank" on:click={handleClick}>
   <OpenNewTab {scale} {color} circular={false} />
 </a>
 

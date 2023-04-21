@@ -21,7 +21,7 @@
 </script>
 
 {#if href}
-  <a class="advert-button {playerStyle} {controlsOrder}" href={href} target="_blank" rel="noreferrer" on:click={handleClick}>
+  <a class="advert-button {playerStyle} {controlsOrder}" href={href} target="_blank" on:click={handleClick}>
     <OpenNewTab {color} {scale} />
   </a>
 {:else}

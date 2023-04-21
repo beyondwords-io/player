@@ -203,7 +203,7 @@
     {/if}
 
     {#if customUrl}
-      <a class="custom-advert-link" href={customUrl} target="_blank" rel="noreferrer">&nbsp;</a>
+      <a class="custom-advert-link" href={customUrl} target="_blank">&nbsp;</a>
     {/if}
   </div>
 </div>

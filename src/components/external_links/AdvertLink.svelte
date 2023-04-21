@@ -22,7 +22,7 @@
   };
 </script>
 
-<a class="advert-link {playerStyle} {controlsOrder}" href={href} {style} class:no-image={!largeImage} class:mobile={isMobile} target="_blank" rel="noreferrer" on:click={handleClick}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={href} {style} class:no-image={!largeImage} class:mobile={isMobile} target="_blank" on:click={handleClick}>
   {text || ""}
 </a>
 
