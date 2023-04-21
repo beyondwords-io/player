@@ -18,7 +18,7 @@
   $: dashOffset = circumference * (1 - clamped);
 </script>
 
-{#if enabled}
+{#if enabled && progress}
   <button type="button" class="progress-circle" style="width: {scale * 40}px; height: {scale * 40}px" on:keydown={handleKeyDown(onEvent, "Circle")}>
     <svg fill="none" width={size} height={size} xmlns="http://www.w3.org/2000/svg">
       <circle cx="50%"
