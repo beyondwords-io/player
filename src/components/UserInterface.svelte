@@ -212,7 +212,7 @@
       </div>
     </Hoverable>
 
-    {#if !isSmall && !isScreen}
+    {#if !isSmall}
       <Playlist {onEvent} style={playlistStyle} {content} index={contentIndex} isMobile={isMobile} textColor={activeTextColor} backgroundColor={activeBackgroundColor} iconColor={activeIconColor} />
     {/if}
   </div>
@@ -254,6 +254,7 @@
     box-sizing: border-box;
     column-gap: 8px;
     transition: padding 0.5s;
+    position: relative;
   }
 
   .summary {
