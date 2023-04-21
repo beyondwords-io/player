@@ -433,6 +433,7 @@
     text-align: center;
     row-gap: 40px;
     padding: 40px;
+    border-radius: 8px;
   }
 
   .screen.mobile .main {
