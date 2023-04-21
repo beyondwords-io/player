@@ -66,17 +66,17 @@ const setProps = (player, data) => {
   set(player, "backgroundColor", colors.background_color);
   set(player, "iconColor", colors.icon_color);
   set(player, "highlightColor", colors.highlight_color);
-  set(player, "logoIconEnabled", data.settings.logo_icon_enabled, { overridable: false });
+  set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
   set(player, "highlightSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "segmentWidgetSections", data.settings.segment_playback_enabled ? "none" : "none");
   set(player, "currentSegment", undefined);                          // TODO: set ^ to "body" after more testing
   set(player, "hoveredSegment", undefined);
-  set(player, "analyticsConsent", analyticsConsent(data.settings), { overridable: false });
+  set(player, "analyticsConsent", analyticsConsent(data.settings));
   set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
   set(player, "analyticsTag", data.settings.analytics_tag);
   set(player, "analyticsUrl", data.settings.analytics_url);
-  set(player, "analyticsId", data.settings.analytics_id, { overridable: false });
+  set(player, "analyticsId", data.settings.analytics_id);
   // TODO: add support for title_enabled
   // TODO: add support for paywall_type
   // TODO: add support for paywall_url
@@ -129,15 +129,9 @@ const setProps = (player, data) => {
   }));
 };
 
-const set = (player, propName, value, { overridable = true } = {}) => {
-  const overriddenByScriptTag = typeof player.initialProps[propName] !== "undefined";
-  if (overriddenByScriptTag && overridable) { return; }
-
-  if (overriddenByScriptTag && !overridable) {
-    console.error(`Property '${propName}' cannot be overridden. Please contact support@beyondwords.io.`); // TODO: extract and add context
-  }
-
-  player[propName] = value;
+const set = (player, propName, value) => {
+  const overridden = typeof player.initialProps[propName] !== "undefined";
+  if (!overridden) { player[propName] = value; }
 };
 
 const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {
