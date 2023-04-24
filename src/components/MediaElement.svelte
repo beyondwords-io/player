@@ -50,11 +50,9 @@
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
 
   $: poster = playbackState !== "stopped" && (activeAdvert?.imageUrl || contentItem?.imageUrl);
-
-  $: isAdvert = activeAdvert && playbackState !== "stopped";
   $: isStopped = playbackState === "stopped";
 
-  $: segmentIndex = isAdvert || isStopped ? -1 : findSegmentIndex(segments, currentTime);
+  $: segmentIndex = activeAdvert || introOrOutro || isStopped ? -1 : findSegmentIndex(segments, currentTime);
   $: segmentIndex, handleSegmentUpdate();
 
   $: videoBehindWidget && animate();
