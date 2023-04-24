@@ -56,6 +56,8 @@ const setProps = (player, data) => {
   set(player, "callToAction", data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "contentIndex", 0);
+  set(player, "introsOutros", introsOutrosArray(data.settings));
+  set(player, "introsOutrosIndex", -1);
   set(player, "advertIndex", -1);
   set(player, "duration", 0);
   set(player, "currentTime", 0);
@@ -132,6 +134,16 @@ const setProps = (player, data) => {
 const set = (player, propName, value) => {
   const overridden = typeof player.initialProps[propName] !== "undefined";
   if (!overridden) { player[propName] = value; }
+};
+
+const introsOutrosArray = ({ intro_outro_enabled, intro_url, outro_url }) => {
+  if (!intro_outro_enabled) { return []; }
+  const array = [];
+
+  if (intro_url) { array.push({ placement: "pre-roll", media: [{ url: intro_url }] }); }
+  if (outro_url) { array.push({ placement: "post-roll", media: [{ url: outro_url }] }); }
+
+  return array
 };
 
 const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {

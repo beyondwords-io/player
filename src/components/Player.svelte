@@ -31,6 +31,8 @@
   export let mediaSession = "auto";
   export let content = [];
   export let contentIndex = 0;
+  export let introsOutros = [];
+  export let introsOutrosIndex = -1;
   export let adverts = [];
   export let advertIndex = -1;
   export let duration = 0;
@@ -82,6 +84,7 @@
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
   $: activeAdvert = adverts[advertIndex];
+  $: introOrOutro = introsOutros[introsOutrosIndex];
   $: contentItem = content[contentIndex];
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
