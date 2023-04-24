@@ -7,6 +7,7 @@
 
   export let content;
   export let contentIndex;
+  export let introOrOutro;
   export let activeAdvert;
   export let advertConsent;
   export let playbackState;
@@ -34,7 +35,7 @@
   $: segments = contentItem?.segments || [];
 
   $: media = activeAdvert?.media;
-  $: !activeAdvert && (media = contentItem?.media);
+  $: !activeAdvert && (media = introOrOutro?.media || contentItem?.media);
 
   $: sources = [media].flat().filter(m => m);
   $: hls = loadMedia(sources[0], video, hls, handleHlsError);

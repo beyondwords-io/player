@@ -121,6 +121,7 @@
   {onEvent}
   {content}
   {contentIndex}
+  {introOrOutro}
   {activeAdvert}
   {advertConsent}
   bind:playbackState
