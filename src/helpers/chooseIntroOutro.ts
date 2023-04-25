@@ -11,11 +11,28 @@ const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, conten
 
   const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd });
 
-  return atTheStart ? 0 : -1; // TODO: placements
+  let bestSoFar = -1;
+  let bestRandom = -Infinity;
+
+  for (const [thisIndex, introOutro] of introsOutros.entries()) {
+    if (resultedInAPlaybackError(introOutro)) { continue; }
+    if (!placements.has(introOutro.placement)) { continue; }
+
+    // TODO: how to keep the same intro/outro if the user replays?
+
+    const thisRandom = Math.random();
+    if (thisRandom < bestRandom) { continue; }
+
+    bestSoFar = thisIndex;
+    bestRandom = thisRandom;
+  }
+
+  return bestSoFar;
 };
 
 const updateErroredIntrosOutros = () => {}; // TODO
 const updatePlayedIntroOutroMedia = () => {}; // TODO
+const resultedInAPlaybackError = () => {}; // TODO
 
 const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart, atTheEnd }) => {
   const eligiblePlacements = new Set();
