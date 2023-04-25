@@ -373,7 +373,7 @@ class RootController {
     } else {
       this.player.contentIndex = tryIndex;
 
-      if (!this.#isIntro() && !this.#isOutro() && !this.#isAdvert()) {
+      if (!this.#isAdvert()) {
         this.#setTime(() => 0);
         this.midrollPlayed = false;
         this.segmentPlayed = false;
@@ -440,11 +440,25 @@ class RootController {
 
     this.player.introsOutrosIndex = index;
 
+    const introStarted = !wasIntro && this.#isIntro();
     const introFinished = wasIntro && !this.#isIntro();
     const outroFinished = wasOutro && !this.#isOutro();
 
+    if (introStarted)  { this.#skipIntroIfNotAtTheStart(); }
     if (introFinished) { this.player.currentTime = 0; }
     if (outroFinished) { this.#setTrack(() => Infinity); }
+  }
+
+  #skipIntroIfNotAtTheStart() {
+    const atTheStart = this.player.currentTime === 0;
+    if (atTheStart) { return; }
+
+    this.player.introsOutrosIndex = -1;
+
+    // We were at the start and were going to play an intro but the user skipped
+    // past it, e.g. by clicking a segment. Therefore check if an advert would
+    // have played at the start of the content. Ads cannot be skipped by the user.
+    this.#chooseAndSetAdvert({ atTheStart: true });
   }
 
   #setAdvert(index) {
