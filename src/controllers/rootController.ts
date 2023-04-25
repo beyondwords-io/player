@@ -161,7 +161,6 @@ class RootController {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
 
     const wasIntro = this.#isIntro();
-    const wasOutro = this.#isOutro();
     const wasAdvert = this.#isAdvert();
 
     this.#chooseAndSetAdvert({ atTheEnd: true, wasIntro });
@@ -396,7 +395,7 @@ class RootController {
   }
 
   #chooseAndSetIntroOutro({ atTheStart, atTheEnd, errored } = {}) {
-    const { adverts, content, introsOutros, currentTime } = this.player;
+    const { content, introsOutros, currentTime } = this.player;
 
     const introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
     const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
@@ -406,7 +405,7 @@ class RootController {
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored } = {}) {
-    const { adverts, content, introsOutros, currentTime } = this.player;
+    const { adverts, content, currentTime } = this.player;
 
     let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
     const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;

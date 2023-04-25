@@ -29,6 +29,7 @@ const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, conten
     if (thisPlayed === bestPlayed && thisRandom < bestRandom) { continue; }
 
     bestSoFar = thisIndex;
+    bestPlayed = thisPlayed;
     bestRandom = thisRandom;
   }
 
