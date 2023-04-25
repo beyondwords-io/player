@@ -34,8 +34,9 @@
   $: contentItem = content[contentIndex];
   $: segments = contentItem?.segments || [];
 
-  $: media = activeAdvert?.media;
-  $: !activeAdvert && (media = introOrOutro?.media || contentItem?.media);
+  $: media = introOrOutro?.media;
+  $: !introOrOutro && (media = activeAdvert?.media);
+  $: !activeAdvert && (media = contentItem?.media);
 
   $: sources = [media].flat().filter(m => m);
   $: hls = loadMedia(sources[0], video, hls, handleHlsError);
@@ -52,7 +53,7 @@
   $: poster = playbackState !== "stopped" && (activeAdvert?.imageUrl || contentItem?.imageUrl);
   $: isStopped = playbackState === "stopped";
 
-  $: segmentIndex = activeAdvert || introOrOutro || isStopped ? -1 : findSegmentIndex(segments, currentTime);
+  $: segmentIndex = introOrOutro || activeAdvert || isStopped ? -1 : findSegmentIndex(segments, currentTime);
   $: segmentIndex, handleSegmentUpdate();
 
   $: videoBehindWidget && animate();

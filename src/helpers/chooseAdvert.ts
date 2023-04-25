@@ -2,7 +2,7 @@ import findSegmentIndex from "./findSegmentIndex";
 import { updateErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored } = {}) => {
+const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, introsOutrosIndex, currentTime, atTheStart, atTheEnd, errored } = {}) => {
   if (!content[contentIndex]?.adsEnabled) { return -1; }
 
   const currentAdvert = adverts[advertIndex];
@@ -11,6 +11,8 @@ const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, curren
     if (atTheEnd) { updatePlayedAdvertMedia(currentAdvert); return -1; } // Play the content.
     if (!atTheEnd) { return advertIndex; } // Keep playing the current advert until it ends.
   }
+
+  if (introsOutrosIndex !== -1) { return -1; } // Wait until the intro/outro has finished.
 
   const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd });
 

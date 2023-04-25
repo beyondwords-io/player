@@ -83,8 +83,8 @@
   export let segmentHighlights = new SegmentHighlights();
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
-  $: activeAdvert = adverts[advertIndex];
   $: introOrOutro = introsOutros[introsOutrosIndex];
+  $: activeAdvert = adverts[advertIndex];
   $: contentItem = content[contentIndex];
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
