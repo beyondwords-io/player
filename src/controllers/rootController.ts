@@ -92,7 +92,7 @@ class RootController {
   handlePressedSourceUrl()             { /* Do nothing */ }
 
   handleDurationUpdated()              { /* Do nothing */ }
-  handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#setInterstitial(); }
+  handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#chooseAndSetAdvert(); }
   handlePlaybackPaused()               { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
@@ -127,7 +127,8 @@ class RootController {
 
   handleIdentifiersChanged() {
     setPropsFromApi(this.player).then(() => {
-      this.#setInterstitial({ atTheStart: true });
+      this.#chooseAndSetIntroOutro({ atTheStart: true });
+      this.#chooseAndSetAdvert({ atTheStart: true });
     });
   }
 
@@ -154,11 +155,16 @@ class RootController {
   handlePlaybackEnded() {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
 
-    const wasInterstitial = this.#isInterstitial();
-    this.#setInterstitial({ atTheEnd: true });
+    const wasIntro = this.#isIntro();
+    const wasOutro = this.#isOutro();
+    const wasAdvert = this.#isAdvert();
 
-    if (wasInterstitial) { return; } // Don't skip track because the content hasn't played yet.
-    if (this.#isInterstitial()) { return; } // Don't skip track until post-roll has played.
+    this.#chooseAndSetAdvert({ atTheEnd: true, wasIntro });
+    this.#chooseAndSetIntroOutro({ atTheEnd: true });
+
+    if (wasIntro || wasOutro || wasAdvert) { return; } // Don't skip track because the content hasn't played yet.
+    if (this.#isIntro() || this.#isOutro() || this.#isAdvert()) { return; } // Don't skip track until post-roll has played.
+    // TODO: all needed ^ ?
 
     this.#setTrack(i => i + 1);
   }
@@ -166,8 +172,10 @@ class RootController {
   handlePlaybackErrored({ mediaType, mediaUrl, errorMessage }) {
     console.error(`${mediaType} playback error: ${errorMessage} (requesting ${mediaUrl})`);
 
-    if (this.#isInterstitial()) {
-      this.#setInterstitial({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
+    if (this.#isIntro() || this.#isOutro()) {
+      this.#chooseAndSetIntroOutro({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
+    } else if (this.#isAdvert()) {
+      this.#chooseAndSetAdvert({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else {
       this.handlePlaybackEnded();
     }
@@ -224,7 +232,8 @@ class RootController {
     if (!this.#matchesIdentifiers({ contentId, legacyId, sourceId, sourceUrl })) { return; }
 
     setPropsFromApi(this.player).then(() => {
-      this.#setInterstitial({ atTheStart: true });
+      this.#chooseAndSetIntroOutro({ atTheStart: true });
+      this.#chooseAndSetAdvert({ atTheStart: true });
     });
   }
 
@@ -364,13 +373,14 @@ class RootController {
     } else {
       this.player.contentIndex = tryIndex;
 
-      if (!this.#isInterstitial()) {
+      if (!this.#isIntro() && !this.#isOutro() && !this.#isAdvert()) {
         this.#setTime(() => 0);
         this.midrollPlayed = false;
         this.segmentPlayed = false;
       }
 
-      this.#setInterstitial({ atTheStart: true });
+      this.#chooseAndSetIntroOutro({ atTheStart: true });
+      this.#chooseAndSetAdvert({ atTheStart: true });
     }
   }
 
@@ -384,19 +394,24 @@ class RootController {
     }
   }
 
-  #setInterstitial({ atTheStart, atTheEnd, errored } = {}) {
+  #chooseAndSetIntroOutro({ atTheStart, atTheEnd, errored } = {}) {
+    const { adverts, content, introsOutros, currentTime } = this.player;
+
+    const introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
+    const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
+    const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
+
+    this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
+  }
+
+  #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored } = {}) {
     const { adverts, content, introsOutros, currentTime } = this.player;
 
     let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
     const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
     const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
 
-    const atTheEndOfIntro = atTheEnd && introsOutrosIndex !== -1 && contentIndex === 0;
-
-    this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
-    introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
-
-    if (atTheEndOfIntro) { atTheStart = true; atTheEnd = false; } // Choose from pre-roll advert placements after the intro.
+    if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
     this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
   }
 
@@ -446,7 +461,8 @@ class RootController {
   }
 
   #overridePlayerState() {
-    this.prevTime = this.player.currentTime;
+    if (!this.#isIntro()) { this.prevTime = this.player.currentTime; }
+
     this.prevRate = this.player.playbackRate;
     this.prevContent = this.player.contentIndex;
 
