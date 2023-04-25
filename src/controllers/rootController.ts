@@ -167,7 +167,7 @@ class RootController {
     console.error(`${mediaType} playback error: ${errorMessage} (requesting ${mediaUrl})`);
 
     if (this.#isInterstitial()) {
-      this.#setInterstitial({ errored: true });
+      this.#setInterstitial({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else {
       this.handlePlaybackEnded();
     }
