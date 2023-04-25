@@ -36,7 +36,7 @@
 
   $: media = introOrOutro?.media;
   $: !introOrOutro && (media = activeAdvert?.media);
-  $: !activeAdvert && (media = contentItem?.media);
+  $: !introOrOutro && !activeAdvert && (media = contentItem?.media);
 
   $: sources = [media].flat().filter(m => m);
   $: hls = loadMedia(sources[0], video, hls, handleHlsError);

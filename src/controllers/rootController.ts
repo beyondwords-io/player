@@ -284,11 +284,15 @@ class RootController {
   }
 
   #isInterstitial() {
-    return this.#isIntroOutro() || this.#isAdvert();
+    return this.#isIntro() || this.#isOutro() || this.#isAdvert();
   }
 
-  #isIntroOutro() {
-    return this.player.introsOutrosIndex !== -1;
+  #isIntro() {
+    return this.player.introsOutros[this.player.introsOutrosIndex]?.placement === "pre-roll";
+  }
+
+  #isOutro() {
+    return this.player.introsOutros[this.player.introsOutrosIndex]?.placement === "post-roll";
   }
 
   #isAdvert() {
@@ -415,11 +419,16 @@ class RootController {
     const defer = this.player.playbackState !== "playing" && index !== -1;
     if (defer) { this.nextIntroOutro = index; return; } else { delete this.nextIntroOutro; }
 
-    const wasIntroOutro = this.#isIntroOutro();
+    const wasIntro = this.#isIntro();
+    const wasOutro = this.#isOutro();
+
     this.player.introsOutrosIndex = index;
 
-    const introOutroFinished = wasIntroOutro && !this.#isIntroOutro();
-    if (introOutroFinished) { this.player.currentTime = 0; }
+    const introFinished = wasIntro && !this.#isIntro();
+    const outroFinished = wasOutro && !this.#isOutro();
+
+    if (introFinished) { this.player.currentTime = 0; }
+    if (outroFinished) { this.#setTrack(() => Infinity); }
   }
 
   #setAdvert(index) {
