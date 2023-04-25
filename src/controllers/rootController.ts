@@ -423,7 +423,11 @@ class RootController {
     const defer = this.player.playbackState !== "playing" && index !== -1;
     if (defer) { this.nextIntroOutro = index; return; } else { delete this.nextIntroOutro; }
 
+    const wasIntroOutro = this.#isIntroOutro();
     this.player.introsOutrosIndex = index;
+
+    const introOutroFinished = wasIntroOutro && !this.#isIntroOutro();
+    if (introOutroFinished) { this.player.currentTime = 0; }
   }
 
   #setAdvert(index) {
