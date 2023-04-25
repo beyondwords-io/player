@@ -95,7 +95,7 @@ class RootController {
   handlePressedSourceUrl()             { /* Do nothing */ }
 
   handleDurationUpdated()              { /* Do nothing */ }
-  handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#chooseAndSetAdvert(); }
+  handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#setInterstitial(); }
   handlePlaybackPaused()               { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
@@ -130,8 +130,7 @@ class RootController {
 
   handleIdentifiersChanged() {
     setPropsFromApi(this.player).then(() => {
-      this.#chooseAndSetIntroOutro({ atTheStart: true });
-      this.#chooseAndSetAdvert({ atTheStart: true });
+      this.#setInterstitial({ atTheStart: true });
     });
   }
 
@@ -158,14 +157,11 @@ class RootController {
   handlePlaybackEnded() {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
 
-    const wasIntroOutro = this.#isIntroOutro();
-    const wasAdvert = this.#isAdvert();
+    const wasInterstitial = this.#isInterstitial();
+    this.#setInterstitial({ atTheEnd: true });
 
-    this.#chooseAndSetIntroOutro({ atTheEnd: true });
-    this.#chooseAndSetAdvert({ atTheEnd: true });
-
-    if (wasIntroOutro || wasAdvert) { return; } // Don't skip track because the content hasn't played yet.
-    if (this.#isIntroOutro() || this.#isAdvert()) { return; } // Don't skip track until post-roll has played.
+    if (wasInterstitial) { return; } // Don't skip track because the content hasn't played yet.
+    if (this.#isInterstitial()) { return; } // Don't skip track until post-roll has played.
 
     this.#setTrack(i => i + 1);
   }
@@ -173,10 +169,8 @@ class RootController {
   handlePlaybackErrored({ mediaType, mediaUrl, errorMessage }) {
     console.error(`${mediaType} playback error: ${errorMessage} (requesting ${mediaUrl})`);
 
-    if (this.#isIntroOutro()) {
-      this.#chooseAndSetIntroOutro({ errored: true });
-    } else if (this.#isAdvert()) {
-      this.#chooseAndSetAdvert({ errored: true });
+    if (this.#isInterstitial()) {
+      this.#setInterstitial({ errored: true });
     } else {
       this.handlePlaybackEnded();
     }
@@ -233,8 +227,7 @@ class RootController {
     if (!this.#matchesIdentifiers({ contentId, legacyId, sourceId, sourceUrl })) { return; }
 
     setPropsFromApi(this.player).then(() => {
-      this.#chooseAndSetIntroOutro({ atTheStart: true });
-      this.#chooseAndSetAdvert({ atTheStart: true });
+      this.#setInterstitial({ atTheStart: true });
     });
   }
 
@@ -291,6 +284,10 @@ class RootController {
   #sendEventToListeners(eventType, event) {
     const typeListeners = this.eventListeners[eventType] || {};
     Object.values(typeListeners).forEach(f => f(event));
+  }
+
+  #isInterstitial() {
+    return this.#isIntroOutro() || this.#isAdvert();
   }
 
   #isIntroOutro() {
@@ -366,14 +363,13 @@ class RootController {
     } else {
       this.player.contentIndex = tryIndex;
 
-      if (!this.#isIntroOutro() && !this.#isAdvert()) {
+      if (!this.#isInterstitial()) {
         this.#setTime(() => 0);
         this.midrollPlayed = false;
         this.segmentPlayed = false;
       }
 
-      this.#chooseAndSetIntroOutro({ atTheStart: true });
-      this.#chooseAndSetAdvert({ atTheStart: true });
+      this.#setInterstitial({ atTheStart: true });
     }
   }
 
@@ -387,24 +383,22 @@ class RootController {
     }
   }
 
-  #chooseAndSetIntroOutro({ atTheStart, atTheEnd, errored } = {}) {
-    const { introsOutros } = this.player;
-    let { introsOutrosIndex, advertIndex, contentIndex } = this.player;
+  #setInterstitial({ atTheStart, atTheEnd, errored } = {}) {
+    const { adverts, content, introsOutros, currentTime } = this.player;
+    let { advertIndex, contentIndex, introsOutrosIndex } = this.player;
 
     if (typeof this.nextIntroOutro !== "undefined") { introsOutrosIndex = this.nextIntroOutro; }
     if (typeof this.nextAdvert !== "undefined") { advertIndex = this.nextAdvert; }
     if (typeof this.prevContent !== "undefined") { contentIndex = this.prevContent; }
 
     this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, atTheStart, atTheEnd, errored }));
-  }
 
-  #chooseAndSetAdvert({ atTheStart, atTheEnd, errored } = {}) {
-    const { adverts, content, currentTime } = this.player;
-    let { introsOutrosIndex, advertIndex, contentIndex } = this.player;
+    // TODO: move logic into chooseAdvert
+    const atTheEndOfIntro = atTheEnd && introsOutrosIndex !== -1 && contentIndex === 0;
+    if (atTheEndOfIntro) { atTheStart = true; atTheEnd = false; }
 
+    introsOutrosIndex = this.player.introsOutrosIndex;
     if (typeof this.nextIntroOutro !== "undefined") { introsOutrosIndex = this.nextIntroOutro; }
-    if (typeof this.nextAdvert !== "undefined") { advertIndex = this.nextAdvert; }
-    if (typeof this.prevContent !== "undefined") { contentIndex = this.prevContent; }
 
     this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, introsOutrosIndex, currentTime, atTheStart, atTheEnd, errored }));
   }

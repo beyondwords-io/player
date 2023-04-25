@@ -9,7 +9,7 @@ const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, atTheS
 
   if (advertIndex !== -1) { return -1; } // Wait until the advert has finished.
 
-  return 0;
+  return atTheStart ? 0 : -1; // TODO: placements
 };
 
 export default chooseIntroOutro;
