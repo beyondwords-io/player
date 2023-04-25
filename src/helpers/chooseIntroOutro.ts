@@ -1,4 +1,5 @@
 import { updateErroredIntrosOutros, resultedInAPlaybackError } from "./erroredIntrosOutros";
+import { updatePlayedIntroOutroMedia, alreadyPlayedIntroOutroMedia } from "./playedIntroOutroMedia";
 
 const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }) => {
   const currentIntroOutro = introsOutros[introsOutrosIndex];
@@ -14,16 +15,18 @@ const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, conten
   const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd });
 
   let bestSoFar = -1;
+  let bestPlayed = -Infinity;
   let bestRandom = -Infinity;
 
   for (const [thisIndex, introOutro] of introsOutros.entries()) {
     if (resultedInAPlaybackError(introOutro)) { continue; }
     if (!placements.has(introOutro.placement)) { continue; }
 
-    // TODO: how to keep the same intro/outro if the user replays?
+    const thisPlayed = alreadyPlayedIntroOutroMedia(introOutro) ? 1 : 0;
+    if (thisPlayed < bestPlayed) { continue; }
 
     const thisRandom = Math.random();
-    if (thisRandom < bestRandom) { continue; }
+    if (thisPlayed === bestPlayed && thisRandom < bestRandom) { continue; }
 
     bestSoFar = thisIndex;
     bestRandom = thisRandom;
