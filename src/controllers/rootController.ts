@@ -50,7 +50,12 @@ class RootController {
       event.status = "ignored-due-to-scrubbing";
     } else if (handler) {
       await handler.call(this, event);
-      this.#playDeferredInterstitial();
+
+      // Defer playback of intros/outros/adverts until the user presses play so
+      // that the user interface shows the content rather than the interstitial.
+      this.#playDeferredIntroOutro();
+      this.#playDeferredAdvert();
+
       event.status = "handled";
     } else {
       throwError("No handler function for event.", event);
@@ -292,10 +297,6 @@ class RootController {
     Object.values(typeListeners).forEach(f => f(event));
   }
 
-  #isInterstitial() {
-    return this.#isIntro() || this.#isOutro() || this.#isAdvert();
-  }
-
   #isIntro() {
     return this.player.introsOutros[this.player.introsOutrosIndex]?.placement === "pre-roll";
   }
@@ -415,19 +416,20 @@ class RootController {
     this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
   }
 
-  // Defer playback of intros/outros/adverts until the user presses play so that
-  // we show the duration/colors for the content rather than the interstitial.
-  #playDeferredInterstitial() {
+  #playDeferredIntroOutro() {
     if (this.player.playbackState !== "playing") { return; }
+    if (typeof this.nextIntroOutro === "undefined") { return; }
 
-    if (typeof this.nextIntroOutro !== "undefined") {
-      this.#setIntroOutro(this.nextIntroOutro);
-      delete this.nextIntroOutro;
+    this.#setIntroOutro(this.nextIntroOutro);
+    delete this.nextIntroOutro;
+  }
 
-    } else if (typeof this.nextAdvert !== "undefined") {
-      this.#setAdvert(this.nextAdvert);
-      delete this.nextAdvert;
-    }
+  #playDeferredAdvert() {
+    if (this.player.playbackState !== "playing") { return; }
+    if (typeof this.nextAdvert === "undefined") { return; }
+
+    this.#setAdvert(this.nextAdvert);
+    delete this.nextAdvert;
   }
 
   #setIntroOutro(index) {
