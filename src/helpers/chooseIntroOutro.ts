@@ -1,4 +1,4 @@
-const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, atTheStart, atTheEnd, errored }) => {
+const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }) => {
   const currentIntroOutro = introsOutros[introsOutrosIndex];
 
   if (currentIntroOutro) {

@@ -2,7 +2,7 @@ import findSegmentIndex from "./findSegmentIndex";
 import { updateErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = ({ adverts, advertIndex, content = [], contentIndex, introsOutrosIndex, currentTime, atTheStart, atTheEnd, errored } = {}) => {
+const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored } = {}) => {
   if (!content[contentIndex]?.adsEnabled) { return -1; }
 
   const currentAdvert = adverts[advertIndex];

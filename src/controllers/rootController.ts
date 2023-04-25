@@ -389,11 +389,11 @@ class RootController {
 
     const atTheEndOfIntro = atTheEnd && introsOutrosIndex !== -1 && contentIndex === 0;
 
-    this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, atTheStart, atTheEnd, errored }));
+    this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
     introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
 
     if (atTheEndOfIntro) { atTheStart = true; atTheEnd = false; } // Choose from pre-roll advert placements after the intro.
-    this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, introsOutrosIndex, currentTime, atTheStart, atTheEnd, errored }));
+    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
   }
 
   // Defer playback of intros/outros/adverts until the user presses play so that
