@@ -50,10 +50,7 @@ class RootController {
       event.status = "ignored-due-to-scrubbing";
     } else if (handler) {
       await handler.call(this, event);
-
-      this.#playDeferredIntroOutro();
-      this.#playDeferredAdvert();
-
+      this.#playDeferredInterstitial();
       event.status = "handled";
     } else {
       throwError("No handler function for event.", event);
@@ -387,8 +384,8 @@ class RootController {
     const { adverts, content, introsOutros, currentTime } = this.player;
 
     let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
-    let advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
-    let contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
+    const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
+    const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
 
     const atTheEndOfIntro = atTheEnd && introsOutrosIndex !== -1 && contentIndex === 0;
 
@@ -399,20 +396,19 @@ class RootController {
     this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, introsOutrosIndex, currentTime, atTheStart, atTheEnd, errored }));
   }
 
-  #playDeferredIntroOutro() {
-    if (typeof this.nextIntroOutro === "undefined") { return; }
+  // Defer playback of intros/outros/adverts until the user presses play so that
+  // we show the duration/colors for the content rather than the interstitial.
+  #playDeferredInterstitial() {
     if (this.player.playbackState !== "playing") { return; }
 
-    this.#setIntroOutro(this.nextIntroOutro);
-    delete this.nextIntroOutro;
-  }
+    if (typeof this.nextIntroOutro !== "undefined") {
+      this.#setIntroOutro(this.nextIntroOutro);
+      delete this.nextIntroOutro;
 
-  #playDeferredAdvert() {
-    if (typeof this.nextAdvert === "undefined") { return; }
-    if (this.player.playbackState !== "playing") { return; }
-
-    this.#setAdvert(this.nextAdvert);
-    delete this.nextAdvert;
+    } else if (typeof this.nextAdvert !== "undefined") {
+      this.#setAdvert(this.nextAdvert);
+      delete this.nextAdvert;
+    }
   }
 
   #setIntroOutro(index) {
