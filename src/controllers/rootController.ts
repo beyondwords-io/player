@@ -164,9 +164,11 @@ class RootController {
     const wasAdvert = this.#isAdvert();
 
     this.#chooseAndSetAdvert({ atTheEnd: true, wasIntro });
-    this.#chooseAndSetIntroOutro({ atTheEnd: true });
+    if (wasAdvert) { return; } // Don't skip track because the content hasn't played yet.
 
-    if (wasIntro || wasAdvert) { return; } // Don't skip track because the content hasn't played yet.
+    this.#chooseAndSetIntroOutro({ atTheEnd: true });
+    if (wasIntro) { return; } // Don't skip track because the content/advert hasn't played yet.
+
     if (this.#isOutro() || this.#isAdvert()) { return; } // Don't skip track until post-roll has played.
 
     this.#setTrack(i => i + 1);
