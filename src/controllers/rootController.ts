@@ -385,21 +385,17 @@ class RootController {
 
   #setInterstitial({ atTheStart, atTheEnd, errored } = {}) {
     const { adverts, content, introsOutros, currentTime } = this.player;
-    let { advertIndex, contentIndex, introsOutrosIndex } = this.player;
 
-    if (typeof this.nextIntroOutro !== "undefined") { introsOutrosIndex = this.nextIntroOutro; }
-    if (typeof this.nextAdvert !== "undefined") { advertIndex = this.nextAdvert; }
-    if (typeof this.prevContent !== "undefined") { contentIndex = this.prevContent; }
+    let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
+    let advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
+    let contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
+
+    const atTheEndOfIntro = atTheEnd && introsOutrosIndex !== -1 && contentIndex === 0;
 
     this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, atTheStart, atTheEnd, errored }));
+    introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
 
-    // TODO: move logic into chooseAdvert
-    const atTheEndOfIntro = atTheEnd && introsOutrosIndex !== -1 && contentIndex === 0;
-    if (atTheEndOfIntro) { atTheStart = true; atTheEnd = false; }
-
-    introsOutrosIndex = this.player.introsOutrosIndex;
-    if (typeof this.nextIntroOutro !== "undefined") { introsOutrosIndex = this.nextIntroOutro; }
-
+    if (atTheEndOfIntro) { atTheStart = true; atTheEnd = false; } // Choose from pre-roll advert placements after the intro.
     this.#setAdvert(chooseAdvert({ adverts, advertIndex, content, contentIndex, introsOutrosIndex, currentTime, atTheStart, atTheEnd, errored }));
   }
 
