@@ -357,16 +357,28 @@ class RootController {
 
   #setSegment(indexFn) {
     const segments = this.player.content[this.player.contentIndex].segments;
-
     const currentIndex = findSegmentIndex(segments, this.player.currentTime);
+
     const tryIndex = indexFn(currentIndex);
+    const outOfBounds = tryIndex < 0 || tryIndex >= segments.length;
 
     // If the user clicks next while the intro is playing, skip to the content.
     if (this.#isIntro() && tryIndex > 0) { this.handlePlaybackEnded(); return; }
 
+    // If the user clicks previous while the outro is playing, skip back to
+    // the last segment of the content or 0.01 if there are no segments. This
+    // ensures the intro does not play again because we are not at time 0.
+    if (this.#isOutro() && tryIndex < 0) {
+      this.#setIntroOutro(-1);
+      this.#setTime(() => segments[segments.length - 1]?.startTime || 0.01);
+      this.player.playbackState = "playing";
+      return;
+    }
+
     // Otherwise, just set the time to the startTime of the segment.
-    const outOfBounds = tryIndex < 0 || tryIndex >= segments.length;
-    if (!outOfBounds) { this.#setTime(() => segments[tryIndex].startTime); }
+    if (!outOfBounds && !this.#isIntro() && !this.#isOutro()) {
+      this.#setTime(() => segments[tryIndex].startTime);
+    }
   }
 
   #setTrack(indexFn) {
