@@ -140,7 +140,7 @@ const introsOutrosArray = ({ intro_outro_enabled, intro_url, outro_url }) => {
   if (intro_url) { array.push({ placement: "pre-roll", media: [{ url: intro_url }] }); }
   if (outro_url) { array.push({ placement: "post-roll", media: [{ url: outro_url }] }); }
 
-  return array
+  return array;
 };
 
 const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {

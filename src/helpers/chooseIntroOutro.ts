@@ -1,7 +1,7 @@
 import { updateErroredIntrosOutros, resultedInAPlaybackError } from "./erroredIntrosOutros";
 import { updatePlayedIntroOutroMedia, alreadyPlayedIntroOutroMedia } from "./playedIntroOutroMedia";
 
-const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }) => {
+const chooseIntroOutro = ({ introsOutros = [], introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }) => {
   const currentIntroOutro = introsOutros[introsOutrosIndex];
 
   x: if (currentIntroOutro) {

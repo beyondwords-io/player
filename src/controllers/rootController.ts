@@ -246,7 +246,7 @@ class RootController {
     const isContent = !this.#isAdvert() && !this.#isIntro() && !this.#isOutro();
 
     if (!isContent && !this.segmentPlayed) {
-      this.player.segmentContainers.reset();
+      this.player.segmentContainers?.reset();
       this.player.currentSegment = null;
     } else if (isContent) {
       this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
@@ -300,11 +300,11 @@ class RootController {
   }
 
   #isIntro(index = this.player.introsOutrosIndex) {
-    return this.player.introsOutros[index]?.placement === "pre-roll";
+    return this.player?.introsOutros?.[index]?.placement === "pre-roll";
   }
 
   #isOutro(index = this.player.introsOutrosIndex) {
-    return this.player.introsOutros[index]?.placement === "post-roll";
+    return this.player?.introsOutros?.[index]?.placement === "post-roll";
   }
 
   #isAdvert() {
