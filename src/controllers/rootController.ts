@@ -415,6 +415,7 @@ class RootController {
       }
     }
 
+    this.#setIntroOutro(-1);
     this.#chooseAndSetIntroOutro({ atTheStart: true });
 
     // Avoid playing back-to-back adverts: post-roll at the end of content
