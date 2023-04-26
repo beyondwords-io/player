@@ -98,13 +98,13 @@
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
-  $: currentAllowedInWidget = sectionEnabled("current", currentSegment, segmentWidgetSections);
-  $: hoveredAllowedInWidget = sectionEnabled("hovered", hoveredSegment, segmentWidgetSections);
-
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, currentAllowedInWidget && resetHovered();
 
   const resetHovered = () => lastHovered = hoveredSegment;
+
+  $: currentAllowedInWidget = sectionEnabled("current", currentSegment, segmentWidgetSections);
+  $: hoveredAllowedInWidget = sectionEnabled("hovered", lastHovered, segmentWidgetSections);
 
   $: widgetSegment = (hoveredAllowedInWidget && lastHovered) || (currentAllowedInWidget && currentSegment);
   $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker;
