@@ -244,9 +244,7 @@ class RootController {
   }
 
   handleCurrentSegmentUpdated({ segment, segmentIndex, contentIndex }) {
-    const isContent = !this.#isAdvert() && !this.#isIntro() && !this.#isOutro();
-
-    if (isContent) {
+    if (this.#isContent()) {
       this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
     } else if (!this.segmentPlayed) {
       this.player.segmentContainers?.reset();
@@ -300,6 +298,14 @@ class RootController {
     Object.values(typeListeners).forEach(f => f(event));
   }
 
+  #hasIntro() {
+    return this.player.introsOutros.some(o => o.placement === "pre-roll");
+  }
+
+  #hasOutro() {
+    return this.player.introsOutros.some(o => o.placement === "post-roll");
+  }
+
   #isIntro(index = this.player.introsOutrosIndex) {
     return this.player?.introsOutros?.[index]?.placement === "pre-roll";
   }
@@ -314,6 +320,10 @@ class RootController {
 
   #isMidrollAdvert() {
     return this.player.adverts[this.player.advertIndex]?.placement === "mid-roll";
+  }
+
+  #isContent() {
+    return !this.#isIntro() && !this.#isOutro() && !this.#isAdvert();
   }
 
   #playOrPause() {
@@ -357,26 +367,32 @@ class RootController {
 
   #setSegment(indexFn) {
     const segments = this.player.content[this.player.contentIndex].segments;
+
     const currentIndex = findSegmentIndex(segments, this.player.currentTime);
-
     const tryIndex = indexFn(currentIndex);
-    const outOfBounds = tryIndex < 0 || tryIndex >= segments.length;
 
-    // If the user clicks next while the intro is playing, skip to the content.
-    if (this.#isIntro() && tryIndex > 0) { this.handlePlaybackEnded(); return; }
+    // If the user clicks next during the intro, skip to the content.
+    if (this.#isIntro() && tryIndex >= 0) {
+      this.handlePlaybackEnded();
 
-    // If the user clicks previous while the outro is playing, skip back to
-    // the last segment of the content or 0.01 if there are no segments. This
-    // ensures the intro does not play again because we are not at time 0.
-    if (this.#isOutro() && tryIndex < 0) {
+    // If the user clicks previous during the outro, skip back to the last segment.
+    // Set 0.01 to ensure the intro doesn't play again if there are no segments.
+    } else if (this.#isOutro() && tryIndex < 0) {
       this.#setIntroOutro(-1);
       this.#setTime(() => segments[segments.length - 1]?.startTime || 0.01);
       this.player.playbackState = "playing";
-      return;
-    }
 
-    // Otherwise, just set the time to the startTime of the segment.
-    if (!outOfBounds && !this.#isIntro() && !this.#isOutro()) {
+    // If the user clicks previous on the first segment, skip back to the intro.
+    } else if (this.#isContent() && tryIndex < 0 && this.#hasIntro()) {
+      this.#setTime(() => 0);
+      this.#chooseAndSetIntroOutro({ atTheStart: true });
+
+    // If the user clicks next on the last segment, play the outro.
+    } else if (this.#isContent() && tryIndex === segments.length && this.#hasOutro()) {
+      this.#setTime(() => this.player.duration - 0.01);
+
+    // Otherwise, set the time to the startTime of the segment.
+    } else if (this.#isContent() && tryIndex >= 0 && tryIndex < segments.length) {
       this.#setTime(() => segments[tryIndex].startTime);
     }
   }
