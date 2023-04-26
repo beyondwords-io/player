@@ -48,9 +48,6 @@ const setProps = (player, data) => {
 
   const imageEnabled = data.settings.image_enabled;
 
-  // TODO: allow overriddable for some fields based on subscription
-  //       e.g. logo_icon_enabled could be overridable if on a premium plan
-
   set(player, "playerStyle", data.settings.player_style);
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
   set(player, "callToAction", data.settings.call_to_action);
