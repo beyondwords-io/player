@@ -361,10 +361,12 @@ class RootController {
     const currentIndex = findSegmentIndex(segments, this.player.currentTime);
     const tryIndex = indexFn(currentIndex);
 
-    const outOfBounds = tryIndex < 0 || tryIndex >= segments.length;
-    if (outOfBounds) { return; }
+    // If the user clicks next while the intro is playing, skip to the content.
+    if (this.#isIntro() && tryIndex > 0) { this.handlePlaybackEnded(); return; }
 
-    this.#setTime(() => segments[tryIndex].startTime);
+    // Otherwise, just set the time to the startTime of the segment.
+    const outOfBounds = tryIndex < 0 || tryIndex >= segments.length;
+    if (!outOfBounds) { this.#setTime(() => segments[tryIndex].startTime); }
   }
 
   #setTrack(indexFn) {
