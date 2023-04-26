@@ -381,8 +381,13 @@ class RootController {
         this.midrollPlayed = false;
         this.segmentPlayed = false;
       }
+    }
 
-      this.#chooseAndSetIntroOutro({ atTheStart: true });
+    this.#chooseAndSetIntroOutro({ atTheStart: true });
+
+    // Avoid playing back-to-back adverts: post-roll at the end of content
+    // followed by pre-roll at the start when content is replayed by the user.
+    if (!outOfBounds) {
       this.#chooseAndSetAdvert({ atTheStart: true });
     }
   }
