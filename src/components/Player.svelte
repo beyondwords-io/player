@@ -107,7 +107,9 @@
   $: hoveredAllowedInWidget = sectionEnabled("hovered", lastHovered, segmentWidgetSections);
 
   $: widgetSegment = (hoveredAllowedInWidget && lastHovered) || (currentAllowedInWidget && currentSegment);
+
   $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker;
+  $: showRealTimeInWidget = widgetIsCurrent || activeAdvert || introOrOutro;
 
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
@@ -194,8 +196,8 @@
       {content}
       {contentIndex}
       {duration}
-      currentTime={widgetIsCurrent || activeAdvert ? currentTime : widgetSegment.startTime}
-      playbackState={widgetIsCurrent || activeAdvert ? playbackState : "paused"}
+      currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
+      playbackState={showRealTimeInWidget ? playbackState : "paused"}
       {activeAdvert}
       {textColor}
       {backgroundColor}
