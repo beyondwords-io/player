@@ -243,10 +243,12 @@ class RootController {
   }
 
   handleCurrentSegmentUpdated({ segment, segmentIndex, contentIndex }) {
-    if (this.#isAdvert() && !this.segmentPlayed) {
+    const isContent = !this.#isAdvert() && !this.#isIntro() && !this.#isOutro();
+
+    if (!isContent && !this.segmentPlayed) {
       this.player.segmentContainers.reset();
       this.player.currentSegment = null;
-    } else if (!this.#isAdvert()) {
+    } else if (isContent) {
       this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
     }
   }
