@@ -36,8 +36,6 @@ const chooseIntroOutro = ({ introsOutros, introsOutrosIndex, advertIndex, conten
   return bestSoFar;
 };
 
-const updatePlayedIntroOutroMedia = () => {}; // TODO
-
 const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart, atTheEnd }) => {
   const eligiblePlacements = new Set();
 
