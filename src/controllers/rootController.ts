@@ -299,12 +299,12 @@ class RootController {
     Object.values(typeListeners).forEach(f => f(event));
   }
 
-  #isIntro() {
-    return this.player.introsOutros[this.player.introsOutrosIndex]?.placement === "pre-roll";
+  #isIntro(index = this.player.introsOutrosIndex) {
+    return this.player.introsOutros[index]?.placement === "pre-roll";
   }
 
-  #isOutro() {
-    return this.player.introsOutros[this.player.introsOutrosIndex]?.placement === "post-roll";
+  #isOutro(index = this.player.introsOutrosIndex) {
+    return this.player.introsOutros[index]?.placement === "post-roll";
   }
 
   #isAdvert() {
@@ -438,22 +438,21 @@ class RootController {
     const defer = this.player.playbackState !== "playing" && index !== -1;
     if (defer) { this.nextIntroOutro = index; return; } else { delete this.nextIntroOutro; }
 
-    const wasIntro = this.#isIntro();
-    const wasOutro = this.#isOutro();
-
-    this.player.introsOutrosIndex = index;
-
     const atTheStart = this.player.contentIndex === 0 && this.player.currentTime === 0;
-    const skippedIntro = this.#isIntro() && !atTheStart;
+    const skippedIntro = !atTheStart && this.#isIntro(index);
 
     // We were at the start and were going to play an intro but the user skipped
     // past it so clear the index and check if an advert should now play.
     if (skippedIntro) {
       this.player.introsOutrosIndex = -1;
       this.#chooseAndSetAdvert({ atTheStart: true });
-
       return;
     }
+
+    const wasIntro = this.#isIntro();
+    const wasOutro = this.#isOutro();
+
+    this.player.introsOutrosIndex = index;
 
     const introFinished = wasIntro && !this.#isIntro();
     const outroFinished = wasOutro && !this.#isOutro();
@@ -461,7 +460,6 @@ class RootController {
     if (introFinished) { this.player.currentTime = 0; }
     if (outroFinished) { this.#setTrack(() => Infinity); }
   }
-
 
   #setAdvert(index) {
     const defer = this.player.playbackState !== "playing" && index !== -1;
