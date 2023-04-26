@@ -159,6 +159,7 @@ class RootController {
 
   handlePlaybackEnded() {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
+    this.segmentPlayed = false;
 
     const wasIntro = this.#isIntro();
     const wasAdvert = this.#isAdvert();
@@ -245,11 +246,11 @@ class RootController {
   handleCurrentSegmentUpdated({ segment, segmentIndex, contentIndex }) {
     const isContent = !this.#isAdvert() && !this.#isIntro() && !this.#isOutro();
 
-    if (!isContent && !this.segmentPlayed) {
+    if (isContent) {
+      this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
+    } else if (!this.segmentPlayed) {
       this.player.segmentContainers?.reset();
       this.player.currentSegment = null;
-    } else if (isContent) {
-      this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
     }
   }
 
@@ -379,7 +380,6 @@ class RootController {
       if (!this.#isAdvert()) {
         this.#setTime(() => 0);
         this.midrollPlayed = false;
-        this.segmentPlayed = false;
       }
     }
 
