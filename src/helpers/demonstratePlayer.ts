@@ -1,16 +1,18 @@
-import waitUntil from "../helpers/waitUntil";
+import waitUntil from "./waitUntil";
+import settableProps from "./settableProps";
+import diffObject from "./diffObject";
 
 let previousIndex = -1;
+let changedProps = [];
 
 const demonstratePlayer = async (controller, currentTime) => {
   await waitUntil(() => controller.player);
   const player = controller.player;
 
   const currentIndex = transitionIndexAtTime(player.contentIndex, player.currentTime);
-  if (currentIndex === previousIndex) { return; }
 
-  transitions[currentIndex].apply(player);
-  // TODO: apply/revert multiple transitions
+  if (currentIndex > previousIndex) { applyTransitions(player, previousIndex, currentIndex); }
+  if (currentIndex < previousIndex) { undoTransitions(player, previousIndex, currentIndex); }
 
   previousIndex = currentIndex;
 };
@@ -23,6 +25,28 @@ const transitionIndexAtTime = (i, time) => {
     return transitions.length - 1;
   } else {
     return nextIndex - 1;
+  }
+};
+
+const applyTransitions = (player, previousIndex, currentIndex) => {
+  for (let i = previousIndex + 1; i <= currentIndex; i += 1) {
+    const before = settableProps(player);
+
+    transitions[i].apply(player);
+    const after = settableProps(player);
+
+    const diff = diffObject(before, after);
+    changedProps.push(diff);
+  }
+};
+
+const undoTransitions = (player, previousIndex, currentIndex) => {
+  for (let i = previousIndex; i > currentIndex; i -= 1) {
+    const diff = changedProps.pop();
+
+    for (const [key, delta] of Object.entries(diff)) {
+      player[key] = delta.previousValue;
+    }
   }
 };
 
