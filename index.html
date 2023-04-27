@@ -6,46 +6,94 @@
     <title>BeyondWords Player</title>
   </head>
   <body>
-    <h1 data-beyondwords-marker="a4bf775c-4283-445d-8145-c56e46848fb4">
+    <h1 data-beyondwords-marker="9053e2e5-bbfe-435c-b952-57af82489a08" id="beyondwords-player">
       BeyondWords Player
     </h1>
 
     <script async defer type="module" src="src/index.ts" onload='new BeyondWords.Player({
       target: this,
       projectId: 26027,
-      contentId: 6590099,
+      playlistId: 86791,
+      playlistStyle: "hide",
     })'>
     </script>
 
-    <p data-beyondwords-marker="dd78bccf-bb04-45fd-82ca-48db10c232be">
-      This is an example page that contains the
+    <p data-beyondwords-marker="76fe8780-09ef-4a35-b5ac-31122bdf0c79">
+      This is a demo page for the
       <a href="https://beyondwords.io/" target="_blank">BeyondWords</a> Player.
-      It is used during the development of the player to test the effects of
-      code changes in this repository.
+      As you listen to the audio, the player will automatically update to
+      demonstrate its key features. Additionally, on desktop, you can use the
+      panel on the right to customize the player and inspect its properties.
     </p>
 
-    <p data-beyondwords-marker="37ac781a-04f2-4377-b01f-1dba1c45363a">
-      You can use this page to test different styles of player by running the
-      <span class="code">./bin/server</span> script on your computer and then
-      editing the <span class="code">index.html</span> file in the root of this
-      repository. The player is intialized in the script tag at the top of this
-      page and takes various options.
+    <p data-beyondwords-marker="7b4afe4c-b3be-42c7-a7d4-6a657fa5acd4">
+      This page is intended to help integrators understand the capabilities of
+      the player and to make it easier to add the player to your website. For
+      more detailed documentation, please refer to the
+      <a href="https://github.com/beyondwords-io/player" target="_blank">player repository</a>
+      on GitHub which includes guides and reference material.
     </p>
 
-    <p data-beyondwords-marker="492dcc81-d1e6-421b-a7d8-e754eb65bd94">
-      For example, you could pass the <span class="code">playerStyle: "small"</span>
-      option to change the style of player. You can also make changes in a
-      JavaScript console, without having to run the project locally, e.g.
-      <span class="code">BeyondWords.Player.instances()[0].playerStyle = "small"</span>
+    <p data-beyondwords-marker="677d53fe-29ea-433a-9976-6dbbd4882bf0">
+      The explanations on this page are split into sections. You can click on
+      the playlist icon in the player above to jump to a specific section to
+      hear about a particular feature. If you have any feedback on this page,
+      please open a
+      <a href="https://github.com/beyondwords-io/player/issues/new/choose" target="_blank">GitHub issue</a>.
+      Thank you.
     </p>
 
-    <p data-beyondwords-marker="28e3f9ba-1d47-426e-b0a5-181607dd81dd">
-      The automated tests in this project also use this page. They take
-      screenshots of the player's user interface and compare them against
-      previous images for regressions.
+    <h2 data-beyondwords-marker="c8517247-b416-401f-a783-15e345381e3a" id="player-styles">
+      Player Styles
+    </h2>
+
+    <p data-beyondwords-marker="a160fb43-0fc9-4032-9ffc-51c863d2739e">
+      The player supports five different styles: 'small', 'standard', 'large', 'screen'
+      and 'video'.
+    </p>
+
+    <p data-beyondwords-marker="e2af6c9e-241f-45d9-a7dc-2e70e50d4187">
+      The <strong>small</strong> player style, currently visible, is our most
+      compact style and takes up minimal space on your page. When used in the
+      widget at the bottom of the page, it automatically expands and collapses
+      when interacting with it, although you can customize this behavior.
+    </p>
+
+    <p data-beyondwords-marker="f33c7e8e-78b2-4a0c-989b-c300aff144fd">
+      The <strong>standard</strong> player style is the default and it's what we recommend for
+      most people. It provides a balance of functionality while taking up a
+      small-ish amount of space on the page. On mobile, a right-to-left layout
+      is used since most users are right-handed.
+    </p>
+
+    <p data-beyondwords-marker="c3419771-64e8-47d5-8114-efe934a40c73">
+      The <strong>large</strong> player style turns the player into more of a feature on your
+      webpage. It shows an image and supports an additional title that can vary
+      depending on the content or advert that is playing. We recommend this
+      style for playlists of multiple content items.
+    </p>
+
+    <p data-beyondwords-marker="dd0fe86a-ec06-4490-b756-988ed881a6c8">
+      The <strong>screen</strong> player style is intended to be used when the player takes up
+      the full screen, i.e. to create a dedicated landing page for your content.
+      We use this style at BeyondWords to provide a URL that allows content to
+      be shared on social media, such as
+      <a href="https://audio.beyondwords.io/playlist/86791" target="_blank">this one</a>.
+    </p>
+
+    <p data-beyondwords-marker="0dbdb40f-2100-4273-bab6-594a225f6def">
+      The <strong>video</strong> player style is our latest addition that
+      supports video playback. You will soon be able to generate videos of your
+      content being read out word-by-word to make the experience more engaging
+      for your users. We haven't launched this quite yet, but you can see a demo
+      of this feature on
+      <a href="https://beyondwords-core.github.io/playback-from-paragraphs-prototype/" target="_blank">this page</a>
+      by setting the 'Player style' dropdown to 'video'.
     </p>
 
     <div style="height: 100vh"></div>
+
+    <!-- TODO: write a ./bin script to synthesize the audio of this page -->
 
     <style>
       body {
@@ -53,11 +101,15 @@
         padding: 2rem;
       }
 
-      h1,  p, .beyondwords-player {
+      h1, h2,  p, .beyondwords-player {
         max-width: 40rem;
         margin: 2rem auto;
         line-height: 1.4;
         text-align: justify;
+      }
+
+      h2 {
+        margin-top: 4rem;
       }
 
       .code {
