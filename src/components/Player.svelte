@@ -12,6 +12,7 @@
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
   import sectionEnabled from "../helpers/sectionEnabled";
+  import demonstratePlayer from "../helpers/demonstratePlayer";
   import { findByQuery }  from "../helpers/resolveTarget";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
@@ -67,6 +68,7 @@
   export let showBottomWidget = false;
   export let showMediaSession = false;
   export let isFullScreen = false;
+  export let isDemoPage = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
@@ -116,6 +118,8 @@
 
   $: segmentHighlights.update("current", currentSegment, highlightSections, highlightColor);
   $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor);
+
+  $: isDemoPage && demonstratePlayer(controller, currentTime);
 </script>
 
 <MediaElement
