@@ -3,13 +3,13 @@ import settableProps from "./settableProps";
 import diffObject from "./diffObject";
 
 let previousIndex = -1;
-let changedProps = [];
+const changedProps = [];
 
 const demonstratePlayer = async (controller, currentTime) => {
   await waitUntil(() => controller.player);
   const player = controller.player;
 
-  const currentIndex = transitionIndexAtTime(player.contentIndex, player.currentTime);
+  const currentIndex = transitionIndexAtTime(player.contentIndex, currentTime);
 
   if (currentIndex > previousIndex) { applyTransitions(player, previousIndex, currentIndex); }
   if (currentIndex < previousIndex) { undoTransitions(player, previousIndex, currentIndex); }
