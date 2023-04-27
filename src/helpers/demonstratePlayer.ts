@@ -53,6 +53,7 @@ const undoTransitions = (player, previousIndex, currentIndex) => {
 const transitions = [
   { index: 1, atTime: 8.873,  apply: (p) => { p.playerStyle = "small";    p.widgetStyle = "small"; } },
   { index: 1, atTime: 24.713, apply: (p) => { p.playerStyle = "standard"; p.widgetStyle = "standard"; } },
+  { index: 1, atTime: 35,     apply: (p) => { p.widgetWidth = "0"; } },
   { index: 1, atTime: 40.768, apply: (p) => { p.playerStyle = "large";    p.widgetStyle = "large"; } },
   { index: 1, atTime: 56.512, apply: (p) => { p.playerStyle = "screen";   p.widgetStyle = "screen"; } },
   { index: 1, atTime: 72.664, apply: (p) => { p.playerStyle = "video";    p.widgetStyle = "video"; } },
