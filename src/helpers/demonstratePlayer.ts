@@ -2,6 +2,15 @@ import waitUntil from "./waitUntil";
 import settableProps from "./settableProps";
 import diffObject from "./diffObject";
 
+// On GitHhub Pages, the player will use the player script from NPM, rather than
+// the latest changes in this repository. You'll need to ./bin/publish a new
+// version of the NPM package before changes will be visible.
+//
+// TODO: move transitions into index.html so that they can be updated without
+// having to publish a new NPM package. We could perhaps add a top-level player
+// method like #animate(transitions) or #demonstrate(transitions) that could be
+// used by anyone as part of the public SDK.
+
 let previousIndex = -1;
 const changedProps = [];
 
