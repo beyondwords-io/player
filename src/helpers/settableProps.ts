@@ -1,8 +1,6 @@
 const settableProps = (object) => {
-  const descriptors = Object.getOwnPropertyDescriptors(object);
-  const setters = Object.entries(descriptors).filter(([_, { set }]) => set);
-
-  const propNames = setters.map(([k, _]) => k).filter(k => !ignoreList.has(k));
+  // TODO: make this better - perhaps by adding player.props()
+  const propNames = Object.keys(object.$$.props).filter(k => !ignoreList.has(k));
   const keyValues = propNames.map(name => [name, object[name]]);
 
   return Object.fromEntries(keyValues);
