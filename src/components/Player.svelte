@@ -60,6 +60,7 @@
   export let analyticsCustomUrl = undefined;
   export let analyticsTag = undefined;
   export let writeToken = undefined;
+  export let transitions = []; // TODO: turn into a documented feature
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
@@ -68,7 +69,6 @@
   export let showBottomWidget = false;
   export let showMediaSession = false;
   export let isFullScreen = false;
-  export let isDemoPage = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
@@ -119,7 +119,9 @@
   $: segmentHighlights.update("current", currentSegment, highlightSections, highlightColor);
   $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor);
 
-  $: isDemoPage && demonstratePlayer(controller, currentTime);
+  // TODO: if timedTransitions changes then re-apply all transitions.
+  // transitionIndex, transitionChanges, timedTransitions/Events(?), optional contentIndex, { time, transition }
+  $: demonstratePlayer(transitions, controller, currentTime);
 </script>
 
 <MediaElement

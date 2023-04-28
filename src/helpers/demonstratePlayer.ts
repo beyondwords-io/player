@@ -2,31 +2,22 @@ import waitUntil from "./waitUntil";
 import settableProps from "./settableProps";
 import diffObject from "./diffObject";
 
-// On GitHhub Pages, the player will use the player script from NPM, rather than
-// the latest changes in this repository. You'll need to ./bin/publish a new
-// version of the NPM package before changes will be visible.
-//
-// TODO: move transitions into index.html so that they can be updated without
-// having to publish a new NPM package. We could perhaps add a top-level player
-// method like #animate(transitions) or #demonstrate(transitions) that could be
-// used by anyone as part of the public SDK.
-
 let previousIndex = -1;
 const changedProps = [];
 
-const demonstratePlayer = async (controller, currentTime) => {
+const demonstratePlayer = async (transitions, controller, currentTime) => {
   await waitUntil(() => controller.player);
   const player = controller.player;
 
-  const currentIndex = transitionIndexAtTime(player.contentIndex, currentTime);
+  const currentIndex = transitionIndexAtTime(player.contentIndex, currentTime, transitions);
 
-  if (currentIndex > previousIndex) { applyTransitions(player, previousIndex, currentIndex); }
+  if (currentIndex > previousIndex) { applyTransitions(player, previousIndex, currentIndex, transitions); }
   if (currentIndex < previousIndex) { undoTransitions(player, previousIndex, currentIndex); }
 
   previousIndex = currentIndex;
 };
 
-const transitionIndexAtTime = (i, time) => {
+const transitionIndexAtTime = (i, time, transitions) => {
   const nextIndex = transitions.findIndex(t => t.index === i && t.atTime > time || t.index > i);
   const afterTheEnd = nextIndex === -1;
 
@@ -37,7 +28,7 @@ const transitionIndexAtTime = (i, time) => {
   }
 };
 
-const applyTransitions = (player, previousIndex, currentIndex) => {
+const applyTransitions = (player, previousIndex, currentIndex, transitions) => {
   for (let i = previousIndex + 1; i <= currentIndex; i += 1) {
     const before = settableProps(player);
 
@@ -58,14 +49,5 @@ const undoTransitions = (player, previousIndex, currentIndex) => {
     }
   }
 };
-
-const transitions = [
-  { index: 1, atTime: 8.873,  apply: (p) => { p.playerStyle = "small";    p.widgetStyle = "small"; } },
-  { index: 1, atTime: 24.713, apply: (p) => { p.playerStyle = "standard"; p.widgetStyle = "standard"; } },
-  { index: 1, atTime: 35,     apply: (p) => { p.widgetWidth = "0"; } },
-  { index: 1, atTime: 40.768, apply: (p) => { p.playerStyle = "large";    p.widgetStyle = "large"; } },
-  { index: 1, atTime: 56.512, apply: (p) => { p.playerStyle = "screen";   p.widgetStyle = "screen"; } },
-  { index: 1, atTime: 72.664, apply: (p) => { p.playerStyle = "video";    p.widgetStyle = "video"; } },
-];
 
 export default demonstratePlayer;
