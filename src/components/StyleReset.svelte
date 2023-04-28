@@ -1,6 +1,6 @@
 <style>
-  :global(.beyondwords-player :where(:not(svg *, iframe, .animating))),
-  :global(.beyondwords-widget :where(:not(svg *, iframe, .animating))) {
+  :global(.beyondwords-player :where(:not(svg *, iframe, .animating, select))),
+  :global(.beyondwords-widget :where(:not(svg *, iframe, .animating, select))) {
     all: initial;
   }
 

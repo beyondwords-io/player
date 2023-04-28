@@ -6,282 +6,330 @@
     <title>BeyondWords Player</title>
   </head>
   <body>
-    <h1 data-beyondwords-marker="9053e2e5-bbfe-435c-b952-57af82489a08">
-      BeyondWords Player
-    </h1>
+    <div class="side-by-side">
+      <div class="control-panel"></div>
 
-    <script id="player-script" async defer type="module" onload='new BeyondWords.Player({
-      target: this,
-      projectId: 26027,
-      playlistId: 86791,
-      playlistStyle: "hide",
-      skipButtonStyle: "segments",
-      segmentWidgetPosition: "9-oclock",
-      transitions: [
-        // Player Style
-        { index: 1, atTime: 8.873,  apply: (p) => { p.playerStyle = "small";    p.widgetStyle = "small"; } },
-        { index: 1, atTime: 24.713, apply: (p) => { p.playerStyle = "standard"; p.widgetStyle = "standard"; } },
-        { index: 1, atTime: 35,     apply: (p) => { p.widgetWidth = "0"; } },
-        { index: 1, atTime: 40.768, apply: (p) => { p.playerStyle = "large";    p.widgetStyle = "large"; } },
-        { index: 1, atTime: 56.512, apply: (p) => { p.playerStyle = "screen";   p.widgetStyle = "screen"; } },
-        { index: 1, atTime: 72.664, apply: (p) => { p.playerStyle = "video";    p.widgetStyle = "video"; } },
+      <article>
+        <h1 data-beyondwords-marker="9053e2e5-bbfe-435c-b952-57af82489a08">
+          BeyondWords Player
+        </h1>
 
-        // Player Colors
-        { index: 2, atTime: 0,      apply: (p) => { p.playerStyle = "standard"; p.widgetStyle = "standard"; p.widgetWidth = "auto" } },
-        { index: 2, atTime: 14.585, apply: (p) => { p.backgroundColor = "#cdf" } },
-        { index: 2, atTime: 22.1,   apply: (p) => { p.backgroundColor = "linear-gradient(to right, #fcf, #cff)" } },
-        { index: 2, atTime: 26.7,   apply: (p) => { p.backgroundColor = "linear-gradient(to bottom, #ffb, #fc6)" } },
-        { index: 2, atTime: 28.697, apply: (p) => { p.backgroundColor = "#F5F5F5"; p.textColor = "red" } },
-        { index: 2, atTime: 33.5,   apply: (p) => { p.textColor = "#111"; p.iconColor = "blue" } },
-        { index: 2, atTime: 38.6,   apply: (p) => { p.iconColor = "rgba(0, 0, 0, 0.8)"; p.highlightColor = "#fdf" } }, // TODO: fix highlightColor not updating for currentSegment
-        // TODO: demonstrate highlightColor linear gradient
-        { index: 2, atTime: 47.1,   apply: (p) => { p.backgroundColor = "linear-gradient(to right, #fcf, #cff)"; p.textColor = "purple"; p.iconColor = "#009";  } },
-        { index: 2, atTime: 52.2,   apply: (p) => { p.backgroundColor = "#222"; p.textColor = "white"; p.iconColor = "#d00"; p.highlightColor = "#eee";  } },
-        { index: 2, atTime: 55,     apply: (p) => { p.backgroundColor = "#F3F1DE"; p.textColor = "#2D5440"; p.iconColor = "#2D5440";  } },
-        { index: 2, atTime: 62.7,   apply: (p) => { p.backgroundColor = "linear-gradient(22.5deg, #29628D 0%, #29628D 50%, #D0343E 50%, #D0343E 100%)"; p.textColor = "white"; p.iconColor = "white";  } },
+        <script id="player-script" async defer type="module" onload='new BeyondWords.Player({
+          target: this,
+          projectId: 26027,
+          playlistId: 86791,
+          playlistStyle: "hide",
+          skipButtonStyle: "segments",
+          segmentWidgetPosition: "9-oclock",
+          transitions: [
+            // Player Style
+            { index: 1, atTime: 8.873,  apply: (p) => { p.playerStyle = "small";    p.widgetStyle = "small"; } },
+            { index: 1, atTime: 24.713, apply: (p) => { p.playerStyle = "standard"; p.widgetStyle = "standard"; } },
+            { index: 1, atTime: 35,     apply: (p) => { p.widgetWidth = "0"; } },
+            { index: 1, atTime: 40.768, apply: (p) => { p.playerStyle = "large";    p.widgetStyle = "large"; } },
+            { index: 1, atTime: 56.512, apply: (p) => { p.playerStyle = "screen";   p.widgetStyle = "screen"; } },
+            { index: 1, atTime: 72.664, apply: (p) => { p.playerStyle = "video";    p.widgetStyle = "video"; } },
 
-        // Segment Playback
-        { index: 3, atTime: 0,      apply: (p) => { p.backgroundColor = "#f5f5f5"; p.textColor = "#111"; p.iconColor = "rgba(0, 0, 0, 0.8)";  } },
-        { index: 3, atTime: 28.5,   apply: (p) => { p.highlightSections = "none-all"; } },
-        { index: 3, atTime: 32.224, apply: (p) => { p.segmentWidgetSections = "all"; } },
-        { index: 3, atTime: 36,     apply: (p) => { p.clickableSections = "none"; p.highlightSections = "none"; } },
-        { index: 3, atTime: 47.776, apply: (p) => { p.clickableSections = "all"; p.highlightSections = "all"; } },
-        { index: 3, atTime: 64.1, apply: (p) => { p.segmentWidgetSections = "none"; } },
-      ],
-    })'></script>
+            // Player Colors
+            { index: 2, atTime: 0,      apply: (p) => { p.playerStyle = "standard"; p.widgetStyle = "standard"; p.widgetWidth = "auto" } },
+            { index: 2, atTime: 14.585, apply: (p) => { p.backgroundColor = "#cdf" } },
+            { index: 2, atTime: 22.1,   apply: (p) => { p.backgroundColor = "linear-gradient(to right, #fcf, #cff)" } },
+            { index: 2, atTime: 26.7,   apply: (p) => { p.backgroundColor = "linear-gradient(to bottom, #ffb, #fc6)" } },
+            { index: 2, atTime: 28.697, apply: (p) => { p.backgroundColor = "#F5F5F5"; p.textColor = "red" } },
+            { index: 2, atTime: 33.5,   apply: (p) => { p.textColor = "#111"; p.iconColor = "blue" } },
+            { index: 2, atTime: 38.6,   apply: (p) => { p.iconColor = "rgba(0, 0, 0, 0.8)"; p.highlightColor = "#fdf" } }, // TODO: fix highlightColor not updating for currentSegment
+            // TODO: demonstrate highlightColor linear gradient
+            { index: 2, atTime: 47.1,   apply: (p) => { p.backgroundColor = "linear-gradient(to right, #fcf, #cff)"; p.textColor = "purple"; p.iconColor = "#009";  } },
+            { index: 2, atTime: 52.2,   apply: (p) => { p.backgroundColor = "#222"; p.textColor = "white"; p.iconColor = "#d00"; p.highlightColor = "#eee";  } },
+            { index: 2, atTime: 55,     apply: (p) => { p.backgroundColor = "#F3F1DE"; p.textColor = "#2D5440"; p.iconColor = "#2D5440";  } },
+            { index: 2, atTime: 62.7,   apply: (p) => { p.backgroundColor = "linear-gradient(22.5deg, #29628D 0%, #29628D 50%, #D0343E 50%, #D0343E 100%)"; p.textColor = "white"; p.iconColor = "white";  } },
 
-    <script>
-      const script = document.querySelector("#player-script");
-      const isLocal = location.hostname === "localhost";
+            // Segment Playback
+            { index: 3, atTime: 0,      apply: (p) => { p.backgroundColor = "#f5f5f5"; p.textColor = "#111"; p.iconColor = "rgba(0, 0, 0, 0.8)";  } },
+            { index: 3, atTime: 28.5,   apply: (p) => { p.highlightSections = "none-all"; } },
+            { index: 3, atTime: 32.224, apply: (p) => { p.segmentWidgetSections = "all"; } },
+            { index: 3, atTime: 36,     apply: (p) => { p.clickableSections = "none"; p.highlightSections = "none"; } },
+            { index: 3, atTime: 47.776, apply: (p) => { p.clickableSections = "all"; p.highlightSections = "all"; } },
+            { index: 3, atTime: 64.1, apply: (p) => { p.segmentWidgetSections = "none"; } },
+          ],
+        })'></script>
 
-      script.src = isLocal ? "src/index.ts" : "https://proxy.beyondwords.io/npm/@beyondwords/player@0.0.0-beta12/dist/umd.js";
-    </script>
+        <script>
+          const script = document.querySelector("#player-script");
+          const isLocal = location.hostname === "localhost";
 
-    <p data-beyondwords-marker="76fe8780-09ef-4a35-b5ac-31122bdf0c79">
-      This is a demo page for the
-      <a href="https://beyondwords.io/" target="_blank">BeyondWords</a> Player.
-      As you listen to the audio, the player will automatically update to
-      demonstrate its key features. Additionally, on desktop, you can use the
-      panel on the right to customize the player and inspect its properties.
-    </p>
+          script.src = isLocal ? "src/index.ts" : "https://proxy.beyondwords.io/npm/@beyondwords/player@0.0.0-beta12/dist/umd.js";
+        </script>
 
-    <p data-beyondwords-marker="7b4afe4c-b3be-42c7-a7d4-6a657fa5acd4">
-      This page is intended to help integrators understand the capabilities of
-      the player and to make it easier to add the player to your website. For
-      more detailed documentation, please refer to the
-      <a href="https://github.com/beyondwords-io/player" target="_blank">player repository</a>
-      on GitHub which includes guides and reference material.
-    </p>
+        <p data-beyondwords-marker="76fe8780-09ef-4a35-b5ac-31122bdf0c79">
+          This is a demo page for the
+          <a href="https://beyondwords.io/" target="_blank">BeyondWords</a> Player.
+          As you listen to the audio, the player will automatically update to
+          demonstrate its key features. Additionally, on desktop, you can use the
+          control panel in the top-left to customize the player and inspect its
+          properties.
+        </p>
 
-    <p data-beyondwords-marker="677d53fe-29ea-433a-9976-6dbbd4882bf0">
-      The explanations on this page are split into sections. You can click on
-      the playlist icon in the player above to jump to a specific section to
-      hear about a particular feature. If you have any feedback on this page,
-      please open a
-      <a href="https://github.com/beyondwords-io/player/issues/new/choose" target="_blank">GitHub issue</a>.
-      Thank you.
-    </p>
+        <p data-beyondwords-marker="7b4afe4c-b3be-42c7-a7d4-6a657fa5acd4">
+          This page is intended to help integrators understand the capabilities of
+          the player and to make it easier to add the player to your website. For
+          more detailed documentation, please refer to the
+          <a href="https://github.com/beyondwords-io/player" target="_blank">player repository</a>
+          on GitHub which includes guides and reference material.
+        </p>
 
-    <h2 data-beyondwords-marker="c8517247-b416-401f-a783-15e345381e3a">
-      Player Styles
-    </h2>
+        <p data-beyondwords-marker="677d53fe-29ea-433a-9976-6dbbd4882bf0">
+          The explanations on this page are split into sections. You can click on
+          the playlist icon in the player above to jump to a specific section to
+          hear about a particular feature. If you have any feedback on this page,
+          please open a
+          <a href="https://github.com/beyondwords-io/player/issues/new/choose" target="_blank">GitHub issue</a>.
+          Thank you.
+        </p>
 
-    <p data-beyondwords-marker="a160fb43-0fc9-4032-9ffc-51c863d2739e">
-      The player supports five different styles: 'small', 'standard', 'large', 'screen'
-      and 'video'.
-    </p>
+        <h2 data-beyondwords-marker="c8517247-b416-401f-a783-15e345381e3a">
+          Player Styles
+        </h2>
 
-    <p data-beyondwords-marker="e2af6c9e-241f-45d9-a7dc-2e70e50d4187">
-      The <strong>small</strong> player style, currently visible, is our most
-      compact style and takes up minimal space on your page. When used in the
-      widget at the bottom of the page, it automatically expands and collapses
-      when interacting with it, although you can customize this behavior.
-    </p>
+        <p data-beyondwords-marker="a160fb43-0fc9-4032-9ffc-51c863d2739e">
+          The player supports five different styles: 'small', 'standard', 'large', 'screen'
+          and 'video'.
+        </p>
 
-    <p data-beyondwords-marker="f33c7e8e-78b2-4a0c-989b-c300aff144fd">
-      The <strong>standard</strong> player style is the default and it's what we recommend for
-      most people. It provides a balance of functionality while taking up a
-      small-ish amount of space on the page. On mobile, a right-to-left layout
-      is used since most users are right-handed.
-    </p>
+        <p data-beyondwords-marker="e2af6c9e-241f-45d9-a7dc-2e70e50d4187">
+          The <strong>small</strong> player style, currently visible, is our most
+          compact style and takes up minimal space on your page. When used in the
+          widget at the bottom of the page, it automatically expands and collapses
+          when interacting with it, although you can customize this behavior.
+        </p>
 
-    <p data-beyondwords-marker="c3419771-64e8-47d5-8114-efe934a40c73">
-      The <strong>large</strong> player style turns the player into more of a feature on your
-      webpage. It shows an image and supports an additional title that can vary
-      depending on the content or advert that is playing. We recommend this
-      style for playlists of multiple content items.
-    </p>
+        <p data-beyondwords-marker="f33c7e8e-78b2-4a0c-989b-c300aff144fd">
+          The <strong>standard</strong> player style is the default and it's what we recommend for
+          most people. It provides a balance of functionality while taking up a
+          small-ish amount of space on the page. On mobile, a right-to-left layout
+          is used since most users are right-handed.
+        </p>
 
-    <p data-beyondwords-marker="dd0fe86a-ec06-4490-b756-988ed881a6c8">
-      The <strong>screen</strong> player style is intended to be used when the player takes up
-      the full screen, i.e. to create a dedicated landing page for your content.
-      We use this style at BeyondWords to provide a URL that allows content to
-      be shared on social media, such as
-      <a href="https://audio.beyondwords.io/playlist/86791" target="_blank">this one</a>.
-    </p>
+        <p data-beyondwords-marker="c3419771-64e8-47d5-8114-efe934a40c73">
+          The <strong>large</strong> player style turns the player into more of a feature on your
+          webpage. It shows an image and supports an additional title that can vary
+          depending on the content or advert that is playing. We recommend this
+          style for playlists of multiple content items.
+        </p>
 
-    <p data-beyondwords-marker="0dbdb40f-2100-4273-bab6-594a225f6def">
-      The <strong>video</strong> player style is our latest addition that
-      supports video playback. You will soon be able to generate videos of your
-      content being read out word-by-word to make the experience more engaging
-      for your users. We haven't launched this quite yet, but you can see a demo
-      of this feature on
-      <a href="https://beyondwords-core.github.io/playback-from-paragraphs-prototype/" target="_blank">this page</a>
-      by setting the 'Player style' dropdown to 'video'.
-    </p>
+        <p data-beyondwords-marker="dd0fe86a-ec06-4490-b756-988ed881a6c8">
+          The <strong>screen</strong> player style is intended to be used when the player takes up
+          the full screen, i.e. to create a dedicated landing page for your content.
+          We use this style at BeyondWords to provide a URL that allows content to
+          be shared on social media, such as
+          <a href="https://audio.beyondwords.io/playlist/86791" target="_blank">this one</a>.
+        </p>
 
-    <div class="control-panel">
-      The control panel will be added soon.
+        <p data-beyondwords-marker="0dbdb40f-2100-4273-bab6-594a225f6def">
+          The <strong>video</strong> player style is our latest addition that
+          supports video playback. You will soon be able to generate videos of your
+          content being read out word-by-word to make the experience more engaging
+          for your users. We haven't launched this quite yet, but you can see a demo
+          of this feature on
+          <a href="https://beyondwords-core.github.io/playback-from-paragraphs-prototype/" target="_blank">this page</a>
+          by setting the 'Player style' dropdown to 'video'.
+        </p>
+
+        <h2 data-beyondwords-marker="5e36c61d-70f7-40b0-8628-a4209fefb6df">
+          Player Colors
+        </h2>
+
+        <p data-beyondwords-marker="59185256-0aa9-4776-b928-0d740e7fe2ca">
+          The player supports a range of color settings to make it fit with your
+          brand. Colors can be set to any CSS value, such as 'red', '#F00' and
+          'rgb(255, 0, 0)'.
+        </p>
+
+        <p data-beyondwords-marker="2483a58b-01b6-4d6f-adb6-bc5b567b649e">
+          The <strong>backgroundColor</strong> setting affects the background of the
+          player in all user interfaces, including the widget that appears at the
+          bottom of the screen. Additionally, a linear-gradient can be set to add
+          visual interest. Horizontal and vertical gradients are supported.
+        </p>
+
+        <p data-beyondwords-marker="bafe15f4-538e-4869-86c4-41120af8155e">
+          The <strong>textColor</strong> setting is self-explanatory and sets the
+          text color throughout the player. Similarly, the <strong>iconColor</strong>
+          property allows the buttons and progress bar color to change.
+        </p>
+
+        <p data-beyondwords-marker="005616f2-b346-49bb-8534-05e4d6e749f3">
+          The <strong>highlightColor</strong> setting changes the color of
+          the text highlights on the page as the article is being read out. Again,
+          this setting supports linear-gradients.
+        </p>
+
+        <p data-beyondwords-marker="9a57b07b-c669-4ef5-a8aa-214ef204acdd">
+          When combined, these color settings create a distinctive look for the
+          player that can fit your brand. Here is an example of a player that might
+          fit a news brand and here is an example of a player that might fit an
+          eco-friendly brand.
+        </p>
+
+        <p data-beyondwords-marker="bc0a38f4-eb68-4452-90b3-112299339f87">
+          Finally, the player allows adverts to "take over" the look of the player.
+          For example, a Domino's Pizza advert could set the colors to match its
+          brand.
+        </p>
+
+        <h2 data-beyondwords-marker="c8633ed6-6ecb-4847-a477-bfcfbb0f374d">
+          Segment Playback
+        </h2>
+
+        <p data-beyondwords-marker="cb48d272-6498-4135-a572-a3ec259632f5">
+          As you have probably noticed by now, one of the key features of the
+          BeyondWords player is the ability to playback from segments. This feature
+          allows users to click on a paragraph within your article and the audio
+          will immediately skip to that location.
+        </p>
+
+        <p data-beyondwords-marker="5e941dd2-3dbd-43ac-9bc3-989953846ef8">
+          The added text highlights help users follow along with the content as it
+          is being read out and the hover effect emphasizes that paragraphs can
+          be clicked on. These behaviors can be configured independently, e.g. you
+          can choose not to highlight the current segment.
+        </p>
+
+        <p data-beyondwords-marker="e56fd498-c55d-4ccb-b55b-966d93e7381d">
+          The segment widget that appears next to paragraphs can be switched on or
+          off or used instead of the ability to click on paragraphs. The segment
+          widget's progress bar changes as you hover over paragraphs within the
+          article to show their start time within the audio.
+        </p>
+
+        <p data-beyondwords-marker="17c3efab-2eb4-4518-bacf-71288822ee70">
+          The segment widget can be positioned in one of twelve positions next to
+          the paragraph. For convenience, these are named after hours on a clock,
+          for example 12-oclock appears at the top, 3-oclock on the right, 6-oclock
+          at the bottom and 9-oclock on the left.
+        </p>
+
+        <p data-beyondwords-marker="0c1c7361-30cc-4326-aec8-84c7560083e2">
+          To support segment playback on your website, you will need to add some
+          markers into the HTML of your page, although, if you are using our
+          <a href="https://wordpress.org/plugins/speechkit/" target="_blank">WordPress plugin</a>,
+          they will be added automatically. Please refer to our
+          <a href="https://github.com/beyondwords-io/player/blob/gh-pages/doc/segments-playback.md" target="_blank">dedicated guide</a>
+          for more information.
+        </p>
+
+        <h2 data-beyondwords-marker="5f9bef7d-c9fa-4760-b8a2-77c325ad3d06">
+          Media Sessions
+        </h2>
+
+        <p data-beyondwords-marker="95f5752b-27c2-49b1-93ce-f78382505e35">
+          The player supports 'Media Sessions', which allows users to interact with
+          the player on their phone's lock screen, or other Media Session enabled
+          devices. For example, users can use their wireless headphones to
+          play/pause and skip forwards and backwards.
+        </p>
+
+        <p data-beyondwords-marker="TODO">
+          TODO: add more explanation
+        </p>
+
+        <h2 data-beyondwords-marker="TODO">
+          Widget
+        </h2>
+
+        <p data-beyondwords-marker="TODO">
+          Demonstration will be added soon.
+        </p>
+
+        <h2 data-beyondwords-marker="TODO">
+          Adverts
+        </h2>
+
+        <p data-beyondwords-marker="TODO">
+          Demonstration will be added soon.
+        </p>
+
+        <h2 data-beyondwords-marker="TODO">
+          Intros and Outros
+        </h2>
+
+        <p data-beyondwords-marker="TODO">
+          Demonstration will be added soon.
+        </p>
+
+        <h2 data-beyondwords-marker="TODO">
+          Playlists
+        </h2>
+
+        <p data-beyondwords-marker="TODO">
+          Demonstration will be added soon.
+        </p>
+
+        <h2 data-beyondwords-marker="TODO">
+          Analytics
+        </h2>
+
+        <p data-beyondwords-marker="TODO">
+          Demonstration will be added soon.
+        </p>
+
+        <h2 data-beyondwords-marker="TODO">
+          Events
+        </h2>
+
+        <p data-beyondwords-marker="TODO">
+          Demonstration will be added soon.
+        </p>
+
+        <a href="#" class="show-control-panel" onclick='
+          const player = BeyondWords.Player.instances()[0];
+
+          player.controlPanel = ".control-panel";
+          document.querySelector(".control-panel").style.display = "block";
+          this.remove();
+        '>show control panel</a>
+
+        <div style="height: 100vh"></div>
+      </article>
     </div>
 
-    <h2 data-beyondwords-marker="5e36c61d-70f7-40b0-8628-a4209fefb6df">
-      Player Colors
-    </h2>
 
-    <p data-beyondwords-marker="59185256-0aa9-4776-b928-0d740e7fe2ca">
-      The player supports a range of color settings to make it fit with your
-      brand. Colors can be set to any CSS value, such as 'red', '#F00' and
-      'rgb(255, 0, 0)'.
-    </p>
-
-    <p data-beyondwords-marker="2483a58b-01b6-4d6f-adb6-bc5b567b649e">
-      The <strong>backgroundColor</strong> setting affects the background of the
-      player in all user interfaces, including the widget that appears at the
-      bottom of the screen. Additionally, a linear-gradient can be set to add
-      visual interest. Horizontal and vertical gradients are supported.
-    </p>
-
-    <p data-beyondwords-marker="bafe15f4-538e-4869-86c4-41120af8155e">
-      The <strong>textColor</strong> setting is self-explanatory and sets the
-      text color throughout the player. Similarly, the <strong>iconColor</strong>
-      property allows the buttons and progress bar color to change.
-    </p>
-
-    <p data-beyondwords-marker="005616f2-b346-49bb-8534-05e4d6e749f3">
-      The <strong>highlightColor</strong> setting changes the color of
-      the text highlights on the page as the article is being read out. Again,
-      this setting supports linear-gradients.
-    </p>
-
-    <p data-beyondwords-marker="9a57b07b-c669-4ef5-a8aa-214ef204acdd">
-      When combined, these color settings create a distinctive look for the
-      player that can fit your brand. Here is an example of a player that might
-      fit a news brand and here is an example of a player that might fit an
-      eco-friendly brand.
-    </p>
-
-    <p data-beyondwords-marker="bc0a38f4-eb68-4452-90b3-112299339f87">
-      Finally, the player allows adverts to "take over" the look of the player.
-      For example, a Domino's Pizza advert could set the colors to match its
-      brand.
-    </p>
-
-    <h2 data-beyondwords-marker="c8633ed6-6ecb-4847-a477-bfcfbb0f374d">
-      Segment Playback
-    </h2>
-
-    <p data-beyondwords-marker="cb48d272-6498-4135-a572-a3ec259632f5">
-      As you have probably noticed by now, one of the key features of the
-      BeyondWords player is the ability to playback from segments. This feature
-      allows users to click on a paragraph within your article and the audio
-      will immediately skip to that location.
-    </p>
-
-    <p data-beyondwords-marker="5e941dd2-3dbd-43ac-9bc3-989953846ef8">
-      The added text highlights help users follow along with the content as it
-      is being read out and the hover effect emphasizes that paragraphs can
-      be clicked on. These behaviors can be configured independently, e.g. you
-      can choose not to highlight the current segment.
-    </p>
-
-    <p data-beyondwords-marker="e56fd498-c55d-4ccb-b55b-966d93e7381d">
-      The segment widget that appears next to paragraphs can be switched on or
-      off or used instead of the ability to click on paragraphs. The segment
-      widget's progress bar changes as you hover over paragraphs within the
-      article to show their start time within the audio.
-    </p>
-
-    <p data-beyondwords-marker="17c3efab-2eb4-4518-bacf-71288822ee70">
-      The segment widget can be positioned in one of twelve positions next to
-      the paragraph. For convenience, these are named after hours on a clock,
-      for example 12-oclock appears at the top, 3-oclock on the right, 6-oclock
-      at the bottom and 9-oclock on the left.
-    </p>
-
-    <p data-beyondwords-marker="0c1c7361-30cc-4326-aec8-84c7560083e2">
-      To support segment playback on your website, you will need to add some
-      markers into the HTML of your page, although, if you are using our
-      <a href="https://wordpress.org/plugins/speechkit/" target="_blank">WordPress plugin</a>,
-      they will be added automatically. Please refer to our
-      <a href="https://github.com/beyondwords-io/player/blob/gh-pages/doc/segments-playback.md" target="_blank">dedicated guide</a>
-      for more information.
-    </p>
-
-    <h2 data-beyondwords-marker="TODO">
-      Media Sessions
-    </h2>
-
-    <p data-beyondwords-marker="TODO">
-      Demonstration will be added soon.
-    </p>
-
-    <h2 data-beyondwords-marker="TODO">
-      Widget
-    </h2>
-
-    <p data-beyondwords-marker="TODO">
-      Demonstration will be added soon.
-    </p>
-
-    <h2 data-beyondwords-marker="TODO">
-      Adverts
-    </h2>
-
-    <p data-beyondwords-marker="TODO">
-      Demonstration will be added soon.
-    </p>
-
-    <h2 data-beyondwords-marker="TODO">
-      Intros and Outros
-    </h2>
-
-    <p data-beyondwords-marker="TODO">
-      Demonstration will be added soon.
-    </p>
-
-    <h2 data-beyondwords-marker="TODO">
-      Playlists
-    </h2>
-
-    <p data-beyondwords-marker="TODO">
-      Demonstration will be added soon.
-    </p>
-
-    <h2 data-beyondwords-marker="TODO">
-      Analytics
-    </h2>
-
-    <p data-beyondwords-marker="TODO">
-      Demonstration will be added soon.
-    </p>
-
-    <h2 data-beyondwords-marker="TODO">
-      Events
-    </h2>
-
-    <p data-beyondwords-marker="TODO">
-      Demonstration will be added soon.
-    </p>
-
-
-
-    <div style="height: 100vh"></div>
 
     <!-- TODO: write a ./bin script to synthesize the audio of this page -->
 
     <style>
       body {
         font-family: Arial;
+      }
+
+      .side-by-side {
+        display: flex;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow: hidden;
+      }
+
+      .control-panel {
+        padding: 5px;
+        overflow-y: scroll;
+        height: calc(100% - 100px);
+        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
+        display: none;
+      }
+
+      .show-control-panel {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        color: grey;
+      }
+
+      article {
+        overflow-y: scroll;
+        width: 100%;
         padding: 2rem;
       }
 
@@ -294,21 +342,6 @@
 
       h2 {
         margin-top: 4rem;
-      }
-
-      .code {
-        font-weight: bold;
-        color: #040;
-      }
-
-      .control-panel {
-        position: fixed;
-        top: 80px;
-        right: 0;
-        width: 100px;
-        height: 300px;
-        border: 1px solid grey;
-        padding: 10px;
       }
 
       /* Check that styles from the website do not interfere with the player. */

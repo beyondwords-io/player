@@ -3,6 +3,7 @@
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import ExternalWidget from "./ExternalWidget.svelte";
+  import ControlPanel from "./ControlPanel.svelte";
   import MediaSession from "./MediaSession.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
   import StyleReset from "./StyleReset.svelte";
@@ -61,6 +62,7 @@
   export let analyticsTag = undefined;
   export let writeToken = undefined;
   export let transitions = []; // TODO: turn into a documented feature
+  export let controlPanel = undefined; // TODO: turn into a documented feature
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
@@ -93,6 +95,7 @@
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
   $: widgetTarget = findByQuery(widgetTarget);
+  $: controlPanel = findByQuery(controlPanel);
 
   $: videoBehindWidget = showBottomWidget && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
@@ -210,6 +213,54 @@
       {iconColor} />
   </ExternalWidget>
 {/each}
+
+{#if controlPanel}
+  <ExternalWidget root={controlPanel}>
+    <ControlPanel
+      bind:playerApiUrl
+      bind:projectId
+      bind:contentId
+      bind:playlistId
+      bind:sourceId
+      bind:sourceUrl
+      bind:showUserInterface
+      bind:playerStyle
+      bind:playerTitle
+      bind:callToAction
+      bind:skipButtonStyle
+      bind:playlistStyle
+      bind:mediaSession
+      {content}
+      bind:contentIndex
+      {introsOutros}
+      bind:introsOutrosIndex
+      {adverts}
+      bind:advertIndex
+      bind:duration
+      bind:currentTime
+      bind:playbackState
+      bind:playbackRate
+      bind:widgetStyle
+      bind:widgetPosition
+      bind:widgetWidth
+      bind:widgetTarget
+      bind:textColor
+      bind:backgroundColor
+      bind:iconColor
+      bind:highlightColor
+      bind:logoIconEnabled
+      bind:highlightSections
+      bind:clickableSections
+      bind:segmentWidgetSections
+      bind:segmentWidgetPosition
+      bind:currentSegment
+      bind:hoveredSegment
+      bind:advertConsent
+      bind:analyticsConsent
+      bind:analyticsCustomUrl
+      bind:analyticsTag />
+  </ExternalWidget>
+{/if}
 
 {#if showMediaSession}
   <MediaSession
