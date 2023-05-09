@@ -43,6 +43,16 @@
 </script>
 
 <div class="control-panel">
+  <strong>
+    Control Panel
+
+    <a target="_blank" href="https://github.com/beyondwords-io/player/blob/gh-pages/doc/player-settings.md">
+      (view docs)
+    </a>
+
+    <br/><br/>
+  </strong>
+
   <div class="control">
     playerApiUrl:
     <input type="text" bind:value={playerApiUrl}>
@@ -327,7 +337,7 @@
 <style>
   .control {
     display: flex;
-    column-gap: 0.5rem;
+    column-gap: 8px;
   }
 
   input[type="text"] {
@@ -339,5 +349,14 @@
     font-family: "InterVariable", sans-serif;
     font-size: 14px;
     width: 100%;
+  }
+
+  strong {
+    font-weight: bold;
+  }
+
+  a {
+    color: blue;
+    text-decoration: underline;
   }
 </style>
