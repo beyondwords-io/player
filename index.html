@@ -281,10 +281,15 @@
           Demonstration will be added soon.
         </p>
 
-        <a href="#" class="show-control-panel" onclick='
-          BeyondWords.Player.instances()[0].controlPanel = ".control-panel";
-          document.body.classList.add("control-panel-visible");
-        '>show control panel</a>
+        <a href="#" class="toggle-control-panel" onclick='
+          if (document.body.classList.contains("control-panel-visible")) {
+            BeyondWords.Player.instances()[0].controlPanel = null;
+            document.body.classList.remove("control-panel-visible");
+          } else {
+            BeyondWords.Player.instances()[0].controlPanel = ".control-panel";
+            document.body.classList.add("control-panel-visible");
+          }
+        '></a>
 
         <div style="height: 100vh"></div>
       </article>
@@ -301,11 +306,15 @@
         display: none;
       }
 
-      .show-control-panel {
+      .toggle-control-panel {
         position: fixed;
         top: 1rem;
         left: 1rem;
         color: grey;
+      }
+
+      .toggle-control-panel:before {
+        content: "show control panel";
       }
 
       article {
@@ -339,11 +348,15 @@
         overflow-y: scroll;
         height: calc(100% - 110px);
         box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
-        min-width: 280px;
+        min-width: 250px;
       }
 
-      .control-panel-visible .show-control-panel {
-        display: none;
+      .control-panel-visible .toggle-control-panel {
+        left: 235px;
+      }
+
+      .control-panel-visible .toggle-control-panel:before {
+        content: "hide";
       }
 
       .control-panel-visible article {

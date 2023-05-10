@@ -363,7 +363,7 @@
 
   .control, input[type="text"], select, strong, a {
     font-family: "InterVariable", sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     width: 100%;
   }
 
