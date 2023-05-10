@@ -146,7 +146,7 @@
       contentIndex:
       <select bind:value={contentIndex}>
         {#each content as item, i}
-          <option>{i}</option>
+          <option value={i}>{i} ({item.title})</option>
         {/each}
       </select>
     </div>
@@ -154,9 +154,9 @@
     <div class="control">
       introsOutrosIndex:
       <select bind:value={introsOutrosIndex}>
-        <option>{-1}</option>
+        <option value={-1}>-1 (none)</option>
         {#each introsOutros as item, i}
-          <option>{i}</option>
+          <option value={i}>{i}: {item.placement}</option>
         {/each}
       </select>
     </div>
@@ -165,9 +165,9 @@
   <div class="control">
     advertIndex:
     <select bind:value={advertIndex}>
-      <option>{-1}</option>
+      <option value={-1}>-1 (none)</option>
       {#each adverts as item, i}
-        <option>{i}</option>
+        <option value={i}>{i} ({item.placement})</option>
       {/each}
     </select>
   </div>
