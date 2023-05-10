@@ -7,8 +7,6 @@
   </head>
   <body>
     <div class="side-by-side">
-      <div class="control-panel"></div>
-
       <article>
         <h1 data-beyondwords-marker="9053e2e5-bbfe-435c-b952-57af82489a08">
           BeyondWords Player
@@ -281,18 +279,20 @@
           Demonstration will be added soon.
         </p>
 
-        <a href="#" class="toggle-control-panel" onclick='
-          if (document.body.classList.contains("control-panel-visible")) {
-            BeyondWords.Player.instances()[0].controlPanel = null;
-            document.body.classList.remove("control-panel-visible");
-          } else {
-            BeyondWords.Player.instances()[0].controlPanel = ".control-panel";
-            document.body.classList.add("control-panel-visible");
-          }
-        '></a>
+        <a href="#" class="show-control-panel" onclick='
+          BeyondWords.Player.instances()[0].controlPanel = ".control-panel";
+          document.body.classList.add("control-panel-visible");
+        '>show control panel</a>
 
-        <div style="height: 100vh"></div>
+        <div style="height: 100px"></div>
       </article>
+
+      <div class="control-panel">
+        <a href="#" class="hide-control-panel" onclick='
+          BeyondWords.Player.instances()[0].controlPanel = null;
+          document.body.classList.remove("control-panel-visible");
+        '>hide</a>
+      </div>
     </div>
 
     <!-- TODO: write a ./bin script to synthesize the audio of this page -->
@@ -306,15 +306,11 @@
         display: none;
       }
 
-      .toggle-control-panel {
+      .show-control-panel {
         position: fixed;
         top: 1rem;
         left: 1rem;
         color: grey;
-      }
-
-      .toggle-control-panel:before {
-        content: "show control panel";
       }
 
       article {
@@ -334,6 +330,7 @@
 
       .control-panel-visible .side-by-side {
         display: flex;
+        flex-direction: row-reverse;
         position: absolute;
         top: 0;
         bottom: 0;
@@ -351,17 +348,22 @@
         min-width: 250px;
       }
 
-      .control-panel-visible .toggle-control-panel {
-        left: 235px;
-      }
-
-      .control-panel-visible .toggle-control-panel:before {
-        content: "hide";
+      .control-panel-visible .show-control-panel {
+        display: none;
       }
 
       .control-panel-visible article {
         overflow-y: scroll;
         width: 100%;
+      }
+
+      .bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp .hide-control-panel {
+        float: right !important;
+        position: sticky !important;
+        z-index: 1 !important;
+        color: grey !important;
+        font-family: Arial !important;
+        text-decoration: underline !important;
       }
 
       /* Check that styles from the website do not interfere with the player. */
