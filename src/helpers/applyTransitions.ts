@@ -5,20 +5,20 @@ import diffObject from "./diffObject";
 let previousIndex = -1;
 const changedProps = [];
 
-const demonstratePlayer = async (transitions, controller, currentTime) => {
+const applyTransitions = async (transitions, controller, currentTime) => {
   await waitUntil(() => controller.player);
   const player = controller.player;
 
   const currentIndex = transitionIndexAtTime(player.contentIndex, currentTime, transitions);
 
-  if (currentIndex > previousIndex) { applyTransitions(player, previousIndex, currentIndex, transitions); }
+  if (currentIndex > previousIndex) { callTransitions(player, previousIndex, currentIndex, transitions); }
   if (currentIndex < previousIndex) { undoTransitions(player, previousIndex, currentIndex); }
 
   previousIndex = currentIndex;
 };
 
 const transitionIndexAtTime = (i, time, transitions) => {
-  const nextIndex = transitions.findIndex(t => t.index === i && t.atTime > time || t.index > i);
+  const nextIndex = transitions.findIndex(t => t[0] === i && t[1] > time || t[0] > i);
   const afterTheEnd = nextIndex === -1;
 
   if (afterTheEnd) {
@@ -28,11 +28,11 @@ const transitionIndexAtTime = (i, time, transitions) => {
   }
 };
 
-const applyTransitions = (player, previousIndex, currentIndex, transitions) => {
+const callTransitions = (player, previousIndex, currentIndex, transitions) => {
   for (let i = previousIndex + 1; i <= currentIndex; i += 1) {
     const before = settableProps(player);
 
-    transitions[i].apply(player);
+    transitions[i][2](player);
     const after = settableProps(player);
 
     const diff = diffObject(before, after);
@@ -50,4 +50,4 @@ const undoTransitions = (player, previousIndex, currentIndex) => {
   }
 };
 
-export default demonstratePlayer;
+export default applyTransitions;

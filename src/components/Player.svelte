@@ -13,7 +13,7 @@
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
   import sectionEnabled from "../helpers/sectionEnabled";
-  import demonstratePlayer from "../helpers/demonstratePlayer";
+  import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
@@ -123,8 +123,7 @@
   $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor);
 
   // TODO: if timedTransitions changes then re-apply all transitions.
-  // transitionIndex, transitionChanges, timedTransitions/Events(?), optional contentIndex, { time, transition }
-  $: demonstratePlayer(transitions, controller, currentTime);
+  $: applyTransitions(transitions, controller, currentTime);
 </script>
 
 <MediaElement
