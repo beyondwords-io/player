@@ -343,9 +343,9 @@
   <br/>
 
   {#if showAdvancedSettings}
-    <a on:click={() => showAdvancedSettings = false}>hide advanced settings</a>
+    <a href="#_" on:click={() => showAdvancedSettings = false}>hide advanced settings</a>
   {:else}
-    <a on:click={() => showAdvancedSettings = true}>show advanced settings</a>
+    <a href="#_" on:click={() => showAdvancedSettings = true}>show advanced settings</a>
   {/if}
 </div>
 

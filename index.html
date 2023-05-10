@@ -282,18 +282,13 @@
         </p>
 
         <a href="#" class="show-control-panel" onclick='
-          const player = BeyondWords.Player.instances()[0];
-
-          player.controlPanel = ".control-panel";
-          document.querySelector(".control-panel").style.display = "block";
-          this.remove();
+          BeyondWords.Player.instances()[0].controlPanel = ".control-panel";
+          document.body.classList.add("control-panel-visible");
         '>show control panel</a>
 
         <div style="height: 100vh"></div>
       </article>
     </div>
-
-
 
     <!-- TODO: write a ./bin script to synthesize the audio of this page -->
 
@@ -302,23 +297,8 @@
         font-family: Arial;
       }
 
-      .side-by-side {
-        display: flex;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        overflow-y: hidden;
-      }
-
       .control-panel {
-        padding: 16px;
-        overflow-y: scroll;
-        height: calc(100% - 110px);
-        box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
         display: none;
-        min-width: 280px;
       }
 
       .show-control-panel {
@@ -329,8 +309,6 @@
       }
 
       article {
-        overflow-y: scroll;
-        width: 100%;
         padding: 2rem;
       }
 
@@ -343,6 +321,34 @@
 
       h2 {
         margin-top: 4rem;
+      }
+
+      .control-panel-visible .side-by-side {
+        display: flex;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow-y: hidden;
+      }
+
+      .control-panel-visible .control-panel {
+        display: block;
+        padding: 16px;
+        overflow-y: scroll;
+        height: calc(100% - 110px);
+        box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+        min-width: 280px;
+      }
+
+      .control-panel-visible .show-control-panel {
+        display: none;
+      }
+
+      .control-panel-visible article {
+        overflow-y: scroll;
+        width: 100%;
       }
 
       /* Check that styles from the website do not interfere with the player. */
