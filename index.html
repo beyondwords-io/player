@@ -36,8 +36,8 @@
             { index: 2, atTime: 22.1,   apply: (p) => { p.backgroundColor = "linear-gradient(to right, #fcf, #cff)" } },
             { index: 2, atTime: 26.7,   apply: (p) => { p.backgroundColor = "linear-gradient(to bottom, #ffb, #fc6)" } },
             { index: 2, atTime: 28.697, apply: (p) => { p.backgroundColor = "#F5F5F5"; p.textColor = "red" } },
-            { index: 2, atTime: 33.5,   apply: (p) => { p.textColor = "#111"; p.iconColor = "blue" } },
-            { index: 2, atTime: 38.6,   apply: (p) => { p.iconColor = "rgba(0, 0, 0, 0.8)"; p.highlightColor = "#fdf" } }, // TODO: fix highlightColor not updating for currentSegment
+            { index: 2, atTime: 33.5,   apply: (p) => { p.textColor = "#323232"; p.iconColor = "blue" } },
+            { index: 2, atTime: 38.6,   apply: (p) => { p.iconColor = "#323232"; p.highlightColor = "#fdf" } }, // TODO: fix highlightColor not updating for currentSegment
             // TODO: demonstrate highlightColor linear gradient
             { index: 2, atTime: 47.1,   apply: (p) => { p.backgroundColor = "linear-gradient(to right, #fcf, #cff)"; p.textColor = "purple"; p.iconColor = "#009";  } },
             { index: 2, atTime: 52.2,   apply: (p) => { p.backgroundColor = "#222"; p.textColor = "white"; p.iconColor = "#d00"; p.highlightColor = "#eee";  } },
@@ -45,7 +45,7 @@
             { index: 2, atTime: 62.7,   apply: (p) => { p.backgroundColor = "linear-gradient(22.5deg, #29628D 0%, #29628D 50%, #D0343E 50%, #D0343E 100%)"; p.textColor = "white"; p.iconColor = "white";  } },
 
             // Segment Playback
-            { index: 3, atTime: 0,      apply: (p) => { p.backgroundColor = "#f5f5f5"; p.textColor = "#111"; p.iconColor = "rgba(0, 0, 0, 0.8)";  } },
+            { index: 3, atTime: 0,      apply: (p) => { p.backgroundColor = "#F5F5F5"; p.textColor = "#323232"; p.iconColor = "#323232";  } },
             { index: 3, atTime: 28.5,   apply: (p) => { p.highlightSections = "none-all"; } },
             { index: 3, atTime: 32.224, apply: (p) => { p.segmentWidgetSections = "all"; } },
             { index: 3, atTime: 36,     apply: (p) => { p.clickableSections = "none"; p.highlightSections = "none"; } },
@@ -214,7 +214,7 @@
           markers into the HTML of your page, although, if you are using our
           <a href="https://wordpress.org/plugins/speechkit/" target="_blank">WordPress plugin</a>,
           they will be added automatically. Please refer to our
-          <a href="https://github.com/beyondwords-io/player/blob/gh-pages/doc/segments-playback.md" target="_blank">dedicated guide</a>
+          <a href="https://github.com/beyondwords-io/player/blob/main/doc/segments-playback.md" target="_blank">dedicated guide</a>
           for more information.
         </p>
 
@@ -309,15 +309,16 @@
         bottom: 0;
         left: 0;
         right: 0;
-        overflow: hidden;
+        overflow-y: hidden;
       }
 
       .control-panel {
-        padding: 5px;
+        padding: 16px;
         overflow-y: scroll;
-        height: calc(100% - 100px);
-        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.3);
+        height: calc(100% - 110px);
+        box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
         display: none;
+        min-width: 280px;
       }
 
       .show-control-panel {

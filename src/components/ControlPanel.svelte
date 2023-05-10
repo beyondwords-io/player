@@ -1,11 +1,9 @@
 <script>
-  export let playerApiUrl;
   export let projectId;
   export let contentId;
   export let playlistId;
   export let sourceId;
   export let sourceUrl;
-  export let playlist;
   export let showUserInterface;
   export let playerStyle;
   export let playerTitle;
@@ -40,56 +38,55 @@
   export let analyticsConsent;
   export let analyticsCustomUrl;
   export let analyticsTag;
+
+  let showAdvancedSettings = false;
 </script>
 
 <div class="control-panel">
   <strong>
     Control Panel
 
-    <a target="_blank" href="https://github.com/beyondwords-io/player/blob/gh-pages/doc/player-settings.md">
+    <a target="_blank" href="https://github.com/beyondwords-io/player/blob/main/doc/player-settings.md">
       (view docs)
     </a>
 
     <br/><br/>
   </strong>
 
-  <div class="control">
-    playerApiUrl:
-    <input type="text" bind:value={playerApiUrl}>
-  </div>
+  {#if showAdvancedSettings}
+    <div class="control">
+      projectId:
+      <input type="text" bind:value={projectId}>
+    </div>
 
-  <div class="control">
-    projectId:
-    <input type="text" bind:value={projectId}>
-  </div>
+    <div class="control">
+      contentId:
+      <input type="text" bind:value={contentId}>
+    </div>
 
-  <div class="control">
-    contentId:
-    <input type="text" bind:value={contentId}>
-  </div>
+    <div class="control">
+      playlistId:
+      <input type="text" bind:value={playlistId}>
+    </div>
 
-  <div class="control">
-    playlistId:
-    <input type="text" bind:value={playlistId}>
-  </div>
+    <div class="control">
+      sourceId:
+      <input type="text" bind:value={sourceId}>
+    </div>
 
-  <div class="control">
-    sourceId:
-    <input type="text" bind:value={sourceId}>
-  </div>
+    <div class="control">
+      sourceUrl:
+      <input type="text" bind:value={sourceUrl}>
+    </div>
 
-  <div class="control">
-    sourceUrl:
-    <input type="text" bind:value={sourceUrl}>
-  </div>
-
-  <div class="control">
-    showUserInterface:
-    <select bind:value={showUserInterface}>
-      <option>{true}</option>
-      <option>{false}</option>
-    </select>
-  </div>
+    <div class="control">
+      showUserInterface:
+      <select bind:value={showUserInterface}>
+        <option>{true}</option>
+        <option>{false}</option>
+      </select>
+    </div>
+  {/if}
 
   <div class="control">
     playerStyle:
@@ -135,33 +132,35 @@
     </select>
   </div>
 
-  <div class="control">
-    mediaSession:
-    <select bind:value={mediaSession}>
-      <option>auto</option>
-      <option>override</option>
-      <option>none</option>
-    </select>
-  </div>
+  {#if showAdvancedSettings}
+    <div class="control">
+      mediaSession:
+      <select bind:value={mediaSession}>
+        <option>auto</option>
+        <option>override</option>
+        <option>none</option>
+      </select>
+    </div>
 
-  <div class="control">
-    contentIndex:
-    <select bind:value={contentIndex}>
-      {#each content as item, i}
-        <option>{i}</option>
-      {/each}
-    </select>
-  </div>
+    <div class="control">
+      contentIndex:
+      <select bind:value={contentIndex}>
+        {#each content as item, i}
+          <option>{i}</option>
+        {/each}
+      </select>
+    </div>
 
-  <div class="control">
-    introsOutrosIndex:
-    <select bind:value={introsOutrosIndex}>
-      <option>{-1}</option>
-      {#each introsOutros as item, i}
-        <option>{i}</option>
-      {/each}
-    </select>
-  </div>
+    <div class="control">
+      introsOutrosIndex:
+      <select bind:value={introsOutrosIndex}>
+        <option>{-1}</option>
+        {#each introsOutros as item, i}
+          <option>{i}</option>
+        {/each}
+      </select>
+    </div>
+  {/if}
 
   <div class="control">
     advertIndex:
@@ -173,29 +172,31 @@
     </select>
   </div>
 
-  <div class="control">
-    duration:
-    <input type="text" bind:value={duration}>
-  </div>
+  {#if showAdvancedSettings}
+    <div class="control">
+      duration:
+      <input type="text" bind:value={duration}>
+    </div>
 
-  <div class="control">
-    currentTime:
-    <input type="text" bind:value={currentTime}>
-  </div>
+    <div class="control">
+      currentTime:
+      <input type="text" bind:value={currentTime}>
+    </div>
 
-  <div class="control">
-    playbackState:
-    <select bind:value={playbackState}>
-      <option>stopped</option>
-      <option>playing</option>
-      <option>paused</option>
-    </select>
-  </div>
+    <div class="control">
+      playbackState:
+      <select bind:value={playbackState}>
+        <option>stopped</option>
+        <option>playing</option>
+        <option>paused</option>
+      </select>
+    </div>
 
-  <div class="control">
-    playbackRate:
-    <input type="text" bind:value={playbackRate}>
-  </div>
+    <div class="control">
+      playbackRate:
+      <input type="text" bind:value={playbackRate}>
+    </div>
+  {/if}
 
   <div class="control">
     widgetStyle:
@@ -230,10 +231,12 @@
     </select>
   </div>
 
-  <div class="control">
-    widgetTarget:
-    <input type="text" bind:value={widgetTarget}>
-  </div>
+  {#if showAdvancedSettings}
+    <div class="control">
+      widgetTarget:
+      <input type="text" bind:value={widgetTarget}>
+    </div>
+  {/if}
 
   <div class="control">
     textColor:
@@ -255,13 +258,15 @@
     <input type="text" bind:value={highlightColor}>
   </div>
 
-  <div class="control">
-    logoIconEnabled:
-    <select bind:value={logoIconEnabled}>
-      <option>{true}</option>
-      <option>{false}</option>
-    </select>
-  </div>
+  {#if showAdvancedSettings}
+    <div class="control">
+      logoIconEnabled:
+      <select bind:value={logoIconEnabled}>
+        <option>{true}</option>
+        <option>{false}</option>
+      </select>
+    </div>
+  {/if}
 
   <div class="control">
     highlightSections:
@@ -305,39 +310,50 @@
     </select>
   </div>
 
-  <div class="control">
-    advertConsent:
-    <select bind:value={advertConsent}>
-      <option>personalized</option>
-      <option>non-personalized</option>
-      <option>under-the-age-of-consent</option>
-    </select>
-  </div>
+  {#if showAdvancedSettings}
+    <div class="control">
+      advertConsent:
+      <select bind:value={advertConsent}>
+        <option>personalized</option>
+        <option>non-personalized</option>
+        <option>under-the-age-of-consent</option>
+      </select>
+    </div>
 
-  <div class="control">
-    analyticsConsent:
-    <select bind:value={analyticsConsent}>
-      <option>allowed</option>
-      <option>without-local-storage</option>
-      <option>none</option>
-    </select>
-  </div>
+    <div class="control">
+      analyticsConsent:
+      <select bind:value={analyticsConsent}>
+        <option>allowed</option>
+        <option>without-local-storage</option>
+        <option>none</option>
+      </select>
+    </div>
 
-  <div class="control">
-    analyticsCustomUrl:
-    <input type="text" bind:value={analyticsCustomUrl}>
-  </div>
+    <div class="control">
+      analyticsCustomUrl:
+      <input type="text" bind:value={analyticsCustomUrl}>
+    </div>
 
-  <div class="control">
-    analyticsTag:
-    <input type="text" bind:value={analyticsTag}>
-  </div>
+    <div class="control">
+      analyticsTag:
+      <input type="text" bind:value={analyticsTag}>
+    </div>
+  {/if}
+
+  <br/>
+
+  {#if showAdvancedSettings}
+    <a on:click={() => showAdvancedSettings = false}>hide advanced settings</a>
+  {:else}
+    <a on:click={() => showAdvancedSettings = true}>show advanced settings</a>
+  {/if}
 </div>
 
 <style>
   .control {
     display: flex;
     column-gap: 8px;
+    margin: 12px 0;
   }
 
   input[type="text"] {
@@ -345,9 +361,9 @@
     border-radius: 2px;
   }
 
-  .control, input[type="text"], select {
+  .control, input[type="text"], select, strong, a {
     font-family: "InterVariable", sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     width: 100%;
   }
 
@@ -356,7 +372,6 @@
   }
 
   a {
-    color: blue;
     text-decoration: underline;
   }
 </style>

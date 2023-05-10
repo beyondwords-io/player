@@ -217,7 +217,6 @@
 {#if controlPanel}
   <ExternalWidget root={controlPanel}>
     <ControlPanel
-      bind:playerApiUrl
       bind:projectId
       bind:contentId
       bind:playlistId
