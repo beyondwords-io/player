@@ -3,15 +3,15 @@ import { updateErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
 const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored } = {}) => {
-  if (!content[contentIndex]?.adsEnabled) { return -1; }
+  const currentAdvert = adverts && adverts[advertIndex];
 
-  const currentAdvert = adverts[advertIndex];
   x: if (currentAdvert) {
     if (errored) { updateErroredAdverts(currentAdvert); break x; } // Choose another advert.
     if (atTheEnd) { updatePlayedAdvertMedia(currentAdvert); return -1; } // Play the content.
     if (!atTheEnd) { return advertIndex; } // Keep playing the current advert until it ends.
   }
 
+  if (!content[contentIndex]?.adsEnabled) { return -1; }
   if (introsOutrosIndex !== -1) { return -1; } // Wait until the intro/outro has finished.
 
   const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd });
