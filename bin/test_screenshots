@@ -1,0 +1,13 @@
+#!/bin/bash
+
+g="--grep screenshot"
+
+if [ "$1" == "--native" ]; then
+  npx playwright test $g $2 $3 $4 $5 # e.g. --headed
+else
+  container=$(cat .github/workflows/ci.yml | grep container | awk '{print $2}')
+  mount_dir="-v $(pwd):/player -v $(pwd)/node_modules/.test:/player/node_modules"
+  clean_run="cd /player && npm install && npx playwright test $g $1 $2 $3 $4 $5"
+
+  docker run -it --rm --ipc=host $mount_dir $container /bin/bash -c "$clean_run"
+fi

@@ -24,7 +24,7 @@ const config: PlaywrightTestConfig = {
     { name: "mobile-android", use: { ...getDevice("Pixel 5") } },
     { name: "mobile-ios", use: { ...getDevice("iPhone 11") } },
   ],
-  workers: 10,
+  workers: 6,
 
   webServer: {
     command: "./bin/server",
