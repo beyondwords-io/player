@@ -50,7 +50,7 @@ const setProps = (player, data) => {
 
   set(player, "playerStyle", data.settings.player_style);
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
-  set(player, "callToAction", data.settings.call_to_action);
+  set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "contentIndex", 0);
   set(player, "introsOutros", introsOutrosArray(data.settings));
