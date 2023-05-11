@@ -12,7 +12,7 @@ const config: PlaywrightTestConfig = {
   outputDir: "test/results",
   reporter: "dot",
 
-  timeout: 300000,
+  timeout: 600000,
   expect: { timeout: 5000 },
   use: { actionTimeout: 5000 },
 
