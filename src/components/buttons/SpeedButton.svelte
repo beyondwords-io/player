@@ -1,6 +1,7 @@
 <script>
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
+  import translate from "../../helpers/translate";
 
   export let speed = 1;
   export let scale = 1;
@@ -39,7 +40,7 @@
   };
 </script>
 
-<button type="button" class="speed-button" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown}>
+<button type="button" class="speed-button" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown} aria-label={translate("changePlaybackSpeed")}>
   <span style="font-size: {fontSize}; color: {color}">{speed}x</span>
 </button>
 

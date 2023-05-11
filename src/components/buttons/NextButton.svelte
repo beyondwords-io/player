@@ -4,11 +4,13 @@
   import NextTrack from "../svg_icons/NextTrack.svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
+  import translate from "../../helpers/translate";
 
   export let style = "segments";
   export let scale = 1;
   export let color = "#323232";
   export let onEvent = () => {};
+  let ariaLabel;
 
   $: backwardsSeconds = parseFloat(style.split("-")[1] || 10);
   $: forwardsSeconds = parseFloat(style.split("-")[2] || backwardsSeconds);
@@ -16,6 +18,16 @@
   $: isSegments = style === "segments";
   $: isSeconds = style.startsWith("seconds");
   $: isTracks = style === "tracks";
+
+  $: {
+    if (isSeconds) {
+      ariaLabel = translate("seekAhead");
+    } else if (isSegments) {
+      ariaLabel = translate("nextSegment");
+    } else if (isTracks) {
+      ariaLabel = translate("nextTrack");
+    }
+  }
 
   const handleClick = () => {
     let type, description, props;
@@ -36,7 +48,7 @@
   };
 </script>
 
-<button type="button" class="next-button" on:click={handleClick} on:mouseup={blurElement}>
+<button type="button" class="next-button" on:click={handleClick} on:mouseup={blurElement} aria-label={ariaLabel}>
   {#if isSeconds}
     <SeekAhead seconds={forwardsSeconds} {scale} {color} />
   {:else if isSegments}

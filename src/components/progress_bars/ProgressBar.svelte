@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
+  import translate from "../../helpers/translate";
   import handleKeyDown from "./handleKeyDown";
 
   export let progress = 0;
@@ -67,7 +68,7 @@
   });
 </script>
 
-<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement}>
+<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement} aria-label={translate("scrubProgressBar")}>
   <div class="background" style="{backgroundStyle}"></div>
   <div class="progress" style="{backgroundStyle}; width: {progress * 100}%"></div>
 </button>

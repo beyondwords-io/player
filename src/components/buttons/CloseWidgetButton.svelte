@@ -2,6 +2,7 @@
   import Close from "../svg_icons/Close.svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
+  import translate from "../../helpers/translate";
 
   export let scale = 1;
   export let color = "#323232";
@@ -17,7 +18,7 @@
   };
 </script>
 
-<button type="button" class="close-widget-button" style="margin: {margin}; outline-offset: {4.8 * scale}px" on:click={handleClick} on:mouseup={blurElement}>
+<button type="button" class="close-widget-button" style="margin: {margin}; outline-offset: {4.8 * scale}px" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("closeWidget")}>
   <Close {scale} {color} />
 </button>
 

@@ -2,6 +2,7 @@
   import UpArrow from "../svg_icons/UpArrow.svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
+  import translate from "../../helpers/translate";
 
   export let scale = 1;
   export let color = "#323232";
@@ -16,7 +17,7 @@
   };
 </script>
 
-<button type="button" class="scroll-to-player-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {4.8 * scale}px">
+<button type="button" class="scroll-to-player-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {4.8 * scale}px" aria-label={translate("scrollToPlayer")}>
   <UpArrow {scale} {color} />
 </button>
 

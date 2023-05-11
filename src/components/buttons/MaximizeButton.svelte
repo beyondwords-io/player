@@ -2,6 +2,7 @@
   import Maximize from "../svg_icons/Maximize.svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
+  import translate from "../../helpers/translate";
 
   export let scale = 1;
   export let color = "#323232";
@@ -16,7 +17,7 @@
   };
 </script>
 
-<button type="button" class="maximize-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {6.4 * scale}px">
+<button type="button" class="maximize-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {6.4 * scale}px" aria-label={translate("maximizeVideo")}>
   <Maximize {scale} {color} />
 </button>
 

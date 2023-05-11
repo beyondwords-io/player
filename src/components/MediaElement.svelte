@@ -3,6 +3,7 @@
   import VastContainer from "./VastContainer.svelte";
   import loadMedia from "../helpers/loadMedia";
   import newEvent from "../helpers/newEvent";
+  import translate from "../helpers/translate";
   import findSegmentIndex from "../helpers/findSegmentIndex";
 
   export let content;
@@ -203,7 +204,7 @@
     {/if}
 
     {#if customUrl}
-      <a class="custom-advert-link" href={customUrl} target="_blank">&nbsp;</a>
+      <a class="custom-advert-link" href={customUrl} target="_blank" aria-label={translate("visitAdvert")}>&nbsp;</a>
     {/if}
   </div>
 </div>

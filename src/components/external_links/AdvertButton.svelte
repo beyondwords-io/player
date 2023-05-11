@@ -1,6 +1,7 @@
 <script>
   import OpenNewTab from "../svg_icons/OpenNewTab.svelte";
   import newEvent from "../../helpers/newEvent";
+  import translate from "../../helpers/translate";
 
   export let href;
   export let scale = 1;
@@ -21,7 +22,7 @@
 </script>
 
 {#if href}
-  <a class="advert-button {playerStyle} {controlsOrder}" href={href} target="_blank" on:click={handleClick}>
+  <a class="advert-button {playerStyle} {controlsOrder}" href={href} target="_blank" on:click={handleClick} aria-label={translate("visitAdvert")}>
     <OpenNewTab {color} {scale} />
   </a>
 {:else}

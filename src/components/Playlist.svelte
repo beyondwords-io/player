@@ -63,7 +63,7 @@
           {#if i === index}
             <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
           {:else}
-            <span class="number" style="color: {textColor}">{i + 1}</span>
+            <span class="number" style="color: {textColor}" aria-hidden="true">{i + 1}</span>
           {/if}
 
           <span class="title">
