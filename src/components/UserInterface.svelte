@@ -158,7 +158,7 @@
         <div class="controls">
           <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
             <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={activeIconColor}>
-              <PlayPauseButton {onEvent} {isPlaying} tabindex={isScreen || isSmall ? -1 : 0} scale={playPauseScale} color={buttonColor} />
+              <PlayPauseButton {onEvent} {isPlaying} scale={playPauseScale} color={buttonColor} />
             </ProgressCircle>
           </Visibility>
 

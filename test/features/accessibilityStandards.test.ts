@@ -17,7 +17,7 @@ test("accessibility standards", async ({ page }) => {
 
     const results = await new AxeBuilder({ page })
       .include(".beyondwords-player")
-      .disableRules(["color-contrast", "nested-interactive"])
+      .disableRules(["color-contrast"])
       .analyze();
 
     expect(results.violations).toEqual([]);
