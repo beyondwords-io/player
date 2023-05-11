@@ -2,6 +2,7 @@ import waitUntil from "./waitUntil";
 import settableProps from "./settableProps";
 import diffObject from "./diffObject";
 
+// TODO: move state onto player (or into controller?) so that you can use transitions with multiple player instances.
 let previousIndex = -1;
 const changedProps = [];
 
