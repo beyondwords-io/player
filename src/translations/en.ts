@@ -1,6 +1,8 @@
 export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "Listen to this article",
+
+  // These translations are used by aria-label.
   playAudio: "Play audio",
   pauseAudio: "Pause audio",
   scrubProgressBar: "Scrub progress bar",
