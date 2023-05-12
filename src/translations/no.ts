@@ -20,4 +20,5 @@ export default {
   maximizeVideo: "Maksimer videoen",
   scrollToPlayer: "Bla til spiller",
   changePlaybackSpeed: "Endre avspillingshastighet",
+  downloadAudio: "Last ned lyd",
 };

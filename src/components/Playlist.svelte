@@ -1,11 +1,13 @@
 <script>
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
   import ContentTitle from "./titles/ContentTitle.svelte";
+  import DownloadButton from "./buttons/DownloadButton.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
   import newEvent from "../helpers/newEvent";
   import blurElement from "../helpers/blurElement";
 
   export let style = "auto";
+  export let downloadFormats = [];
   export let larger = false;
   export let textColor = "#111";
   export let backgroundColor = "#f5f5f5";
@@ -53,12 +55,26 @@
 
     scrollable.scrollTop = nearestTen;
   };
+
+  const mediaToDownload = (media) => {
+    media ||= [];
+
+    for (const format of downloadFormats) {
+      for (const [i, item] of media?.entries()) {
+        if (item.url?.endsWith(`.${format}`)) { return i; }
+      }
+    }
+
+    return -1;
+  };
 </script>
 
 {#if mode === "show" || mode === "auto" && content.length > 1}
   <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
     <div class="scrollable" tabindex="-1">
-      {#each content as { title, duration }, i}
+      {#each content as { title, duration, media }, i}
+        {@const mediaIndex = mediaToDownload(media)}
+
         <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
           {#if i === index}
             <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
@@ -68,6 +84,12 @@
 
           <span class="title">
             <ContentTitle {title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
+          </span>
+
+          <span class="download">
+            {#if mediaIndex !== -1}
+              <DownloadButton {onEvent} color={iconColor} contentIndex={i} {mediaIndex} />
+            {/if}
           </span>
 
           <span class="duration">
@@ -88,6 +110,7 @@
   .scrollable {
     padding: 3.2px 0;
     padding-left: 4px;
+    overflow-x: hidden;
     overflow-y: scroll;
     max-height: calc(40px * var(--desktop-rows));
   }
@@ -119,7 +142,7 @@
     height: 40px;
 
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto 30px;
     grid-template-rows: auto;
     align-items: center;
     column-gap: 8px;
@@ -152,7 +175,6 @@
 
   .mobile .item {
     height: 80px;
-    grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto auto;
     padding-right: 16px;
   }
@@ -176,6 +198,10 @@
     grid-row: 1 / span 2;
   }
 
+  .mobile .title {
+    grid-column: 2 / span 3;
+  }
+
   .active .title {
     font-weight: 700;
   }
@@ -191,6 +217,8 @@
   .duration {
     margin: 4px 0;
     white-space: nowrap;
+    display: flex;
+    justify-content: flex-end;
   }
 
   .larger .duration {
@@ -198,6 +226,15 @@
   }
 
   .mobile .duration {
+    grid-row: 2;
+    grid-column: 2;
+    justify-content: flex-start;
+    align-self: flex-start;
+  }
+
+  .mobile .download {
+    grid-row: 2;
+    grid-column: 4;
     align-self: flex-start;
   }
 

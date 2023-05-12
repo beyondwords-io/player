@@ -30,6 +30,7 @@
   export let callToAction = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
+  export let downloadFormats = [];
   export let mediaSession = "auto";
   export let content = [];
   export let contentIndex = 0;
@@ -152,6 +153,7 @@
     {callToAction}
     {skipButtonStyle}
     {playlistStyle}
+    {downloadFormats}
     {playerTitle}
     {content}
     {contentIndex}
@@ -176,6 +178,7 @@
       {callToAction}
       {skipButtonStyle}
       playlistStyle="hide"
+      {downloadFormats}
       {playerTitle}
       fixedPosition={!widgetTarget && widgetPosition}
       fixedWidth={widgetWidth}

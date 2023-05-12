@@ -8,6 +8,7 @@ import findSegmentIndex from "../helpers/findSegmentIndex";
 import settableProps from "../helpers/settableProps";
 import diffObject from "../helpers/diffObject";
 import sectionEnabled from "../helpers/sectionEnabled";
+import downloadFile from "../helpers/downloadFile";
 import chooseAdvert from "../helpers/chooseAdvert";
 import chooseIntroOutro from "../helpers/chooseIntroOutro";
 import chooseMediaSession from "../helpers/chooseMediaSession";
@@ -218,6 +219,17 @@ class RootController {
 
     parts[0] = isShowing ? "hide" : "show";
     this.player.playlistStyle = parts.join("-");
+  }
+
+  handlePressedDownload({ contentIndex, mediaIndex }) {
+    const contentItem = this.player.content[contentIndex];
+    const mediaItem = contentItem.media[mediaIndex];
+
+    const mediaUrl = mediaItem.url;
+    const extension = mediaUrl.split(".").pop();
+    const filename = `${contentItem.title}.${extension}`;
+
+    return downloadFile(mediaUrl, contentItem.title);
   }
 
   handlePressedCloseWidget() {

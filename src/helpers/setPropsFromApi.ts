@@ -52,6 +52,7 @@ const setProps = (player, data) => {
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
   set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
+  set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
   set(player, "contentIndex", 0);
   set(player, "introsOutros", introsOutrosArray(data.settings));
   set(player, "introsOutrosIndex", -1);
@@ -79,7 +80,6 @@ const setProps = (player, data) => {
   // TODO: add support for title_enabled
   // TODO: add support for paywall_type
   // TODO: add support for paywall_url
-  // TODO: add support for download_button_enabled
   // TODO: add support for share_button_enabled
   // TODO: add support for voice_icon_enabled
 

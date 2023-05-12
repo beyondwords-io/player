@@ -22,7 +22,7 @@
 </script>
 
 {#if href}
-  <a class="advert-button {playerStyle} {controlsOrder}" href={href} target="_blank" on:click={handleClick} aria-label={translate("visitAdvert")}>
+  <a class="advert-button {playerStyle} {controlsOrder}" {href} target="_blank" on:click={handleClick} aria-label={translate("visitAdvert")}>
     <OpenNewTab {color} {scale} />
   </a>
 {:else}

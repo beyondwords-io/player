@@ -34,6 +34,7 @@
   export let callToAction = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
+  export let downloadFormats = [];
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
@@ -216,6 +217,7 @@
       <Playlist
         {onEvent}
         style={playlistStyle}
+        {downloadFormats}
         larger={isScreen && !isMobile}
         {content}
         index={contentIndex}
