@@ -44,7 +44,7 @@
 
 <div class="control-panel">
   <strong>
-    Control Panel
+    Player settings:
 
     <a target="_blank" href="https://github.com/beyondwords-io/player/blob/main/doc/player-settings.md">
       (view docs)
@@ -211,7 +211,9 @@
   </div>
 
   {#if showAdvancedSettings}
-    <br/><strong>Advanced settings:</strong>
+    <br/>
+    <strong>Advanced settings:</strong>
+    <br/><br/>
 
     <div class="control">
       projectId:
