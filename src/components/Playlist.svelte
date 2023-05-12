@@ -75,7 +75,7 @@
       {#each content as { title, duration, media }, i}
         {@const mediaIndex = mediaToDownload(media)}
 
-        <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement}>
+        <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
           {#if i === index}
             <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
           {:else}
