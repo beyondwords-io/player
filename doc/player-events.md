@@ -96,6 +96,7 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | FinishedScrubbingProgressBar | user      | The user let go after scrubbing the progress bar.
 | PressedMaximize              | user      | The maximize button was pressed.
 | PressedPlaylistItem          | user      | A playlist item was pressed.
+| PressedDownload              | user      | The download button next to a playlist item was pressed.
 | PressedTogglePlaylist        | user      | The toggle playlist button was pressed.
 | PressedCloseWidget           | user      | The close widget button was pressed.
 | PressedSegment               | user      | The user pressed on a segment in the article.
