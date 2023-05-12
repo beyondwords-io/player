@@ -100,6 +100,15 @@
   </div>
 
   <div class="control">
+    playbackState:
+    <select bind:value={playbackState}>
+      <option>stopped</option>
+      <option>playing</option>
+      <option>paused</option>
+    </select>
+  </div>
+
+  <div class="control">
     playerTitle:
     <input type="text" bind:value={playerTitle}>
   </div>
@@ -181,15 +190,6 @@
     <div class="control">
       currentTime:
       <input type="text" bind:value={currentTime}>
-    </div>
-
-    <div class="control">
-      playbackState:
-      <select bind:value={playbackState}>
-        <option>stopped</option>
-        <option>playing</option>
-        <option>paused</option>
-      </select>
     </div>
 
     <div class="control">
