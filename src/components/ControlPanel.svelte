@@ -94,7 +94,6 @@
       <option>small</option>
       <option>standard</option>
       <option>large</option>
-      <option>screen</option>
       <option>video</option>
     </select>
   </div>
@@ -204,7 +203,6 @@
       <option>small</option>
       <option>standard</option>
       <option>large</option>
-      <option>screen</option>
       <option>video</option>
     </select>
   </div>
