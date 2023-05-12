@@ -199,7 +199,7 @@
   }
 
   .mobile .title {
-    grid-column: 2 / span 3;
+    grid-column: 2 / span 2;
   }
 
   .active .title {
@@ -233,9 +233,12 @@
   }
 
   .mobile .download {
-    grid-row: 2;
+    grid-row: 1 / span 2;
     grid-column: 4;
-    align-self: flex-start;
+    justify-self: flex-end;
+    align-self: center;
+    position: relative;
+    top: -2px;
   }
 
   :global(.beyondwords-player.maximized) .playlist {
