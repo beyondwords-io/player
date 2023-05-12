@@ -5,7 +5,8 @@
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
 
-  export let playlistShowing = false;
+  export let playlistShowing;
+  export let playerStyle;
   export let scale = 1;
   export let color = "#323232";
   export let onEvent = () => {};
@@ -19,7 +20,7 @@
   };
 </script>
 
-<button type="button" class="playlist-button" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {6.4 * scale}px" aria-label={translate("togglePlaylist")}>
+<button type="button" class="playlist-button {playerStyle}" on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {5 * scale}px" aria-label={translate("togglePlaylist")}>
   {#if playlistShowing}
     <HidePlaylist {scale} {color} />
   {:else}
@@ -36,6 +37,11 @@
     border: none;
     margin: 0;
     padding: 0;
+  }
+
+  .playlist-button.large {
+    position: relative;
+    left: 2px;
   }
 
   @media (hover: hover) and (pointer: fine) {

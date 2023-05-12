@@ -198,7 +198,7 @@
               {:else if isScreen && contentItem.sourceUrl}
                 <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={buttonColor} />
               {:else if isPlaylist && !fixedPosition}
-                <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} playlistShowing={showPlaylist} />
+                <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} playlistShowing={showPlaylist} {playerStyle} />
               {/if}
             </SecondaryButton>
           {/if}
