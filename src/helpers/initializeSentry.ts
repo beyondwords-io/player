@@ -3,7 +3,12 @@ import * as stackTraceParser from "stacktrace-parser";
 import { version } from "../../package.json";
 import settableProps from "./settableProps";
 
+let called = false;
+
 const initializeSentry = () => {
+  if (called) { return; }
+  called = true;
+
   const thisFilename = originFilename(new Error());
   const isDevelopment = thisFilename?.match(/initializeSentry/); // Not minified.
   const captureEnabled = thisFilename ? {} : { defaultIntegrations: false };
@@ -52,4 +57,4 @@ const withPlayerProps = (event) => {
   return event;
 };
 
-initializeSentry();
+export default initializeSentry;

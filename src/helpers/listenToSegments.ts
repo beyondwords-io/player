@@ -1,7 +1,12 @@
 import { dataAttribute } from "./segmentHighlights";
 import newEvent from "./newEvent";
 
+let called = false;
+
 const listenToSegments = () => {
+  if (called) { return; }
+  called = true;
+
   addEventListener("mousedown", handleMouseDown);
   addEventListener("click", handleMouseUp);
   addEventListener("mousemove", handleMouseMove);
@@ -124,4 +129,4 @@ const changed = (playerIndex, contentIndex, segmentIndex) => {
   }
 };
 
-listenToSegments();
+export default listenToSegments;

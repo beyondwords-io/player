@@ -1,7 +1,7 @@
-import "./helpers/initializeSentry";
-import "./helpers/listenToSegments";
 import PlayerComponent from "./components/Player.svelte";
 import RootController from "./controllers/rootController";
+import initializeSentry from "./helpers/initializeSentry";
+import listenToSegments from "./helpers/listenToSegments";
 import resolveTarget from "./helpers/resolveTarget";
 import sendToAnalytics from "./helpers/sendToAnalytics";
 import throwError from "./helpers/throwError";
@@ -11,6 +11,9 @@ class Player extends PlayerComponent {
   static #instances = [];
 
   constructor({ target, ...props }) {
+    initializeSentry();
+    listenToSegments();
+
     const { newTarget, showUserInterface } = resolveTarget(target);
     newTarget.classList.add("beyondwords-player", "bwp");
 
