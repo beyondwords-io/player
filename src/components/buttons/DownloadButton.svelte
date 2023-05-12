@@ -16,7 +16,7 @@
 
     onEvent(newEvent({
       type: "PressedDownload",
-      description: "The download button was pressed.",
+      description: "The download button next to a playlist item was pressed.",
       initiatedBy: "user",
       contentIndex,
       mediaIndex,
