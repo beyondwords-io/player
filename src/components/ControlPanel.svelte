@@ -53,41 +53,6 @@
     <br/><br/>
   </strong>
 
-  {#if showAdvancedSettings}
-    <div class="control">
-      projectId:
-      <input type="text" bind:value={projectId}>
-    </div>
-
-    <div class="control">
-      contentId:
-      <input type="text" bind:value={contentId}>
-    </div>
-
-    <div class="control">
-      playlistId:
-      <input type="text" bind:value={playlistId}>
-    </div>
-
-    <div class="control">
-      sourceId:
-      <input type="text" bind:value={sourceId}>
-    </div>
-
-    <div class="control">
-      sourceUrl:
-      <input type="text" bind:value={sourceUrl}>
-    </div>
-
-    <div class="control">
-      showUserInterface:
-      <select bind:value={showUserInterface}>
-        <option>{true}</option>
-        <option>{false}</option>
-      </select>
-    </div>
-  {/if}
-
   <div class="control">
     playerStyle:
     <select bind:value={playerStyle}>
@@ -140,35 +105,6 @@
     </select>
   </div>
 
-  {#if showAdvancedSettings}
-    <div class="control">
-      mediaSession:
-      <select bind:value={mediaSession}>
-        <option>auto</option>
-        <option>override</option>
-        <option>none</option>
-      </select>
-    </div>
-
-    <div class="control">
-      contentIndex:
-      <select bind:value={contentIndex}>
-        {#each content as item, i}
-          <option value={i}>{i} ({item.title})</option>
-        {/each}
-      </select>
-    </div>
-
-    <div class="control">
-      introsOutrosIndex:
-      <select bind:value={introsOutrosIndex}>
-        <option value={-1}>-1 (none)</option>
-        {#each introsOutros as item, i}
-          <option value={i}>{i}: {item.placement}</option>
-        {/each}
-      </select>
-    </div>
-  {/if}
 
   <div class="control">
     advertIndex:
@@ -179,23 +115,6 @@
       {/each}
     </select>
   </div>
-
-  {#if showAdvancedSettings}
-    <div class="control">
-      duration:
-      <input type="text" bind:value={duration}>
-    </div>
-
-    <div class="control">
-      currentTime:
-      <input type="text" bind:value={currentTime}>
-    </div>
-
-    <div class="control">
-      playbackRate:
-      <input type="text" bind:value={playbackRate}>
-    </div>
-  {/if}
 
   <div class="control">
     widgetStyle:
@@ -229,13 +148,6 @@
     </select>
   </div>
 
-  {#if showAdvancedSettings}
-    <div class="control">
-      widgetTarget:
-      <input type="text" bind:value={widgetTarget}>
-    </div>
-  {/if}
-
   <div class="control">
     textColor:
     <input type="text" bind:value={textColor}>
@@ -255,16 +167,6 @@
     highlightColor:
     <input type="text" bind:value={highlightColor}>
   </div>
-
-  {#if showAdvancedSettings}
-    <div class="control">
-      logoIconEnabled:
-      <select bind:value={logoIconEnabled}>
-        <option>{true}</option>
-        <option>{false}</option>
-      </select>
-    </div>
-  {/if}
 
   <div class="control">
     highlightSections:
@@ -309,6 +211,97 @@
   </div>
 
   {#if showAdvancedSettings}
+    <br/><strong>Advanced settings:</strong>
+
+    <div class="control">
+      projectId:
+      <input type="text" bind:value={projectId}>
+    </div>
+
+    <div class="control">
+      contentId:
+      <input type="text" bind:value={contentId}>
+    </div>
+
+    <div class="control">
+      playlistId:
+      <input type="text" bind:value={playlistId}>
+    </div>
+
+    <div class="control">
+      sourceId:
+      <input type="text" bind:value={sourceId}>
+    </div>
+
+    <div class="control">
+      sourceUrl:
+      <input type="text" bind:value={sourceUrl}>
+    </div>
+
+    <div class="control">
+      showUserInterface:
+      <select bind:value={showUserInterface}>
+        <option>{true}</option>
+        <option>{false}</option>
+      </select>
+    </div>
+
+    <div class="control">
+      mediaSession:
+      <select bind:value={mediaSession}>
+        <option>auto</option>
+        <option>override</option>
+        <option>none</option>
+      </select>
+    </div>
+
+    <div class="control">
+      contentIndex:
+      <select bind:value={contentIndex}>
+        {#each content as item, i}
+          <option value={i}>{i} ({item.title})</option>
+        {/each}
+      </select>
+    </div>
+
+    <div class="control">
+      introsOutrosIndex:
+      <select bind:value={introsOutrosIndex}>
+        <option value={-1}>-1 (none)</option>
+        {#each introsOutros as item, i}
+          <option value={i}>{i}: {item.placement}</option>
+        {/each}
+      </select>
+    </div>
+
+    <div class="control">
+      duration:
+      <input type="text" bind:value={duration}>
+    </div>
+
+    <div class="control">
+      currentTime:
+      <input type="text" bind:value={currentTime}>
+    </div>
+
+    <div class="control">
+      playbackRate:
+      <input type="text" bind:value={playbackRate}>
+    </div>
+
+    <div class="control">
+      widgetTarget:
+      <input type="text" bind:value={widgetTarget}>
+    </div>
+
+    <div class="control">
+      logoIconEnabled:
+      <select bind:value={logoIconEnabled}>
+        <option>{true}</option>
+        <option>{false}</option>
+      </select>
+    </div>
+
     <div class="control">
       advertConsent:
       <select bind:value={advertConsent}>
