@@ -69,37 +69,35 @@
   };
 </script>
 
-{#if mode === "show" || mode === "auto" && content.length > 1}
-  <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
-    <div class="scrollable" tabindex="-1">
-      {#each content as { title, duration, media }, i}
-        {@const mediaIndex = mediaToDownload(media)}
+<div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
+  <div class="scrollable" tabindex="-1">
+    {#each content as { title, duration, media }, i}
+      {@const mediaIndex = mediaToDownload(media)}
 
-        <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
-          {#if i === index}
-            <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
-          {:else}
-            <span class="number" style="color: {textColor}" aria-hidden="true">{i + 1}</span>
+      <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
+        {#if i === index}
+          <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
+        {:else}
+          <span class="number" style="color: {textColor}" aria-hidden="true">{i + 1}</span>
+        {/if}
+
+        <span class="title">
+          <ContentTitle {title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
+        </span>
+
+        <span class="download">
+          {#if mediaIndex !== -1}
+            <DownloadButton {onEvent} color={iconColor} contentIndex={i} {mediaIndex} />
           {/if}
+        </span>
 
-          <span class="title">
-            <ContentTitle {title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
-          </span>
-
-          <span class="download">
-            {#if mediaIndex !== -1}
-              <DownloadButton {onEvent} color={iconColor} contentIndex={i} {mediaIndex} />
-            {/if}
-          </span>
-
-          <span class="duration">
-            <DurationInMins {duration} {scale} bold={i === index} color={textColor} />
-          </span>
-        </button>
-      {/each}
-    </div>
+        <span class="duration">
+          <DurationInMins {duration} {scale} bold={i === index} color={textColor} />
+        </span>
+      </button>
+    {/each}
   </div>
-{/if}
+</div>
 
 <style>
   .playlist {

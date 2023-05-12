@@ -103,6 +103,9 @@
   $: showCloseWidget = fixedPosition && !isSmall && !(isStandard && isAdvert);
   $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall) && !forcedCollapsed;
 
+  $: playlistParts = playlistStyle.split("-");
+  $: showPlaylist = (playlistParts[0] === "show" || playlistParts[0] === "auto" && isPlaylist) && !isSmall;
+
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
   $: fixedPosition && animate();
 
@@ -213,7 +216,7 @@
       </div>
     </Hoverable>
 
-    {#if !isSmall}
+    {#if showPlaylist}
       <Playlist
         {onEvent}
         style={playlistStyle}
