@@ -44,19 +44,19 @@
 </script>
 
 <div class="control-panel">
-  <strong>
-    Player settings:
+  <div class="heading">
+    <strong>Player settings:</strong>
 
-    <a target="_blank" href="https://github.com/beyondwords-io/player/blob/main/doc/player-settings.md">
-      (view docs)
+    <a tabindex={-1} target="_blank" class="docs" href="https://github.com/beyondwords-io/player/blob/main/doc/player-settings.md">
+      view docs
     </a>
+  </div>
 
-    <br/><br/>
-  </strong>
+  <br/>
 
   <div class="control">
     playerStyle:
-    <select bind:value={playerStyle}>
+    <select tabindex={-1} bind:value={playerStyle}>
       <option>small</option>
       <option>standard</option>
       <option>large</option>
@@ -66,7 +66,7 @@
 
   <div class="control">
     playbackState:
-    <select bind:value={playbackState}>
+    <select tabindex={-1} bind:value={playbackState}>
       <option>stopped</option>
       <option>playing</option>
       <option>paused</option>
@@ -75,17 +75,17 @@
 
   <div class="control">
     playerTitle:
-    <input type="text" bind:value={playerTitle}>
+    <input tabindex={-1} type="text" bind:value={playerTitle}>
   </div>
 
   <div class="control">
     callToAction:
-    <input type="text" bind:value={callToAction}>
+    <input tabindex={-1} type="text" bind:value={callToAction}>
   </div>
 
   <div class="control">
     skipButtonStyle:
-    <select bind:value={skipButtonStyle}>
+    <select tabindex={-1} bind:value={skipButtonStyle}>
       <option>auto</option>
       <option>segments</option>
       <option>seconds</option>
@@ -97,7 +97,7 @@
 
   <div class="control">
     playlistStyle:
-    <select bind:value={playlistStyle}>
+    <select tabindex={-1} bind:value={playlistStyle}>
       <option>auto</option>
       <option>show</option>
       <option>show-3</option>
@@ -108,7 +108,7 @@
 
   <div class="control">
     playlistToggle:
-    <select bind:value={playlistToggle}>
+    <select tabindex={-1} bind:value={playlistToggle}>
       <option>auto</option>
       <option>show</option>
       <option>hide</option>
@@ -117,7 +117,7 @@
 
   <div class="control">
     advertIndex:
-    <select bind:value={advertIndex}>
+    <select tabindex={-1} bind:value={advertIndex}>
       <option value={-1}>-1 (none)</option>
       {#each adverts as item, i}
         <option value={i}>{i} ({item.placement})</option>
@@ -127,7 +127,7 @@
 
   <div class="control">
     widgetStyle:
-    <select bind:value={widgetStyle}>
+    <select tabindex={-1} bind:value={widgetStyle}>
       <option>small</option>
       <option>standard</option>
       <option>large</option>
@@ -137,7 +137,7 @@
 
   <div class="control">
     widgetPosition:
-    <select bind:value={widgetPosition}>
+    <select tabindex={-1} bind:value={widgetPosition}>
       <option>auto</option>
       <option>left</option>
       <option>center</option>
@@ -147,7 +147,7 @@
 
   <div class="control">
     widgetWidth:
-    <select bind:value={widgetWidth}>
+    <select tabindex={-1} bind:value={widgetWidth}>
       <option>auto</option>
       <option>400px</option>
       <option>30rem</option>
@@ -159,27 +159,27 @@
 
   <div class="control">
     textColor:
-    <input type="text" bind:value={textColor}>
+    <input tabindex={-1} type="text" bind:value={textColor}>
   </div>
 
   <div class="control">
     backgroundColor:
-    <input type="text" bind:value={backgroundColor}>
+    <input tabindex={-1} type="text" bind:value={backgroundColor}>
   </div>
 
   <div class="control">
     iconColor:
-    <input type="text" bind:value={iconColor}>
+    <input tabindex={-1} type="text" bind:value={iconColor}>
   </div>
 
   <div class="control">
     highlightColor:
-    <input type="text" bind:value={highlightColor}>
+    <input tabindex={-1} type="text" bind:value={highlightColor}>
   </div>
 
   <div class="control">
     highlightSections:
-    <select bind:value={highlightSections}>
+    <select tabindex={-1} bind:value={highlightSections}>
       <option>all</option>
       <option>body</option>
       <option>none</option>
@@ -190,7 +190,7 @@
 
   <div class="control">
     clickableSections:
-    <select bind:value={clickableSections}>
+    <select tabindex={-1} bind:value={clickableSections}>
       <option>all</option>
       <option>body</option>
       <option>none</option>
@@ -201,7 +201,7 @@
 
   <div class="control">
     segmentWidgetSections:
-    <select bind:value={segmentWidgetSections}>
+    <select tabindex={-1} bind:value={segmentWidgetSections}>
       <option>all</option>
       <option>body</option>
       <option>none</option>
@@ -212,7 +212,7 @@
 
   <div class="control">
     segmentWidgetPosition:
-    <select bind:value={segmentWidgetPosition}>
+    <select tabindex={-1} bind:value={segmentWidgetPosition}>
       {#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as hour}
         <option>{hour}-oclock</option>
       {/each}
@@ -226,32 +226,32 @@
 
     <div class="control">
       projectId:
-      <input type="text" bind:value={projectId}>
+      <input tabindex={-1} type="text" bind:value={projectId}>
     </div>
 
     <div class="control">
       contentId:
-      <input type="text" bind:value={contentId}>
+      <input tabindex={-1} type="text" bind:value={contentId}>
     </div>
 
     <div class="control">
       playlistId:
-      <input type="text" bind:value={playlistId}>
+      <input tabindex={-1} type="text" bind:value={playlistId}>
     </div>
 
     <div class="control">
       sourceId:
-      <input type="text" bind:value={sourceId}>
+      <input tabindex={-1} type="text" bind:value={sourceId}>
     </div>
 
     <div class="control">
       sourceUrl:
-      <input type="text" bind:value={sourceUrl}>
+      <input tabindex={-1} type="text" bind:value={sourceUrl}>
     </div>
 
     <div class="control">
       showUserInterface:
-      <select bind:value={showUserInterface}>
+      <select tabindex={-1} bind:value={showUserInterface}>
         <option>{true}</option>
         <option>{false}</option>
       </select>
@@ -259,7 +259,7 @@
 
     <div class="control">
       mediaSession:
-      <select bind:value={mediaSession}>
+      <select tabindex={-1} bind:value={mediaSession}>
         <option>auto</option>
         <option>override</option>
         <option>none</option>
@@ -268,7 +268,7 @@
 
     <div class="control">
       contentIndex:
-      <select bind:value={contentIndex}>
+      <select tabindex={-1} bind:value={contentIndex}>
         {#each content as item, i}
           <option value={i}>{i} ({item.title})</option>
         {/each}
@@ -277,7 +277,7 @@
 
     <div class="control">
       introsOutrosIndex:
-      <select bind:value={introsOutrosIndex}>
+      <select tabindex={-1} bind:value={introsOutrosIndex}>
         <option value={-1}>-1 (none)</option>
         {#each introsOutros as item, i}
           <option value={i}>{i}: {item.placement}</option>
@@ -287,27 +287,27 @@
 
     <div class="control">
       duration:
-      <input type="text" bind:value={duration}>
+      <input tabindex={-1} type="text" bind:value={duration}>
     </div>
 
     <div class="control">
       currentTime:
-      <input type="text" bind:value={currentTime}>
+      <input tabindex={-1} type="text" bind:value={currentTime}>
     </div>
 
     <div class="control">
       playbackRate:
-      <input type="text" bind:value={playbackRate}>
+      <input tabindex={-1} type="text" bind:value={playbackRate}>
     </div>
 
     <div class="control">
       widgetTarget:
-      <input type="text" bind:value={widgetTarget}>
+      <input tabindex={-1} type="text" bind:value={widgetTarget}>
     </div>
 
     <div class="control">
       logoIconEnabled:
-      <select bind:value={logoIconEnabled}>
+      <select tabindex={-1} bind:value={logoIconEnabled}>
         <option>{true}</option>
         <option>{false}</option>
       </select>
@@ -315,7 +315,7 @@
 
     <div class="control">
       advertConsent:
-      <select bind:value={advertConsent}>
+      <select tabindex={-1} bind:value={advertConsent}>
         <option>personalized</option>
         <option>non-personalized</option>
         <option>under-the-age-of-consent</option>
@@ -324,7 +324,7 @@
 
     <div class="control">
       analyticsConsent:
-      <select bind:value={analyticsConsent}>
+      <select tabindex={-1} bind:value={analyticsConsent}>
         <option>allowed</option>
         <option>without-local-storage</option>
         <option>none</option>
@@ -333,29 +333,37 @@
 
     <div class="control">
       analyticsCustomUrl:
-      <input type="text" bind:value={analyticsCustomUrl}>
+      <input tabindex={-1} type="text" bind:value={analyticsCustomUrl}>
     </div>
 
     <div class="control">
       analyticsTag:
-      <input type="text" bind:value={analyticsTag}>
+      <input tabindex={-1} type="text" bind:value={analyticsTag}>
     </div>
   {/if}
 
   <br/>
 
   {#if showAdvancedSettings}
-    <a href="#_" on:click={() => showAdvancedSettings = false}>hide advanced settings</a>
+    <a tabindex={-1} href="#_" on:click={() => showAdvancedSettings = false}>hide advanced settings</a>
   {:else}
-    <a href="#_" on:click={() => showAdvancedSettings = true}>show advanced settings</a>
+    <a tabindex={-1} href="#_" on:click={() => showAdvancedSettings = true}>show advanced settings</a>
   {/if}
 </div>
 
 <style>
+  .heading {
+    display: flex;
+  }
+
+  .docs {
+    text-align: right;
+  }
+
   .control {
     display: flex;
     column-gap: 8px;
-    margin: 12px 0;
+    margin: 10px 0;
   }
 
   input[type="text"] {
