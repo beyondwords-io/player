@@ -229,7 +229,7 @@ class RootController {
     const extension = mediaUrl.split(".").pop();
     const filename = `${contentItem.title}.${extension}`;
 
-    return downloadFile(mediaUrl, contentItem.title);
+    return downloadFile(mediaUrl, filename);
   }
 
   handlePressedCloseWidget() {

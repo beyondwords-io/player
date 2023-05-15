@@ -60,7 +60,7 @@
     media ||= [];
 
     for (const format of downloadFormats) {
-      for (const [i, item] of media?.entries()) {
+      for (const [i, item] of media.entries()) {
         if (item.url?.endsWith(`.${format}`)) { return i; }
       }
     }

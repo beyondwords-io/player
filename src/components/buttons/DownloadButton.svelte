@@ -8,7 +8,6 @@
   export let mediaIndex;
   export let scale = 1;
   export let color = "#323232";
-  export let media = [];
   export let onEvent = () => {};
 
   const handleClick = (event) => {
