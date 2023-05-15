@@ -10,6 +10,7 @@
   export let callToAction;
   export let skipButtonStyle;
   export let playlistStyle;
+  export let playlistToggle;
   export let mediaSession;
   export let content;
   export let contentIndex;
@@ -105,6 +106,14 @@
     </select>
   </div>
 
+  <div class="control">
+    playlistToggle:
+    <select bind:value={playlistToggle}>
+      <option>auto</option>
+      <option>show</option>
+      <option>hide</option>
+    </select>
+  </div>
 
   <div class="control">
     advertIndex:

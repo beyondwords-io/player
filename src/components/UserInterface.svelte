@@ -34,6 +34,7 @@
   export let callToAction = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
+  export let playlistToggle = "auto";
   export let downloadFormats = [];
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
@@ -104,7 +105,9 @@
   $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall) && !forcedCollapsed;
 
   $: playlistParts = playlistStyle.split("-");
+
   $: showPlaylist = (playlistParts[0] === "show" || playlistParts[0] === "auto" && isPlaylist) && !isSmall;
+  $: showPlaylistToggle = (playlistToggle === "show" || playlistToggle === "auto" && isPlaylist) && !isSmall;
 
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
   $: fixedPosition && animate();
@@ -197,7 +200,7 @@
                 <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
               {:else if isScreen && contentItem.sourceUrl}
                 <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={buttonColor} />
-              {:else if isPlaylist && !fixedPosition}
+              {:else if showPlaylistToggle}
                 <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} playlistShowing={showPlaylist} {playerStyle} />
               {/if}
             </SecondaryButton>

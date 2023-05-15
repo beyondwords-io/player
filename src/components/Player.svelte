@@ -30,6 +30,7 @@
   export let callToAction = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
+  export let playlistToggle = "auto";
   export let downloadFormats = [];
   export let mediaSession = "auto";
   export let content = [];
@@ -153,6 +154,7 @@
     {callToAction}
     {skipButtonStyle}
     {playlistStyle}
+    {playlistToggle}
     {downloadFormats}
     {playerTitle}
     {content}
@@ -178,6 +180,7 @@
       {callToAction}
       {skipButtonStyle}
       playlistStyle="hide"
+      playlistToggle="hide"
       {downloadFormats}
       {playerTitle}
       fixedPosition={!widgetTarget && widgetPosition}
@@ -230,6 +233,7 @@
       bind:callToAction
       bind:skipButtonStyle
       bind:playlistStyle
+      bind:playlistToggle
       bind:mediaSession
       {content}
       bind:contentIndex
