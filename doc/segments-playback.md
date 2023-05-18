@@ -79,10 +79,11 @@ The above code will prevent the player from changing its current time when the b
 
 Playback from Segments supports various [Player Settings](./player-settings.md):
 
-- **segmentPlayback** can be used to disable this feature or only apply it to 'body' segments
-- **highlightColor** can be used to change the highlight color of the active and hovered segments
-- **highlightCurrent** can be used to decide whether to highlight the currently played segment
-- **highlightHovered** can be used to decide whether to highlight the hovered segment
+- **highlightColor** can be used to set a different highlight color for segments on the page
+- **highlightSections** can be used to control which segments highlighting applies to (if any)
+- **clickableSections** can be used to control which segments can be clicked on (if any)
+- **segmentWidgetSections** can be used to control which segments the widget appears next to (if any)
+- **segmentWidgetPosition** can be used to control which side the widget appears next to the segment
 - **currentSegment** can be used to get the current segment (this is a read-only property)
 - **hoveredSegment** can be used to get the hovered segment (this is a read-only property)
 

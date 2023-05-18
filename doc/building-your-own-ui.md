@@ -154,6 +154,28 @@ Please note that the player styles might change in the future which could mean y
 
 Because of this, we'd discourage this technique, but you're welcome to use it if you are prepared to monitor this yourself.
 
+## Segment style overrides
+
+If you want to override the highlight color of segments, you can use the following CSS:
+
+```css
+[data-beyondwords-marker]:nth-child(3n) .beyondwords-highlight {
+  background: #fcc !important;
+}
+
+[data-beyondwords-marker]:nth-child(3n+1) .beyondwords-highlight {
+  background: #cfc !important;
+}
+
+[data-beyondwords-marker]:nth-child(3n+2) .beyondwords-highlight {
+  background: #ccf !important;
+}
+```
+
+Note that you do not need to use the `.bwp.bwp.bwp...` selector in this case
+because that is only needed for the player user interface and for the segment
+widget.
+
 ## Direct API calls
 
 We'd strongly recommend using one of techniques above if you want to customize the user-interface of the player.
