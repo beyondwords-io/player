@@ -28,7 +28,7 @@ More complex features like progress bars can be built using this technique.
 The simplest way to repeatedly query the player is by registering an event listener for all events:
 
 ```javascript
-player.addEventListener("<any">, rerenderCustomUserInterface);
+player.addEventListener("<any>", rerenderCustomUserInterface);
 
 const rerenderCustomUserInterface = () => {
   // Update your user-interface by querying the player object.
