@@ -46,6 +46,7 @@
   export let playbackState = "stopped";
   export let playbackRate = 1;
   export let activeAdvert = undefined;
+  export let persistentAdvert = undefined;
   export let textColor = "#111";
   export let backgroundColor = "#f5f5f5";
   export let iconColor = "black";
@@ -95,7 +96,9 @@
 
   $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
   $: posterImage = isStopped ? contentItem.imageUrl : null;
-  $: largeImage = isAdvert && activeAdvert.imageUrl || contentItem.imageUrl;
+
+  $: largeImage = isAdvert && activeAdvert.imageUrl || persistentAdvert?.imageUrl ||  contentItem.imageUrl;
+  $: largeImageHref = isAdvert && activeAdvert.clickThroughUrl || persistentAdvert?.clickThroughUrl;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && (fixedWidth === 0 || fixedWidth === "0");
@@ -143,7 +146,7 @@
 
       <div class="main" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
         {#if largeImage && (isLarge || isScreen)}
-          <LargeImage src={largeImage} href={isAdvert ? activeAdvert.clickThroughUrl : null} scale={isScreen && !isMobile ? 1.5 : 1} />
+          <LargeImage src={largeImage} href={largeImageHref} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
 
         {#if isVideo && fixedPosition}

@@ -58,6 +58,7 @@
   export let segmentWidgetPosition = "7-oclock";
   export let currentSegment = undefined;
   export let hoveredSegment = undefined;
+  export let persistentAdImage = false;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
@@ -77,6 +78,7 @@
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = undefined;
+  export let persistentAdvert = undefined;
   export let analyticsUrl = undefined;
   export let analyticsId = undefined;
   export let listenSessionId = undefined;
@@ -164,6 +166,7 @@
     {playbackState}
     {playbackRate}
     {activeAdvert}
+    {persistentAdvert}
     {textColor}
     {backgroundColor}
     {iconColor}
@@ -192,6 +195,7 @@
       {playbackState}
       {playbackRate}
       {activeAdvert}
+      {persistentAdvert}
       {textColor}
       {backgroundColor}
       {iconColor}
@@ -213,6 +217,7 @@
       currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
       playbackState={showRealTimeInWidget ? playbackState : "paused"}
       {activeAdvert}
+      {persistentAdvert}
       {textColor}
       {backgroundColor}
       {iconColor} />
@@ -273,6 +278,7 @@
     {content}
     {contentIndex}
     {activeAdvert}
+    {persistentAdvert}
     {duration}
     {playbackState}
     {skipButtonStyle}

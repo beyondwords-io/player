@@ -72,6 +72,7 @@ const setProps = (player, data) => {
   set(player, "segmentWidgetSections", data.settings.segment_playback_enabled ? "none" : "none");
   set(player, "currentSegment", undefined);                          // TODO: set ^ to "body" after more testing
   set(player, "hoveredSegment", undefined);
+  set(player, "persistentAdImage", data.settings.persistent_ad_image);
   set(player, "analyticsConsent", analyticsConsent(data.settings));
   set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
   set(player, "analyticsTag", data.settings.analytics_tag);
