@@ -18,6 +18,8 @@
   export let introsOutrosIndex;
   export let adverts;
   export let advertIndex;
+  export let persistentAdImage;
+  export let persistentIndex;
   export let duration;
   export let currentTime;
   export let playbackState;
@@ -280,6 +282,24 @@
       <select tabindex={-1} bind:value={introsOutrosIndex}>
         <option value={-1}>-1 (none)</option>
         {#each introsOutros as item, i}
+          <option value={i}>{i}: {item.placement}</option>
+        {/each}
+      </select>
+    </div>
+
+    <div class="control">
+      persistentAdImage:
+      <select tabindex={-1} bind:value={persistentAdImage}>
+        <option>{true}</option>
+        <option>{false}</option>
+      </select>
+    </div>
+
+    <div class="control">
+      persistentIndex:
+      <select tabindex={-1} bind:value={persistentIndex}>
+        <option value={-1}>-1 (none)</option>
+        {#each adverts as item, i}
           <option value={i}>{i}: {item.placement}</option>
         {/each}
       </select>
