@@ -5,7 +5,7 @@ const choosePersistentAdvert = (persistentAdImage, persistentIndex, advertIndex,
   let bestMatch = -Infinity;
   let bestPlacement = -Infinity;
 
-  for (const [thisIndex, advert] of adverts.entries()) {
+  for (const [thisIndex, advert] of (adverts || []).entries()) {
     if (!persistentAdImage) { continue; }
     if (resultedInAPlaybackError(advert)) { continue; }
     if (advert.type === "vast") { continue; }
