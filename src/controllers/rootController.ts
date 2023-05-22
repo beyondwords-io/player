@@ -10,6 +10,7 @@ import diffObject from "../helpers/diffObject";
 import sectionEnabled from "../helpers/sectionEnabled";
 import downloadFile from "../helpers/downloadFile";
 import chooseAdvert from "../helpers/chooseAdvert";
+import choosePersistentAdvert from "../helpers/choosePersistentAdvert";
 import chooseIntroOutro from "../helpers/chooseIntroOutro";
 import chooseMediaSession from "../helpers/chooseMediaSession";
 import chooseWidget from "../helpers/chooseWidget";
@@ -466,6 +467,11 @@ class RootController {
 
     if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
     this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
+
+    const persistentAdImage = this.player.persistentAdImage;
+    const persistentIndex = this.player.persistentIndex;
+
+    this.player.persistentIndex = choosePersistentAdvert(persistentAdImage, persistentIndex, advertIndex, adverts);
   }
 
   #playDeferredIntroOutro() {

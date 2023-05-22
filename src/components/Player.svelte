@@ -39,6 +39,8 @@
   export let introsOutrosIndex = -1;
   export let adverts = [];
   export let advertIndex = -1;
+  export let persistentAdImage = false;
+  export let persistentIndex = -1;
   export let duration = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
@@ -58,7 +60,6 @@
   export let segmentWidgetPosition = "7-oclock";
   export let currentSegment = undefined;
   export let hoveredSegment = undefined;
-  export let persistentAdImage = false;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
@@ -78,7 +79,6 @@
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = undefined;
-  export let persistentAdvert = undefined;
   export let analyticsUrl = undefined;
   export let analyticsId = undefined;
   export let listenSessionId = undefined;
@@ -93,6 +93,7 @@
 
   $: introOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
+  $: persistentAdvert = adverts[persistentIndex];
   $: contentItem = content[contentIndex];
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
@@ -246,6 +247,8 @@
       bind:introsOutrosIndex
       {adverts}
       bind:advertIndex
+      bind:persistentAdImage
+      bind:persistentIndex
       bind:duration
       bind:currentTime
       bind:playbackState
