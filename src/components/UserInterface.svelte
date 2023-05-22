@@ -143,7 +143,7 @@
 
       <div class="main" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
         {#if largeImage && (isLarge || isScreen)}
-          <LargeImage src={largeImage} scale={isScreen && !isMobile ? 1.5 : 1} />
+          <LargeImage src={largeImage} href={isAdvert ? activeAdvert.clickThroughUrl : null} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
 
         {#if isVideo && fixedPosition}

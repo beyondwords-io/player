@@ -22,12 +22,12 @@
 
   :global(.beyondwords-player button),
   :global(.beyondwords-player button *),
-  :global(.beyondwords-player a),
-  :global(.beyondwords-player a *),
+  :global(.beyondwords-player a[href]),
+  :global(.beyondwords-player a[href] *),
   :global(.beyondwords-widget button),
   :global(.beyondwords-widget button *),
-  :global(.beyondwords-widget a),
-  :global(.beyondwords-widget a *) {
+  :global(.beyondwords-widget a[href]),
+  :global(.beyondwords-widget a[href] *) {
     cursor: pointer;
   }
 
