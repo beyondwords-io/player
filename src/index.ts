@@ -13,7 +13,7 @@ class Player extends PlayerComponent {
 
   constructor({ target, ...props }) {
     validateWebContext();
-    initializeSentry();
+    initializeSentry(props);
     listenToSegments();
 
     const { newTarget, showUserInterface } = resolveTarget(target);

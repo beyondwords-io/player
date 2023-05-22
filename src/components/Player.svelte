@@ -65,6 +65,7 @@
   export let analyticsCustomUrl = undefined;
   export let analyticsTag = undefined;
   export let writeToken = undefined;
+  export let captureErrors = true;
   export let transitions = []; // TODO: turn into a documented feature
   export let controlPanel = undefined; // TODO: turn into a documented feature
   export const addEventListener = (...args) => controller.addEventListener(...args);

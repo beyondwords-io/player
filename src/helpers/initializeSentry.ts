@@ -5,8 +5,10 @@ import settableProps from "./settableProps";
 
 let called = false;
 
-const initializeSentry = () => {
-  if (called) { return; }
+const initializeSentry = ({ captureErrors }) => {
+  const isEnabled = captureErrors !== false;
+  if (!isEnabled || called) { return; }
+
   called = true;
 
   const thisFilename = originFilename(new Error());
