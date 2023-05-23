@@ -20,6 +20,7 @@ export default defineConfig({
       fileName: format => `${format}.js`,
     },
     sourcemap: true,
+    target: "es2015",
   },
   test: {
     environment: "jsdom",
