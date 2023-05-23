@@ -254,8 +254,8 @@
     <div class="control">
       showUserInterface:
       <select tabindex={-1} bind:value={showUserInterface}>
-        <option>{true}</option>
         <option>{false}</option>
+        <option>{true}</option>
       </select>
     </div>
 
@@ -290,8 +290,8 @@
     <div class="control">
       persistentAdImage:
       <select tabindex={-1} bind:value={persistentAdImage}>
-        <option>{true}</option>
         <option>{false}</option>
+        <option>{true}</option>
       </select>
     </div>
 
@@ -328,8 +328,8 @@
     <div class="control">
       logoIconEnabled:
       <select tabindex={-1} bind:value={logoIconEnabled}>
-        <option>{true}</option>
         <option>{false}</option>
+        <option>{true}</option>
       </select>
     </div>
 
