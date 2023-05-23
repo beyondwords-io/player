@@ -97,8 +97,8 @@
   $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
   $: posterImage = isStopped ? contentItem.imageUrl : null;
 
-  $: largeImage = isAdvert && activeAdvert.imageUrl || persistentAdvert?.imageUrl ||  contentItem.imageUrl;
-  $: largeImageHref = isAdvert && activeAdvert.clickThroughUrl || persistentAdvert?.clickThroughUrl;
+  $: largeImage = isAdvert && activeAdvert.imageUrl || !isStopped && persistentAdvert?.imageUrl ||  contentItem.imageUrl;
+  $: largeImageHref = isAdvert && activeAdvert.clickThroughUrl || !isStopped && persistentAdvert?.clickThroughUrl;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && (fixedWidth === 0 || fixedWidth === "0");
