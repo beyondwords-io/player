@@ -9,7 +9,7 @@
   $: size = `${scale * 80}px`;
 </script>
 
-<a class="large-image" {href} target="_blank" style="width: {size}; height: {size}" aria-label={translate("visitAdvert")}>
+<a class="large-image" href={href ? href : null} target="_blank" style="width: {size}; height: {size}" aria-label={translate("visitAdvert")}>
   <img src={src} alt={alt} style="width: {size}; height: {size}" />
 </a>
 
