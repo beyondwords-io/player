@@ -33,7 +33,7 @@ const analyticsEventType = (player, playerEventType) => {
   // Emit a 'play' event after 'PlaybackPlaying' followed by 'CurrentTimeUpdated'.
   // This ensures player.duration has been updated from the media.
   if (playerEventType === "PlaybackPlaying") { player.emitPlayEvent = "CurrentTimeUpdated"; }
-  if (playerEventType === player.emitPlayEvent) { delete player.emitPlayEvent; return "play"; }
+  if (playerEventType === player.emitPlayEvent) { player.emitPlayEvent = null; return "play"; }
 
   // Emit a 'play_progress' event for each 10%, 20%, ..., 100% of playback reached.
   if (playerEventType === "CurrentTimeUpdated" && isNextPercentage(player)) { return "play_progress"; }
