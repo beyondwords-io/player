@@ -79,7 +79,6 @@ Note that you will need to replace projectId and contentId with valid identifier
   <head>
     <meta charset='UTF-8' />
     <title>Custom User Interface</title>
-    <script src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'></script>
   </head>
   <body>
     <div>
@@ -89,38 +88,44 @@ Note that you will need to replace projectId and contentId with valid identifier
     </div>
 
     <script>
-      let player, playButton, contentTitle, timeIndicator;
+      var player, playButton, contentTitle, timeIndicator;
 
-      const initialize = () => {
-        player = new BeyondWords.Player({ projectId: <ID>, contentId: '<ID>' });
+      function initializeCustomUserInterface() {
+        player = BeyondWords.Player.instances()[0];
+        player = player || new BeyondWords.Player({ projectId: <ID>, contentId: '<ID>' });
 
         playButton = document.getElementById('play-button');
         contentTitle = document.getElementById('content-title');
         timeIndicator = document.getElementById('time-indicator');
 
-        player.addEventListener('<any>', rerender);
+        player.addEventListener('<any>', rerenderCustomUserInterface);
         playButton.addEventListener('click', playOrPause);
-      };
+      }
 
-      const rerender = () => {
-        const isPlaying = player.playbackState === 'playing';
-        const minutes = Math.floor(player.currentTime / 60);
-        const seconds = Math.floor(player.currentTime % 60);
+      function rerenderCustomUserInterface() {
+        var contentItem = player.content[player.contentIndex];
+        var isPlaying = player.playbackState === 'playing';
+
+        var minutes = Math.floor(player.currentTime / 60);
+        var seconds = Math.floor(player.currentTime % 60);
 
         playButton.innerText = isPlaying ? 'Pause' : 'Play';
-        contentTitle.innerText = player.content[player.contentIndex]?.title || '';
-        timeIndicator.innerText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-      };
+        contentTitle.innerText = contentItem ? contentItem.title : '';
+        timeIndicator.innerText = minutes + ":" + seconds.toString().padStart(2, '0');
+      }
 
-      const playOrPause = () => {
+      function playOrPause() {
         if (player.playbackState === 'playing') {
           player.playbackState = 'paused';
         } else {
           player.playbackState = 'playing';
         }
       };
+    </script>
 
-      document.addEventListener('DOMContentLoaded', initialize);
+    <script async deref
+      src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'
+      onload='initializeCustomUserInterface()'>
     </script>
   </body>
 </html>
