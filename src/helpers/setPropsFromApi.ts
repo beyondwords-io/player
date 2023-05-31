@@ -89,6 +89,7 @@ const setProps = (player, data) => {
     id: item.id,
     title: item.title,
     imageUrl: imageEnabled && (data.playlist?.image_url || item.image_url || data.settings.image_url),
+    sourceId: item.source_id,
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,

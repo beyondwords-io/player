@@ -21,6 +21,7 @@ You can inspect the events that are sent by finding them in the Network tab in y
   "media_type": "content",
   "project_id": 123,
   "content_id": "3f57001d-cb30-42c1-ad6f-047e813c360f",
+  "source_id": "example-source-id",
   "analytics_id": 333,
   "ad_id": null,
   "media_id": 555,
@@ -48,7 +49,8 @@ Events are simple JSON objects with the following fields:
 | device_type           | string            | The type of device that emitted the event. There are three types:<br/><br/>- **phone**: the width of the browser was between 0px and 499px<br/>- **tablet**: the width of the browser was between 500px and 999px<br/>- **desktop**: the width of the browser was 1000px or greater
 | media_type            | string            | The type of media loaded in the player. There are two types:<br/><br/>- **content**: the event was emitted during content playback<br/>- **ad**: the event was emitted during advert playback
 | project_id            | integer           | The numeric ID of the project whose content is loaded into the player. This field might be null if content wasn't fetched from the API and is instead set manually in the player.
-| content_id            | string or integer | The string UUID or numeric ID of the content current loaded into the player. This field might be null if content wasn't fetched from the API and is instead set manually in the player.
+| content_id            | string or integer | The string UUID or numeric ID of the content currently loaded into the player. This field might be null if content wasn't fetched from the API and is instead set manually in the player.
+| source_id             | string            | The string ID that can optionally be associated with the content currently loaded into the player. This field might be null if the source_id ID wasn't set in the BeyondWords API.
 | analytics_id          | integer           | A numeric ID used by BeyondWords for associating this event with your project. This field might be null if content wasn't fetched from the API and is instead set manually in the player.
 | ad_id                 | integer           | The numeric ID of the advert that is currently loaded into the player. This field is null when an advert isn't playing, i.e. when content is playing.
 | media_id              | integer           | The numeric ID of the content or advert media field that is currently loaded into the player. This field is null when VAST adverts are playing.
