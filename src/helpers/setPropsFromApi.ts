@@ -88,7 +88,7 @@ const setProps = (player, data) => {
   set(player, "content", data.content.map((item) => ({
     id: item.id,
     title: item.title,
-    imageUrl: imageEnabled && (data.playlist?.image_url || item.image_url || data.settings.image_url),
+    imageUrl: imageEnabled && (data.playlist?.image_url || data.settings.image_url || item.image_url),
     sourceId: item.source_id,
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
