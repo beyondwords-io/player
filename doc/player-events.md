@@ -77,6 +77,7 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PressedNextTrack             | user+     | The next track button was pressed.
 | PressedAdvertLink            | user      | The advert link was pressed to open the click-through URL in a new tab.
 | PressedAdvertButton          | user      | The advert button was pressed to open the click-through URL in a new tab.
+| PressedAdvertImage           | user      | The advert image was pressed to open the advert in a new tab.
 | PressedAdvertVideo           | user      | The video background was pressed to open the advert in a new tab.
 | PressedBeyondWords           | user      | The BeyondWords logo was pressed to open the BeyondWords website in a new tab.
 | PressedSourceUrl             | user      | The source URL button was pressed to open the source article in a new tab.

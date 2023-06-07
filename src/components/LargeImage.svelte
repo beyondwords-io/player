@@ -1,15 +1,27 @@
 <script>
+  import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
 
   export let src;
   export let href;
   export let alt = "Player Image";
   export let scale = 1;
+  export let onEvent = () => {};
 
   $: size = `${scale * 80}px`;
+
+  const handleClick = () => {
+    if (!href) { return; }
+
+    onEvent(newEvent({
+      type: "PressedAdvertImage",
+      description: "The advert image was pressed to open the click-through URL in a new tab.",
+      initiatedBy: "user",
+    }));
+  };
 </script>
 
-<a class="large-image" href={href ? href : null} target="_blank" style="width: {size}; height: {size}" aria-label={translate("visitAdvert")}>
+<a class="large-image" href={href ? href : null} target="_blank" style="width: {size}; height: {size}" on:click={handleClick} aria-label={translate("visitAdvert")}>
   <img src={src} alt={alt} style="width: {size}; height: {size}" />
 </a>
 
