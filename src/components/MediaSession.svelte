@@ -46,7 +46,7 @@
   $: foreground = isAdvert && activeAdvert?.iconColor || iconColor;
   $: background, foreground, renderedSvgs = imageSizes.map((_, i) => tick().then(() => fallbackSvgs[i]));
 
-  $: imageUrl_ = isAdvert && activeAdvert.imageUrl || !isStopped && persistentAdvert?.imageUrl || contentItem.imageUrl;
+  $: imageUrl_ = isAdvert && activeAdvert.imageUrl || !isStopped && persistentAdvert?.imageUrl || contentItem?.imageUrl;
   $: imageUrl = failedUrls.has(imageUrl_) ? null : imageUrl_;
 
   $: pngArtworks = imageUrl ? imageSizes.map(s => blobForImageUrl(imageUrl, s, s)) : [];
