@@ -112,7 +112,7 @@ const isNextPercentage = (player) => {
   const currentPercentage = (player.currentTime / player.duration) * 100;
 
   if (currentPercentage >= nextPercentage) {
-    player.prevPercentage = nextPercentage;
+    player.prevPercentage = Math.floor(currentPercentage / 10) * 10;
     return true;
   }
 };
