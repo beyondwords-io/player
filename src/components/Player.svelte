@@ -84,7 +84,7 @@
   export let analyticsId = undefined;
   export let listenSessionId = undefined;
   export let sessionCreatedAt = undefined;
-  export let emitPlayEvent = undefined;
+  export let isNewListen = false;
   export let prevPercentage = 0;
   export let segmentWidgets = [];
   export let segmentContainers = new SegmentContainers(arr => segmentWidgets = arr);

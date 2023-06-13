@@ -31,9 +31,9 @@ const analyticsEventType = (player, playerEventType) => {
   if (!player.listenSessionId && player.duration) { return "load"; }
 
   // Emit a 'play' event after 'PlaybackPlaying' followed by 'CurrentTimeUpdated'.
-  // This ensures player.duration has been updated from the media.
-  if (playerEventType === "PlaybackPlaying") { player.emitPlayEvent = "CurrentTimeUpdated"; }
-  if (playerEventType === player.emitPlayEvent) { player.emitPlayEvent = null; return "play"; }
+  // Only emit for new listens, i.e. if the content/advert changed from what it was previously.
+  if (playerEventType === "PlaybackPlaying" && isNewListen(player)) { player.isNewListen = true; }
+  if (playerEventType === "CurrentTimeUpdated" && player.isNewListen) { player.isNewListen = false; return "play"; }
 
   // Emit a 'play_progress' event for each 10%, 20%, ..., 100% of playback reached.
   if (playerEventType === "CurrentTimeUpdated" && isNextPercentage(player)) { return "play_progress"; }
@@ -85,6 +85,26 @@ const gaEventName = ({ event_type, listen_length_percent }) => {
   if (event_type === "play_progress" && percentage === 100) { return "Complete"; }
   if (event_type === "play_progress") { return `${percentage}% listened`; }
   if (event_type === "ad_link_click") { return "Advert Click"; }
+};
+
+const isNewListen = (player) => {
+  let changed = false;
+
+  // Handle content/adverts separately so that we don't consider it a new listen
+  // after mid-roll adverts, or if the same advert is played twice in a row.
+  const isAdvert = player.advertIndex !== -1;
+
+  if (isAdvert) {
+    const advertId = player.adverts[player.advertIndex]?.id || player.advertIndex;
+    changed = advertId !== player.prevAdvertId;
+    player.prevAdvertId = advertId;
+  } else {
+    const contentId = player.content[player.contentIndex]?.id || player.contentIndex;
+    changed = contentId !== player.prevContentId;
+    player.prevContentId = contentId;
+  }
+
+  return changed;
 };
 
 const isNextPercentage = (player) => {
