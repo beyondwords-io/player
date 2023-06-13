@@ -5,7 +5,7 @@ env:
 jobs:
   CI:
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.34.0-jammy
+    container: mcr.microsoft.com/playwright:v1.35.0-jammy
 
     steps:
     - uses: actions/checkout@v3
