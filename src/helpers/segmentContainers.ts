@@ -30,29 +30,25 @@ class SegmentContainers {
   }
 
   static #addContainers(marker, self, position, playerStyle) {
-    const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
+    const element = document.querySelector(`[${dataAttribute}="${marker}"]`);
+    const container = document.createElement("div");
 
-    for (const element of markerElements) {
-      const container = document.createElement("div");
+    // Don't add 'position: relative' to the data-beyondwords-marker element
+    // if we can help it to reduce interference on the publisher's webpage.
+    const needsRelative = ["2-oclock", "3-oclock", "4-oclock", "8-oclock", "9-oclock", "10-oclock"].includes(position);
 
-      // Don't add 'position: relative' to the data-beyondwords-marker element
-      // if we can help it to reduce interference on the publisher's webpage.
-      const needsRelative = ["2-oclock", "3-oclock", "4-oclock", "8-oclock", "9-oclock", "10-oclock"].includes(position);
+    if (needsRelative) { element.classList.add(...markerClasses); }
+    container.classList.add(...containerClasses(marker, position, playerStyle));
 
-      if (needsRelative) { element.classList.add(...markerClasses); }
-      container.classList.add(...containerClasses(marker, position, playerStyle));
+    const insertBefore = ["11-oclock", "12-oclock", "1-oclock"].includes(position);
 
-      const insertBefore = ["11-oclock", "12-oclock", "1-oclock"].includes(position);
-
-      if (insertBefore) {
-        element.insertBefore(container, element.firstChild);
-      } else {
-        element.appendChild(container);
-      }
-
-      self.containers.push(container);
+    if (insertBefore) {
+      element.insertBefore(container, element.firstChild);
+    } else {
+      element.appendChild(container);
     }
 
+    self.containers.push(container);
     self.onUpdate(self.containers);
   }
 
