@@ -96,6 +96,14 @@
     }));
   };
 
+  const handleLoadedData = () => {
+    onEvent(newEvent({
+      type: "MediaLoaded",
+      description: "The media finished loading its first frame of data.",
+      initiatedBy: "media",
+    }));
+  };
+
   const handleTimeUpdate = () => {
     // Ensure the correct duration is sent to analytics for vast ads.
     if (vastUrl) { return; }
@@ -189,6 +197,7 @@
            on:pause={handlePause}
            on:ended={handleEnded}
            on:durationchange={handleDurationChange}
+           on:loadeddata={handleLoadedData}
            on:timeupdate={handleTimeUpdate}
            on:ratechange={handleRateChange}>
 

@@ -103,6 +103,7 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PressedSegment               | user      | The user pressed on a segment in the article.
 | HoveredSegmentUpdated        | user      | The user hovered over a different segment in the article.
 | CurrentSegmentUpdated        | media     | The media's current segment was updated.
+| MediaLoaded                  | media     | The media finished loading its first frame of data.
 | DurationUpdated              | media*    | The media's duration was updated.
 | CurrentTimeUpdated           | media     | The media's current time was updated.
 | PlaybackPaused               | media*    | The media became paused at its current playback time.

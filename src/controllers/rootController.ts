@@ -142,6 +142,15 @@ class RootController {
     });
   }
 
+  handleMediaLoaded() {
+    if (this.mediaLoaded) { return; }
+
+    const initialTime = this.player.initialProps.currentTime;
+    if (initialTime) { this.player.currentTime = initialTime; }
+
+    this.mediaLoaded = true;
+  }
+
   handlePressedPlay({ emittedFrom, widgetSegment, widgetIsCurrent }) {
     if (emittedFrom === "segment-widget" && !widgetIsCurrent) {
       this.#playFromSegment(widgetSegment);
