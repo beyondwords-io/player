@@ -100,8 +100,8 @@
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
-  $: widgetTarget = findByQuery(widgetTarget);
-  $: controlPanel = findByQuery(controlPanel);
+  $: widgetTarget = findByQuery(widgetTarget, "widget");
+  $: controlPanel = findByQuery(controlPanel, "control panel");
 
   $: videoBehindWidget = showBottomWidget && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
