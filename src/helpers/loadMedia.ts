@@ -1,6 +1,6 @@
 import Hls from "hls.js/dist/hls.light.js";
 
-const loadMedia = (source, video, hls, onError) => {
+const loadMedia = (source, video, hls, onError, play) => {
   if (!video) { return; }
 
   const prevPaused = video.paused;
@@ -26,7 +26,7 @@ const loadMedia = (source, video, hls, onError) => {
     video.load();
   }
 
-  if (!prevPaused) { video.play(); }
+  if (!prevPaused) { play(); }
   video.playbackRate = prevRate;
 
   return hls;

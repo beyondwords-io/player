@@ -28,6 +28,7 @@
   let time = 0;
 
   const setTime = (t) => time = t;
+  const play = () => video?.play()?.catch(handlePlayError);
 
   $: !activeAdvert && setTime(currentTime);
   $: currentTime = time;
@@ -40,12 +41,12 @@
   $: !introOrOutro && !activeAdvert && (media = contentItem?.media);
 
   $: sources = [media].flat().filter(m => m);
-  $: hls = loadMedia(sources[0], video, hls, handleHlsError);
+  $: hls = loadMedia(sources[0], video, hls, handleHlsError, play);
 
   $: vastUrl = activeAdvert?.vastUrl;
   $: customUrl = activeAdvert?.clickThroughUrl;
 
-  $: sources, !vastUrl && (playbackState === "playing" ? video?.play() : video?.pause());
+  $: sources, !vastUrl && (playbackState === "playing" ? play() : video?.pause());
   $: sources, prevPercentage = 0;
 
   $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
@@ -130,6 +131,16 @@
     onEvent(newEvent({
       type: "PlaybackRateUpdated",
       description: "The media's playback rate was updated.",
+      initiatedBy: "media",
+    }));
+  };
+
+  const handlePlayError = (error) => {
+    if (error?.name !== "NotAllowedError") { throw error; }
+
+    onEvent(newEvent({
+      type: "PlaybackNotAllowed",
+      description: "The media cannot play because there was no user event.",
       initiatedBy: "media",
     }));
   };

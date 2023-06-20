@@ -110,6 +110,7 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PlaybackRateUpdated          | media     | The media's playback rate was updated.
 | PlaybackPlaying              | media     | The media began playing from its current playback time.
 | PlaybackEnded                | media*    | The media finished playing because it reached the end.
+| PlaybackNotAllowed           | media     | The media cannot play because there was no user event.
 | PlaybackErrored              | media*    | The media failed to play.
 | IdentifiersChanged           | browser   | The Player's content identifiers changed.
 | FullScreenModeUpdated        | browser   | The browser entered or exited full screen mode.

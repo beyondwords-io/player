@@ -189,6 +189,11 @@ class RootController {
     this.#setTrack(i => i + 1);
   }
 
+  handlePlaybackNotAllowed() {
+    const atTheStart = this.player.contentIndex === 0 && this.player.currentTime === 0;
+    this.player.playbackState = atTheStart ? "stopped" : "paused";
+  }
+
   handlePlaybackErrored({ mediaType, mediaUrl, errorMessage }) {
     console.error(`${mediaType} playback error: ${errorMessage} (requesting ${mediaUrl})`);
 
