@@ -189,13 +189,15 @@ class RootController {
     this.#setTrack(i => i + 1);
   }
 
-  handlePlaybackNotAllowed() {
+  handlePlaybackNotAllowed({ description }) {
+    console.warn(`BeyondWords.Player: ${description}`);
+
     const atTheStart = this.player.contentIndex === 0 && this.player.currentTime === 0;
     this.player.playbackState = atTheStart ? "stopped" : "paused";
   }
 
-  handlePlaybackErrored({ mediaType, mediaUrl, errorMessage }) {
-    console.error(`${mediaType} playback error: ${errorMessage} (requesting ${mediaUrl})`);
+  handlePlaybackErrored({ mediaType, errorMessage }) {
+    console.warn(`BeyondWords.Player: ${mediaType} playback error: ${errorMessage}`);
 
     if (this.#isIntro() || this.#isOutro()) {
       this.#chooseAndSetIntroOutro({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
