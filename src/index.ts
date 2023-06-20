@@ -1,5 +1,6 @@
 import PlayerComponent from "./components/Player.svelte";
 import RootController from "./controllers/rootController";
+import setErrorHandler from "./helpers/setErrorHandler";
 import validateWebContext from "./helpers/validateWebContext";
 import initializeSentry from "./helpers/initializeSentry";
 import listenToSegments from "./helpers/listenToSegments";
@@ -13,6 +14,7 @@ class Player extends PlayerComponent {
 
   constructor({ target, ...props }) {
     validateWebContext();
+    setErrorHandler(props);
     initializeSentry(props);
     listenToSegments();
 
