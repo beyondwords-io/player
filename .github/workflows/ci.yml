@@ -1,5 +1,11 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
 env:
   HOME: /root # https://github.com/microsoft/playwright/issues/6500
 jobs:
