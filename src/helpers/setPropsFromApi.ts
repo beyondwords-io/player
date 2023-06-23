@@ -85,6 +85,13 @@ const setProps = (player, data) => {
   // TODO: add support for share_button_enabled
   // TODO: add support for voice_icon_enabled
 
+  setContentProp(player, data);
+  setAdvertsProp(player, data);
+};
+
+const setContentProp = (player, data) => {
+  const imageEnabled = data?.settings?.image_enabled;
+
   set(player, "content", data.content.map((item) => ({
     id: item.id,
     title: item.title,
@@ -105,6 +112,10 @@ const setProps = (player, data) => {
       duration: segment.duration ? segment.duration / 1000 : 0,
     })),
   })));
+};
+
+const setAdvertsProp = (player, data) => {
+  const imageEnabled = data?.settings?.image_enabled;
 
   set(player, "adverts", data.ads.map((item) => {
     const isVast = item.type === "vast";
