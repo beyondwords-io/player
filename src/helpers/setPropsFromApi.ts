@@ -48,20 +48,17 @@ const setProps = (player, data) => {
 
   const imageEnabled = data.settings.image_enabled;
 
+  resetSomeProps(player);
+  setContentProp(player, data);
+  setAdvertsProp(player, data);
+
   set(player, "playerStyle", data.settings.player_style);
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
   set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
-  set(player, "contentIndex", 0);
   set(player, "introsOutros", introsOutrosArray(data.settings));
-  set(player, "introsOutrosIndex", -1);
-  set(player, "advertIndex", -1);
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
-  set(player, "persistentIndex", -1);
-  set(player, "duration", 0);
-  set(player, "currentTime", 0);
-  set(player, "playbackState", "stopped");
   set(player, "widgetStyle", data.settings.widget_style);
   set(player, "widgetPosition", data.settings.widget_position);
   set(player, "textColor", colors.text_color);
@@ -71,9 +68,7 @@ const setProps = (player, data) => {
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
   set(player, "highlightSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
-  set(player, "segmentWidgetSections", data.settings.segment_playback_enabled ? "none" : "none");
-  set(player, "currentSegment", undefined);                          // TODO: set ^ to "body" after more testing
-  set(player, "hoveredSegment", undefined);
+  set(player, "segmentWidgetSections", data.settings.segment_playback_enabled ? "none" : "none"); // TODO: default to body?
   set(player, "analyticsConsent", analyticsConsent(data.settings));
   set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
   set(player, "analyticsTag", data.settings.analytics_tag);
@@ -84,9 +79,18 @@ const setProps = (player, data) => {
   // TODO: add support for paywall_url
   // TODO: add support for share_button_enabled
   // TODO: add support for voice_icon_enabled
+};
 
-  setContentProp(player, data);
-  setAdvertsProp(player, data);
+const resetSomeProps = (player) => {
+  set(player, "contentIndex", 0);
+  set(player, "introsOutrosIndex", -1);
+  set(player, "advertIndex", -1);
+  set(player, "persistentIndex", -1);
+  set(player, "duration", 0);
+  set(player, "currentTime", 0);
+  set(player, "playbackState", "stopped");
+  set(player, "currentSegment", undefined);
+  set(player, "hoveredSegment", undefined);
 };
 
 const setContentProp = (player, data) => {
