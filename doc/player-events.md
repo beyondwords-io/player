@@ -113,6 +113,7 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PlaybackNotAllowed           | media     | The media cannot play because there was no user event.
 | PlaybackErrored              | media*    | The media failed to play.
 | IdentifiersChanged           | browser   | The Player's content identifiers changed.
+| NoContentAvailable           | browser   | No published and processed content is available for the identifiers.
 | FullScreenModeUpdated        | browser   | The browser entered or exited full screen mode.
 | ContentStatusChanged         | websocket | The processing status of a content item within the project changed.
 

@@ -1,6 +1,7 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
 import resolveTheme from "./resolveTheme";
+import newEvent from "./newEvent";
 
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient(player.playerApiUrl, player.projectId);
@@ -9,8 +10,8 @@ const setPropsFromApi = async (player) => {
   const identifiers = identifiersArray(player);
   if (identifiers.length === 0) { return; }
 
-  const data = await fetchData(client, identifiers);
-  if (!data) { return; }
+  const data = await fetchData(client, identifiers).catch(() => {});
+  if (!data?.content) { handleNoContent(player); return; }
 
   // The player allows you to override props from the API by adding them in the script tag.
   // For example, you could add { backgroundCollor: "yellow" } to set a different color.
@@ -42,11 +43,21 @@ const fetchData = (client, identifiers) => {
   if (identifier.source_url)  { return client.bySourceUrl(identifier.source_url); }
 };
 
+const handleNoContent = (player) => {
+  resetSomeProps(player);
+  setContentProp(player);
+  setAdvertsProp(player);
+
+  player.onEvent(newEvent({
+    type: "NoContentAvailable",
+    description: "No published and processed content is available for the identifiers.",
+    initiatedBy: "browser",
+  }));
+};
+
 const setProps = (player, data) => {
   const theme = resolveTheme(data.settings.theme);
   const colors = data.settings[`${theme}_theme`];
-
-  const imageEnabled = data.settings.image_enabled;
 
   resetSomeProps(player);
   setContentProp(player, data);
@@ -95,8 +106,9 @@ const resetSomeProps = (player) => {
 
 const setContentProp = (player, data) => {
   const imageEnabled = data?.settings?.image_enabled;
+  const contentArray = data?.content || [];
 
-  set(player, "content", data.content.map((item) => ({
+  set(player, "content", contentArray.map((item) => ({
     id: item.id,
     title: item.title,
     imageUrl: imageEnabled && (data.playlist?.image_url || data.settings.image_url || item.image_url),
@@ -120,8 +132,9 @@ const setContentProp = (player, data) => {
 
 const setAdvertsProp = (player, data) => {
   const imageEnabled = data?.settings?.image_enabled;
+  const advertsArray = data?.ads || [];
 
-  set(player, "adverts", data.ads.map((item) => {
+  set(player, "adverts", advertsArray.map((item) => {
     const isVast = item.type === "vast";
 
     const theme = resolveTheme(item.theme);

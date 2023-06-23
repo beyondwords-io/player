@@ -142,6 +142,10 @@ class RootController {
     });
   }
 
+  handleNoContentAvailable({ description }) {
+    console.warn(`BeyondWords.Player: ${description}`);
+  }
+
   handleMediaLoaded() {
     if (this.mediaLoaded) { return; }
 
