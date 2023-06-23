@@ -17,6 +17,10 @@ new BeyondWords.Player({
 });
 ```
 
+Note that the player will always be mounted in the DOM, even when you are using headless mode.
+
+This is because the player is built on top of a native media element (a `<video>` tag).
+
 ## How to build a UI
 
 The simplest way to build your own UI is to repeatedly query the player instance and re-render.
@@ -65,6 +69,25 @@ In this example, the component is forced to re-render when the counter is update
 
 Note that the counter isn't actually displayed, we are just using it to force the component to rerender.
 
+## Using WordPress
+
+If you're using our WordPress plugin, it supports a 'headless' mode which hides the default UI.
+
+This feature is only available in private beta versions 4.x or greater. Please [contact us](mailto:support@beyondwords.io) for access.
+
+The player script tag will be added for you when using the WordPress plugin so **do not** add it manually.
+
+WordPress supports a filter called `beyondwords_player_script_onload` which can be used to initialize your UI:
+
+```php
+function my_beyondwords_player_script_onload( $onload, $params ) {
+    return $onload . 'initializeCustomUserInterface();';
+}
+add_filter( 'beyondwords_player_script_onload', 'my_beyondwords_player_script_onload', 10, 2 );
+```
+
+Then follow the instructions for the plain JavaScript example below to render your custom UI.
+
 ## Using JavaScript
 
 If you're using plain Javascript, here's a working example that implements the above technique.
@@ -72,6 +95,8 @@ If you're using plain Javascript, here's a working example that implements the a
 The user-interface in this example is very simple but should demonstrate the core technique.
 
 Note that you will need to replace projectId and contentId with valid identifiers from your project.
+
+If you're using the WordPress plugin (see above) then you can remove the line containing `new BeyondWords.Player(...)`.
 
 ```html
 <!DOCTYPE html>
@@ -123,6 +148,7 @@ Note that you will need to replace projectId and contentId with valid identifier
       };
     </script>
 
+    <!-- Remove this script tag if you are using the WordPress plugin. It will be added for you. -->
     <script async deref
       src='https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js'
       onload='initializeCustomUserInterface()'>
