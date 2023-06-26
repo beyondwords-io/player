@@ -101,6 +101,7 @@ class RootController {
 
   handleDurationUpdated()              { /* Do nothing */ }
   handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#chooseAndSetAdvert(); }
+  handlePlaybackPaused()               { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
   handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
@@ -167,20 +168,11 @@ class RootController {
   }
 
   handlePlaybackPlaying() {
-    this.player.playbackState = "playing"; // In case the <video> tag is played manually.
-
     const otherPlayers = this.PlayerClass.instances().filter(p => p !== this.player);
     const playingPlayers = otherPlayers.filter(p => p.playbackState === "playing");
 
     playingPlayers.forEach(p => p.playbackState = "paused");
     chooseMediaSession(this.PlayerClass);
-  }
-
-  handlePlaybackPaused() {
-    if (this.player.playbackState !== "playing") { return; }
-
-    const atTheStart = this.player.contentIndex === 0 && this.player.currentTime === 0;
-    this.player.playbackState = atTheStart ? "stopped" : "paused"; // See comment above.
   }
 
   handlePlaybackEnded() {
