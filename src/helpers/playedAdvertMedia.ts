@@ -5,11 +5,11 @@
 const playedAdvertMedia = new Set();
 
 const updatePlayedAdvertMedia = (advert) => {
-  advert.media.forEach(m => playedAdvertMedia.add(m.url));
+  [...advert.audio, ...advert.video].forEach(m => playedAdvertMedia.add(m.url));
 };
 
 const alreadyPlayedAdvertMedia = (advert) => (
-  advert.media.some(m => playedAdvertMedia.has(m.url))
+  [...advert.audio, ...advert.video].some(m => playedAdvertMedia.has(m.url))
 );
 
 export default playedAdvertMedia;

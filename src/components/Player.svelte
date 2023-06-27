@@ -67,8 +67,8 @@
   export let writeToken = undefined;
   export let captureErrors = true;
   export let onError = () => {};
-  export let transitions = []; // TODO: turn into a documented feature
-  export let controlPanel = undefined; // TODO: turn into a documented feature
+  export let transitions = [];
+  export let controlPanel = undefined;
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 

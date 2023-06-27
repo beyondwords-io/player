@@ -4,11 +4,11 @@
 const playedIntroOutroMedia = new Set();
 
 const updatePlayedIntroOutroMedia = (introOutro) => {
-  introOutro.media.forEach(m => playedIntroOutroMedia.add(m.url));
+  [...introOutro.audio, ...introOutro.video].forEach(m => playedIntroOutroMedia.add(m.url));
 };
 
 const alreadyPlayedIntroOutroMedia = (introOutro) => (
-  introOutro.media.some(m => playedIntroOutroMedia.has(m.url))
+  [...introOutro.audio, ...introOutro.video].some(m => playedIntroOutroMedia.has(m.url))
 );
 
 export default playedIntroOutroMedia;

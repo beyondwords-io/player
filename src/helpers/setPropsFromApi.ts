@@ -116,10 +116,15 @@ const setContentProp = (player, data) => {
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
-    media: [...item.video, ...item.audio].map((media) => ({
-      id: media.id,
-      url: media.url,
-      contentType: media.content_type,
+    audio: item.audio.map((audio) => ({
+      id: audio.id,
+      url: audio.url,
+      contentType: audio.content_type,
+    })),
+    video: item.video.map((video) => ({
+      id: video.id,
+      url: video.url,
+      contentType: video.content_type,
     })),
     segments: item.segments.map((segment) => ({
       marker: segment.marker,
@@ -150,10 +155,15 @@ const setAdvertsProp = (player, data) => {
       textColor: colors?.text_color,
       backgroundColor: colors?.background_color,
       iconColor: colors?.icon_color,
-      media: isVast ? [] : item.media.map((media) => ({
-        id: media.id,
-        url: media.url,
-        contentType: media.content_type,
+      audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
+        id: audio.id,
+        url: audio.url,
+        contentType: audio.content_type,
+      })),
+      video: isVast ? [] : (item.video || []).map((video) => ({
+        id: video.id,
+        url: video.url,
+        contentType: video.content_type,
       })),
     };
   }));
@@ -168,8 +178,8 @@ const introsOutrosArray = ({ intro_outro_enabled, intro_url, outro_url }) => {
   if (!intro_outro_enabled) { return []; }
   const array = [];
 
-  if (intro_url) { array.push({ placement: "pre-roll", media: [{ url: intro_url }] }); }
-  if (outro_url) { array.push({ placement: "post-roll", media: [{ url: outro_url }] }); }
+  if (intro_url) { array.push({ placement: "pre-roll", audio: [{ url: intro_url }], video: [] }); }
+  if (outro_url) { array.push({ placement: "post-roll", audio: [{ url: outro_url }], video: [] }); }
 
   return array;
 };

@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import VastContainer from "./VastContainer.svelte";
+  import orderedMediaSources from "../helpers/orderedMediaSources";
   import loadMedia from "../helpers/loadMedia";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
@@ -36,11 +37,11 @@
   $: contentItem = content[contentIndex];
   $: segments = contentItem?.segments || [];
 
-  $: media = introOrOutro?.media;
-  $: !introOrOutro && (media = activeAdvert?.media);
-  $: !introOrOutro && !activeAdvert && (media = contentItem?.media);
+  $: mediaObject = introOrOutro;
+  $: !introOrOutro && (mediaObject = activeAdvert);
+  $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
 
-  $: sources = [media].flat().filter(m => m);
+  $: sources = orderedMediaSources(mediaObject, video);
   $: hls = loadMedia(sources[0], video, hls, handleHlsError, play);
 
   $: vastUrl = activeAdvert?.vastUrl;

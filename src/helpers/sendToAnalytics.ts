@@ -62,7 +62,7 @@ const eventFromProps = (player, analyticsEventType) => {
     source_id: contentItem?.sourceId,
     analytics_id: player.analyticsId,
     ad_id: activeAdvert?.id,
-    media_id: (activeAdvert || contentItem)?.media?.[0]?.id,
+    media_id: (activeAdvert || contentItem)?.media?.[0]?.id, // TODO
     local_storage_id: withoutStorage ? null : JSON.parse(localStorage.beyondwords),
     listen_session_id: player.listenSessionId,
     session_created_at: player.sessionCreatedAt,

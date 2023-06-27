@@ -12,23 +12,23 @@ describe("erroredAdverts", () => {
   const source4 = "https://example.com/4.mp3";
 
   it("keeps track of VAST URLs that have resulted in a playback error", () => {
-    updateErroredAdverts({ vastUrl: vastUrl1, media: [] });
-    updateErroredAdverts({ vastUrl: vastUrl2, media: [] });
-    updateErroredAdverts({ vastUrl: vastUrl3, media: [] });
+    updateErroredAdverts({ vastUrl: vastUrl1, audio: [], video: [] });
+    updateErroredAdverts({ vastUrl: vastUrl2, audio: [], video: [] });
+    updateErroredAdverts({ vastUrl: vastUrl3, audio: [], video: [] });
 
-    expect(resultedInAPlaybackError({ vastUrl: vastUrl1 , media: [] })).toEqual(true);
-    expect(resultedInAPlaybackError({ vastUrl: vastUrl2 , media: [] })).toEqual(true);
-    expect(resultedInAPlaybackError({ vastUrl: vastUrl3 , media: [] })).toEqual(true);
-    expect(resultedInAPlaybackError({ vastUrl: vastUrl4 , media: [] })).toEqual(false);
+    expect(resultedInAPlaybackError({ vastUrl: vastUrl1 , audio: [], video: [] })).toEqual(true);
+    expect(resultedInAPlaybackError({ vastUrl: vastUrl2 , audio: [], video: [] })).toEqual(true);
+    expect(resultedInAPlaybackError({ vastUrl: vastUrl3 , audio: [], video: [] })).toEqual(true);
+    expect(resultedInAPlaybackError({ vastUrl: vastUrl4 , audio: [], video: [] })).toEqual(false);
   });
 
   it("keeps track of media sources that have resulted in a playback error", () => {
-    updateErroredAdverts({ vastUrl: null, media: [{ url: source1 }] });
-    updateErroredAdverts({ vastUrl: null, media: [{ url: source2 }, { url: source3 }] });
+    updateErroredAdverts({ vastUrl: null, audio: [{ url: source1 }], video: [] });
+    updateErroredAdverts({ vastUrl: null, audio: [{ url: source2 }], video: [{ url: source3 }] });
 
-    expect(resultedInAPlaybackError({ vastUrl: null , media: [{ url: source1 }] })).toEqual(true);
-    expect(resultedInAPlaybackError({ vastUrl: null , media: [{ url: source2 }] })).toEqual(true);
-    expect(resultedInAPlaybackError({ vastUrl: null , media: [{ url: source3 }, { url: source4 }] })).toEqual(true);
-    expect(resultedInAPlaybackError({ vastUrl: null , media: [{ url: source4 }] })).toEqual(false);
+    expect(resultedInAPlaybackError({ vastUrl: null , audio: [{ url: source1 }], video: [] })).toEqual(true);
+    expect(resultedInAPlaybackError({ vastUrl: null , audio: [], video: [{ url: source2 }] })).toEqual(true);
+    expect(resultedInAPlaybackError({ vastUrl: null , audio: [{ url: source3 }, { url: source4 }], video: [] })).toEqual(true);
+    expect(resultedInAPlaybackError({ vastUrl: null , audio: [], video: [{ url: source4 }] })).toEqual(false);
   });
 });

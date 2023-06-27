@@ -56,8 +56,8 @@
     scrollable.scrollTop = nearestTen;
   };
 
-  const mediaToDownload = (media) => {
-    media ||= [];
+  const mediaToDownload = (audio, video) => {
+    const media = [...(audio || []), ...(video || [])];
 
     for (const format of downloadFormats) {
       for (const [i, item] of media.entries()) {
@@ -71,8 +71,8 @@
 
 <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
   <div class="scrollable" tabindex="-1">
-    {#each content as { title, duration, media }, i}
-      {@const mediaIndex = mediaToDownload(media)}
+    {#each content as { title, duration, audio, video }, i}
+      {@const mediaIndex = mediaToDownload(audio, video)}
 
       <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
         {#if i === index}

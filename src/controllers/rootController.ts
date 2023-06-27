@@ -245,9 +245,10 @@ class RootController {
 
   handlePressedDownload({ contentIndex, mediaIndex }) {
     const contentItem = this.player.content[contentIndex];
-    const mediaItem = contentItem.media[mediaIndex];
 
-    const mediaUrl = mediaItem.url;
+    const media = [...(contentItem.audio || []), ...(contentItem.video || [])];
+    const mediaUrl = media[mediaIndex].url;
+
     const extension = mediaUrl.split(".").pop();
     const filename = `${contentItem.title}.${extension}`;
 
