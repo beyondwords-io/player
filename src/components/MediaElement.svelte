@@ -197,6 +197,7 @@
 
 <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic} class:behind-widget={videoBehindWidget} {style}>
   <div class="inner">
+    <!-- svelte-ignore a11y-media-has-caption -->
     <video bind:this={video}
            bind:duration
            bind:currentTime={time}
@@ -216,8 +217,6 @@
       {#each sources as { url, contentType }, i}
         <source src={url} type={contentType} on:error={handleSourceError(i)}>
       {/each}
-
-      <track kind="captions">
     </video>
 
     {#if vastUrl}
