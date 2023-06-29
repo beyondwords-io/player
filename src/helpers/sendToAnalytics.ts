@@ -38,7 +38,7 @@ const analyticsEventType = (player, playerEventType) => {
   // Emit a 'play_progress' event for each 10%, 20%, ..., 100% of playback reached.
   if (playerEventType === "CurrentTimeUpdated" && isNextPercentage(player)) { return "play_progress"; }
 
-  // Emit an 'ad_link_click' event when you press on an advert link/button/video.
+  // Emit an 'ad_link_click' event when you press on an advert link/button/image/video.
   if (playerEventType.startsWith("PressedAdvert")) { return "ad_link_click"; }
 };
 

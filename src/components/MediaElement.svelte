@@ -6,6 +6,7 @@
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
   import findSegmentIndex from "../helpers/findSegmentIndex";
+  import findLoadedMedia from "../helpers/findLoadedMedia";
 
   export let content;
   export let contentIndex;
@@ -102,10 +103,13 @@
   };
 
   const handleLoadedData = () => {
+    const loadedMedia = findLoadedMedia(sources, video);
+
     onEvent(newEvent({
       type: "MediaLoaded",
       description: "The media finished loading its first frame of data.",
       initiatedBy: "media",
+      loadedMedia,
     }));
   };
 

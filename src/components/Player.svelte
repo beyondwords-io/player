@@ -60,6 +60,7 @@
   export let segmentWidgetPosition = "7-oclock";
   export let currentSegment = undefined;
   export let hoveredSegment = undefined;
+  export let loadedMedia = undefined;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;

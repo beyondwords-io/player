@@ -146,13 +146,9 @@ class RootController {
     console.warn(`BeyondWords.Player: ${description}`);
   }
 
-  handleMediaLoaded() {
-    if (this.mediaLoaded) { return; }
-
-    const initialTime = this.player.initialProps.currentTime;
-    if (initialTime) { this.player.currentTime = initialTime; }
-
-    this.mediaLoaded = true;
+  handleMediaLoaded({ loadedMedia }) {
+    this.player.loadedMedia = loadedMedia;
+    this.#setInitialTime();
   }
 
   handlePressedPlay({ emittedFrom, widgetSegment, widgetIsCurrent }) {
@@ -460,6 +456,15 @@ class RootController {
     if (!outOfBounds) {
       this.#chooseAndSetAdvert({ atTheStart: true });
     }
+  }
+
+  #setInitialTime() {
+    if (this.initialTimeSet) { return; }
+
+    const initialTime = this.player.initialProps.currentTime;
+    if (initialTime) { this.player.currentTime = initialTime; }
+
+    this.initialTimeSet = true;
   }
 
   #setTime(timeFn, contentIndex) {
