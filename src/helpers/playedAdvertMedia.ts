@@ -5,12 +5,14 @@
 const playedAdvertMedia = new Set();
 
 const updatePlayedAdvertMedia = (advert) => {
-  [...advert.audio, ...advert.video].forEach(m => playedAdvertMedia.add(m.url));
+  const media = [...(advert.audio || []), ...(advert.video || [])];
+  media.forEach(m => playedAdvertMedia.add(m.url));
 };
 
-const alreadyPlayedAdvertMedia = (advert) => (
-  [...advert.audio, ...advert.video].some(m => playedAdvertMedia.has(m.url))
-);
+const alreadyPlayedAdvertMedia = (advert) => {
+  const media = [...(advert.audio || []), ...(advert.video || [])];
+  return media.some(m => playedAdvertMedia.has(m.url));
+};
 
 export default playedAdvertMedia;
 export { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia };

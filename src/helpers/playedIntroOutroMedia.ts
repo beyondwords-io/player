@@ -4,12 +4,14 @@
 const playedIntroOutroMedia = new Set();
 
 const updatePlayedIntroOutroMedia = (introOutro) => {
-  [...introOutro.audio, ...introOutro.video].forEach(m => playedIntroOutroMedia.add(m.url));
+  const media = [...(introOutro.audio || []), ...(introOutro.video || [])];
+  media.forEach(m => playedIntroOutroMedia.add(m.url));
 };
 
-const alreadyPlayedIntroOutroMedia = (introOutro) => (
-  [...introOutro.audio, ...introOutro.video].some(m => playedIntroOutroMedia.has(m.url))
-);
+const alreadyPlayedIntroOutroMedia = (introOutro) => {
+  const media = [...(introOutro.audio || []), ...(introOutro.video || [])];
+  return media.some(m => playedIntroOutroMedia.has(m.url));
+};
 
 export default playedIntroOutroMedia;
 export { updatePlayedIntroOutroMedia, alreadyPlayedIntroOutroMedia };
