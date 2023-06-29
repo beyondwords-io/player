@@ -108,6 +108,10 @@ const isNewListen = (player) => {
 };
 
 const isNextPercentage = (player) => {
+  // We send 'play' events with media_type: 'content' when the intro is played
+  // but we should not send 'play_progress' events during the intro/outro.
+  if (player.introsOutrosIndex !== -1) { return; }
+
   const nextPercentage = player.prevPercentage + 10;
   const currentPercentage = (player.currentTime / player.duration) * 100;
 
