@@ -5,7 +5,8 @@
   import translate from "../../helpers/translate";
 
   export let contentIndex;
-  export let mediaIndex;
+  export let audioIndex;
+  export let videoIndex;
   export let scale = 1;
   export let color = "#323232";
   export let onEvent = () => {};
@@ -18,7 +19,8 @@
       description: "The download button next to a playlist item was pressed.",
       initiatedBy: "user",
       contentIndex,
-      mediaIndex,
+      audioIndex,
+      videoIndex
     }));
   };
 </script>

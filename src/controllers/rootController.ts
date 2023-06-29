@@ -243,11 +243,13 @@ class RootController {
     this.player.playlistStyle = parts.join("-");
   }
 
-  handlePressedDownload({ contentIndex, mediaIndex }) {
+  handlePressedDownload({ contentIndex, audioIndex, videoIndex }) {
     const contentItem = this.player.content[contentIndex];
 
-    const media = [...(contentItem.audio || []), ...(contentItem.video || [])];
-    const mediaUrl = media[mediaIndex].url;
+    const audioItem = contentItem.audio?.[audioIndex];
+    const videoItem = contentItem.video?.[videoIndex];
+
+    const mediaUrl = (audioItem || videoItem).url;
 
     const extension = mediaUrl.split(".").pop();
     const filename = `${contentItem.title}.${extension}`;

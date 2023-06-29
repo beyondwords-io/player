@@ -57,22 +57,24 @@
   };
 
   const mediaToDownload = (audio, video) => {
-    const media = [...(audio || []), ...(video || [])];
-
     for (const format of downloadFormats) {
-      for (const [i, item] of media.entries()) {
-        if (item.url?.endsWith(`.${format}`)) { return i; }
+      for (const [i, item] of (audio || []).entries()) {
+        if (item.url?.endsWith(`.${format}`)) { return [i, -1]; }
+      }
+
+      for (const [i, item] of (video || []).entries()) {
+        if (item.url?.endsWith(`.${format}`)) { return [-1, i]; }
       }
     }
 
-    return -1;
+    return [-1, -1];
   };
 </script>
 
 <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
   <div class="scrollable" tabindex="-1">
     {#each content as { title, duration, audio, video }, i}
-      {@const mediaIndex = mediaToDownload(audio, video)}
+      {@const [audioIndex, videoIndex] = mediaToDownload(audio, video)}
 
       <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
         {#if i === index}
@@ -86,8 +88,8 @@
         </span>
 
         <span class="download">
-          {#if mediaIndex !== -1}
-            <DownloadButton {onEvent} color={iconColor} contentIndex={i} {mediaIndex} />
+          {#if audioIndex !== -1 || videoIndex !== -1}
+            <DownloadButton {onEvent} color={iconColor} contentIndex={i} {audioIndex} {videoIndex} />
           {/if}
         </span>
 
