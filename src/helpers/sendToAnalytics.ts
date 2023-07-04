@@ -46,7 +46,7 @@ const eventFromProps = (player, analyticsEventType) => {
   player.listenSessionId ||= randomUuid();
   player.sessionCreatedAt ||= Date.now();
 
-  const withoutStorage = player.analyticsConsent === "without-local-storage";
+  const withoutStorage = ["without-local-storage", "none"].includes(player.analyticsConsent);
   if (!withoutStorage) { localStorage.beyondwords ||= JSON.stringify(randomUuid()); }
 
   const activeAdvert = player.adverts[player.advertIndex];
