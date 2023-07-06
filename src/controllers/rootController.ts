@@ -100,7 +100,6 @@ class RootController {
   handlePressedSourceUrl()             { /* Do nothing */ }
 
   handleDurationUpdated()              { /* Do nothing */ }
-  handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#chooseAndSetAdvert(); }
   handlePlaybackPaused()               { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
@@ -148,6 +147,11 @@ class RootController {
 
   handleMediaLoaded({ loadedMedia }) {
     this.player.loadedMedia = loadedMedia;
+    this.#setInitialTime();
+  }
+
+  handleCurrentTimeUpdated() {
+    if (!this.midrollPlayed) { this.#chooseAndSetAdvert(); }
     this.#setInitialTime();
   }
 
@@ -459,12 +463,11 @@ class RootController {
   }
 
   #setInitialTime() {
-    if (this.initialTimeSet) { return; }
+    this.timeHasBeenNonZero ||= this.player.currentTime;
+    if (this.timeHasBeenNonZero) { return; }
 
     const initialTime = this.player.initialProps.currentTime;
     if (initialTime) { this.player.currentTime = initialTime; }
-
-    this.initialTimeSet = true;
   }
 
   #setTime(timeFn, contentIndex) {
