@@ -565,6 +565,10 @@
     pointer-events: none;
   }
 
+  .video .controls > :global(.progress-bar.full-width) {
+    transition: opacity 0.25s, height 0.1s, top 0.1s;
+  }
+
   :global(.video .hoverable):focus-within .controls > :global(*),
   :global(.video .hoverable):focus-within .end > :global(.beyondwords),
   .video.stopped .controls > :global(*),

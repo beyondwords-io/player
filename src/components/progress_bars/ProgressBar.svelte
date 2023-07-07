@@ -68,7 +68,7 @@
   });
 </script>
 
-<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement} aria-label={translate("scrubProgressBar")}>
+<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement} aria-label={translate("scrubProgressBar")}>
   <div class="background" style="{backgroundStyle}"></div>
   <div class="progress" style="{backgroundStyle}; width: {progress * 100}%"></div>
 </button>
@@ -112,11 +112,18 @@
   .full-width {
     position: absolute;
     width: 100%;
+    height: 4px;
     left: 0;
     right: 0;
-    top: -8px;
+    top: -4px;
     border-radius: 0;
     background: rgb(239, 239, 239);
+  }
+
+  .full-width:hover,
+  .full-width.mouse-down {
+    height: 8px;
+    top: -6px;
   }
 
   .full-width .progress {
