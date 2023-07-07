@@ -46,8 +46,4 @@
     position: relative;
     bottom: 20px;
   }
-
-  .video {
-    display: none;
-  }
 </style>
