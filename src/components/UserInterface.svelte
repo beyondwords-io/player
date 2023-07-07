@@ -8,7 +8,6 @@
   import PlaylistButton from "./buttons/PlaylistButton.svelte";
   import SecondaryButton from "./buttons/SecondaryButton.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
-  import ScrollToPlayerButton from "./buttons/ScrollToPlayerButton.svelte";
   import CloseWidgetButton from "./buttons/CloseWidgetButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import AdvertButton from "./external_links/AdvertButton.svelte";
@@ -147,12 +146,6 @@
       <div class="main" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
         {#if largeImage && (isLarge || isScreen)}
           <LargeImage {onEvent} src={largeImage} href={largeImageHref} scale={isScreen && !isMobile ? 1.5 : 1} />
-        {/if}
-
-        {#if isVideo && fixedPosition}
-          <div class="scroll-to-player">
-            <ScrollToPlayerButton {onEvent} scale={isMobile ? 1.5 : 2} color={buttonColor} />
-          </div>
         {/if}
 
         {#if isLarge || isScreen || isVideo}
@@ -499,8 +492,6 @@
     pointer-events: none;
   }
 
-  .video.advert_.playing .scroll-to-player,
-  .video.advert_.playing .scroll-to-player :global(*),
   .video.advert_.playing .controls,
   .video.advert_.playing .controls :global(*),
   .video.advert_.playing .end,
@@ -662,12 +653,10 @@
     margin: 8px;
   }
 
-  .video.fixed .scroll-to-player,
   .video.fixed .end {
     margin: 16px;
   }
 
-  .video.fixed.mobile .scroll-to-player,
   .video.fixed.mobile .end {
     margin: 12px;
   }

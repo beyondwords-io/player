@@ -104,7 +104,6 @@ class RootController {
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
   handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
-  handlePressedScrollToPlayer()        { this.player.target.scrollIntoView(); }
 
   handlePressedVideoBackground()       { this.#playOrPause(); }
   handlePressedEnterOnProgressBar()    { this.#playOrPause(); }

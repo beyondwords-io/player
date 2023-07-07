@@ -82,7 +82,6 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PressedBeyondWords           | user      | The BeyondWords logo was pressed to open the BeyondWords website in a new tab.
 | PressedSourceUrl             | user      | The source URL button was pressed to open the source article in a new tab.
 | VisibilityChanged            | user      | The player was scrolled into or out of view.
-| PressedScrollToPlayer        | user      | The scroll to player button was pressed.
 | PressedVideoBackground       | user      | The video background was pressed.
 | PressedEnterOnProgressBar    | user      | The enter key was pressed while the progress bar was focussed.
 | PressedSpaceOnProgressBar    | user      | The space key was pressed while the progress bar was focussed.
