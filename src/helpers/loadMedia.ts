@@ -1,12 +1,13 @@
 import Hls from "hls.js/dist/hls.light.js";
 
-const loadMedia = (source, video, hls, onError, play) => {
+const loadMedia = (source, video, hls, onError, play, startPosition) => {
   if (!video) { return; }
 
   const prevPaused = video.paused;
   const prevRate = video.playbackRate;
 
   hls?.detachMedia();
+  hls?.destroy();
 
   const isStreamable = (source || {}).contentType === "application/x-mpegURL";
   const libraryHlsSupported = Hls.isSupported();
@@ -15,7 +16,7 @@ const loadMedia = (source, video, hls, onError, play) => {
   const useLibraryHls = isStreamable && libraryHlsSupported && !nativeHlsSupported;
 
   if (useLibraryHls) {
-    hls = hls || new Hls({ enableWorker: false });
+    hls = new Hls({ enableWorker: false, ...{ startPosition } });
 
     hls.on(Hls.Events.ERROR, onError);
 

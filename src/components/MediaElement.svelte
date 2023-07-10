@@ -30,6 +30,8 @@
   let poster;
   let timeout;
   let time = 0;
+  let loadCount = 0;
+  let initialTime = currentTime;
 
   const setTime = (t) => time = t;
   const play = () => video?.play()?.catch(handlePlayError);
@@ -40,12 +42,16 @@
   $: contentItem = content[contentIndex];
   $: segments = contentItem?.segments || [];
 
+  $: contentIndex, introOrOutro, activeAdvert, loadCount += 1;
+  $: isFirstLoad = loadCount === 1;
+  $: timeFragment = isFirstLoad ? `#t=${initialTime}` : "";
+
   $: mediaObject = introOrOutro;
   $: !introOrOutro && (mediaObject = activeAdvert);
   $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
 
   $: sources = orderedMediaSources(mediaObject, video);
-  $: hls = loadMedia(sources[0], video, hls, handleHlsError, play);
+  $: hls = loadMedia(sources[0], video, hls, handleHlsError, play, isFirstLoad && initialTime);
 
   $: vastUrl = activeAdvert?.vastUrl;
   $: customUrl = activeAdvert?.clickThroughUrl;
@@ -223,7 +229,7 @@
            on:ratechange={handleRateChange}>
 
       {#each sources as { url, contentType }, i}
-        <source src={url} type={contentType} on:error={handleSourceError(i)}>
+        <source src={`${url}${timeFragment}`} type={contentType} on:error={handleSourceError(i)}>
       {/each}
     </video>
 
