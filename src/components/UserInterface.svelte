@@ -205,7 +205,7 @@
             {#if showCloseWidget}
               <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={buttonColor} />
             {:else}
-              <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying || isPaused} />
+              <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
             {/if}
           </div>
         {/if}
@@ -534,7 +534,6 @@
   }
 
   .video.stopped .main,
-  .video.paused .main,
   .video.hovering .main {
     cursor: default;
   }
@@ -572,7 +571,6 @@
   :global(.video .hoverable):focus-within .controls > :global(*),
   :global(.video .hoverable):focus-within .end > :global(.beyondwords),
   .video.stopped .controls > :global(*),
-  .video.paused .controls > :global(*),
   .video.hovering .controls > :global(*),
   .video.advert_ .controls > :global(.time-indicator),
   .video.advert_ .controls > :global(.advert-link) {
@@ -596,11 +594,9 @@
 
   :global(.video.advert_ .hoverable):focus-within .controls > :global(.time-indicator),
   .video.advert_.stopped .controls > :global(.time-indicator),
-  .video.advert_.paused .controls > :global(.time-indicator),
   .video.advert_.hovering .controls > :global(.time-indicator),
   :global(.video.advert_ .hoverable):focus-within .controls > :global(.advert-link),
   .video.advert_.stopped .controls > :global(.advert-link),
-  .video.advert_.paused .controls > :global(.advert-link),
   .video.advert_.hovering .controls > :global(.advert-link) {
     bottom: 76px;
   }
@@ -640,7 +636,7 @@
     flex-direction: row-reverse;
   }
 
-  .video.paused :global(.hoverable),
+  .video :global(.hoverable):focus-within,
   .video.hovering :global(.hoverable) {
     background: linear-gradient(
       rgba(0, 0, 0, 0)     50.0%,
@@ -660,7 +656,7 @@
     );
   }
 
-  .video.fixed.paused :global(.hoverable),
+  .video.fixed :global(.hoverable):focus-within,
   .video.fixed.hovering :global(.hoverable) {
     background: linear-gradient(
       rgba(0, 0, 0, 0)     25.0%,
