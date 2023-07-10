@@ -642,7 +642,42 @@
 
   .video.paused :global(.hoverable),
   .video.hovering :global(.hoverable) {
-    background: rgba(0, 0, 0, 0.2);
+    background: linear-gradient(
+      rgba(0, 0, 0, 0)     50.0%,
+      rgba(0, 0, 0, 0.083) 63.6%,
+      rgba(0, 0, 0, 0.14)  67.55%,
+      rgba(0, 0, 0, 0.207) 71.3%,
+      rgba(0, 0, 0, 0.282) 74.8%,
+      rgba(0, 0, 0, 0.36)  78.1%,
+      rgba(0, 0, 0, 0.44)  81.25%,
+      rgba(0, 0, 0, 0.518) 84.2%,
+      rgba(0, 0, 0, 0.593) 87.05%,
+      rgba(0, 0, 0, 0.66)  89.75%,
+      rgba(0, 0, 0, 0.717) 92.4%,
+      rgba(0, 0, 0, 0.761) 94.95%,
+      rgba(0, 0, 0, 0.79)  97.5%,
+      rgba(0, 0, 0, 0.8)   100.0%
+    );
+  }
+
+  .video.fixed.paused :global(.hoverable),
+  .video.fixed.hovering :global(.hoverable) {
+    background: linear-gradient(
+      rgba(0, 0, 0, 0)     25.0%,
+      rgba(0, 0, 0, 0.083) 45.4%,
+      rgba(0, 0, 0, 0.14)  51.325%,
+      rgba(0, 0, 0, 0.207) 56.95%,
+      rgba(0, 0, 0, 0.282) 62.2%,
+      rgba(0, 0, 0, 0.36)  67.15%,
+      rgba(0, 0, 0, 0.44)  71.875%,
+      rgba(0, 0, 0, 0.518) 76.3%,
+      rgba(0, 0, 0, 0.593) 80.575%,
+      rgba(0, 0, 0, 0.66)  84.625%,
+      rgba(0, 0, 0, 0.717) 88.6%,
+      rgba(0, 0, 0, 0.761) 92.425%,
+      rgba(0, 0, 0, 0.79)  96.25%,
+      rgba(0, 0, 0, 0.8)   100.0%
+    );
   }
 
   .video.mobile .controls {
