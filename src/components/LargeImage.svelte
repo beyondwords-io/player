@@ -1,6 +1,7 @@
 <script>
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
+  import blurElement from "../helpers/blurElement";
 
   export let src;
   export let href;
@@ -21,7 +22,7 @@
   };
 </script>
 
-<a class="large-image" href={href ? href : null} target="_blank" style="width: {size}; height: {size}" on:click={handleClick} aria-label={translate("visitAdvert")}>
+<a class="large-image" href={href ? href : null} target="_blank" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("visitAdvert")}>
   <img src={src} alt={alt} style="width: {size}; height: {size}" />
 </a>
 

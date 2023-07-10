@@ -2,6 +2,7 @@
   import Logo from "../svg_icons/Logo.svelte";
   import newEvent from "../../helpers/newEvent";
   import translate from "../../helpers/translate";
+  import blurElement from "../../helpers/blurElement";
 
   export let scale = 1;
   export let visible = true;
@@ -16,7 +17,7 @@
   };
 </script>
 
-<a class="beyondwords" href="https://beyondwords.io/" target="_blank" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px" aria-label={translate("visitBeyondWords")}>
+<a class="beyondwords" href="https://beyondwords.io/" target="_blank" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px" on:mouseup={blurElement} aria-label={translate("visitBeyondWords")}>
   <Logo {scale} />
 </a>
 

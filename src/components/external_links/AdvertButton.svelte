@@ -2,6 +2,7 @@
   import OpenNewTab from "../svg_icons/OpenNewTab.svelte";
   import newEvent from "../../helpers/newEvent";
   import translate from "../../helpers/translate";
+  import blurElement from "../../helpers/blurElement";
 
   export let href;
   export let scale = 1;
@@ -22,7 +23,7 @@
 </script>
 
 {#if href}
-  <a class="advert-button {playerStyle} {controlsOrder}" {href} target="_blank" on:click={handleClick} style="outline-offset: {3.2 * scale}px" aria-label={translate("visitAdvert")}>
+  <a class="advert-button {playerStyle} {controlsOrder}" {href} target="_blank" on:click={handleClick} style="outline-offset: {3.2 * scale}px" on:mouseup={blurElement} aria-label={translate("visitAdvert")}>
     <OpenNewTab {color} {scale} />
   </a>
 {:else}

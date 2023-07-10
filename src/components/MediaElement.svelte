@@ -5,6 +5,7 @@
   import loadMedia from "../helpers/loadMedia";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
+  import blurElement from "../helpers/blurElement";
   import findSegmentIndex from "../helpers/findSegmentIndex";
   import findLoadedMedia from "../helpers/findLoadedMedia";
 
@@ -231,7 +232,7 @@
     {/if}
 
     {#if customUrl}
-      <a class="custom-advert-link" href={customUrl} target="_blank" aria-label={translate("visitAdvert")}>&nbsp;</a>
+      <a class="custom-advert-link" href={customUrl} target="_blank" on:mouseup={blurElement} aria-label={translate("visitAdvert")}>&nbsp;</a>
     {/if}
   </div>
 </div>

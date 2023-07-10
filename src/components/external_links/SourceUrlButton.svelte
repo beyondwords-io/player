@@ -2,6 +2,7 @@
   import OpenNewTab from "../svg_icons/OpenNewTab.svelte";
   import newEvent from "../../helpers/newEvent";
   import translate from "../../helpers/translate";
+  import blurElement from "../../helpers/blurElement";
 
   export let href;
   export let scale = 1;
@@ -17,7 +18,7 @@
   };
 </script>
 
-<a class="source-url-button" href={href} target="_blank" on:click={handleClick} aria-label={translate("visitSourceArticle")}>
+<a class="source-url-button" href={href} target="_blank" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("visitSourceArticle")}>
   <OpenNewTab {scale} {color} circular={false} />
 </a>
 

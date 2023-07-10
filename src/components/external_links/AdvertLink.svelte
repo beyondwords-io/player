@@ -1,5 +1,6 @@
 <script>
   import newEvent from "../../helpers/newEvent";
+  import blurElement from "../../helpers/blurElement";
 
   export let href;
   export let scale = 1;
@@ -22,7 +23,7 @@
   };
 </script>
 
-<a class="advert-link {playerStyle} {controlsOrder}" href={href} {style} class:no-image={!largeImage} class:mobile={isMobile} target="_blank" on:click={handleClick}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={href} {style} class:no-image={!largeImage} class:mobile={isMobile} target="_blank" on:click={handleClick} on:mouseup={blurElement}>
   {text || ""}
 </a>
 
