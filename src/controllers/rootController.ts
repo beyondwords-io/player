@@ -100,6 +100,8 @@ class RootController {
   handlePressedSourceUrl()             { /* Do nothing */ }
 
   handleDurationUpdated()              { /* Do nothing */ }
+  handleMediaLoaded({ loadedMedia })   { this.player.loadedMedia = loadedMedia; }
+  handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#chooseAndSetAdvert(); }
   handlePlaybackPaused()               { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
@@ -142,16 +144,6 @@ class RootController {
 
   handleNoContentAvailable({ description }) {
     console.warn(`BeyondWords.Player: ${description}`);
-  }
-
-  handleMediaLoaded({ loadedMedia }) {
-    this.player.loadedMedia = loadedMedia;
-    this.#setInitialTime();
-  }
-
-  handleCurrentTimeUpdated() {
-    if (!this.midrollPlayed) { this.#chooseAndSetAdvert(); }
-    this.#setInitialTime();
   }
 
   handlePressedPlay({ emittedFrom, widgetSegment, widgetIsCurrent }) {
@@ -459,14 +451,6 @@ class RootController {
     if (!outOfBounds) {
       this.#chooseAndSetAdvert({ atTheStart: true });
     }
-  }
-
-  #setInitialTime() {
-    this.timeHasBeenNonZero ||= this.player.currentTime;
-    if (this.timeHasBeenNonZero) { return; }
-
-    const initialTime = this.player.initialProps.currentTime;
-    if (initialTime) { this.player.currentTime = initialTime; }
   }
 
   #setTime(timeFn, contentIndex) {
