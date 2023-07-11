@@ -24,8 +24,8 @@
   export let widgetPosition;
   export let widgetWidth;
   export let onEvent = () => {};
+  export let video;
 
-  let video;
   let hls = null;
   let poster;
   let timeout;

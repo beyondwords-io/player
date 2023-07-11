@@ -101,8 +101,6 @@ class RootController {
 
   handleDurationUpdated()              { /* Do nothing */ }
   handleMediaLoaded({ loadedMedia })   { this.player.loadedMedia = loadedMedia; }
-  handleCurrentTimeUpdated()           { !this.midrollPlayed && this.#chooseAndSetAdvert(); }
-  handlePlaybackPaused()               { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
   handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
@@ -166,6 +164,25 @@ class RootController {
     chooseMediaSession(this.PlayerClass);
   }
 
+  handlePlaybackPaused() {
+    const isPlaying = this.player.playbackState === "playing";
+    const atTheEnd = this.player.currentTime >= this.player.duration;
+
+    // If you bypass the player SDK and call video.pause() on the HTML element,
+    // update the state so the UI is correct. This can happen when a phone call.
+    if (isPlaying && !atTheEnd) { this.player.playbackState = "paused"; }
+  }
+
+  handleCurrentTimeUpdated() {
+    if (!this.midrollPlayed) { this.#chooseAndSetAdvert(); }
+
+    const atTheStart = this.player.currentTime <= 0;
+    const atTheEnd = this.player.currentTime >= this.player.duration;
+    const videoPaused = this.player.mediaElement.video.paused;
+
+    if (!atTheStart && !atTheEnd && !videoPaused) { this.player.playbackState = "playing"; }
+  }
+
   handlePlaybackEnded() {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
     this.segmentPlayed = false;
@@ -187,7 +204,7 @@ class RootController {
   handlePlaybackNotAllowed({ description }) {
     console.warn(`BeyondWords.Player: ${description}`);
 
-    const atTheStart = this.player.contentIndex === 0 && this.player.currentTime === 0;
+    const atTheStart = this.player.contentIndex <= 0 && this.player.currentTime <= 0;
     this.player.playbackState = atTheStart ? "stopped" : "paused";
   }
 
@@ -509,7 +526,7 @@ class RootController {
     const defer = this.player.playbackState !== "playing" && index !== -1;
     if (defer) { this.nextIntroOutro = index; return; } else { delete this.nextIntroOutro; }
 
-    const atTheStart = this.player.contentIndex === 0 && this.player.currentTime === 0;
+    const atTheStart = this.player.contentIndex <= 0 && this.player.currentTime <= 0;
     const skippedIntro = !atTheStart && this.#isIntro(index);
 
     // We were at the start and were going to play an intro but the user skipped
