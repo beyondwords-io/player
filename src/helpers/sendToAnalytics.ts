@@ -51,7 +51,7 @@ const eventFromProps = (player, analyticsEventType) => {
 
   const activeAdvert = player.adverts[player.advertIndex];
   const contentItem = player.content[player.contentIndex];
-  const percentage = (player.currentTime / player.duration) * 100;
+  const percentage = player.duration ? (player.currentTime / player.duration) * 100 : 0;
 
   return {
     event_type: analyticsEventType,
