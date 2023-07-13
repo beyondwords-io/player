@@ -51,24 +51,30 @@
   };
 
   const getMouseRatio = (event) => {
+    const clientX = event.clientX || event.touches?.[0]?.clientX || 0;
+
     const { x, width } = progressBar.getBoundingClientRect();
-    const mouseRatio = (event.clientX - x) / width;
+    const mouseRatio = (clientX - x) / width;
 
     return Math.max(0, Math.min(1, mouseRatio));
   };
 
   onMount(() => {
-    const listener1 = addEventListener("mouseup", handleMouseUp);
-    const listener2 = addEventListener("mousemove", handleMouseMove);
+    const mouseup = addEventListener("mouseup", handleMouseUp);
+    const mousemove = addEventListener("mousemove", handleMouseMove);
+    const touchend = addEventListener("touchend", handleMouseUp);
+    const touchmove = addEventListener("touchmove", handleMouseMove);
 
     return () => {
-      removeEventListener("mouseup", listener1);
-      removeEventListener("mousemove", listener2);
+      removeEventListener("mouseup", mouseup);
+      removeEventListener("mousemove", mousemove);
+      removeEventListener("touchend", touchend);
+      removeEventListener("touchmove", touchmove);
     };
   });
 </script>
 
-<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement} aria-label={translate("scrubProgressBar")}>
+<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement} aria-label={translate("scrubProgressBar")}>
   <div class="background" style="{backgroundStyle}"></div>
   <div class="progress" style="{backgroundStyle}; width: {progress * 100}%"></div>
 </button>
