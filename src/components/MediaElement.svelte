@@ -174,10 +174,10 @@
     }));
   };
 
-  const handleHlsError = (event, data) => {
+  const handleHlsError = async (event, data) => {
     if (!data.fatal) { return; }
 
-    hls?.destroy();
+    (await hls)?.destroy();
     hls = null;
 
     onEvent(newEvent({

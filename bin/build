@@ -1,3 +1,3 @@
 #!/bin/bash
 
-npx vite build
+npx vite build && ./bin/vendor_hls

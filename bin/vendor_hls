@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# We want to load Hls.js dynamically so that it is only loaded when it is needed.
+#
+# Vite supports dynamic imports for ES modules, but this is not supported for
+# UMD modules which instead bundle all dependencies into the output file.
+#
+# Therefore, add the HLS dependency as an 'external' in vite.config.ts which
+# will remove it from both the es.js and umd.js output files. We can then copy
+# it manually (using this script) to the expected relative ../dist path.
+#
+# One downside of this approach is that the hls.light.min.js file is a UMD
+# module so it adds Hls as a global to the window object which is not ideal.
+
+cp node_modules/hls.js/dist/hls.light.min.js* dist/

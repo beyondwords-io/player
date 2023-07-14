@@ -1,22 +1,22 @@
-import Hls from "hls.js/dist/hls.light.js";
+import * as stackTraceParser from "stacktrace-parser";
 
-const loadMedia = (source, video, hls, onError, play, startPosition) => {
+const loadMedia = async (source, video, hls, onError, play, startPosition) => {
   if (!video) { return; }
 
   const prevPaused = video.paused;
   const prevRate = video.playbackRate;
 
-  hls?.detachMedia();
-  hls?.destroy();
+  (await hls)?.detachMedia();
+  (await hls)?.destroy();
 
-  const isStreamable = (source || {}).contentType === "application/x-mpegURL";
-  const libraryHlsSupported = Hls.isSupported();
-  const nativeHlsSupported = video.canPlayType("application/vnd.apple.mpegurl");
+  const isHls = (source || {}).contentType === "application/x-mpegURL";
+  const nativeSupport = video.canPlayType("application/vnd.apple.mpegurl");
 
-  const useLibraryHls = isStreamable && libraryHlsSupported && !nativeHlsSupported;
+  const Hls = isHls && !nativeSupport && (await loadHlsLibrary());
+  const useLibraryHls = window.Hls?.isSupported?.();
 
   if (useLibraryHls) {
-    hls = new Hls({ enableWorker: false, ...{ startPosition } });
+    hls = new window.Hls({ enableWorker: false, ...{ startPosition } });
 
     hls.on(Hls.Events.ERROR, onError);
 
@@ -32,5 +32,25 @@ const loadMedia = (source, video, hls, onError, play, startPosition) => {
 
   return hls;
 };
+
+const loadHlsLibrary = async () => {
+  const thisFilename = originFilename(new Error());
+  const isDevelopment = thisFilename?.match(/loadMedia.ts/); // Not minified.
+
+  let Hls;
+  if (isDevelopment) {
+    Hls = (await import("hls.js/dist/hls.light.js")).default;
+  } else {
+    await import("../../dist/hls.light.min.js");
+    Hls = window.Hls;
+  }
+
+  if (!Hls) { console.warn(`BeyondWords.Player: failed to load the hls.js library`); }
+  return Hls;
+};
+
+const originFilename = (error) => (
+  stackTraceParser.parse(error?.stack || "")[0]?.file
+);
 
 export default loadMedia;
