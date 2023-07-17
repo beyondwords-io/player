@@ -13,10 +13,10 @@ const loadMedia = async (source, video, hls, onError, play, startPosition) => {
   const nativeSupport = video.canPlayType("application/vnd.apple.mpegurl");
 
   const Hls = isHls && !nativeSupport && (await loadHlsLibrary());
-  const useLibraryHls = window.Hls?.isSupported?.();
+  const useLibraryHls = Hls?.isSupported?.();
 
   if (useLibraryHls) {
-    hls = new window.Hls({ enableWorker: false, ...{ startPosition } });
+    hls = new Hls({ enableWorker: false, ...{ startPosition } });
 
     hls.on(Hls.Events.ERROR, onError);
 
@@ -37,15 +37,22 @@ const loadHlsLibrary = async () => {
   const thisFilename = originFilename(new Error());
   const isDevelopment = thisFilename?.match(/loadMedia.ts/); // Not minified.
 
-  let Hls;
-  if (isDevelopment) {
-    Hls = (await import("hls.js/dist/hls.light.js")).default;
-  } else {
-    await import("../../dist/hls.light.min.js");
-    Hls = window.Hls;
-  }
-
+  const Hls = isDevelopment ? await loadHlsFromNodeModule() : await loadHlsFromDistDirectory();
   if (!Hls) { console.warn(`BeyondWords.Player: failed to load the hls.js library`); }
+
+  return Hls;
+}
+
+const loadHlsFromNodeModule = async () => (
+  (await import("hls.js/dist/hls.light.js")).default
+);
+
+const loadHlsFromDistDirectory = async () => {
+  // If we don't set this to a variable first, the ./bin/build script will check
+  // that the file exists and will fail because it doesn't until after the build.
+  const externalPath = "./hls.light.min.js";
+
+  await import(externalPath /* @vite-ignore */);
   return Hls;
 };
 
