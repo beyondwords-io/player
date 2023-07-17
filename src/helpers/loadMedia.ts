@@ -38,21 +38,27 @@ const loadHlsLibrary = async () => {
   const isDevelopment = thisFilename?.match(/loadMedia.ts/); // Not minified.
 
   const Hls = isDevelopment ? await loadHlsFromNodeModule() : await loadHlsFromDistDirectory();
-  if (!Hls) { console.warn(`BeyondWords.Player: failed to load the hls.js library`); }
+  if (!Hls) { console.warn("BeyondWords.Player: failed to load the hls.js library"); }
 
   return Hls;
-}
+};
 
 const loadHlsFromNodeModule = async () => (
   (await import("hls.js/dist/hls.light.js")).default
 );
 
 const loadHlsFromDistDirectory = async () => {
+  const previousHls = window.Hls;
+
   // If we don't set this to a variable first, the ./bin/build script will check
   // that the file exists and will fail because it doesn't until after the build.
   const externalPath = "./hls.light.min.js";
-
   await import(externalPath /* @vite-ignore */);
+
+  // Avoid polluting the global window object and restore any previous Hls value.
+  const Hls = window.Hls;
+  window.Hls = previousHls;
+
   return Hls;
 };
 

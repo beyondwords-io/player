@@ -11,5 +11,6 @@
 #
 # One downside of this approach is that the hls.light.min.js file is a UMD
 # module so it adds Hls as a global to the window object which is not ideal.
+# When the script is loaded, it restores window.Hls to what it was previously.
 
 cp node_modules/hls.js/dist/hls.light.min.js* dist/
