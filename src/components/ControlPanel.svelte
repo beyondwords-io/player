@@ -1,4 +1,8 @@
 <script>
+  import loadStyle from "../helpers/loadStyle";
+
+  loadStyle();
+
   export let projectId;
   export let contentId;
   export let playlistId;

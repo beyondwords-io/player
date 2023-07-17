@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cat > dist/style.js <<-EOF
+(function () {
+  if (document.getElementById("beyondwords-player-style")) { return; }
+
+  var style = document.createElement("style");
+
+  style.id = "beyondwords-player-style";
+  style.type = "text/css";
+  style.innerText = '$(cat dist/style.css)';
+
+  document.head.append(style);
+})();
+EOF
+
+rm dist/style.css

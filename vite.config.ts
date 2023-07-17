@@ -3,7 +3,6 @@ import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import makeCssImportant from "./src/helpers/makeCssImportant";
 import prefixCssSelectors from "./src/helpers/prefixCssSelectors";
-import inlineCssIntoScript from "vite-plugin-css-injected-by-js";
 
 export default defineConfig({
   plugins: [
@@ -11,7 +10,6 @@ export default defineConfig({
     makeCssImportant({ type: "inline-styles" }),
     makeCssImportant({ type: "style-tags" }),
     prefixCssSelectors(".bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp"),
-    inlineCssIntoScript(),
   ],
   build: {
     lib: {
