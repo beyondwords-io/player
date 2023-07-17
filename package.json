@@ -23,7 +23,6 @@
     "@axe-core/playwright": "^4.7",
     "@fontsource/inter": "^4.5",
     "@playwright/test": "^1.28",
-    "@sentry/svelte": "^7.43",
     "@sveltejs/vite-plugin-svelte": "^2.0",
     "@typescript-eslint/eslint-plugin": "^6.0",
     "@typescript-eslint/parser": "^6.0",
