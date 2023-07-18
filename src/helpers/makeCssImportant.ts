@@ -1,3 +1,4 @@
+import MagicString from "magic-string";
 import postcss from "postcss";
 import throwError from "./throwError";
 
@@ -11,25 +12,33 @@ const makeCssImportant = ({ type }) => {
   }
 };
 
-const applyToInlineStyleTags = (src, id) => {
-  if (!id.includes("src/components")) { return; }
-  if (!id.endsWith(".svelte")) { return; }
+const applyToInlineStyleTags = (src, path) => {
+  if (!path.includes("src/components")) { return; }
+  if (!path.endsWith(".svelte")) { return; }
 
   // TODO: error if already important
   // TODO: check that svelte function names haven't changed by looking for them in UserInterface.svelte (error otherwise)
 
-  const code = `
+  const filename = path.replace(/^.*[\\/]/, "");
+  const source = new MagicString(src, { filename });
+
+  source.prepend(`
     const _set_style = (node, k, v) => set_style(node, k, v, 1);
     const _attr_dev = (node, k, v) => attr_dev(node, k, k === "style" ? _important(v) : v);
     const _attr = (node, k, v) => attr(node, k, k === "style" ? _important(v) : v);
 
     const _css_regex = /;(?!([^()]*\\([^()]*\\))*[^()]*\\))/; // Match semicolons not inside parentheses.
     const _important = value => value.split(_css_regex).map(s => s + " !important").join(";");
+  `);
 
-    ${src.replaceAll("set_style(", "_set_style(").replaceAll("attr_dev(", "_attr_dev(").replaceAll("attr(", "_attr(")}
-  `;
+  source.replaceAll("set_style(", "_set_style(");
+  source.replaceAll("attr_dev(", "_attr_dev(");
+  source.replaceAll("attr(", "_attr(");
 
-  return { code, map: null }; // TODO: use magic-string
+  const code = source.toString();
+  const map = source.generateMap({ source: filename });
+
+  return { code, map };
 };
 
 const applyToExternalCssFiles = async (src, id) => {
