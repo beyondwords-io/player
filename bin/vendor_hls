@@ -5,12 +5,25 @@
 # Vite supports dynamic imports for ES modules, but this is not supported for
 # UMD modules which instead bundle all dependencies into the output file.
 #
-# Therefore, add the HLS dependency as an 'external' in vite.config.ts which
-# will remove it from both the es.js and umd.js output files. We can then copy
-# it manually (using this script) to the expected relative ../dist path.
+# Therefore, the approach works as follows:
 #
-# One downside of this approach is that the hls.light.min.js file is a UMD
-# module so it adds Hls as a global to the window object which is not ideal.
-# When the script is loaded, it restores window.Hls to what it was previously.
+# 1) Set Hls as an external in vite.config.js to exclude it from es.js and umd.js
+# 2) Load Hls from node_modules/ in development mode
+# 3) Load Hls from dist/ in production mode
+#    a) Copy Hls from node_modules to dist/ using the script below
+#    b) Replace references to node_modules/ with dist/
+#
+# Note that when Hls is loaded from dist/ in production mode, it loads a UMD
+# module rather than an ES module. Because of this, there is no default export
+# and Hls is added to the global window object. The loadMedia.ts script tries to
+# prevent overriding any existing Hls value that might be set on window.
+#
+# Note that imports are cached, so if you try to import the UMD module more than
+# once, it will only have the side effect of setting window.Hls the first time.
 
 cp node_modules/hls.js/dist/hls.light.min.js* dist/
+
+# Replace with a path specifier of equal length to keep the sourcemap intact.
+sed -i.backup 's:hls.js/dist/:././././././:' dist/es.js
+sed -i.backup 's:hls.js/dist/:././././././:' dist/umd.js
+rm dist/*.backup

@@ -1,5 +1,3 @@
-import * as stackTraceParser from "stacktrace-parser";
-
 const loadMedia = async (source, video, hls, onError, play, startPosition) => {
   if (!video) { return; }
 
@@ -33,37 +31,16 @@ const loadMedia = async (source, video, hls, onError, play, startPosition) => {
   return hls;
 };
 
+let Hls;
 const loadHlsLibrary = async () => {
-  const thisFilename = originFilename(new Error());
-  const isDevelopment = thisFilename?.match(/loadMedia.ts/); // Not minified.
+  if (Hls) { return Hls; }
+  const previous = window.Hls;
 
-  const Hls = isDevelopment ? await loadHlsFromNodeModule() : await loadHlsFromDistDirectory();
-  if (!Hls) { console.warn("BeyondWords.Player: failed to load the hls.js library"); }
+  Hls ||= (await import("hls.js/dist/hls.light.min.js")).default;
+  Hls ||= window.Hls;
 
+  window.Hls = previous;
   return Hls;
 };
-
-const loadHlsFromNodeModule = async () => (
-  (await import("hls.js/dist/hls.light.js")).default
-);
-
-const loadHlsFromDistDirectory = async () => {
-  const previousHls = window.Hls;
-
-  // If we don't set this to a variable first, the ./bin/build script will check
-  // that the file exists and will fail because it doesn't until after the build.
-  const externalPath = "./hls.light.min.js";
-  await import(externalPath /* @vite-ignore */);
-
-  // Avoid polluting the global window object and restore any previous Hls value.
-  const Hls = window.Hls;
-  window.Hls = previousHls;
-
-  return Hls;
-};
-
-const originFilename = (error) => (
-  stackTraceParser.parse(error?.stack || "")[0]?.file
-);
 
 export default loadMedia;
