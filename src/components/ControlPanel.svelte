@@ -1,7 +1,5 @@
 <script>
-  import loadStyle from "../helpers/loadStyle";
-
-  loadStyle();
+  import("../helpers/loadStyle.ts");
 
   export let projectId;
   export let contentId;

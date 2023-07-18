@@ -1,4 +1,5 @@
 <script>
+  import("../helpers/loadStyle.ts");
   import "@fontsource/inter/variable.css";
   import { fly } from "svelte/transition";
   import PlayPauseButton from "./buttons/PlayPauseButton.svelte";
@@ -22,15 +23,12 @@
   import Playlist from "./Playlist.svelte";
   import Hoverable from "./helpers/Hoverable.svelte";
   import Visibility from "./helpers/Visibility.svelte";
-  import loadStyle from "../helpers/loadStyle";
   import belowBreakpoint from "../helpers/belowBreakpoint";
   import controlsOrderFn from "../helpers/controlsOrder";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
   import { canFullScreen } from "../helpers/fullScreen";
-
-  loadStyle();
 
   export let playerStyle = "standard";
   export let callToAction = undefined;

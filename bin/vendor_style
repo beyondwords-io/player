@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# We want to load styles dynamically so that they are only loaded when needed.
+# For example, if the player is used in headless mode we don't need the styles.
+#
+# Therefore, the approach works as follows:
+#
+# 1) Set loadStyle.ts as an external in vite.config to exclude it from es.js and umd.js
+# 2) Write styles in the normal way using <style> tags in components
+# 3) Load styles from <style> tags in development
+# 4) Load styles from dist/style.js in production
+#    a) When Vite builds the project it outputs style.css
+#    b) Replace style.css with style.js (below) which adds a <style> tag to <head>
+#    c) Mark components that require styles with import("../helpers/loadStyle.ts")
+#    d) Replace references to loadStyle.ts with dist/style.js
+#
+# Note that we apply other transformations to styles before creating style.css
+# using vite plugins, e.g. making all styles important to avoid accidental overrides.
+
 cat > dist/style.js <<-EOF
 (function () {
   if (document.getElementById("beyondwords-player-style")) { return; }
@@ -15,3 +32,8 @@ cat > dist/style.js <<-EOF
 EOF
 
 rm dist/style.css
+
+# Replace with a path specifier of equal length to keep the sourcemap intact.
+sed -i.backup 's:./helpers/loadStyle.ts:./././././././style.js:' dist/es.js
+sed -i.backup 's:./helpers/loadStyle.ts:./././././././style.js:' dist/umd.js
+rm dist/*.backup

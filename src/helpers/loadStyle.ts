@@ -1,19 +1,7 @@
-import * as stackTraceParser from "stacktrace-parser";
-
-const loadStyle = () => {
-  const thisFilename = originFilename(new Error());
-  const isDevelopment = thisFilename?.match(/loadStyle.ts/); // Not minified.
-
-  if (isDevelopment) { return; } // Already loaded by vite server.
-
-  // If we don't set this to a variable first, the ./bin/build script will check
-  // that the file exists and will fail because it doesn't until after the build.
-  const externalPath = "./style.js";
-  import(externalPath /* @vite-ignore */);
-};
-
-const originFilename = (error) => (
-  stackTraceParser.parse(error?.stack || "")[0]?.file
-);
-
-export default loadStyle;
+// This file doesn't actually do anything. It serves as a marker whose import
+// line can be replaced during the build process to load the aggregate styles.
+//
+// Note that you should always load this file with a dynamic import rather than
+// a static once or it will not work, i.e. import("../helpers/loadStyle.ts")
+//
+// See ./bin/vendor_style for more infromation.
