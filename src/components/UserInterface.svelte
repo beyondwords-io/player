@@ -144,7 +144,7 @@
         <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
       {/if}
 
-      <div class="main" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
+      <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
         {#if largeImage && (isLarge || isScreen)}
           <LargeImage {onEvent} src={largeImage} href={largeImageHref} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}

@@ -41,9 +41,9 @@
 </script>
 
 <div class="hoverable"
+     role="none"
      on:mouseenter={onEnter}
      on:mouseleave={onLeave}
      on:mousemove={idleDelay !== Infinity && onMove}>
-
   <slot></slot>
 </div>
