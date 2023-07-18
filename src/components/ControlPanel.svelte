@@ -1,5 +1,5 @@
 <script>
-  import("../helpers/loadStyle.ts");
+  import("../helpers/loadTheStyles.ts");
 
   export let projectId;
   export let contentId;

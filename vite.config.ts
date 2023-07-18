@@ -20,7 +20,7 @@ export default defineConfig({
     sourcemap: true,
     target: "es2015",
     rollupOptions: {
-      external: [/hls.light.min.js/, /loadStyle.ts/],
+      external: [/hls.light.min.js/, /loadTheStyles.ts/],
     },
   },
   test: {

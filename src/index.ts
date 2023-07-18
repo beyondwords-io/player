@@ -6,6 +6,7 @@ import listenToSegments from "./helpers/listenToSegments";
 import resolveTarget from "./helpers/resolveTarget";
 import sendToAnalytics from "./helpers/sendToAnalytics";
 import throwError from "./helpers/throwError";
+import relativeUrl from "./helpers/relativeUrl";
 import { version } from "../package.json";
 
 class Player extends PlayerComponent {
@@ -31,6 +32,18 @@ class Player extends PlayerComponent {
 
   static get version() {
     return version;
+  }
+
+  static get scriptSrc() {
+    return relativeUrl();
+  }
+
+  static get styleSrc() {
+    return relativeUrl("style.js");
+  }
+
+  static get hlsSrc() {
+    return relativeUrl("hls.light.min.js");
   }
 
   static instances() {

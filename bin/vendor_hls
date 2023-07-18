@@ -24,6 +24,6 @@
 cp node_modules/hls.js/dist/hls.light.min.js* dist/
 
 # Replace with a path specifier of equal length to keep the sourcemap intact.
-sed -i.backup 's:hls.js/dist/:././././././:' dist/es.js
-sed -i.backup 's:hls.js/dist/:././././././:' dist/umd.js
+sed -i.backup 's:"hls.js/dist/hls.light.min.js":"././././././hls.light.min.js":' dist/es.js
+sed -i.backup 's:"hls.js/dist/hls.light.min.js":  BeyondWords.Player.hlsSrc   :' dist/umd.js
 rm dist/*.backup

@@ -1,5 +1,5 @@
 <script>
-  import("../helpers/loadStyle.ts");
+  import("../helpers/loadTheStyles.ts");
   import "@fontsource/inter/variable.css";
   import { fly } from "svelte/transition";
   import PlayPauseButton from "./buttons/PlayPauseButton.svelte";
