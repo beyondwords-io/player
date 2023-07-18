@@ -130,7 +130,7 @@ class RootController {
 
   handleFinishedScrubbingProgressBar() {
     this.player.playbackState = this.preScrubState;
-    delete this.preScrubState;
+    setTimeout(() => delete this.preScrubState, 500);
   }
 
   handleIdentifiersChanged() {
@@ -170,7 +170,7 @@ class RootController {
 
     // If you bypass the player SDK and call video.pause() on the HTML element,
     // update the state so the UI is correct. This can happen when a phone call.
-    if (isPlaying && !atTheEnd) { this.player.playbackState = "paused"; }
+    if (isPlaying && !atTheEnd && !this.preScrubState) { this.player.playbackState = "paused"; }
   }
 
   handleCurrentTimeUpdated() {
