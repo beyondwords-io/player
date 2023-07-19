@@ -95,7 +95,6 @@
   $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
   $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
-  $: posterImage = isStopped ? contentItem.imageUrl : null;
 
   $: largeImage = isAdvert && activeAdvert.imageUrl || !isStopped && persistentAdvert?.imageUrl ||  contentItem.imageUrl;
   $: largeImageHref = isAdvert && activeAdvert.clickThroughUrl || !isStopped && persistentAdvert?.clickThroughUrl;
@@ -140,8 +139,8 @@
 {#if knownPlayerStyle(playerStyle) && content.length > 0}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget on:outrostart={animate}>
     <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
-      {#if isVideo && (posterImage || !videoIsBehind)}
-        <div class="video-placeholder" style={posterImage ? `background-image: url(${posterImage})` : ""} />
+      {#if isVideo && !videoIsBehind}
+        <div class="video-placeholder" />
       {/if}
 
       <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">

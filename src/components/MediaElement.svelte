@@ -1,5 +1,5 @@
 <script>
-  import { onMount, tick } from "svelte";
+  import { onMount } from "svelte";
   import VastContainer from "./VastContainer.svelte";
   import orderedMediaSources from "../helpers/orderedMediaSources";
   import loadMedia from "../helpers/loadMedia";
@@ -27,7 +27,6 @@
   export let video;
 
   let hls = null;
-  let poster;
   let timeout;
   let time = 0;
   let loadCount = 0;
@@ -61,9 +60,6 @@
 
   $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
-
-  $: poster_ = playbackState !== "stopped" && (activeAdvert?.imageUrl || contentItem?.imageUrl);
-  $: poster_, tick().then(() => poster = poster_);
 
   $: atTheStart = playbackState === "stopped" && currentTime === 0;
 
@@ -216,7 +212,6 @@
            bind:duration
            bind:currentTime={time}
            bind:playbackRate
-           poster={poster || ""}
            preload="metadata"
            playsinline
            disablepictureinpicture
