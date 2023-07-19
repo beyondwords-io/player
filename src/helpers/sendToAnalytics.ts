@@ -63,6 +63,7 @@ const eventFromProps = (player, analyticsEventType) => {
     analytics_id: player.analyticsId,
     ad_id: activeAdvert?.id,
     media_id: player.loadedMedia?.id,
+    media_format: player.loadedMedia?.format,
     local_storage_id: withoutStorage ? null : JSON.parse(localStorage.beyondwords),
     listen_session_id: player.listenSessionId,
     session_created_at: player.sessionCreatedAt,
