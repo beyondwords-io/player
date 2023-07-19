@@ -27,8 +27,8 @@ const sendToAnalytics = (player, playerEvent) => {
 };
 
 const analyticsEventType = (player, playerEventType) => {
-  // Emit a 'load' event once only. Wait for the media duration to be known.
-  if (!player.listenSessionId && player.duration) { return "load"; }
+  // Emit a 'load' event once only, even if the media changes.
+  if (playerEventType === "MediaLoaded" && !player.listenSessionId) { return "load"; }
 
   // Emit a 'play' event after 'PlaybackPlaying' followed by 'CurrentTimeUpdated'.
   // Only emit for new listens, i.e. if the content/advert changed from what it was previously.
