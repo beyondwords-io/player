@@ -104,7 +104,7 @@
   $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
 
   $: showCloseWidget = fixedPosition && !isSmall && !(isStandard && isAdvert);
-  $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall) && !forcedCollapsed;
+  $: showBeyondWords = logoIconEnabled && !isVideo && (!isAdvert || isScreen) && !(fixedPosition && isSmall) && !forcedCollapsed;
 
   $: playlistParts = playlistStyle.split("-");
 
