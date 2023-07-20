@@ -45,6 +45,7 @@
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let playbackRate = 1;
+  export let playbackRates = [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 2.5, 3];
   export let widgetStyle = "standard";
   export let widgetPosition = "auto";
   export let widgetWidth = "auto";

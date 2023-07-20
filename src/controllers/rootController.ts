@@ -395,21 +395,21 @@ class RootController {
   }
 
   #setSpeed(indexFn, { cycle } = {}) {
-    const availableSpeeds = [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 2.5, 3];
-    const maxIndex = availableSpeeds.length - 1;
+    const playbackRates = this.player.playbackRates;
+    const maxIndex = playbackRates.length - 1;
 
-    const currentIndex = availableSpeeds.indexOf(this.player.playbackRate);
+    const currentIndex = playbackRates.indexOf(this.player.playbackRate);
     const tryIndex = indexFn(currentIndex);
 
     let updatedIndex;
 
     if (cycle) {
-      updatedIndex = tryIndex % availableSpeeds.length;
+      updatedIndex = tryIndex % playbackRates.length;
     } else {
       updatedIndex = Math.max(0, Math.min(maxIndex, tryIndex));
     }
 
-    this.player.playbackRate = availableSpeeds[updatedIndex] || 1;
+    this.player.playbackRate = playbackRates[updatedIndex] || 1;
   }
 
   #setSegment(indexFn) {
