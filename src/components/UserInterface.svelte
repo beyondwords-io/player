@@ -3,7 +3,7 @@
   import "@fontsource/inter/variable.css";
   import { fly } from "svelte/transition";
   import PlayPauseButton from "./buttons/PlayPauseButton.svelte";
-  import SpeedButton from "./buttons/SpeedButton.svelte";
+  import PlaybackRateButton from "./buttons/PlaybackRateButton.svelte";
   import PrevButton from "./buttons/PrevButton.svelte";
   import NextButton from "./buttons/NextButton.svelte";
   import PlaylistButton from "./buttons/PlaylistButton.svelte";
@@ -167,7 +167,7 @@
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-            <SpeedButton {onEvent} speed={playbackRate} scale={buttonScale} color={isVideo ? buttonColor : activeTextColor} />
+            <PlaybackRateButton {onEvent} rate={playbackRate} scale={buttonScale} color={isVideo ? buttonColor : activeTextColor} />
             <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
             <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
           {/if}
@@ -292,21 +292,21 @@
     transition: column-gap 1.25s;
   }
 
-  .right-to-left .controls :global(.advert-button)  { order: 1; }
-  .right-to-left .controls :global(.advert-link)    { order: 2; }
-  .right-to-left .controls :global(.progress-bar)   { order: 3; }
-  .right-to-left .controls :global(.player-title)   { order: 4; }
-  .right-to-left .controls :global(.time-indicator) { order: 5; }
-  .right-to-left .controls :global(.prev-button)    { order: 6; }
-  .right-to-left .controls :global(.next-button)    { order: 7; }
-  .right-to-left .controls :global(.speed-button)   { order: 8; }
-  .right-to-left .controls :global(.visibility)     { order: 9; }
+  .right-to-left .controls :global(.advert-button)        { order: 1; }
+  .right-to-left .controls :global(.advert-link)          { order: 2; }
+  .right-to-left .controls :global(.progress-bar)         { order: 3; }
+  .right-to-left .controls :global(.player-title)         { order: 4; }
+  .right-to-left .controls :global(.time-indicator)       { order: 5; }
+  .right-to-left .controls :global(.prev-button)          { order: 6; }
+  .right-to-left .controls :global(.next-button)          { order: 7; }
+  .right-to-left .controls :global(.playback-rate-button) { order: 8; }
+  .right-to-left .controls :global(.visibility)           { order: 9; }
 
-  .symmetrical .controls :global(.prev-button)      { order: 1; }
-  .symmetrical .controls :global(.speed-button)     { order: 2; }
-  .symmetrical .controls :global(.visibility)       { order: 3; }
-  .symmetrical .controls :global(.secondary-button) { order: 4; }
-  .symmetrical .controls :global(.next-button)      { order: 5; }
+  .symmetrical .controls :global(.prev-button)          { order: 1; }
+  .symmetrical .controls :global(.playback-rate-button) { order: 2; }
+  .symmetrical .controls :global(.visibility)           { order: 3; }
+  .symmetrical .controls :global(.secondary-button)     { order: 4; }
+  .symmetrical .controls :global(.next-button)          { order: 5; }
 
   .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }
 

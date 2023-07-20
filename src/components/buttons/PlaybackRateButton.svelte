@@ -3,7 +3,7 @@
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
 
-  export let speed = 1;
+  export let rate = 1;
   export let scale = 1;
   export let color = "#323232";
   export let onEvent = () => {};
@@ -13,8 +13,8 @@
 
   const handleClick = () => {
     onEvent(newEvent({
-      type: "PressedChangeSpeed",
-      description: "The change speed button was pressed.",
+      type: "PressedChangeRate",
+      description: "The change playback rate button was pressed.",
       initiatedBy: "user",
     }));
   };
@@ -33,19 +33,19 @@
     event.preventDefault();
 
     onEvent(newEvent({
-      type: `Pressed${key}OnChangeSpeed`,
-      description: `The ${key.toLowerCase()} key was pressed while change speed was focussed.`,
+      type: `Pressed${key}OnChangeRate`,
+      description: `The ${key.toLowerCase()} key was pressed while change playback rate was focussed.`,
       initiatedBy: "user",
     }));
   };
 </script>
 
-<button type="button" class="speed-button" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown} aria-label={translate("changePlaybackSpeed")}>
-  <span style="font-size: {fontSize}; color: {color}">{speed}x</span>
+<button type="button" class="playback-rate-button" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown} aria-label={translate("changePlaybackRate")}>
+  <span style="font-size: {fontSize}; color: {color}">{rate}x</span>
 </button>
 
 <style>
-  .speed-button {
+  .playback-rate-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -59,7 +59,7 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .speed-button:hover span {
+    .playback-rate-button:hover span {
       opacity: 0.7;
     }
   }

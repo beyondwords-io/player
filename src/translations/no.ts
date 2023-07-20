@@ -18,6 +18,6 @@ export default {
   togglePlaylist: "Bytt spilleliste",
   visitSourceArticle: "Besøk kildeartikkelen",
   maximizeVideo: "Maksimer videoen",
-  changePlaybackSpeed: "Endre avspillingshastighet",
+  changePlaybackRate: "Endre avspillingshastighet",
   downloadAudio: "Last ned lyd",
 };

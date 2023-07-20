@@ -18,6 +18,6 @@ export default {
   togglePlaylist: "Toggle playlist",
   visitSourceArticle: "Visit source article",
   maximizeVideo: "Maximize video",
-  changePlaybackSpeed: "Change playback speed",
+  changePlaybackRate: "Change playback rate",
   downloadAudio: "Download audio",
 };

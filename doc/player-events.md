@@ -62,13 +62,13 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 |------------------------------|-----------|-------------|
 | PressedPlay                  | user+     | The play button was pressed.
 | PressedPause                 | user+     | The pause button was pressed.
-| PressedChangeSpeed           | user      | The change speed button was pressed.
-| PressedEnterOnChangeSpeed    | user      | The enter key was pressed while change speed was focussed.
-| PressedSpaceOnChangeSpeed    | user      | The space key was pressed while change speed was focussed.
-| PressedUpOnChangeSpeed       | user      | The up key was pressed while change speed was focussed.
-| PressedRightOnChangeSpeed    | user      | The right key was pressed while change speed was focussed.
-| PressedDownOnChangeSpeed     | user      | The down key was pressed while change speed was focussed.
-| PressedLeftOnChangeSpeed     | user      | The left key was pressed while change speed was focussed.
+| PressedChangeRate            | user      | The change playback rate button was pressed.
+| PressedEnterOnChangeRate     | user      | The enter key was pressed while change playback rate was focussed.
+| PressedSpaceOnChangeRate     | user      | The space key was pressed while change playback rate was focussed.
+| PressedUpOnChangeRate        | user      | The up key was pressed while change playback rate was focussed.
+| PressedRightOnChangeRate     | user      | The right key was pressed while change playback rate was focussed.
+| PressedDownOnChangeRate      | user      | The down key was pressed while change playback rate was focussed.
+| PressedLeftOnChangeRate      | user      | The left key was pressed while change playback rate was focussed.
 | PressedPrevSegment           | user+     | The previous segment button was pressed.
 | PressedNextSegment           | user+     | The next segment button was pressed.
 | PressedSeekBack              | user+     | The seek backward button was pressed.
