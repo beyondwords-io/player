@@ -1,11 +1,13 @@
 import { resolve } from "path"
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import fixRequireJsIssue from "./src/helpers/fixRequireJsIssue";
 import makeCssImportant from "./src/helpers/makeCssImportant";
 import prefixCssSelectors from "./src/helpers/prefixCssSelectors";
 
 export default defineConfig({
   plugins: [
+    fixRequireJsIssue(),
     svelte({ emitCss: true, compilerOptions: { accessors: true } }),
     makeCssImportant({ type: "inline-styles" }),
     makeCssImportant({ type: "style-tags" }),
