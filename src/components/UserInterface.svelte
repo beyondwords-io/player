@@ -84,7 +84,7 @@
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : activeIconColor;
 
   $: buttonScale = isSmall || isVideo && fixedPosition ? 0.8 : isScreen && !isMobile ? 2 : 1;
-  $: playPauseScale = buttonScale * (isScreen ? 1.5 : isVideo && isStopped ? 2 : 1);
+  $: playPauseScale = buttonScale * (isScreen ? 1.5 : isVideo && isStopped ? 1.6 : 1);
   $: logoScale = isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1;
   $: closeScale = isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1;
   $: closeMargin = isScreen && !isMobile ? "12px 0" : isScreen ? "4px 0" : "auto";
