@@ -120,11 +120,13 @@ const setContentProp = (player, data) => {
       id: audio.id,
       url: audio.url,
       contentType: audio.content_type,
+      duration: audio.duration ? audio.duration / 1000 : 0,
     })),
     video: item.video.map((video) => ({
       id: video.id,
       url: video.url,
       contentType: video.content_type,
+      duration: video.duration ? video.duration / 1000 : 0,
     })),
     segments: item.segments.map((segment) => ({
       marker: segment.marker,
@@ -159,11 +161,13 @@ const setAdvertsProp = (player, data) => {
         id: audio.id,
         url: audio.url,
         contentType: audio.content_type,
+        duration: audio.duration ? audio.duration / 1000 : 0,
       })),
       video: isVast ? [] : (item.video || []).map((video) => ({
         id: video.id,
         url: video.url,
         contentType: video.content_type,
+        duration: video.duration ? video.duration / 1000 : 0,
       })),
     };
   }));
