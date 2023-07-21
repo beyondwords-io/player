@@ -76,13 +76,13 @@ class RootController {
 
   // Please document all events and keep in-sync with /doc/player-events.md
 
-  handlePressedChangeSpeed()           { this.#setSpeed(i => i + 1, { cycle: true }); }
-  handlePressedEnterOnChangeSpeed()    { this.#setSpeed(i => i + 1, { cycle: true }); }
-  handlePressedSpaceOnChangeSpeed()    { this.#setSpeed(i => i + 1, { cycle: true }); }
-  handlePressedUpOnChangeSpeed()       { this.#setSpeed(i => i + 1); }
-  handlePressedRightOnChangeSpeed()    { this.#setSpeed(i => i + 1); }
-  handlePressedDownOnChangeSpeed()     { this.#setSpeed(i => i - 1); }
-  handlePressedLeftOnChangeSpeed()     { this.#setSpeed(i => i - 1); }
+  handlePressedChangeRate()            { this.#setRate(i => i + 1, { cycle: true }); }
+  handlePressedEnterOnChangeRate()     { this.#setRate(i => i + 1, { cycle: true }); }
+  handlePressedSpaceOnChangeRate()     { this.#setRate(i => i + 1, { cycle: true }); }
+  handlePressedUpOnChangeRate()        { this.#setRate(i => i + 1); }
+  handlePressedRightOnChangeRate()     { this.#setRate(i => i + 1); }
+  handlePressedDownOnChangeRate()      { this.#setRate(i => i - 1); }
+  handlePressedLeftOnChangeRate()      { this.#setRate(i => i - 1); }
 
   handlePressedPrevSegment()           { this.#setSegment(i => i - 1); }
   handlePressedNextSegment()           { this.#setSegment(i => i + 1); }
@@ -324,7 +324,7 @@ class RootController {
 
   #ignoreDueToAdvert({ type }) {
     return this.#isAdvert() && (
-      type.includes("ChangeSpeed") ||
+      type.includes("ChangeRate") ||
       type.includes("PrevSegment") ||
       type.includes("NextSegment") ||
       type.includes("SeekBack") ||
@@ -394,7 +394,7 @@ class RootController {
     this.segmentPlayed = true;
   }
 
-  #setSpeed(indexFn, { cycle } = {}) {
+  #setRate(indexFn, { cycle } = {}) {
     const playbackRates = this.player.playbackRates;
     const maxIndex = playbackRates.length - 1;
 
