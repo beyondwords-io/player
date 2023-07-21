@@ -43,6 +43,7 @@ module.exports = {
     ],
     "svelte/no-at-html-tags": 0, // allow `@html` in templates
     "svelte/valid-compile": 0, // allow `export let unused = ...`
+    "svelte/no-unused-svelte-ignore": 0 // allow redundant ignores
   },
   "settings": {
     "svelte3/typescript": true

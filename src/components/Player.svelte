@@ -1,3 +1,4 @@
+<!-- svelte-ignore unused-export-let -->
 <script>
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
