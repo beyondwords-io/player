@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import VastContainer from "./VastContainer.svelte";
   import orderedMediaSources from "../helpers/orderedMediaSources";
+  import loadHlsIfNeeded from "../helpers/loadHlsIfNeeded";
   import loadMedia from "../helpers/loadMedia";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
@@ -26,7 +27,7 @@
   export let onEvent = () => {};
   export let video;
 
-  let hls = null;
+  let Hls, hls;
   let timeout;
   let time = 0;
   let loadCount = 0;
@@ -50,7 +51,9 @@
   $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
 
   $: sources = orderedMediaSources(mediaObject, video);
-  $: hls = loadMedia(sources[0], video, hls, handleHlsError, play, isFirstLoad && initialTime);
+
+  $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
+  $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, isFirstLoad && initialTime);
 
   $: vastUrl = activeAdvert?.vastUrl;
   $: customUrl = activeAdvert?.clickThroughUrl;
@@ -173,7 +176,7 @@
   const handleHlsError = async (event, data) => {
     if (!data.fatal) { return; }
 
-    (await hls)?.destroy();
+    hls?.destroy();
     hls = null;
 
     onEvent(newEvent({
