@@ -41,6 +41,8 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": [
       "warn", { "argsIgnorePattern": "_" }
     ],
+    "svelte/no-at-html-tags": 0, // allow `@html` in templates
+    "svelte/valid-compile": 0, // allow `export let unused = ...`
   },
   "settings": {
     "svelte3/typescript": true

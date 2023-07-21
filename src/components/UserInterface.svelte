@@ -66,7 +66,6 @@
   $: isScreen = playerStyle === "screen";
   $: isVideo = playerStyle === "video";
   $: isPlaying = playbackState === "playing";
-  $: isPaused = playbackState === "paused";
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
   $: isPlaylist = content.length > 1;
@@ -80,7 +79,6 @@
   $: activeIconColor = isAdvert && activeAdvert?.iconColor || iconColor;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
-  $: skipDisabled = skipStyle === "segments";
   $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : activeIconColor;
 
   $: buttonScale = isSmall || isVideo && fixedPosition ? 0.8 : isScreen && !isMobile ? 2 : 1;

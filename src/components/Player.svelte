@@ -1,4 +1,3 @@
-<!-- svelte-ignore unused-export-let -->
 <script>
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
@@ -98,7 +97,6 @@
   $: introOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
   $: persistentAdvert = adverts[persistentIndex];
-  $: contentItem = content[contentIndex];
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";

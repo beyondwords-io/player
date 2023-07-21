@@ -17,10 +17,10 @@
   export let isMobile;
   export let onEvent;
 
-  $: [mode, desktopRows, mobileRows] = style.split("-");
+  $: parts = style.split("-");
 
-  $: mobileRows = mobileRows || desktopRows || 4;
-  $: desktopRows = desktopRows || 5;
+  $: desktopRows = parts[1] || 5;
+  $: mobileRows = parts[2] || parts[1] || 4;
 
   $: scale = larger ? 1.25 : 1;
 

@@ -13,7 +13,6 @@
   let ariaLabel;
 
   $: backwardsSeconds = style.split("-")[1] || 10;
-  $: forwardsSeconds = style.split("-")[2] || backwardsSeconds;
 
   $: isSegments = style === "segments";
   $: isSeconds = style.startsWith("seconds");
