@@ -10,6 +10,7 @@
   import SegmentContainers from "../helpers/segmentContainers";
   import SegmentClickables from "../helpers/segmentClickables";
   import SegmentHighlights from "../helpers/segmentHighlights";
+  import ColorThemes from "../helpers/colorThemes";
   import identifiersEvent from "../helpers/identifiersEvent";
   import onStatusChange from "../helpers/onStatusChange";
   import sectionEnabled from "../helpers/sectionEnabled";
@@ -93,6 +94,7 @@
   export let segmentContainers = new SegmentContainers(arr => segmentWidgets = arr);
   export let segmentClickables = new SegmentClickables();
   export let segmentHighlights = new SegmentHighlights();
+  export let colorThemes = new ColorThemes();
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
   $: introOrOutro = introsOutros[introsOutrosIndex];

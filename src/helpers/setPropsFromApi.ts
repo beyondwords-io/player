@@ -1,5 +1,6 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
+import camelCaseKeys from "./camelCaseKeys";
 import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 
@@ -45,6 +46,7 @@ const fetchData = (client, identifiers) => {
 
 const handleNoContent = (player) => {
   resetSomeProps(player);
+  setColorThemes(player);
   setContentProp(player);
   setAdvertsProp(player);
 
@@ -60,6 +62,7 @@ const setProps = (player, data) => {
   const colors = data.settings[`${theme}_theme`];
 
   resetSomeProps(player);
+  setColorThemes(player, data);
   setContentProp(player, data);
   setAdvertsProp(player, data);
 
@@ -103,6 +106,25 @@ const resetSomeProps = (player) => {
   set(player, "currentSegment", undefined);
   set(player, "hoveredSegment", undefined);
 };
+
+const setColorThemes = (player, data) => {
+  player.colorThemes.reset();
+  const entries = [[null, data.settings], ...data.ads.entries()];
+
+  for (const [advertIndex, object] of entries) {
+    const mode = object.theme || "light";
+    player.colorThemes.setMode({ advertIndex, mode });
+
+    for (const name of themeNames(object)) {
+      const colors = camelCaseKeys(object[`${name}_theme`]);
+      if (colors) { player.colorThemes.setTheme({ advertIndex, name, ...colors }); }
+    }
+  }
+};
+
+const themeNames = (data) => (
+  Object.keys(data).filter(k => k.endsWith("_theme")).map(k => k.split("_theme")[0])
+);
 
 const setContentProp = (player, data) => {
   const imageEnabled = data?.settings?.image_enabled;
