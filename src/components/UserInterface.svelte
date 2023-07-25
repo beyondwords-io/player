@@ -79,7 +79,6 @@
   $: activeIconColor = isAdvert && activeAdvert?.iconColor || iconColor;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
-  $: buttonColor = isVideo ? "rgba(250, 250, 250, 0.8)" : activeIconColor;
 
   $: buttonScale = isSmall || isVideo && fixedPosition ? 0.8 : isScreen && !isMobile ? 2 : 1;
   $: playPauseScale = buttonScale * (isScreen ? 1.5 : isVideo && isStopped ? 1.6 : 1);
@@ -156,7 +155,7 @@
         <div class="controls">
           <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
             <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={activeIconColor}>
-              <PlayPauseButton {onEvent} {isPlaying} scale={playPauseScale} color={buttonColor} />
+              <PlayPauseButton {onEvent} {isPlaying} scale={playPauseScale} color={activeIconColor} />
             </ProgressCircle>
           </Visibility>
 
@@ -165,34 +164,34 @@
           {/if}
 
           {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-            <PlaybackRateButton {onEvent} rate={playbackRate} scale={buttonScale} color={isVideo ? buttonColor : activeTextColor} />
-            <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
-            <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={buttonColor} />
+            <PlaybackRateButton {onEvent} rate={playbackRate} scale={buttonScale} color={activeTextColor} />
+            <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
+            <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
           {/if}
 
           {#if isStandard && fixedPosition && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
             <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
           {/if}
 
-          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} color={isVideo ? buttonColor : activeTextColor} />
+          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} color={activeTextColor} />
 
           {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
             <ProgressBar {onEvent} {progress} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
           {/if}
 
           {#if isAdvert && !forcedCollapsed}
-            <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={isVideo ? "rgba(250, 250, 250, 0.8)" : activeTextColor} {largeImage} {isMobile} />
-            <AdvertButton {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={buttonColor} />
+            <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} />
+            <AdvertButton {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={activeIconColor} />
           {/if}
 
           {#if !isStopped}
             <SecondaryButton {playerStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo && canFullScreen()}
-                <MaximizeButton {onEvent} scale={buttonScale} color={buttonColor} />
+                <MaximizeButton {onEvent} scale={buttonScale} color={activeIconColor} />
               {:else if isScreen && contentItem.sourceUrl}
-                <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={buttonColor} />
+                <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={activeIconColor} />
               {:else if showPlaylistToggle}
-                <PlaylistButton {onEvent} scale={buttonScale} color={buttonColor} playlistShowing={showPlaylist} {playerStyle} />
+                <PlaylistButton {onEvent} scale={buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
               {/if}
             </SecondaryButton>
           {/if}
@@ -201,7 +200,7 @@
         {#if showCloseWidget || showBeyondWords}
           <div class="end">
             {#if showCloseWidget}
-              <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={buttonColor} />
+              <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
             {:else}
               <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
             {/if}
