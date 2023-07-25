@@ -11,8 +11,6 @@
   export let color = "#323232";
   export let onEvent = () => {};
 
-  $: backgroundStyle = fullWidth ? "" : `background: ${color}`;
-
   let progressBar;
   let mouseDown;
 
@@ -75,8 +73,8 @@
 </script>
 
 <button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement} aria-label={translate("scrubProgressBar")}>
-  <div class="background" style="{backgroundStyle}"></div>
-  <div class="progress" style="{backgroundStyle}; width: {progress * 100}%"></div>
+  <div class="background" style="background: {color}"></div>
+  <div class="progress" style="background: {color}; width: {progress * 100}%"></div>
 </button>
 
 <style>
@@ -123,13 +121,16 @@
     right: 0;
     top: -4px;
     border-radius: 0;
-    background: rgb(239, 239, 239);
   }
 
   .full-width:hover,
   .full-width.mouse-down {
     height: 8px;
     top: -6px;
+  }
+
+  .full-width .background {
+    opacity: 0.4;
   }
 
   .full-width .progress {
