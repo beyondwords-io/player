@@ -54,6 +54,9 @@
   export let backgroundColor = "#f5f5f5";
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
+  export let videoTextColor = "white";
+  export let videoBackgroundColor = "black";
+  export let videoIconColor = "white";
   export let logoIconEnabled = true;
   export let highlightSections = "all";
   export let clickableSections = "all";
@@ -174,6 +177,9 @@
     {textColor}
     {backgroundColor}
     {iconColor}
+    {videoTextColor}
+    {videoBackgroundColor}
+    {videoIconColor}
     {logoIconEnabled}
     videoIsBehind={videoBehindStatic} />
 {/if}
@@ -203,6 +209,9 @@
       {textColor}
       {backgroundColor}
       {iconColor}
+      {videoTextColor}
+      {videoBackgroundColor}
+      {videoIconColor}
       {logoIconEnabled}
       videoIsBehind={videoBehindWidget} />
   </ExternalWidget>
@@ -224,7 +233,10 @@
       {persistentAdvert}
       {textColor}
       {backgroundColor}
-      {iconColor} />
+      {iconColor}
+      {videoTextColor}
+      {videoBackgroundColor}
+      {videoIconColor} />
   </ExternalWidget>
 {/each}
 

@@ -57,7 +57,8 @@ const handleNoContent = (player) => {
 
 const setProps = (player, data) => {
   const theme = resolveTheme(data.settings.theme);
-  const colors = data.settings[`${theme}_theme`];
+  const themeColors = data.settings[`${theme}_theme`];
+  const videoColors = data.settings["video_theme"];
 
   resetSomeProps(player);
   setContentProp(player, data);
@@ -72,10 +73,13 @@ const setProps = (player, data) => {
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
   set(player, "widgetStyle", data.settings.widget_style);
   set(player, "widgetPosition", data.settings.widget_position);
-  set(player, "textColor", colors.text_color);
-  set(player, "backgroundColor", colors.background_color);
-  set(player, "iconColor", colors.icon_color);
-  set(player, "highlightColor", colors.highlight_color);
+  set(player, "textColor", themeColors.text_color);
+  set(player, "backgroundColor", themeColors.background_color);
+  set(player, "iconColor", themeColors.icon_color);
+  set(player, "highlightColor", themeColors.highlight_color);
+  set(player, "videoTextColor", videoColors.text_color);
+  set(player, "videoBackgroundColor", videoColors.background_color);
+  set(player, "videoIconColor", videoColors.icon_color);
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
   set(player, "highlightSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
@@ -143,9 +147,9 @@ const setAdvertsProp = (player, data) => {
 
   set(player, "adverts", advertsArray.map((item) => {
     const isVast = item.type === "vast";
-
     const theme = resolveTheme(item.theme);
-    const colors = item[`${theme}_theme`];
+    const themeColors = item[`${theme}_theme`];
+    const videoColors = item["video_theme"];
 
     return {
       id: item.id,
@@ -154,9 +158,12 @@ const setAdvertsProp = (player, data) => {
       vastUrl: isVast ? item.vast_url : null,
       clickThroughUrl: !isVast ? item.click_through_url : null,
       imageUrl: imageEnabled && item.image_url,
-      textColor: colors?.text_color,
-      backgroundColor: colors?.background_color,
-      iconColor: colors?.icon_color,
+      textColor: themeColors?.text_color,
+      backgroundColor: themeColors?.background_color,
+      iconColor: themeColors?.icon_color,
+      videoTextColor: videoColors?.text_color,
+      videoBackgroundColor: videoColors?.background_color,
+      videoIconColor: videoColors?.icon_color,
       audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
         id: audio.id,
         url: audio.url,
