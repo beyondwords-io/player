@@ -1,5 +1,24 @@
+import newEvent from "./newEvent";
+
 class ColorThemes {
   #themes = {};
+  #prevStyle;
+
+  onToggledVideo(playerStyle, onEvent) {
+    const isVideo = playerStyle === "video";
+    const wasVideo = this.#prevStyle === "video";
+
+    const toggled = isVideo !== wasVideo;
+    this.#prevStyle = playerStyle;
+
+    if (toggled) {
+      onEvent(newEvent({
+        type: "ColorThemeUpdated",
+        description: "The player's color theme was updated.",
+        initiatedBy: "browser",
+      }));
+    }
+  }
 
   reset() {
     this.#themes = {};

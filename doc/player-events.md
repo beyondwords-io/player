@@ -114,6 +114,7 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | IdentifiersChanged           | browser   | The Player's content identifiers changed.
 | NoContentAvailable           | browser   | No published and processed content is available for the identifiers.
 | FullScreenModeUpdated        | browser   | The browser entered or exited full screen mode.
+| ColorThemeUpdated            | browser   | The player's color theme was updated.
 | ContentStatusChanged         | websocket | The processing status of a content item within the project changed.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)

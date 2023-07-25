@@ -111,6 +111,9 @@
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
+  $: colorThemes.onToggledVideo(playerStyle, (colorThemeEvent) => onEvent(colorThemeEvent));
+
+  // TODO: replace webhook with a simpler approach.
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
   $: lastHovered = hoveredSegment || lastHovered;
