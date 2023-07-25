@@ -24,9 +24,9 @@ class ColorThemes {
     this.#themes = {};
   }
 
-  setTheme({ advertIndex, name, textColor, backgroundColor, iconColor, highlightColor }) {
+  setTheme({ advertIndex, name, ...colors }) {
     this.#themes[advertIndex] ||= {};
-    this.#themes[advertIndex][name] = { textColor, backgroundColor, iconColor, highlightColor };
+    this.#themes[advertIndex][name] = colors;
   }
 
   setMode({ advertIndex, mode }) {
