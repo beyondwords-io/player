@@ -236,6 +236,10 @@ class RootController {
     this.player.target.classList[addOrRemove]("maximized");
   }
 
+  handleColorThemeUpdated() {
+    this.player.colorThemes.applyTheme(this.player);
+  }
+
   handlePressedPlaylistItem({ index }) {
     this.#setTrack(() => index);
     this.player.playbackState = "playing";

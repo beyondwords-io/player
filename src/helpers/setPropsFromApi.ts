@@ -213,4 +213,4 @@ const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {
 };
 
 export default setPropsFromApi;
-export { identifiersArray, fetchData };
+export { identifiersArray, fetchData, set };
