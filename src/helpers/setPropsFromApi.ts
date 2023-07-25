@@ -1,7 +1,6 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
 import camelCaseKeys from "./camelCaseKeys";
-import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 
 const setPropsFromApi = async (player) => {
@@ -58,13 +57,12 @@ const handleNoContent = (player) => {
 };
 
 const setProps = (player, data) => {
-  const theme = resolveTheme(data.settings.theme);
-  const colors = data.settings[`${theme}_theme`];
-
   resetSomeProps(player);
   setColorThemes(player, data);
   setContentProp(player, data);
   setAdvertsProp(player, data);
+
+  const colors = player.colorThemes.resolve({ advertIndex: null });
 
   set(player, "playerStyle", data.settings.player_style);
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
@@ -75,10 +73,10 @@ const setProps = (player, data) => {
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
   set(player, "widgetStyle", data.settings.widget_style);
   set(player, "widgetPosition", data.settings.widget_position);
-  set(player, "textColor", colors.text_color);
-  set(player, "backgroundColor", colors.background_color);
-  set(player, "iconColor", colors.icon_color);
-  set(player, "highlightColor", colors.highlight_color);
+  set(player, "textColor", colors.textColor);
+  set(player, "backgroundColor", colors.backgroundColor);
+  set(player, "iconColor", colors.iconColor);
+  set(player, "highlightColor", colors.highlightColor);
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
   set(player, "highlightSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
@@ -112,8 +110,7 @@ const setColorThemes = (player, data) => {
   const entries = [[null, data.settings], ...data.ads.entries()];
 
   for (const [advertIndex, object] of entries) {
-    const mode = object.theme || "light";
-    player.colorThemes.setMode({ advertIndex, mode });
+    player.colorThemes.setMode({ advertIndex, mode: object.theme });
 
     for (const name of themeNames(object)) {
       const colors = camelCaseKeys(object[`${name}_theme`]);
@@ -163,11 +160,9 @@ const setAdvertsProp = (player, data) => {
   const imageEnabled = data?.settings?.image_enabled;
   const advertsArray = data?.ads || [];
 
-  set(player, "adverts", advertsArray.map((item) => {
+  set(player, "adverts", advertsArray.map((item, i) => {
     const isVast = item.type === "vast";
-
-    const theme = resolveTheme(item.theme);
-    const colors = item[`${theme}_theme`];
+    const colors = player.colorThemes.resolve({ advertIndex: i });
 
     return {
       id: item.id,
@@ -176,9 +171,9 @@ const setAdvertsProp = (player, data) => {
       vastUrl: isVast ? item.vast_url : null,
       clickThroughUrl: !isVast ? item.click_through_url : null,
       imageUrl: imageEnabled && item.image_url,
-      textColor: colors?.text_color,
-      backgroundColor: colors?.background_color,
-      iconColor: colors?.icon_color,
+      textColor: colors?.textColor,
+      backgroundColor: colors?.backgroundColor,
+      iconColor: colors?.iconColor,
       audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
         id: audio.id,
         url: audio.url,
