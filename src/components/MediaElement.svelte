@@ -176,7 +176,7 @@
   const handleHlsError = async (event, data) => {
     if (!data.fatal) { return; }
 
-    hls?.destroy();
+    hls?.destroy?.();
     hls = null;
 
     onEvent(newEvent({
@@ -226,9 +226,11 @@
            on:timeupdate={handleTimeUpdate}
            on:ratechange={handleRateChange}>
 
-      {#each sources as { url, contentType }, i}
-        <source src={`${url}${timeFragment}`} type={contentType} on:error={handleSourceError(i)}>
-      {/each}
+      {#if hls !== "pending"}
+        {#each sources as { url, contentType }, i}
+          <source src={`${url}${timeFragment}`} type={contentType} on:error={handleSourceError(i)}>
+        {/each}
+      {/if}
     </video>
 
     {#if vastUrl}

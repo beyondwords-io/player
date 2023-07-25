@@ -6,11 +6,11 @@ const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
   const prevPaused = video.paused;
   const prevRate = video.playbackRate;
 
-  hls?.detachMedia();
-  hls?.destroy();
+  hls?.detachMedia?.();
+  hls?.destroy?.();
 
   if (useHlsLibrary(source, video)) {
-    if (!Hls) { return; } // loadMedia will be re-called once Hls is ready.
+    if (!Hls) { return "pending"; } // loadMedia will be re-called once Hls is ready.
 
     hls = new Hls({ enableWorker: false, ...{ startPosition } });
     hls.on(Hls.Events.ERROR, onError);
@@ -25,7 +25,7 @@ const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
   if (!prevPaused) { play(); }
   video.playbackRate = prevRate;
 
-  return hls;
+  return hls || "not-used";
 };
 
 export default loadMedia;
