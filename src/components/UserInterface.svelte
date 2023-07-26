@@ -77,13 +77,13 @@
   $: contentItem = content[contentIndex] || {};
   $: progress = currentTime / duration;
 
-  $: activeVideoTextColor = isAdvert && activeAdvert.videoTextColor || videoTextColor;
-  $: activeVideoBgColor = isAdvert && activeAdvert.videoBackgroundColor || videoBackgroundColor;
-  $: activeVideoIconColor = isAdvert && activeAdvert.videoIconColor || videoIconColor;
+  $: nonVideoTextColor = isAdvert && activeAdvert.textColor || textColor;
+  $: nonVideoBgColor = isAdvert && activeAdvert.backgroundColor || backgroundColor;
+  $: nonVideoIconColor = isAdvert && activeAdvert.iconColor || iconColor;
 
-  $: activeTextColor = isVideo ? activeVideoTextColor : (isAdvert && activeAdvert.textColor || textColor);
-  $: activeBgColor = isVideo ? activeVideoBgColor : (isAdvert && activeAdvert.backgroundColor || backgroundColor);
-  $: activeIconColor = isVideo ? activeVideoIconColor : (isAdvert && activeAdvert.iconColor || iconColor);
+  $: activeTextColor = isVideo ? (isAdvert && activeAdvert.videoTextColor || videoTextColor) : nonVideoTextColor;
+  $: activeBgColor = isVideo ? (isAdvert && activeAdvert.videoBackgroundColor || videoBackgroundColor) : nonVideoBgColor;
+  $: activeIconColor = isVideo ? (isAdvert && activeAdvert.videoIconColor || videoIconColor) : nonVideoIconColor;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
 
@@ -225,9 +225,9 @@
         {content}
         index={contentIndex}
         isMobile={isMobile}
-        textColor={activeTextColor}
-        backgroundColor={activeBgColor}
-        iconColor={activeIconColor} />
+        textColor={nonVideoTextColor}
+        backgroundColor={nonVideoBgColor}
+        iconColor={nonVideoIconColor} />
     {/if}
   </div>
 {/if}
