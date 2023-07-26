@@ -55,7 +55,7 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
   export let videoTextColor = "white";
-  export let videoBackgroundColor = "black";
+  export let videoBackgroundColor = "black"; // TODO: how to implement with easing gradient?
   export let videoIconColor = "white";
   export let logoIconEnabled = true;
   export let highlightSections = "all";
