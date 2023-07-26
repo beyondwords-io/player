@@ -115,7 +115,7 @@ const setContentProp = (player, data) => {
   set(player, "content", contentArray.map((item) => ({
     id: item.id,
     title: item.title,
-    imageUrl: imageEnabled && (data.playlist?.image_url || data.settings.image_url || item.image_url),
+    imageUrl: imageEnabled ? (data.playlist?.image_url || data.settings.image_url || item.image_url) : null,
     sourceId: item.source_id,
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
@@ -157,7 +157,7 @@ const setAdvertsProp = (player, data) => {
       placement: item.placement,
       vastUrl: isVast ? item.vast_url : null,
       clickThroughUrl: !isVast ? item.click_through_url : null,
-      imageUrl: imageEnabled && item.image_url,
+      imageUrl: imageEnabled ? item.image_url : null,
       textColor: themeColors?.text_color,
       backgroundColor: themeColors?.background_color,
       iconColor: themeColors?.icon_color,
