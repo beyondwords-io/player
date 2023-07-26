@@ -77,13 +77,13 @@
   $: contentItem = content[contentIndex] || {};
   $: progress = currentTime / duration;
 
-  $: textColorKey = isVideo ? "videoTextColor" : "textColor";
-  $: backgroundColorKey = isVideo ? "videoBackgroundColor" : "backgroundColor";
-  $: iconColorKey = isVideo ? "videoIconColor" : "iconColor";
+  $: activeVideoTextColor = isAdvert && activeAdvert.videoTextColor || videoTextColor;
+  $: activeVideoBgColor = isAdvert && activeAdvert.videoBackgroundColor || videoBackgroundColor;
+  $: activeVideoIconColor = isAdvert && activeAdvert.videoIconColor || videoIconColor;
 
-  $: activeTextColor = isAdvert && activeAdvert[textColorKey] || eval(textColorKey);
-  $: activeBackgroundColor = isAdvert && activeAdvert[backgroundColorKey] || eval(backgroundColorKey);
-  $: activeIconColor = isAdvert && activeAdvert[iconColorKey] || eval(iconColorKey);
+  $: activeTextColor = isVideo ? activeVideoTextColor : (isAdvert && activeAdvert.textColor || textColor);
+  $: activeBgColor = isVideo ? activeVideoBgColor : (isAdvert && activeAdvert.backgroundColor || backgroundColor);
+  $: activeIconColor = isVideo ? activeVideoIconColor : (isAdvert && activeAdvert.iconColor || iconColor);
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
 
@@ -147,7 +147,7 @@
         <div class="video-placeholder" />
       {/if}
 
-      <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBackgroundColor}">
+      <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBgColor}">
         {#if largeImage && (isLarge || isScreen)}
           <LargeImage {onEvent} src={largeImage} href={largeImageHref} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
@@ -226,7 +226,7 @@
         index={contentIndex}
         isMobile={isMobile}
         textColor={activeTextColor}
-        backgroundColor={activeBackgroundColor}
+        backgroundColor={activeBgColor}
         iconColor={activeIconColor} />
     {/if}
   </div>
