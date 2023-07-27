@@ -640,6 +640,7 @@
     flex-direction: row-reverse;
   }
 
+  .video.stopped :global(.hoverable),
   .video :global(.hoverable):focus-within,
   .video.hovering :global(.hoverable) {
     background: linear-gradient(
@@ -660,6 +661,7 @@
     );
   }
 
+  .video.fixed.stopped :global(.hoverable),
   .video.fixed :global(.hoverable):focus-within,
   .video.fixed.hovering :global(.hoverable) {
     background: linear-gradient(
