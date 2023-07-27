@@ -50,7 +50,7 @@
   $: !introOrOutro && (mediaObject = activeAdvert);
   $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
 
-  $: sources = orderedMediaSources(mediaObject, video);
+  $: sources = orderedMediaSources(mediaObject, video, isFirstLoad && initialTime);
 
   $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
   $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, isFirstLoad && initialTime);
