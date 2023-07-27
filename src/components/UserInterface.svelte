@@ -682,6 +682,27 @@
     );
   }
 
+  :global(.beyondwords-player.maximized) .video.stopped :global(.hoverable),
+  :global(.beyondwords-player.maximized) .video :global(.hoverable):focus-within,
+  :global(.beyondwords-player.maximized) .video.hovering :global(.hoverable) {
+    background: linear-gradient(
+      rgba(0, 0, 0, 0)     75%,
+      rgba(0, 0, 0, 0.083) 81.67%,
+      rgba(0, 0, 0, 0.14)  83.67%,
+      rgba(0, 0, 0, 0.207) 85.33%,
+      rgba(0, 0, 0, 0.282) 87.33%,
+      rgba(0, 0, 0, 0.36)  89.0%,
+      rgba(0, 0, 0, 0.44)  90.33%,
+      rgba(0, 0, 0, 0.518) 92.0%,
+      rgba(0, 0, 0, 0.593) 93.33%,
+      rgba(0, 0, 0, 0.66)  94.67%,
+      rgba(0, 0, 0, 0.717) 96.0%,
+      rgba(0, 0, 0, 0.761) 97.33%,
+      rgba(0, 0, 0, 0.79)  98.67%,
+      rgba(0, 0, 0, 0.8)   100.0%
+    );
+  }
+
   .video.mobile .controls {
     padding: 8px;
   }
@@ -717,6 +738,5 @@
   :global(.beyondwords-player.maximized) .video :global(.hoverable) {
     padding: 0;
     height: 100%;
-    background: none;
   }
 </style>
