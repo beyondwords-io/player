@@ -142,7 +142,7 @@
 
 {#if knownPlayerStyle(playerStyle) && content.length > 0}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget on:outrostart={animate}>
-    <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 3000 : Infinity}>
+    <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
       {#if isVideo && !videoIsBehind}
         <div class="video-placeholder" />
       {/if}
