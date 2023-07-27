@@ -110,6 +110,7 @@
 
   $: videoBehindWidget = showBottomWidget && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
+  $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
@@ -152,6 +153,7 @@
   bind:prevPercentage
   {videoBehindWidget}
   {videoBehindStatic}
+  {videoMightBeShown}
   {widgetPosition}
   {widgetWidth} />
 

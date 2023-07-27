@@ -22,6 +22,7 @@
   export let prevPercentage;
   export let videoBehindWidget;
   export let videoBehindStatic;
+  export let videoMightBeShown;
   export let widgetPosition;
   export let widgetWidth;
   export let onEvent = () => {};
@@ -35,6 +36,7 @@
 
   const setTime = (t) => time = t;
   const play = () => video?.play()?.catch(handlePlayError);
+  const preferVideo = () => videoMightBeShown;
 
   $: !activeAdvert && setTime(currentTime);
   $: currentTime = time;
@@ -50,7 +52,7 @@
   $: !introOrOutro && (mediaObject = activeAdvert);
   $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
 
-  $: sources = orderedMediaSources(mediaObject, video, isFirstLoad && initialTime);
+  $: sources = orderedMediaSources(mediaObject, preferVideo(), isFirstLoad && initialTime);
 
   $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
   $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, isFirstLoad && initialTime);

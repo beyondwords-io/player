@@ -1,12 +1,9 @@
-import elementIsVisible from "./elementIsVisible";
-
-const orderedMediaSources = (mediaObject, videoElement, startPosition) => {
+const orderedMediaSources = (mediaObject, preferVideo, startPosition) => {
   if (!mediaObject) { return []; }
 
   const audio = (mediaObject.audio || []).map(s => ({ ...s, format: "audio" }));
   const video = (mediaObject.video || []).map(s => ({ ...s, format: "video" }));
 
-  const preferVideo = elementIsVisible(videoElement); // TODO: change to check playerStyle
   const sources = preferVideo ? [...video, ...audio] : [...audio, ...video];
 
   if (startPosition && isAndroidChrome()) {
