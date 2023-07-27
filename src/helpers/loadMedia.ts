@@ -1,7 +1,7 @@
 import { useHlsLibrary } from "./loadHlsIfNeeded";
 
 const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
-  if (!video) { return; }
+  if (!video || !source) { return; }
 
   const prevPaused = video.paused;
   const prevRate = video.playbackRate;
