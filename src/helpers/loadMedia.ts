@@ -1,6 +1,6 @@
 import { useHlsLibrary } from "./loadHlsIfNeeded";
 
-const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
+const loadMedia = (source, video, Hls, hls, onError, play, isFirstLoad, initialTime) => {
   if (!video || !source) { return; }
 
   const prevPaused = video.paused;
@@ -12,12 +12,12 @@ const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
   if (useHlsLibrary(source, video)) {
     if (!Hls) { return "pending"; } // loadMedia will be re-called once Hls is ready.
 
-    hls = new Hls({ enableWorker: false, ...{ startPosition } });
+    hls = new Hls({ enableWorker: false, ...{ startPosition: isFirstLoad && initialTime } });
     hls.on(Hls.Events.ERROR, onError);
 
     hls.loadSource(source.url);
     hls.attachMedia(video);
-  } else {
+  } else if (!isFirstLoad) {
     video.removeAttribute("src");
     video.load();
   }

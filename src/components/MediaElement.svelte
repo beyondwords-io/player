@@ -35,8 +35,10 @@
   let initialTime = currentTime;
 
   const setTime = (t) => time = t;
-  const play = () => video?.play()?.catch(handlePlayError);
   const preferVideo = () => videoMightBeShown;
+
+  const play = () => video?.paused && video?.play()?.catch(handlePlayError);
+  const pause = () => !video?.paused && video?.pause();
 
   $: !activeAdvert && setTime(currentTime);
   $: currentTime = time;
@@ -52,15 +54,15 @@
   $: !introOrOutro && (mediaObject = activeAdvert);
   $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
 
-  $: sources = orderedMediaSources(mediaObject, preferVideo(), isFirstLoad && initialTime);
+  $: sources = orderedMediaSources(mediaObject, preferVideo(), isFirstLoad, initialTime);
 
   $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
-  $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, isFirstLoad && initialTime);
+  $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, isFirstLoad, initialTime);
 
   $: vastUrl = activeAdvert?.vastUrl;
   $: customUrl = activeAdvert?.clickThroughUrl;
 
-  $: sources, !vastUrl && (playbackState === "playing" ? play() : video?.pause());
+  $: sources, !vastUrl && (playbackState === "playing" ? play() : pause());
   $: sources, prevPercentage = 0;
 
   $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
