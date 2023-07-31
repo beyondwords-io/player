@@ -17,7 +17,9 @@ class Player extends PlayerComponent {
     listenToSegments();
 
     const { newTarget, showUserInterface } = resolveTarget(target);
+
     newTarget.classList.add("beyondwords-player", "bwp");
+    newTarget.style.display = "none"; // Removed after styles have loaded.
 
     const controller = new RootController(null, Player);
     controller.addEventListener("<any>", e => sendToAnalytics(this, e));
@@ -27,6 +29,10 @@ class Player extends PlayerComponent {
 
     controller.player = this;
     Player.#instances.push(this);
+  }
+
+  static stylesLoaded() {
+    this.instances().forEach(p => p.target.style.removeProperty("display"));
   }
 
   static get version() {
