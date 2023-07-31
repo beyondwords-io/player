@@ -28,7 +28,7 @@ const applyToInlineStyleTags = (src, path) => {
     const _attr = (node, k, v) => attr(node, k, k === "style" ? _important(v) : v);
 
     const _css_regex = /;(?!([^()]*\\([^()]*\\))*[^()]*\\))/; // Match semicolons not inside parentheses.
-    const _important = value => value.split(_css_regex).map(s => s + " !important").join(";");
+    const _important = value => value.split(_css_regex).filter(s => s).map(s => s + " !important").join(";");
   `);
 
   source.replaceAll("set_style(", "_set_style(");
