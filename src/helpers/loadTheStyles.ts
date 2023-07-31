@@ -6,4 +6,4 @@
 //
 // In development mode, the styles have already loaded because of HMR so call stylesLoaded() now.
 // In production mode, call it after styles are appended to <head> (see ./bin/vendor_style).
-BeyondWords.Player.stylesLoaded();
+BeyondWords.Player.styleLoaded();

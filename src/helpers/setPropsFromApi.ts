@@ -181,7 +181,7 @@ const setAdvertsProp = (player, data) => {
 };
 
 const set = (player, propName, value) => {
-  const overridden = typeof player.initialProps[propName] !== "undefined";
+  const overridden = typeof player.initialProps?.[propName] !== "undefined";
   if (!overridden) { player[propName] = value; }
 };
 

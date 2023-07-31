@@ -28,7 +28,7 @@ cat > dist/style.js <<-EOF
   style.innerText = '$(cat dist/style.css)';
 
   document.head.append(style);
-  BeyondWords.Player.stylesLoaded();
+  BeyondWords.Player.styleLoaded();
 })();
 EOF
 
