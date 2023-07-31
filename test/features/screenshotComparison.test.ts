@@ -3,6 +3,8 @@ import playerPermutations from "../support/playerPermutations.ts";
 
 test("screenshot comparison", async ({ page }) => {
   await page.goto("http://localhost:8000");
+
+  await waitForStylesToLoad(page);
   await resetPlayerProps(page);
 
   await playerPermutations(async (params) => {
@@ -23,6 +25,14 @@ test("screenshot comparison", async ({ page }) => {
     process.stdout.write(".");
   });
 });
+
+const waitForStylesToLoad = async (page) => {
+  await page.evaluate(async () => {
+    await new Promise(resolve => {
+      setInterval(() => BeyondWords.Player._styleLoaded && resolve(), 100);
+    });
+  });
+};
 
 const resetPlayerProps = async (page) => {
   await page.evaluate(async () => {
