@@ -166,7 +166,7 @@ class RootController {
 
   handlePlaybackPaused() {
     const isPlaying = this.player.playbackState === "playing";
-    const atTheEnd = this.player.currentTime >= this.player.duration;
+    const atTheEnd = this.player.currentTime >= this.player.duration - 0.5;
 
     // If you bypass the player SDK and call video.pause() on the HTML element,
     // update the state so the UI is correct. This can happen when a phone call.
