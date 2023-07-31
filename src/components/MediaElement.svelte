@@ -115,7 +115,7 @@
     }));
   };
 
-  const handleLoadedData = () => {
+  const handleLoadedMetadata = () => {
     isLoaded = true;
 
     const loadedMedia = findLoadedMedia(sources, video);
@@ -233,7 +233,7 @@
            on:pause={handlePause}
            on:ended={handleEnded}
            on:durationchange={handleDurationChange}
-           on:loadeddata={handleLoadedData}
+           on:loadedmetadata={handleLoadedMetadata}
            on:timeupdate={handleTimeUpdate}
            on:ratechange={handleRateChange}>
 
