@@ -1,13 +1,13 @@
 import { useHlsLibrary } from "./loadHlsIfNeeded";
 
 const loadMedia = (source, video, Hls, hls, onError, play, isFirstLoad, initialTime) => {
+  hls?.detachMedia?.();
+  hls?.destroy?.();
+
   if (!video || !source) { return; }
 
   const prevPaused = video.paused;
   const prevRate = video.playbackRate;
-
-  hls?.detachMedia?.();
-  hls?.destroy?.();
 
   if (useHlsLibrary(source, video)) {
     if (!Hls) { return "pending"; } // loadMedia will be re-called once Hls is ready.
