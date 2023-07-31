@@ -31,6 +31,7 @@
   let Hls, hls;
   let timeout;
   let time = 0;
+  let isLoaded;
   let loadCount = 0;
   let initialTime = currentTime;
 
@@ -56,14 +57,16 @@
 
   $: sources = orderedMediaSources(mediaObject, preferVideo(), isFirstLoad, initialTime);
 
+  $: sources, isLoaded = false;
+  $: sources, prevPercentage = 0;
+
   $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
   $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, isFirstLoad, initialTime);
 
   $: vastUrl = activeAdvert?.vastUrl;
   $: customUrl = activeAdvert?.clickThroughUrl;
 
-  $: sources, !vastUrl && (playbackState === "playing" ? play() : pause());
-  $: sources, prevPercentage = 0;
+  $: isLoaded && !vastUrl && (playbackState === "playing" ? play() : pause());
 
   $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
@@ -113,6 +116,8 @@
   };
 
   const handleLoadedData = () => {
+    isLoaded = true;
+
     const loadedMedia = findLoadedMedia(sources, video);
 
     onEvent(newEvent({
