@@ -33,6 +33,8 @@ class SegmentContainers {
     const element = document.querySelector(`[${dataAttribute}="${marker}"]`);
     const container = document.createElement("div");
 
+    if (!element) { return; }
+
     // Don't add 'position: relative' to the data-beyondwords-marker element
     // if we can help it to reduce interference on the publisher's webpage.
     const needsRelative = ["2-oclock", "3-oclock", "4-oclock", "8-oclock", "9-oclock", "10-oclock"].includes(position);
