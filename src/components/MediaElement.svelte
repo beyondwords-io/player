@@ -164,6 +164,8 @@
   };
 
   const handleSourceError = (sourceIndex) => () => {
+    console.warn(`BeyondWords.Player: error while loading ${sources[sourceIndex]?.contentType} source`);
+
     const isLastSource = sourceIndex === sources.length - 1;
     if (!isLastSource) { return; }
 
