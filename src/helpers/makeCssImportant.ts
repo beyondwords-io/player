@@ -17,10 +17,14 @@ const applyToInlineStyleTags = (src, path) => {
   if (!path.endsWith(".svelte")) { return; }
 
   // TODO: error if already important
-  // TODO: check that svelte function names haven't changed by looking for them in UserInterface.svelte (error otherwise)
 
   const filename = path.replace(/^.*[\\/]/, "");
   const source = new MagicString(src, { filename });
+
+  if (filename.includes("UserInterface.svelte")) {
+     const expected = src.includes("set_style") && (src.includes("attr_dev") || src.includes("attr"));
+     if (!expected) { throw new Error("Unable to makeCssImportant because Svelte's function names have changed."); }
+  }
 
   source.prepend(`
     const _set_style = (node, k, v) => set_style(node, k, v, 1);
