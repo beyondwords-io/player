@@ -108,7 +108,7 @@
   $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
 
   $: showCloseWidget = fixedPosition && !isSmall && !(isStandard && isAdvert);
-  $: showBeyondWords = logoIconEnabled && !isVideo && (!isAdvert || isScreen) && !(fixedPosition && isSmall) && !forcedCollapsed;
+  $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall) && !forcedCollapsed;
 
   $: playlistParts = playlistStyle.split("-");
 
@@ -200,6 +200,10 @@
               {:else if showPlaylistToggle}
                 <PlaylistButton {onEvent} scale={buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
               {/if}
+
+              {#if isVideo && showBeyondWords}
+                <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+              {/if}
             </SecondaryButtons>
           {/if}
         </div>
@@ -208,7 +212,7 @@
           <div class="end">
             {#if showCloseWidget}
               <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
-            {:else}
+            {:else if !isVideo}
               <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
             {/if}
           </div>
