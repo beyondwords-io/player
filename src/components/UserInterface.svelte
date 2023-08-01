@@ -199,7 +199,7 @@
               {:else if showPlaylistToggle}
                 <PlaylistButton {onEvent} scale={buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
               {:else if !showPlaylist}
-                <DownloadButton {onEvent} scale={logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={contentItem?.audio} video={contentItem?.video} />
+                <DownloadButton {onEvent} scale={isScreen ? buttonScale : logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={contentItem?.audio} video={contentItem?.video} />
               {/if}
 
               {#if isVideo && canFullScreen()}
