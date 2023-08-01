@@ -3,9 +3,10 @@
   export let isMobile;
   export let isAdvert;
   export let scale;
+  export let controlsOrder;
 </script>
 
-<div class="secondary-buttons {playerStyle}" class:mobile={isMobile} class:advert_={isAdvert} style="--scale: {scale}">
+<div class="secondary-buttons {playerStyle} {controlsOrder}" class:mobile={isMobile} class:advert_={isAdvert} style="--scale: {scale}">
   <slot></slot>
 </div>
 
@@ -15,6 +16,10 @@
     align-items: center;
     justify-content: center;
     column-gap: 24px;
+  }
+
+  .right-to-left {
+    flex-direction: row-reverse;
   }
 
   .advert_ {
