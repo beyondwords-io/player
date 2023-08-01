@@ -51,4 +51,8 @@
     margin-left: 0;
     display: flex;
   }
+
+  .video.advert_ :global(.playlist-button) {
+    display: none;
+  }
 </style>
