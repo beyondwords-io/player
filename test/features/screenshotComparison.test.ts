@@ -19,6 +19,9 @@ test("screenshot comparison", async ({ page }) => {
     const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
     const userInterface = page.locator(`.user-interface${selector}`);
 
+    const playButton = page.locator(`.user-interface${selector} .play-pause-button`);
+    await playButton.hover();
+
     const name = `${screenshotName(params)}.png`;
     await expect(userInterface).toHaveScreenshot(name, { fullPage: true, maxDiffPixelRatio: 0.01 });
 
