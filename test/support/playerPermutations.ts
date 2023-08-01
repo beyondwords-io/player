@@ -17,6 +17,8 @@ const permutations = (object) => (
   ), [{}])
 );
 
+const audio = [{ id: 123, url: "http://example.com/audio.mp3", contentType: "audio/mpeg", duration: 30 }];
+
 const dimensions = {
   playerStyle: ["large", "screen", "small", "standard", "video"],
   playbackState: ["paused", "playing", "stopped"],
@@ -29,9 +31,10 @@ const dimensions = {
   contentIndex: [0],
   currentTime: [10],
   content: [
-    [{ title: "A reasonable length podcast title", imageUrl: itemImage, sourceUrl: "https://example.com" }],
-    [{ title: `A ${"very ".repeat(50)} long title` }, ...Array(10).fill({ title: "Another playlist item" })],
+    [{ title: "A reasonable length podcast title", imageUrl: itemImage, sourceUrl: "https://example.com", audio }],
+    [{ title: `A ${"very ".repeat(50)} long title`, audio }, ...Array(10).fill({ title: "Another playlist item", audio })],
   ],
+  downloadFormats: [[], ["mp3"]],
   widgetPosition: [null, "auto", "center", "left", "right"],
   widgetStyle: ["none"],
   widgetWidth: [0, "50%", "auto"],
@@ -50,6 +53,14 @@ const skipPermutation = (params) => {
 
   const playlistWouldntShow = (testingTheWidget || params.playerStyle === "small") && params.content.length > 1;
   if (playlistWouldntShow) { return true; }
+
+  const downloadWouldntShow = params.downloadFormats && (
+    params.advertIndex === 0 ||
+    params.playbackState === "stopped" ||
+    params.playerStyle === "screen" && params.content[0].sourceUrl ||
+    params.playerStyle === "small"
+  );
+  if (downloadWouldntShow) { return true; }
 
   const widthIsIrrelevant = !testingTheWidget && params.widgetWidth !== "auto";
   if (widthIsIrrelevant) { return true; }
