@@ -55,27 +55,11 @@
 
     scrollable.scrollTop = nearestTen;
   };
-
-  const mediaToDownload = (audio, video) => {
-    for (const format of downloadFormats) {
-      for (const [i, item] of (audio || []).entries()) {
-        if (item.url?.endsWith(`.${format}`)) { return [i, -1]; }
-      }
-
-      for (const [i, item] of (video || []).entries()) {
-        if (item.url?.endsWith(`.${format}`)) { return [-1, i]; }
-      }
-    }
-
-    return [-1, -1];
-  };
 </script>
 
 <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
   <div class="scrollable" tabindex="-1">
     {#each content as { title, duration, audio, video }, i}
-      {@const [audioIndex, videoIndex] = mediaToDownload(audio, video)}
-
       <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
         {#if i === index}
           <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
@@ -88,9 +72,7 @@
         </span>
 
         <span class="download">
-          {#if audioIndex !== -1 || videoIndex !== -1}
-            <DownloadButton {onEvent} color={iconColor} contentIndex={i} {audioIndex} {videoIndex} />
-          {/if}
+          <DownloadButton {onEvent} color={iconColor} {downloadFormats} contentIndex={i} {audio} {video} />
         </span>
 
         <span class="duration">

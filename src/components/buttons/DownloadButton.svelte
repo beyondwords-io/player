@@ -4,12 +4,32 @@
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
 
+  export let downloadFormats;
   export let contentIndex;
-  export let audioIndex;
-  export let videoIndex;
+  export let audio;
+  export let video;
   export let scale = 1;
   export let color = "#323232";
   export let onEvent = () => {};
+
+  const mediaToDownload = (downloadFormats, audio, video) => {
+    for (const format of downloadFormats) {
+      for (const [i, item] of (audio || []).entries()) {
+        if (item.url?.endsWith(`.${format}`)) { return [i, -1]; }
+      }
+
+      for (const [i, item] of (video || []).entries()) {
+        if (item.url?.endsWith(`.${format}`)) { return [-1, i]; }
+      }
+    }
+
+    return [-1, -1];
+  };
+
+  let audioIndex;
+  let videoIndex;
+
+  $: [audioIndex, videoIndex] = mediaToDownload(downloadFormats, audio, video);
 
   const handleClick = (event) => {
     event.stopPropagation();
@@ -25,9 +45,11 @@
   };
 </script>
 
-<button type="button" class="download-button" style="outline-offset: {4.8 * scale}px" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("downloadAudio")}>
-  <Download {scale} {color} />
-</button>
+{#if audioIndex !== -1 || videoIndex !== -1}
+  <button type="button" class="download-button" style="outline-offset: {4.8 * scale}px" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("downloadAudio")}>
+    <Download {scale} {color} />
+  </button>
+{/if}
 
 <style>
   .download-button {
