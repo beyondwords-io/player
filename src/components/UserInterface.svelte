@@ -199,7 +199,7 @@
                 <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={activeIconColor} />
               {:else if showPlaylistToggle}
                 <PlaylistButton {onEvent} scale={(isVideo ? 1.25 : 1) * buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
-              {:else if !showPlaylist && !isAdvert}
+              {:else if !showPlaylist && !isAdvert && !(isVideo && width < 320)}
                 <DownloadButton {onEvent} scale={isScreen ? buttonScale : logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={contentItem?.audio} video={contentItem?.video} />
               {/if}
 
