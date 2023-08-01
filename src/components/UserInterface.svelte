@@ -7,7 +7,7 @@
   import PrevButton from "./buttons/PrevButton.svelte";
   import NextButton from "./buttons/NextButton.svelte";
   import PlaylistButton from "./buttons/PlaylistButton.svelte";
-  import SecondaryButton from "./buttons/SecondaryButton.svelte";
+  import SecondaryButtons from "./buttons/SecondaryButtons.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
   import CloseWidgetButton from "./buttons/CloseWidgetButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
@@ -192,7 +192,7 @@
           {/if}
 
           {#if !isStopped}
-            <SecondaryButton {playerStyle} {isMobile} {isAdvert} scale={buttonScale}>
+            <SecondaryButtons {playerStyle} {isMobile} {isAdvert} scale={buttonScale}>
               {#if isVideo && canFullScreen()}
                 <MaximizeButton {onEvent} scale={buttonScale} color={activeIconColor} />
               {:else if isScreen && contentItem.sourceUrl}
@@ -200,7 +200,7 @@
               {:else if showPlaylistToggle}
                 <PlaylistButton {onEvent} scale={buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
               {/if}
-            </SecondaryButton>
+            </SecondaryButtons>
           {/if}
         </div>
 
@@ -309,7 +309,7 @@
   .symmetrical .controls :global(.prev-button)          { order: 1; }
   .symmetrical .controls :global(.playback-rate-button) { order: 2; }
   .symmetrical .controls :global(.visibility)           { order: 3; }
-  .symmetrical .controls :global(.secondary-button)     { order: 4; }
+  .symmetrical .controls :global(.secondary-buttons)    { order: 4; }
   .symmetrical .controls :global(.next-button)          { order: 5; }
 
   .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }

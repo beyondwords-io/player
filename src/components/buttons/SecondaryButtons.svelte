@@ -5,12 +5,12 @@
   export let scale;
 </script>
 
-<div class="secondary-button {playerStyle}" class:mobile={isMobile} class:advert_={isAdvert} style="--scale: {scale}">
+<div class="secondary-buttons {playerStyle}" class:mobile={isMobile} class:advert_={isAdvert} style="--scale: {scale}">
   <slot></slot>
 </div>
 
 <style>
-  .secondary-button {
+  .secondary-buttons {
     display: flex;
     align-items: center;
     justify-content: center;
