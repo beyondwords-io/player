@@ -8,6 +8,7 @@
   import NextButton from "./buttons/NextButton.svelte";
   import PlaylistButton from "./buttons/PlaylistButton.svelte";
   import SecondaryButtons from "./buttons/SecondaryButtons.svelte";
+  import DownloadButton from "./buttons/DownloadButton.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
   import CloseWidgetButton from "./buttons/CloseWidgetButton.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
@@ -197,6 +198,8 @@
                 <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={activeIconColor} />
               {:else if showPlaylistToggle}
                 <PlaylistButton {onEvent} scale={buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
+              {:else if !showPlaylist}
+                <DownloadButton {onEvent} scale={logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={contentItem?.audio} video={contentItem?.video} />
               {/if}
 
               {#if isVideo && canFullScreen()}
