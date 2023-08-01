@@ -183,6 +183,7 @@
     {videoBackgroundColor}
     {videoIconColor}
     {logoIconEnabled}
+    {isFullScreen}
     videoIsBehind={videoBehindStatic} />
 {/if}
 

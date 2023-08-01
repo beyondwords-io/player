@@ -59,6 +59,7 @@
 
   // These are set automatically.
   export let videoIsBehind = false;
+  export let isFullScreen = false;
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
@@ -114,7 +115,7 @@
   $: playlistParts = playlistStyle.split("-");
 
   $: showPlaylist = (playlistParts[0] === "show" || playlistParts[0] === "auto" && isPlaylist) && !isSmall;
-  $: showPlaylistToggle = (playlistToggle === "show" || playlistToggle === "auto" && isPlaylist) && !isSmall;
+  $: showPlaylistToggle = (playlistToggle === "show" || playlistToggle === "auto" && isPlaylist) && !isSmall && !isFullScreen;
 
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
   $: fixedPosition && animate();
