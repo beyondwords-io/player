@@ -193,12 +193,14 @@
 
           {#if !isStopped}
             <SecondaryButtons {playerStyle} {isMobile} {isAdvert} scale={buttonScale}>
-              {#if isVideo && canFullScreen()}
-                <MaximizeButton {onEvent} scale={buttonScale} color={activeIconColor} />
-              {:else if isScreen && contentItem.sourceUrl}
+              {#if isScreen && contentItem.sourceUrl}
                 <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={activeIconColor} />
               {:else if showPlaylistToggle}
                 <PlaylistButton {onEvent} scale={buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
+              {/if}
+
+              {#if isVideo && canFullScreen()}
+                <MaximizeButton {onEvent} scale={buttonScale} color={activeIconColor} />
               {/if}
 
               {#if isVideo && showBeyondWords}
