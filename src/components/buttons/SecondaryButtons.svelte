@@ -2,11 +2,12 @@
   export let playerStyle;
   export let isMobile;
   export let isAdvert;
+  export let fixedPosition;
   export let scale;
   export let controlsOrder;
 </script>
 
-<div class="secondary-buttons {playerStyle} {controlsOrder}" class:mobile={isMobile} class:advert_={isAdvert} style="--scale: {scale}">
+<div class="secondary-buttons {playerStyle} {controlsOrder}" class:mobile={isMobile} class:advert_={isAdvert} class:fixed={fixedPosition} style="--scale: {scale}">
   <slot></slot>
 </div>
 
@@ -16,6 +17,10 @@
     align-items: center;
     justify-content: center;
     column-gap: 24px;
+  }
+
+  .fixed {
+    column-gap: 16px;
   }
 
   .right-to-left {

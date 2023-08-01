@@ -194,7 +194,7 @@
           {/if}
 
           {#if !isStopped}
-            <SecondaryButtons {playerStyle} {isMobile} {isAdvert} scale={buttonScale} {controlsOrder}>
+            <SecondaryButtons {playerStyle} {isMobile} {isAdvert} scale={buttonScale} {controlsOrder} {fixedPosition}>
               {#if isScreen && contentItem.sourceUrl}
                 <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={activeIconColor} />
               {:else if showPlaylistToggle}
