@@ -591,6 +591,10 @@
     pointer-events: auto;
   }
 
+  .video :global(.beyondwords) {
+    transition: none;
+  }
+
   .video.advert_ .controls > :global(.time-indicator) {
     position: absolute;
     left: 16px;
