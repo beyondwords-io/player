@@ -323,6 +323,7 @@
   .symmetrical .controls :global(.next-button)          { order: 5; }
 
   .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }
+  .left-to-right-but-swap-ends .controls :global(.secondary-buttons) { display: none; }
 
   .advert_ .controls {
     justify-content: space-between;
