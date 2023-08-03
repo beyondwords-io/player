@@ -16,6 +16,7 @@
   export let index = 0;
   export let isMobile;
   export let onEvent;
+  let downloadIsVisible;
 
   $: parts = style.split("-");
 
@@ -68,7 +69,7 @@
             <span class="number" style="color: {textColor}" aria-hidden="true">{i + 1}</span>
           {/if}
 
-          <span class="title">
+          <span class="title" class:download-is-visible={downloadIsVisible}>
             <ContentTitle {title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
           </span>
 
@@ -78,7 +79,7 @@
         </button>
 
         <span class="download">
-          <DownloadButton {onEvent} color={iconColor} {downloadFormats} contentIndex={i} {audio} {video} padding={isMobile ? 8 : 0} />
+          <DownloadButton {onEvent} color={iconColor} {downloadFormats} contentIndex={i} {audio} {video} padding={isMobile ? 8 : 0} bind:isVisible={downloadIsVisible} />
         </span>
       </div>
     {/each}
@@ -203,6 +204,10 @@
 
   .title {
     flex-grow: 1;
+  }
+
+  .title.download-is-visible {
+    margin-right: 32px;
   }
 
   .mobile .title {

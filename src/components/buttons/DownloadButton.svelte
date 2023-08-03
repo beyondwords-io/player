@@ -11,6 +11,7 @@
   export let scale = 1;
   export let color = "#323232";
   export let padding = 0;
+  export let isVisible;
   export let onEvent = () => {};
 
   const mediaToDownload = (downloadFormats, audio, video) => {
@@ -31,6 +32,7 @@
   let videoIndex;
 
   $: [audioIndex, videoIndex] = mediaToDownload(downloadFormats, audio, video);
+  $: isVisible = audioIndex !== -1 || videoIndex !== -1;
 
   const handleClick = (event) => {
     event.stopPropagation();
