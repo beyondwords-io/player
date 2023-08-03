@@ -10,6 +10,7 @@
   export let video;
   export let scale = 1;
   export let color = "#323232";
+  export let padding = 0;
   export let onEvent = () => {};
 
   const mediaToDownload = (downloadFormats, audio, video) => {
@@ -46,7 +47,7 @@
 </script>
 
 {#if audioIndex !== -1 || videoIndex !== -1}
-  <button type="button" class="download-button" style="outline-offset: {4.8 * scale}px" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("downloadAudio")}>
+  <button type="button" class="download-button" style="outline-offset: {4.8 * scale}px; padding: {padding}px" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("downloadAudio")}>
     <Download {scale} {color} />
   </button>
 {/if}

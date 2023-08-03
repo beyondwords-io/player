@@ -60,25 +60,27 @@
 <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
   <div class="scrollable" tabindex="-1">
     {#each content as { title, duration, audio, video }, i}
-      <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
-        {#if i === index}
-          <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
-        {:else}
-          <span class="number" style="color: {textColor}" aria-hidden="true">{i + 1}</span>
-        {/if}
+      <div class="row">
+        <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
+          {#if i === index}
+            <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
+          {:else}
+            <span class="number" style="color: {textColor}" aria-hidden="true">{i + 1}</span>
+          {/if}
 
-        <span class="title">
-          <ContentTitle {title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
-        </span>
+          <span class="title">
+            <ContentTitle {title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
+          </span>
+
+          <span class="duration">
+            <DurationInMins {duration} {scale} bold={i === index} color={textColor} />
+          </span>
+        </button>
 
         <span class="download">
-          <DownloadButton {onEvent} color={iconColor} {downloadFormats} contentIndex={i} {audio} {video} />
+          <DownloadButton {onEvent} color={iconColor} {downloadFormats} contentIndex={i} {audio} {video} padding={isMobile ? 8 : 0} />
         </span>
-
-        <span class="duration">
-          <DurationInMins {duration} {scale} bold={i === index} color={textColor} />
-        </span>
-      </button>
+      </div>
     {/each}
   </div>
 </div>
@@ -119,12 +121,23 @@
     border: 2px solid #fafafa;
   }
 
+  .row {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .row .download {
+    position: absolute;
+    right: 48px;
+  }
+
   .item {
     width: 100%;
     height: 40px;
 
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto 30px;
+    grid-template-columns: auto minmax(0, 1fr) 30px;
     grid-template-rows: auto;
     align-items: center;
     column-gap: 8px;
@@ -215,12 +228,8 @@
   }
 
   .mobile .download {
-    grid-row: 1 / span 2;
-    grid-column: 4;
-    justify-self: flex-end;
-    align-self: center;
-    position: relative;
-    top: -2px;
+    right: 8px;
+    margin-top: -2px;
   }
 
   :global(.beyondwords-player.maximized) .playlist {
