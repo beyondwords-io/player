@@ -86,6 +86,7 @@
   export let userInterface = undefined;
   export let widgetInterface = undefined;
   export let controller = undefined;
+  export let logoImagePosition = undefined;
   export let analyticsUrl = undefined;
   export let analyticsId = undefined;
   export let listenSessionId = undefined;
@@ -183,6 +184,7 @@
     {videoBackgroundColor}
     {videoIconColor}
     {logoIconEnabled}
+    {logoImagePosition}
     {isFullScreen}
     videoIsBehind={videoBehindStatic} />
 {/if}
@@ -216,6 +218,7 @@
       {videoBackgroundColor}
       {videoIconColor}
       {logoIconEnabled}
+      {logoImagePosition}
       videoIsBehind={videoBehindWidget} />
   </ExternalWidget>
 {/if}

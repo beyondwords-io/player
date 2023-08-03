@@ -55,6 +55,7 @@
   export let videoBackgroundColor = "black";
   export let videoIconColor = "white";
   export let logoIconEnabled = true;
+  export let logoImagePosition = undefined;
   export let onEvent = () => {};
 
   // These are set automatically.
@@ -214,11 +215,11 @@
           {/if}
         </div>
 
-        {#if showCloseWidget || showBeyondWords}
-          <div class="end">
+        {#if showCloseWidget || showBeyondWords && !isVideo}
+          <div class="end" class:logo-image-right={logoImagePosition !== "top-left"}>
             {#if showCloseWidget}
               <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
-            {:else if !isVideo}
+            {:else}
               <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
             {/if}
           </div>
@@ -733,6 +734,11 @@
 
   .video.fixed.mobile .end {
     margin: 12px;
+  }
+
+  .video.fixed .end.logo-image-right {
+    grid-column: 1;
+    margin-right: auto;
   }
 
   .video.fixed .controls {
