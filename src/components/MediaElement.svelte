@@ -75,6 +75,7 @@
   $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
 
   $: atTheStart = playbackState === "stopped" && currentTime === 0;
+  $: videoMightBeShown, atTheStart && (mediaObject = mediaObject);
 
   $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime);
   $: segmentIndex, handleSegmentUpdate();
