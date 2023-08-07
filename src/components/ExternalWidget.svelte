@@ -1,13 +1,22 @@
 <script>
+  import { onMount } from "svelte";
+
   export let root = undefined;
+  export let prepend = false;
 
   let element;
+  let originalParent;
 
-  $: target = typeof root === "string" ? null : root;
-  $: target && element && target.appendChild(element);
+  onMount(() => originalParent = element.parentNode);
+
+  const prependChild = (node, child) => node.insertBefore(child, node.firstChild);
+  const appendChild = (node, child) => node.appendChild(child);
+
+  $: newRoot = typeof root !== "string" && root || originalParent;
+  $: newRoot && element && (prepend ? prependChild : appendChild)(newRoot, element);
 
   // Ensure the styles apply when widgetTarget is set.
-  $: target?.classList?.add("beyondwords-widget", "bwp");
+  $: root?.classList?.add("beyondwords-widget", "bwp");
 </script>
 
 <div bind:this={element} class="external-widget">
