@@ -81,6 +81,7 @@
   export let initialProps = {};
   export let showBottomWidget = false;
   export let showMediaSession = false;
+  export let isLoaded = false;
   export let isFullScreen = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;
@@ -117,7 +118,9 @@
   $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
 
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
-  $: videoPosterImage = videoSource ? "" : (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl);
+
+  $: showVideoPoster = !videoSource && videoMightBeShown && isLoaded;
+  $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
@@ -158,6 +161,7 @@
   bind:currentTime
   bind:playbackRate
   bind:prevPercentage
+  bind:isLoaded
   {videoBehindWidget}
   {videoBehindStatic}
   {videoMightBeShown}

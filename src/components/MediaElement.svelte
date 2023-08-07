@@ -27,12 +27,12 @@
   export let widgetPosition;
   export let widgetWidth;
   export let onEvent = () => {};
+  export let isLoaded;
   export let video = undefined;
 
   let Hls, hls;
   let timeout;
   let time = 0;
-  let isLoaded;
   let loadCount = 0;
   let initialTime = currentTime;
 
@@ -231,7 +231,6 @@
              bind:duration
              bind:currentTime={time}
              bind:playbackRate
-             poster={isLoaded ? videoPosterImage : ""}
              preload="metadata"
              playsinline
              disablepictureinpicture
