@@ -221,40 +221,42 @@
   });
 </script>
 
-<div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic} class:behind-widget={videoBehindWidget} {style}>
-  <div class="inner">
-    <!-- svelte-ignore a11y-media-has-caption -->
-    <video bind:this={video}
-           bind:duration
-           bind:currentTime={time}
-           bind:playbackRate
-           preload="metadata"
-           playsinline
-           disablepictureinpicture
-           on:play={handlePlay}
-           on:pause={handlePause}
-           on:ended={handleEnded}
-           on:durationchange={handleDurationChange}
-           on:loadedmetadata={handleLoadedMetadata}
-           on:timeupdate={handleTimeUpdate}
-           on:ratechange={handleRateChange}>
+{#if content.length > 0}
+  <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic} class:behind-widget={videoBehindWidget} {style}>
+    <div class="inner">
+      <!-- svelte-ignore a11y-media-has-caption -->
+      <video bind:this={video}
+             bind:duration
+             bind:currentTime={time}
+             bind:playbackRate
+             preload="metadata"
+             playsinline
+             disablepictureinpicture
+             on:play={handlePlay}
+             on:pause={handlePause}
+             on:ended={handleEnded}
+             on:durationchange={handleDurationChange}
+             on:loadedmetadata={handleLoadedMetadata}
+             on:timeupdate={handleTimeUpdate}
+             on:ratechange={handleRateChange}>
 
-      {#if hls !== "pending"}
-        {#each sources as { url, contentType }, i}
-          <source src={`${url}${timeFragment}`} type={contentType} on:error={handleSourceError(i)}>
-        {/each}
+        {#if hls !== "pending"}
+          {#each sources as { url, contentType }, i}
+            <source src={`${url}${timeFragment}`} type={contentType} on:error={handleSourceError(i)}>
+          {/each}
+        {/if}
+      </video>
+
+      {#if vastUrl}
+        <VastContainer {onEvent} {vastUrl} {advertConsent} {video} bind:playbackState bind:duration bind:currentTime />
       {/if}
-    </video>
 
-    {#if vastUrl}
-      <VastContainer {onEvent} {vastUrl} {advertConsent} {video} bind:playbackState bind:duration bind:currentTime />
-    {/if}
-
-    {#if customUrl}
-      <a class="custom-advert-link" href={customUrl} target="_blank" on:mouseup={blurElement} aria-label={translate("visitAdvert")}>&nbsp;</a>
-    {/if}
+      {#if customUrl}
+        <a class="custom-advert-link" href={customUrl} target="_blank" on:mouseup={blurElement} aria-label={translate("visitAdvert")}>&nbsp;</a>
+      {/if}
+    </div>
   </div>
-</div>
+{/if}
 
 <style>
   :global(.beyondwords-player) {
