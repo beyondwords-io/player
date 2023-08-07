@@ -41,6 +41,8 @@
   const play = () => video?.paused && video?.play()?.catch(handlePlayError);
   const pause = () => !video?.paused && video?.pause();
 
+  $: if (videoBehindStatic || videoBehindWidget) { import("../helpers/loadTheStyles.ts"); }
+
   $: !activeAdvert && setTime(currentTime);
   $: currentTime = time;
 

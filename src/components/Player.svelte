@@ -110,7 +110,7 @@
   $: controlPanel = findByQuery(controlPanel, "control panel");
 
   $: videoBehindWidget = showBottomWidget && widgetStyle === "video" && !isFullScreen;
-  $: videoBehindStatic = showUserInterface && interfaceStyle === "video" && !videoBehindWidget;
+  $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());

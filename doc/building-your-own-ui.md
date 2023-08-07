@@ -21,6 +21,8 @@ Note that the player will always be mounted in the DOM, even when you are using 
 
 This is because the player is built on top of a native media element (a `<video>` tag).
 
+If `playerStyle: "video", showUserInterface: false` is set then the `<video>` tag will show without any controls.
+
 ## How to build a UI
 
 The simplest way to build your own UI is to repeatedly query the player instance and re-render.
