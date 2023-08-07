@@ -114,10 +114,11 @@
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
 
-  $: videoBehindWidget = showBottomWidget && widgetStyle === "video" && !isFullScreen;
+  $: videoBehindWidget = (showBottomWidget || widgetTarget) && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
 
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
+  $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
 
   $: showVideoPoster = !videoSource && videoMightBeShown && isLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
@@ -145,29 +146,33 @@
   $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor);
 
   // TODO: if timedTransitions changes then re-apply all transitions.
+  // TODO: don't apply transitions during intros/adverts.
   $: applyTransitions(transitions, controller, currentTime);
 </script>
 
-<MediaElement
-  bind:this={mediaElement}
-  {onEvent}
-  {content}
-  {contentIndex}
-  {introOrOutro}
-  {activeAdvert}
-  {advertConsent}
-  bind:playbackState
-  bind:duration
-  bind:currentTime
-  bind:playbackRate
-  bind:prevPercentage
-  bind:isLoaded
-  {videoBehindWidget}
-  {videoBehindStatic}
-  {videoMightBeShown}
-  {videoPosterImage}
-  {widgetPosition}
-  {widgetWidth} />
+<ExternalWidget prepend root={videoRoot}>
+  <MediaElement
+    bind:this={mediaElement}
+    {onEvent}
+    {content}
+    {contentIndex}
+    {introOrOutro}
+    {activeAdvert}
+    {advertConsent}
+    bind:playbackState
+    bind:duration
+    bind:currentTime
+    bind:playbackRate
+    bind:prevPercentage
+    bind:isLoaded
+    {videoBehindWidget}
+    {videoBehindStatic}
+    {videoMightBeShown}
+    {videoPosterImage}
+    {widgetPosition}
+    {widgetWidth}
+    {widgetTarget} />
+</ExternalWidget>
 
 {#if showUserInterface}
   <UserInterface

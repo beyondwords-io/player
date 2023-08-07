@@ -26,6 +26,7 @@
   export let videoPosterImage;
   export let widgetPosition;
   export let widgetWidth;
+  export let widgetTarget;
   export let onEvent = () => {};
   export let isLoaded;
   export let video = undefined;
@@ -72,8 +73,11 @@
 
   $: isLoaded && !vastUrl && (playbackState === "playing" ? play() : pause());
 
-  $: position = videoBehindWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
-  $: style = videoBehindWidget ? `width: ${widgetWidth}` : "";
+  $: videoBehindStaticWidget = videoBehindWidget && widgetTarget;
+  $: videoBehindSlidingWidget = videoBehindWidget && !widgetTarget;
+
+  $: position = videoBehindSlidingWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
+  $: style = videoBehindSlidingWidget ? `width: ${widgetWidth}` : "";
 
   $: atTheStart = playbackState === "stopped" && currentTime === 0;
   $: videoMightBeShown, atTheStart && (mediaObject = mediaObject);
@@ -81,7 +85,7 @@
   $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime);
   $: segmentIndex, handleSegmentUpdate();
 
-  $: videoBehindWidget && animate();
+  $: videoBehindSlidingWidget && animate();
 
   const animate = () => {
     if (timeout) { clearTimeout(timeout); }
@@ -225,7 +229,7 @@
 </script>
 
 {#if content.length > 0}
-  <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic} class:behind-widget={videoBehindWidget} {style}>
+  <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic || videoBehindStaticWidget} class:behind-sliding-widget={videoBehindSlidingWidget} {style}>
     <div class="inner">
       <!-- svelte-ignore a11y-media-has-caption -->
       <video bind:this={video}
@@ -297,7 +301,7 @@
     width: 100%;
   }
 
-  .behind-widget {
+  .behind-sliding-widget {
     display: flex;
     position: fixed;
     width: 0;
@@ -309,7 +313,7 @@
     z-index: 999;
   }
 
-  .behind-widget:not(.animating) {
+  .behind-sliding-widget:not(.animating) {
     bottom: 0;
     opacity: 1;
   }
