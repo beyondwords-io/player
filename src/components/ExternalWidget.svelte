@@ -19,15 +19,11 @@
   $: root?.classList?.add("beyondwords-widget", "bwp");
 </script>
 
-<div bind:this={element} class="external-widget">
+<div bind:this={element} class="external-widget" style={root ? "position: relative": ""}>
   <slot></slot>
 </div>
 
 <style>
-  .external-widget {
-    position: relative;
-  }
-
   :global(.beyondwords-widget.position-11-oclock > *) { margin-left: 3px; margin-bottom: 10px }
   :global(.beyondwords-widget.position-12-oclock > *) { margin: auto; margin-bottom: 10px; width: fit-content }
   :global(.beyondwords-widget.position-1-oclock > *) { margin-left: auto; margin-bottom: 10px; width: fit-content }

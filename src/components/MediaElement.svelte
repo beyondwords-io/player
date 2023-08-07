@@ -299,6 +299,8 @@
     display: flex;
     position: absolute;
     width: 100%;
+    min-height: 100%;
+    top: 0;
   }
 
   .behind-sliding-widget {
