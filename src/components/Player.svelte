@@ -99,9 +99,13 @@
   export let segmentHighlights = new SegmentHighlights();
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
+  $: contentItem = content[contentIndex];
   $: introOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
   $: persistentAdvert = adverts[persistentIndex];
+
+  $: isAdvert = activeAdvert && playbackState !== "stopped";
+  $: videoSource = loadedMedia?.format === "video";
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
@@ -111,7 +115,9 @@
 
   $: videoBehindWidget = showBottomWidget && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
+
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
+  $: videoPosterImage = videoSource ? "" : (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl);
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
@@ -155,6 +161,7 @@
   {videoBehindWidget}
   {videoBehindStatic}
   {videoMightBeShown}
+  {videoPosterImage}
   {widgetPosition}
   {widgetWidth} />
 
@@ -186,6 +193,7 @@
     {logoIconEnabled}
     {logoImagePosition}
     {isFullScreen}
+    {videoPosterImage}
     videoIsBehind={videoBehindStatic} />
 {/if}
 
@@ -219,6 +227,7 @@
       {videoIconColor}
       {logoIconEnabled}
       {logoImagePosition}
+      {videoPosterImage}
       videoIsBehind={videoBehindWidget} />
   </ExternalWidget>
 {/if}

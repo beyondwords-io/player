@@ -59,6 +59,7 @@
   export let onEvent = () => {};
 
   // These are set automatically.
+  export let videoPosterImage = "";
   export let videoIsBehind = false;
   export let isFullScreen = false;
   export let isVisible = undefined;
@@ -146,11 +147,11 @@
 {#if knownPlayerStyle(playerStyle) && content.length > 0}
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget on:outrostart={animate}>
     <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
-      {#if isVideo && !videoIsBehind}
-        <div class="video-placeholder" />
+      {#if isVideo && (videoPosterImage || !videoIsBehind)}
+        <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""} />
       {/if}
 
-      <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style="background: {isVideo ? "transparent" : activeBgColor}">
+      <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style={isVideo ? "" : `background: ${activeBgColor}`}>
         {#if largeImage && (isLarge || isScreen)}
           <LargeImage {onEvent} src={largeImage} href={largeImageHref} scale={isScreen && !isMobile ? 1.5 : 1} />
         {/if}
@@ -656,9 +657,9 @@
     flex-direction: row-reverse;
   }
 
-  .video.stopped :global(.hoverable),
-  .video :global(.hoverable):focus-within,
-  .video.hovering :global(.hoverable) {
+  .video.stopped .main,
+  .video .main:focus-within,
+  .video.hovering .main {
     background: linear-gradient(
       rgba(0, 0, 0, 0)     50.0%,
       rgba(0, 0, 0, 0.083) 63.6%,
@@ -677,9 +678,9 @@
     );
   }
 
-  .video.fixed.stopped :global(.hoverable),
-  .video.fixed :global(.hoverable):focus-within,
-  .video.fixed.hovering :global(.hoverable) {
+  .video.fixed.stopped .main,
+  .video.fixed .main:focus-within,
+  .video.fixed.hovering .main {
     background: linear-gradient(
       rgba(0, 0, 0, 0)     25.0%,
       rgba(0, 0, 0, 0.083) 45.4%,
@@ -698,9 +699,9 @@
     );
   }
 
-  :global(.beyondwords-player.maximized) .video.stopped :global(.hoverable),
-  :global(.beyondwords-player.maximized) .video :global(.hoverable):focus-within,
-  :global(.beyondwords-player.maximized) .video.hovering :global(.hoverable) {
+  :global(.beyondwords-player.maximized) .video.stopped .main,
+  :global(.beyondwords-player.maximized) .video .main:focus-within,
+  :global(.beyondwords-player.maximized) .video.hovering .main {
     background: linear-gradient(
       rgba(0, 0, 0, 0)     75%,
       rgba(0, 0, 0, 0.083) 81.67%,
