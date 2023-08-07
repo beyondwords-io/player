@@ -9,7 +9,6 @@ const chooseWidget = (Player) => {
 
   for (const player of Player.instances()) {
     if (!player.userInterface) { continue; }
-    if (player.widgetTarget) { continue; }
 
     const knownStyle = knownPlayerStyle(player.widgetStyle);
     if (!knownStyle) { continue; }

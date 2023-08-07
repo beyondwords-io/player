@@ -17,14 +17,6 @@ describe("chooseWidget", () => {
     expect(mock.showBottomWidget).toEqual(false);
   });
 
-  it("does not choose players that manually set the widgetTarget", () => {
-    const mock = { userInterface: { isVisible: false, relativeY: -1 }, widgetStyle: "small", widgetTarget: "mock" };
-
-    chooseWidget({ instances: () => [mock] });
-
-    expect(mock.showBottomWidget).toEqual(false);
-  });
-
   it("does not choose players with an unknown widget style", () => {
     const mock = { userInterface: { isVisible: false, relativeY: -1 }, widgetStyle: "closed-by-user" };
 
