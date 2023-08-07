@@ -1,6 +1,7 @@
 export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "Լսեք այս հոդվածը",
+  videoInWidget: "Video is playing in widget",
 
   // These translations are used by aria-label.
   playAudio: "Play audio",

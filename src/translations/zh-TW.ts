@@ -1,5 +1,6 @@
 export default {
   listenToThisArticle: "聽這篇文章",
+  videoInWidget: "Video is playing in widget",
   playAudio: "Play audio",
 
   // These translations are used by aria-label.

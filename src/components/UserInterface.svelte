@@ -11,6 +11,7 @@
   import DownloadButton from "./buttons/DownloadButton.svelte";
   import MaximizeButton from "./buttons/MaximizeButton.svelte";
   import CloseWidgetButton from "./buttons/CloseWidgetButton.svelte";
+  import VideoInWidget from "./svg_icons/VideoInWidget.svelte";
   import AdvertLink from "./external_links/AdvertLink.svelte";
   import AdvertButton from "./external_links/AdvertButton.svelte";
   import BeyondWords from "./external_links/BeyondWords.svelte";
@@ -148,7 +149,12 @@
   <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
     <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
       {#if isVideo && (videoPosterImage || !videoIsBehind)}
-        <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""} />
+        <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""}>
+          {#if !videoPosterImage}
+            <VideoInWidget color={activeIconColor} />
+            <span style="color: {activeTextColor}">{translate("videoInWidget")}</span>
+          {/if}
+        </div>
       {/if}
 
       <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style={isVideo ? "" : `background: ${activeBgColor}`}>
@@ -537,6 +543,11 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
   }
 
   .video .main {
