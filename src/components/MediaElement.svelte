@@ -42,7 +42,8 @@
   const play = () => video?.paused && video?.play()?.catch(handlePlayError);
   const pause = () => !video?.paused && video?.pause();
 
-  $: if (videoBehindStatic || videoBehindWidget) { import("../helpers/loadTheStyles.ts"); }
+  $: stylesNeeded = content.length > 0 && (videoBehindStatic || videoBehindWidget);
+  $: if (stylesNeeded) { import("../helpers/loadTheStyles.ts"); }
 
   $: !activeAdvert && setTime(currentTime);
   $: currentTime = time;
