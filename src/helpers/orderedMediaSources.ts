@@ -17,7 +17,7 @@ const orderedMediaSources = (mediaObject, preferVideo, isFirstLoad, initialTime)
 };
 
 const isAndroidChrome = () => {
-  const userAgent = navigator?.userAgent?.toLowerCase() || "";
+  const userAgent = navigator?.userAgent?.toLowerCase?.() || "";
   return userAgent.includes("android") && userAgent.includes("chrome");
 };
 

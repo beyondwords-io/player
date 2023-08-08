@@ -4,6 +4,7 @@
   import orderedMediaSources from "../helpers/orderedMediaSources";
   import loadHlsIfNeeded from "../helpers/loadHlsIfNeeded";
   import loadMedia from "../helpers/loadMedia";
+  import timeFragment, { EPSILON } from "../helpers/timeFragment";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
   import blurElement from "../helpers/blurElement";
@@ -53,7 +54,6 @@
 
   $: contentIndex, introOrOutro, activeAdvert, loadCount += 1;
   $: isFirstLoad = loadCount === 1;
-  $: timeFragment = isFirstLoad ? `#t=${initialTime}` : "";
 
   $: mediaObject = introOrOutro;
   $: !introOrOutro && (mediaObject = activeAdvert);
@@ -78,7 +78,7 @@
   $: position = videoBehindSlidingWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = videoBehindSlidingWidget ? `width: ${widgetWidth}` : "";
 
-  $: atTheStart = playbackState === "stopped" && currentTime === 0;
+  $: atTheStart = playbackState === "stopped" && currentTime <= EPSILON;
   $: videoMightBeShown, atTheStart && (mediaObject = mediaObject);
 
   $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime);
@@ -247,8 +247,8 @@
              on:ratechange={handleRateChange}>
 
         {#if hls !== "pending"}
-          {#each sources as { url, contentType }, i}
-            <source src={`${url}${timeFragment}`} type={contentType} on:error={handleSourceError(i)}>
+          {#each sources as { url, contentType, format }, i}
+            <source src={`${url}${timeFragment(isFirstLoad, initialTime, format)}`} type={contentType} on:error={handleSourceError(i)}>
           {/each}
         {/if}
       </video>

@@ -1,6 +1,7 @@
 import { validateEventBeforeProcessing, validateEventAfterProcessing } from "../helpers/eventValidation";
 import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 import { v4 as randomUuid } from "uuid";
+import { EPSILON } from "../helpers/timeFragment";
 import waitUntil from "../helpers/waitUntil";
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
@@ -176,7 +177,7 @@ class RootController {
   handleCurrentTimeUpdated() {
     if (!this.midrollPlayed) { this.#chooseAndSetAdvert(); }
 
-    const atTheStart = this.player.currentTime <= 0;
+    const atTheStart = this.player.currentTime <= EPSILON;
     const atTheEnd = this.player.currentTime >= this.player.duration;
     const videoPaused = this.player.mediaElement.video.paused;
 
@@ -204,7 +205,7 @@ class RootController {
   handlePlaybackNotAllowed({ description }) {
     console.warn(`BeyondWords.Player: ${description}`);
 
-    const atTheStart = this.player.contentIndex <= 0 && this.player.currentTime <= 0;
+    const atTheStart = this.player.contentIndex <= 0 && this.player.currentTime <= EPSILON;
     this.player.playbackState = atTheStart ? "stopped" : "paused";
   }
 
@@ -526,7 +527,7 @@ class RootController {
     const defer = this.player.playbackState !== "playing" && index !== -1;
     if (defer) { this.nextIntroOutro = index; return; } else { delete this.nextIntroOutro; }
 
-    const atTheStart = this.player.contentIndex <= 0 && this.player.currentTime <= 0;
+    const atTheStart = this.player.contentIndex <= 0 && this.player.currentTime <= EPSILON;
     const skippedIntro = !atTheStart && this.#isIntro(index);
 
     // We were at the start and were going to play an intro but the user skipped
