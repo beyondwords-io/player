@@ -36,6 +36,7 @@
   let time = 0;
   let loadCount = 0;
   let initialTime = currentTime;
+  let loadedMedia;
 
   const setTime = (t) => time = t;
   const preferVideo = () => videoMightBeShown;
@@ -54,18 +55,19 @@
 
   $: contentIndex, introOrOutro, activeAdvert, loadCount += 1;
   $: isFirstLoad = loadCount === 1;
+  $: startPosition = isFirstLoad && initialTime;
 
   $: mediaObject = introOrOutro;
   $: !introOrOutro && (mediaObject = activeAdvert);
   $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
 
-  $: sources = orderedMediaSources(mediaObject, preferVideo(), isFirstLoad, initialTime);
+  $: sources = orderedMediaSources(mediaObject, preferVideo(), startPosition);
 
   $: sources, isLoaded = false;
   $: sources, prevPercentage = 0;
 
   $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
-  $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, isFirstLoad, initialTime);
+  $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, startPosition);
 
   $: vastUrl = activeAdvert?.vastUrl;
   $: customUrl = activeAdvert?.clickThroughUrl;
@@ -78,8 +80,10 @@
   $: position = videoBehindSlidingWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
   $: style = videoBehindSlidingWidget ? `width: ${widgetWidth}` : "";
 
-  $: atTheStart = playbackState === "stopped" && currentTime <= EPSILON;
-  $: videoMightBeShown, atTheStart && (mediaObject = mediaObject);
+  $: atTheStart = playbackState !== "playing" && currentTime <= EPSILON;
+
+  // TODO: is it possible to also set the currentTime when changing to video for continuity?
+  $: videoMightBeShown && loadedMedia?.format === "audio" && atTheStart && (mediaObject = mediaObject);
 
   $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime);
   $: segmentIndex, handleSegmentUpdate();
@@ -125,8 +129,7 @@
 
   const handleLoadedMetadata = () => {
     isLoaded = true;
-
-    const loadedMedia = findLoadedMedia(sources, video);
+    loadedMedia = findLoadedMedia(sources, video);
 
     onEvent(newEvent({
       type: "MediaLoaded",

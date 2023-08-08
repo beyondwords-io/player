@@ -1,4 +1,4 @@
-const orderedMediaSources = (mediaObject, preferVideo, isFirstLoad, initialTime) => {
+const orderedMediaSources = (mediaObject, preferVideo, startPosition) => {
   if (!mediaObject) { return []; }
 
   const audio = (mediaObject.audio || []).map(s => ({ ...s, format: "audio" }));
@@ -6,7 +6,7 @@ const orderedMediaSources = (mediaObject, preferVideo, isFirstLoad, initialTime)
 
   const sources = preferVideo ? [...video, ...audio] : [...audio, ...video];
 
-  if (isFirstLoad && initialTime && isAndroidChrome()) {
+  if (startPosition && isAndroidChrome()) {
     const nonHlsSources = sources.filter(s => !s.url.endsWith(".m3u8"));
     const hlsSources = sources.filter(s => s.url.endsWith(".m3u8"));
 
