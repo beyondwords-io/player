@@ -301,8 +301,6 @@
     display: flex;
     position: absolute;
     width: 100%;
-    min-height: 100%;
-    top: 0;
   }
 
   .behind-sliding-widget {
@@ -348,7 +346,8 @@
     to { bottom: 0; opacity: 1; }
   }
 
-  :global(.beyondwords-player.maximized) {
+  :global(.beyondwords-player.maximized),
+  :global(.beyondwords-player.maximized .external-widget) {
     display: flex;
     align-items: center;
     background: black;
