@@ -23,7 +23,6 @@
   export let videoBehindWidget;
   export let videoBehindStatic;
   export let videoMightBeShown;
-  export let videoPosterImage;
   export let widgetPosition;
   export let widgetWidth;
   export let widgetTarget;

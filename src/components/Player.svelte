@@ -168,7 +168,6 @@
     {videoBehindWidget}
     {videoBehindStatic}
     {videoMightBeShown}
-    {videoPosterImage}
     {widgetPosition}
     {widgetWidth}
     {widgetTarget} />
