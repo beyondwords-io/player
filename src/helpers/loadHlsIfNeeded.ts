@@ -6,6 +6,9 @@ const loadHlsIfNeeded = async (source, video) => {
 };
 
 const useHlsLibrary = (source, video) => {
+  const isMounted = source && video;
+  if (!isMounted) { return false; }
+
   const isHlsSource = source?.contentType === "application/x-mpegURL";
   if (!isHlsSource) { return false; }
 
