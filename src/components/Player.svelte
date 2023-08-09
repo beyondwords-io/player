@@ -304,6 +304,8 @@
       bind:backgroundColor
       bind:iconColor
       bind:highlightColor
+      bind:videoTextColor
+      bind:videoIconColor
       bind:logoIconEnabled
       bind:highlightSections
       bind:clickableSections

@@ -34,6 +34,8 @@
   export let backgroundColor;
   export let iconColor;
   export let highlightColor;
+  export let videoTextColor;
+  export let videoIconColor;
   export let logoIconEnabled;
   export let highlightSections;
   export let clickableSections;
@@ -259,6 +261,16 @@
         <option>{false}</option>
         <option>{true}</option>
       </select>
+    </div>
+
+    <div class="control">
+      videoTextColor:
+      <input tabindex={-1} type="text" bind:value={videoTextColor}>
+    </div>
+
+    <div class="control">
+      videoIconColor:
+      <input tabindex={-1} type="text" bind:value={videoIconColor}>
     </div>
 
     <div class="control">
