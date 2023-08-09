@@ -8,6 +8,7 @@ const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
 
   const prevPaused = video.paused;
   const prevRate = video.playbackRate;
+  const wrongSource = video.sourceUrl && video.sourceUrl !== source.url;
 
   if (useHlsLibrary(source, video)) {
     if (!Hls) { return "pending"; } // loadMedia will be re-called once Hls is ready.
@@ -17,7 +18,7 @@ const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
 
     hls.loadSource(source.url);
     hls.attachMedia(video);
-  } else if (source.url !== video.sourceUrl) {
+  } else if (wrongSource) {
     video.removeAttribute("src");
     video.load();
   }
