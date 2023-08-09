@@ -33,6 +33,7 @@ const waitForStylesToLoad = async (page) => {
   await page.evaluate(async () => {
     await new Promise(resolve => {
       setInterval(() => BeyondWords.Player._styleLoaded && resolve(), 100);
+      window.disableAnimation = true;
     });
   });
 };

@@ -27,7 +27,6 @@
   import Visibility from "./helpers/Visibility.svelte";
   import belowBreakpoint from "../helpers/belowBreakpoint";
   import controlsOrderFn from "../helpers/controlsOrder";
-  import { knownPlayerStyle } from "../helpers/playerStyles";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
   import { canFullScreen } from "../helpers/fullScreen";
@@ -101,7 +100,7 @@
   $: widthStyle = fixedWidth === "auto" ? (isSmall ? "fit-content" : "") : fixedWidth;
   $: position = fixedPosition === "auto" ? (isStandard ? "center" : "right") : fixedPosition;
   $: positionClasses = fixedPosition ? `fixed fixed-${position}` : "";
-  $: flyWidget = (e) => fixedPosition && fly(e, { y: isSmall || isStandard ? 40 : 100 });
+  $: flyWidget = (e) => fixedPosition && !window.disableAnimation && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
   $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
 
@@ -145,110 +144,108 @@
   };
 </script>
 
-{#if knownPlayerStyle(playerStyle) && content.length > 0}
-  <div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
-    <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
-      {#if isVideo && (videoPosterImage || !videoIsBehind)}
-        <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""}>
-          {#if !videoPosterImage}
-            <VideoInWidget color={activeIconColor} />
-            <span style="color: {activeTextColor}">{translate("videoInWidget")}</span>
-          {/if}
+<div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
+  <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
+    {#if isVideo && (videoPosterImage || !videoIsBehind)}
+      <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""}>
+        {#if !videoPosterImage}
+          <VideoInWidget color={activeIconColor} />
+          <span style="color: {activeTextColor}">{translate("videoInWidget")}</span>
+        {/if}
+      </div>
+    {/if}
+
+    <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style={isVideo ? "" : `background: ${activeBgColor}`}>
+      {#if largeImage && (isLarge || isScreen)}
+        <LargeImage {onEvent} src={largeImage} href={largeImageHref} scale={isScreen && !isMobile ? 1.5 : 1} />
+      {/if}
+
+      {#if isLarge || isScreen}
+        <div class="summary">
+          <PlayerTitle title={playerTitle} visible={!isAdvert} {playerStyle} scale={isScreen ? 2 : 1} color={activeTextColor} />
+          <ContentTitle title={contentItem.title} maxLines={isMobile || isScreen ? 3 : 1} center={isScreen} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 640 : isScreen ? 320 : null} color={activeTextColor} />
         </div>
       {/if}
 
-      <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style={isVideo ? "" : `background: ${activeBgColor}`}>
-        {#if largeImage && (isLarge || isScreen)}
-          <LargeImage {onEvent} src={largeImage} href={largeImageHref} scale={isScreen && !isMobile ? 1.5 : 1} />
+      <div class="controls">
+        <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
+          <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={activeIconColor}>
+            <PlayPauseButton {onEvent} {isPlaying} scale={playPauseScale} color={activeIconColor} />
+          </ProgressCircle>
+        </Visibility>
+
+        {#if isStandard && isStopped || isSmall}
+          <PlayerTitle title={callToAction || translate("listenToThisArticle")} visible={!isAdvert} {playerStyle} {collapsible} {collapsed} color={activeTextColor} />
         {/if}
 
-        {#if isLarge || isScreen}
-          <div class="summary">
-            <PlayerTitle title={playerTitle} visible={!isAdvert} {playerStyle} scale={isScreen ? 2 : 1} color={activeTextColor} />
-            <ContentTitle title={contentItem.title} maxLines={isMobile || isScreen ? 3 : 1} center={isScreen} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 640 : isScreen ? 320 : null} color={activeTextColor} />
-          </div>
+        {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
+          <PlaybackRateButton {onEvent} rate={playbackRate} scale={buttonScale} color={activeTextColor} />
+          <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
+          <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
         {/if}
 
-        <div class="controls">
-          <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
-            <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={activeIconColor}>
-              <PlayPauseButton {onEvent} {isPlaying} scale={playPauseScale} color={activeIconColor} />
-            </ProgressCircle>
-          </Visibility>
+        {#if isStandard && fixedPosition && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
+          <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
+        {/if}
 
-          {#if isStandard && isStopped || isSmall}
-            <PlayerTitle title={callToAction || translate("listenToThisArticle")} visible={!isAdvert} {playerStyle} {collapsible} {collapsed} color={activeTextColor} />
-          {/if}
+        <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} color={activeTextColor} />
 
-          {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-            <PlaybackRateButton {onEvent} rate={playbackRate} scale={buttonScale} color={activeTextColor} />
-            <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
-            <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
-          {/if}
+        {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
+          <ProgressBar {onEvent} {progress} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
+        {/if}
 
-          {#if isStandard && fixedPosition && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
-            <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
-          {/if}
+        {#if isAdvert && !forcedCollapsed}
+          <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} />
+          <AdvertButton {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={activeIconColor} />
+        {/if}
 
-          <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} color={activeTextColor} />
+        {#if !isStopped}
+          <SecondaryButtons {playerStyle} {isMobile} {isAdvert} scale={buttonScale} {controlsOrder} {fixedPosition}>
+            {#if isScreen && contentItem.sourceUrl}
+              <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={activeIconColor} />
+            {:else if showPlaylistToggle}
+              <PlaylistButton {onEvent} scale={(isVideo ? 1.25 : 1) * buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
+            {:else if !showPlaylist && !isAdvert && !(isVideo && width < 320)}
+              <DownloadButton {onEvent} scale={isScreen ? buttonScale : logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={contentItem?.audio} video={contentItem?.video} />
+            {/if}
 
-          {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
-            <ProgressBar {onEvent} {progress} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
-          {/if}
+            {#if isVideo && canFullScreen()}
+              <MaximizeButton {onEvent} scale={buttonScale} color={activeIconColor} />
+            {/if}
 
-          {#if isAdvert && !forcedCollapsed}
-            <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} />
-            <AdvertButton {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={activeIconColor} />
-          {/if}
-
-          {#if !isStopped}
-            <SecondaryButtons {playerStyle} {isMobile} {isAdvert} scale={buttonScale} {controlsOrder} {fixedPosition}>
-              {#if isScreen && contentItem.sourceUrl}
-                <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={activeIconColor} />
-              {:else if showPlaylistToggle}
-                <PlaylistButton {onEvent} scale={(isVideo ? 1.25 : 1) * buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
-              {:else if !showPlaylist && !isAdvert && !(isVideo && width < 320)}
-                <DownloadButton {onEvent} scale={isScreen ? buttonScale : logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={contentItem?.audio} video={contentItem?.video} />
-              {/if}
-
-              {#if isVideo && canFullScreen()}
-                <MaximizeButton {onEvent} scale={buttonScale} color={activeIconColor} />
-              {/if}
-
-              {#if isVideo && showBeyondWords}
-                <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
-              {/if}
-            </SecondaryButtons>
-          {/if}
-        </div>
-
-        {#if showCloseWidget || showBeyondWords && !isVideo}
-          <div class="end" class:logo-image-right={logoImagePosition !== "top-left"}>
-            {#if showCloseWidget}
-              <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
-            {:else}
+            {#if isVideo && showBeyondWords}
               <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
             {/if}
-          </div>
+          </SecondaryButtons>
         {/if}
       </div>
-    </Hoverable>
 
-    {#if showPlaylist}
-      <Playlist
-        {onEvent}
-        style={playlistStyle}
-        {downloadFormats}
-        larger={isScreen && !isMobile}
-        {content}
-        index={contentIndex}
-        isMobile={isMobile}
-        textColor={nonVideoTextColor}
-        backgroundColor={nonVideoBgColor}
-        iconColor={nonVideoIconColor} />
-    {/if}
-  </div>
-{/if}
+      {#if showCloseWidget || showBeyondWords && !isVideo}
+        <div class="end" class:logo-image-right={logoImagePosition !== "top-left"}>
+          {#if showCloseWidget}
+            <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
+          {:else}
+            <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+          {/if}
+        </div>
+      {/if}
+    </div>
+  </Hoverable>
+
+  {#if showPlaylist}
+    <Playlist
+      {onEvent}
+      style={playlistStyle}
+      {downloadFormats}
+      larger={isScreen && !isMobile}
+      {content}
+      index={contentIndex}
+      isMobile={isMobile}
+      textColor={nonVideoTextColor}
+      backgroundColor={nonVideoBgColor}
+      iconColor={nonVideoIconColor} />
+  {/if}
+</div>
 
 <style>
   .user-interface {

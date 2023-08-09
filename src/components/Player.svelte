@@ -15,6 +15,7 @@
   import sectionEnabled from "../helpers/sectionEnabled";
   import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
+  import { knownPlayerStyle } from "../helpers/playerStyles";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -109,13 +110,17 @@
   $: videoSource = loadedMedia?.format === "video";
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
-  $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
+
+  $: showInlineInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
+  $: showWidgetInterface = (showBottomWidget || widgetTarget) && knownPlayerStyle(widgetStyle) && content.length > 0;
 
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
 
   $: videoBehindWidget = (showBottomWidget || widgetTarget) && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
+
+  $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
@@ -173,7 +178,7 @@
     {widgetTarget} />
 </ExternalWidget>
 
-{#if showUserInterface}
+{#if showInlineInterface}
   <UserInterface
     bind:this={userInterface}
     {onEvent}
@@ -205,7 +210,7 @@
     videoIsBehind={videoBehindStatic} />
 {/if}
 
-{#if showBottomWidget || widgetTarget}
+{#if showWidgetInterface}
   <ExternalWidget root={widgetTarget}>
     <UserInterface
       bind:this={widgetInterface}
