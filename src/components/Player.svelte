@@ -26,6 +26,7 @@
   export let sourceUrl = undefined;
   export let playlist = [];
   export let showUserInterface = true;
+  export let showBottomWidget = false;
   export let playerStyle = "standard";
   export let playerTitle = undefined;
   export let callToAction = undefined;
@@ -80,7 +81,6 @@
 
   // These are set automatically.
   export let initialProps = {};
-  export let showBottomWidget = false;
   export let showMediaSession = false;
   export let isLoaded = false;
   export let isFullScreen = false;
