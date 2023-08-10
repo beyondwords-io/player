@@ -113,7 +113,7 @@
   $: showWidget = showBottomWidget || widgetTarget;
 
   $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
-  $: showWidgetInterface = showWidget && knownPlayerStyle(widgetStyle) && content.length > 0;
+  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(widgetStyle) && content.length > 0;
 
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
