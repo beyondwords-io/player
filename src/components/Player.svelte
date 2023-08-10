@@ -111,8 +111,8 @@
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
 
-  $: showInlineInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
   $: showWidgetInterface = (showBottomWidget || widgetTarget) && knownPlayerStyle(widgetStyle) && content.length > 0;
+  $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
 
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
@@ -178,7 +178,7 @@
     {widgetTarget} />
 </ExternalWidget>
 
-{#if showInlineInterface}
+{#if showStaticInterface}
   <UserInterface
     bind:this={userInterface}
     {onEvent}
