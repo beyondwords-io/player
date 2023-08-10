@@ -21,6 +21,7 @@
   export let currentTime;
   export let playbackRate;
   export let prevPercentage;
+  export let showUserInterface;
   export let videoBehindWidget;
   export let videoBehindStatic;
   export let videoMightBeShown;
@@ -231,7 +232,7 @@
 </script>
 
 {#if content.length > 0}
-  <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic || videoBehindStaticWidget} class:behind-sliding-widget={videoBehindSlidingWidget} {style}>
+  <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic || videoBehindStaticWidget} class:behind-sliding-widget={videoBehindSlidingWidget} class:headless={!showUserInterface} {style}>
     <div class="inner">
       <!-- svelte-ignore a11y-media-has-caption -->
       <video bind:this={video}
@@ -303,6 +304,10 @@
     width: 100%;
   }
 
+  .headless {
+    position: static;
+  }
+
   .behind-sliding-widget {
     display: flex;
     position: fixed;
@@ -356,5 +361,6 @@
   :global(.beyondwords-player.maximized) .media-element {
     max-width: none;
     border-radius: 0;
+    position: absolute;
   }
 </style>

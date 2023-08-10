@@ -171,6 +171,7 @@
     bind:playbackRate
     bind:prevPercentage
     bind:isLoaded
+    {showUserInterface}
     {videoBehindWidget}
     {videoBehindStatic}
     {videoMightBeShown}
