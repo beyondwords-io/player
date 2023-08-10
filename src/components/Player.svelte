@@ -110,14 +110,15 @@
   $: videoSource = loadedMedia?.format === "video";
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
+  $: showWidget = showBottomWidget || widgetTarget;
 
-  $: showWidgetInterface = (showBottomWidget || widgetTarget) && knownPlayerStyle(widgetStyle) && content.length > 0;
   $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
+  $: showWidgetInterface = showWidget && knownPlayerStyle(widgetStyle) && content.length > 0;
 
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
 
-  $: videoBehindWidget = (showBottomWidget || widgetTarget) && widgetStyle === "video" && !isFullScreen;
+  $: videoBehindWidget = showWidget && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
 
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
