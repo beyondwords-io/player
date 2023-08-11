@@ -107,7 +107,7 @@
   $: persistentAdvert = adverts[persistentIndex];
 
   $: isAdvert = activeAdvert && playbackState !== "stopped";
-  $: videoSource = loadedMedia?.format === "video";
+  $: isAudio = loadedMedia?.format === "audio";
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
   $: showWidget = showBottomWidget || widgetTarget;
@@ -126,7 +126,7 @@
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
 
-  $: showVideoPoster = !videoSource && videoMightBeShown && isLoaded;
+  $: showVideoPoster = isAudio && videoMightBeShown && isLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
