@@ -1,7 +1,9 @@
 <script>
   import("../helpers/loadTheStyles.ts");
   import "@fontsource/inter/variable.css";
+  import { onMount } from "svelte";
   import { fly } from "svelte/transition";
+  import ResizeObserver from "resize-observer-polyfill";
   import PlayPauseButton from "./buttons/PlayPauseButton.svelte";
   import PlaybackRateButton from "./buttons/PlaybackRateButton.svelte";
   import PrevButton from "./buttons/PrevButton.svelte";
@@ -65,7 +67,7 @@
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
-  let width, isHovering, timeout;
+  let element, width, isHovering, timeout;
 
   $: isSmall = playerStyle === "small";
   $: isStandard = playerStyle === "standard";
@@ -142,9 +144,17 @@
       initiatedBy: "user",
     }));
   };
+
+  onMount(() => {
+    const observer = new ResizeObserver(([entry]) => {
+      width = entry.contentRect.width;
+    });
+    observer.observe(element);
+    return () => observer.unobserve(element);
+  });
 </script>
 
-<div class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed bind:clientWidth={width} class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
+<div bind:this={element} class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
   <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
     {#if isVideo && (videoPosterImage || !videoIsBehind)}
       <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""}>
