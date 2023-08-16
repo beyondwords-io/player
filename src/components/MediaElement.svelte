@@ -278,10 +278,13 @@
     align-items: center;
     justify-content: center;
     background: black;
-    border-radius: 8px;
     overflow: hidden;
     min-width: 300px;
     max-width: 720px;
+  }
+
+  .media-element:not(.headless) {
+    border-radius: 8px;
   }
 
   .inner {
