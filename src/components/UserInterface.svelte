@@ -147,7 +147,7 @@
 
   onMount(() => {
     const observer = new ResizeObserver(([entry]) => {
-      width = entry.contentRect.width
+      width = entry.contentRect.width;
     });
     observer.observe(element);
     return () => observer.unobserve(element);
