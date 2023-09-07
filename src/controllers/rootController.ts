@@ -119,7 +119,9 @@ class RootController {
 
   handlePressedProgressBar({ ratio }) {
     this.preScrubState = this.player.playbackState;
-    this.#pauseIfPlaying();
+    this.scrubbingPauseTimeout = setTimeout(() => {
+      this.#pauseIfPlaying();
+    }, 100);
     this.#setTime((_, duration) => ratio * duration);
     if (ratio !== 0) { this.segmentPlayed = true; }
   }
@@ -131,6 +133,7 @@ class RootController {
 
   handleFinishedScrubbingProgressBar() {
     this.player.playbackState = this.preScrubState;
+    clearTimeout(this.scrubbingPauseTimeout);
     setTimeout(() => delete this.preScrubState, 500);
   }
 
