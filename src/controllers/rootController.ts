@@ -125,7 +125,7 @@ class RootController {
   }
 
   handleScrubbedProgressBar({ ratio }) {
-    this.#setTime((_, duration) => ratio * duration);
+    this.#setTime((_, duration) => ratio * duration - 0.01);
     if (ratio !== 0) { this.segmentPlayed = true; }
   }
 
