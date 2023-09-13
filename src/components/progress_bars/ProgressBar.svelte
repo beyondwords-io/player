@@ -123,8 +123,8 @@
     border-radius: 0;
   }
 
-  .full-width:hover,
-  .full-width.mouse-down {
+  .full-width:not(.readonly):hover,
+  .full-width:not(.readonly).mouse-down {
     height: 8px;
     top: -6px;
   }
