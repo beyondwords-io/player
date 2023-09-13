@@ -198,7 +198,7 @@
           <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
         {/if}
 
-        <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} color={activeTextColor} />
+        <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} {showBeyondWords} color={activeTextColor} />
 
         {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
           <ProgressBar {onEvent} {progress} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />

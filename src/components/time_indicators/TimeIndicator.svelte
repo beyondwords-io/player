@@ -14,6 +14,7 @@
   export let isStopped;
   export let collapsed;
   export let largeImage;
+  export let showBeyondWords;
   export let color = "323232";
 
   $: isScreen = playerStyle === "screen";
@@ -22,7 +23,7 @@
   $: noTransition = !isAdvert && currentTime < 0.1;
 </script>
 
-<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert_={isAdvert} class:stopped={isStopped} class:no-image={!largeImage} class:no-transition={noTransition} style={opacityCss}>
+<div class="time-indicator {playerStyle} {positionClasses}" class:mobile={isMobile} class:advert_={isAdvert} class:stopped={isStopped} class:no-image={!largeImage} class:no-logo={!showBeyondWords} class:no-transition={noTransition} style={opacityCss}>
   <div class="inner">
     {#if isAdvert && currentTime === 0}
       <!-- -->
@@ -105,6 +106,10 @@
     position: absolute;
     left: 52px;
     top: 28px;
+  }
+
+  .standard.stopped.mobile.no-logo .inner {
+    left: 24px;
   }
 
   .large .inner {
