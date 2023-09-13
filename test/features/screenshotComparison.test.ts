@@ -20,7 +20,7 @@ test("screenshot comparison", async ({ page }) => {
     const userInterface = page.locator(`.user-interface${selector}`);
 
     const playButton = page.locator(`.user-interface${selector} .play-pause-button`).first();
-    await playButton.hover();
+    await playButton.hover(params.playerStyle === "video" ? { force: true } : {});
 
     const name = `${screenshotName(params)}.png`;
     await expect(userInterface).toHaveScreenshot(name, { fullPage: true, maxDiffPixelRatio: 0.01 });
