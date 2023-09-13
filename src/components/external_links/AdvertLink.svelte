@@ -1,5 +1,6 @@
 <script>
   import newEvent from "../../helpers/newEvent";
+  import ensureProtocol from "../../helpers/ensureProtocol";
   import blurElement from "../../helpers/blurElement";
 
   export let href;
@@ -11,7 +12,15 @@
   export let isMobile;
   export let onEvent = () => {};
 
-  $: text = href && new URL(href).hostname;
+  $: hrefWithProtocol = ensureProtocol(href);
+
+  let text;
+  try {
+    text = hrefWithProtocol && new URL(hrefWithProtocol).hostname;
+  } catch (e) {
+    text = "";
+  }
+
   $: style = `font-size: ${12 * scale}px; color: ${color}; border-color: ${color}`;
 
   const handleClick = () => {
@@ -23,7 +32,7 @@
   };
 </script>
 
-<a class="advert-link {playerStyle} {controlsOrder}" href={href} {style} class:no-image={!largeImage} class:mobile={isMobile} target="_blank" on:click={handleClick} on:mouseup={blurElement}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={hrefWithProtocol} {style} class:no-image={!largeImage} class:mobile={isMobile} target="_blank" on:click={handleClick} on:mouseup={blurElement}>
   {text || ""}
 </a>
 

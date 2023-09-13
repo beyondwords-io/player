@@ -2,6 +2,7 @@
   import OpenNewTab from "../svg_icons/OpenNewTab.svelte";
   import newEvent from "../../helpers/newEvent";
   import translate from "../../helpers/translate";
+  import ensureProtocol from "../../helpers/ensureProtocol";
   import blurElement from "../../helpers/blurElement";
 
   export let href;
@@ -11,8 +12,10 @@
   export let controlsOrder;
   export let onEvent = () => {};
 
+  $: hrefWithProtocol = ensureProtocol(href);
+
   const handleClick = () => {
-    if (!href) { return; }
+    if (!hrefWithProtocol) { return; }
 
     onEvent(newEvent({
       type: "PressedAdvertButton",
@@ -22,8 +25,8 @@
   };
 </script>
 
-{#if href}
-  <a class="advert-button {playerStyle} {controlsOrder}" {href} target="_blank" on:click={handleClick} style="outline-offset: {3.2 * scale}px" on:mouseup={blurElement} aria-label={translate("visitAdvert")}>
+{#if hrefWithProtocol}
+  <a class="advert-button {playerStyle} {controlsOrder}" href={hrefWithProtocol} target="_blank" on:click={handleClick} style="outline-offset: {3.2 * scale}px" on:mouseup={blurElement} aria-label={translate("visitAdvert")}>
     <OpenNewTab {color} {scale} />
   </a>
 {:else}
