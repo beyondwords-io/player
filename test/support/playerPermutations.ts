@@ -39,11 +39,13 @@ const dimensions = {
   widgetStyle: ["none"],
   widgetWidth: [0, "50%", "auto"],
   playlistStyle: ["auto"],
+  logoIconEnabled: [true, false],
 };
 
 const skipPermutation = (params) => {
   const testingTheWidget = params.widgetPosition;
   const testingNoImage = !params.adverts[0].imageUrl;
+  const testingNoLogo = !params.logoIconEnabled;
 
   const advertWouldntShow = params.advertIndex === 0 && params.playbackState === "stopped";
   if (advertWouldntShow) { return true; }
@@ -54,7 +56,7 @@ const skipPermutation = (params) => {
   const playlistWouldntShow = (testingTheWidget || params.playerStyle === "small") && params.content.length > 1;
   if (playlistWouldntShow) { return true; }
 
-  const downloadWouldntShow = params.downloadFormats && (
+  const downloadWouldntShow = params.downloadFormats.length > 0 && (
     params.advertIndex === 0 ||
     params.playbackState === "stopped" ||
     params.playerStyle === "screen" && params.content[0].sourceUrl ||
@@ -64,6 +66,9 @@ const skipPermutation = (params) => {
 
   const widthIsIrrelevant = !testingTheWidget && params.widgetWidth !== "auto";
   if (widthIsIrrelevant) { return true; }
+
+  const logoIsIrrelevant = testingNoLogo && (params.widgetPosition || (params.advertIndex === 0 && params.playerStyle !== "screen"));
+  if (logoIsIrrelevant) { return true; }
 
   return false;
 };

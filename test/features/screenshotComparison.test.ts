@@ -55,5 +55,6 @@ const screenshotName = (params) => (
     params.content.length > 1 && "playlist",
     params.widgetPosition && `widget-${params.widgetPosition}-${params.widgetWidth}`.replace("%", ""),
     params.downloadFormats.length > 0 && "download",
+    !params.logoIconEnabled && "no-logo",
   ].filter(s => s).join("-")
 );
