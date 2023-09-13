@@ -637,7 +637,16 @@
   :global(.video.advert_ .hoverable):focus-within .controls > :global(.advert-link),
   .video.advert_.stopped .controls > :global(.advert-link),
   .video.advert_.hovering .controls > :global(.advert-link) {
-    bottom: 76px;
+    bottom: 72px;
+  }
+
+  :global(.video.advert_.mobile .hoverable):focus-within .controls > :global(.time-indicator),
+  .video.advert_.mobile.stopped .controls > :global(.time-indicator),
+  .video.advert_.mobile.hovering .controls > :global(.time-indicator),
+  :global(.video.advert_.mobile .hoverable):focus-within .controls > :global(.advert-link),
+  .video.advert_.mobile.stopped .controls > :global(.advert-link),
+  .video.advert_.mobile.hovering .controls > :global(.advert-link) {
+    bottom: 66px;
   }
 
   .video.advert_.mobile .controls > :global(.time-indicator) {
