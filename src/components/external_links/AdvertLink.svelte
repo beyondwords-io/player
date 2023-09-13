@@ -15,10 +15,12 @@
   $: hrefWithProtocol = ensureProtocol(href);
 
   let text;
-  try {
-    text = hrefWithProtocol && new URL(hrefWithProtocol).hostname;
-  } catch (e) {
-    text = "";
+  $: {
+    try {
+      text = hrefWithProtocol && new URL(hrefWithProtocol).hostname;
+    } catch (e) {
+      text = "";
+    }
   }
 
   $: style = `font-size: ${12 * scale}px; color: ${color}; border-color: ${color}`;
