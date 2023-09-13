@@ -230,13 +230,15 @@
         {/if}
       </div>
 
-      <div class="end" class:logo-image-right={logoImagePosition !== "top-left"} class:has-content={showCloseWidget || (showBeyondWords && !isVideo)} >
-        {#if showCloseWidget}
-          <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
-        {:else if showBeyondWords && !isVideo}
-          <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
-        {/if}
-      </div>
+      {#if showCloseWidget || (showBeyondWords && !isVideo) || (!isAdvert && !isSmall)}
+        <div class="end" class:logo-image-right={logoImagePosition !== "top-left"} class:has-content={showCloseWidget || (showBeyondWords && !isVideo)} >
+          {#if showCloseWidget}
+            <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
+          {:else if showBeyondWords && !isVideo}
+            <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+          {/if}
+        </div>
+      {/if}
     </div>
   </Hoverable>
 
