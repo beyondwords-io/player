@@ -10,6 +10,7 @@
   export let controlsOrder;
   export let largeImage;
   export let isMobile;
+  export let endVisible;
   export let onEvent = () => {};
 
   $: hrefWithProtocol = ensureProtocol(href);
@@ -34,7 +35,7 @@
   };
 </script>
 
-<a class="advert-link {playerStyle} {controlsOrder}" href={hrefWithProtocol} {style} class:no-image={!largeImage} class:mobile={isMobile} target="_blank" on:click={handleClick} on:mouseup={blurElement}>
+<a class="advert-link {playerStyle} {controlsOrder}" href={hrefWithProtocol} {style} class:no-image={!largeImage} class:no-end={!endVisible} class:mobile={isMobile} target="_blank" on:click={handleClick} on:mouseup={blurElement}>
   {text || ""}
 </a>
 
@@ -74,6 +75,14 @@
 
   .screen.no-image.mobile {
     top: 100px;
+  }
+
+  .screen.no-end {
+    top: 140px;
+  }
+
+  .screen.no-image.no-end {
+    top: 24px;
   }
 
   a.video {

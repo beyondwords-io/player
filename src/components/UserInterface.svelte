@@ -205,7 +205,7 @@
         {/if}
 
         {#if isAdvert && !forcedCollapsed}
-          <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} />
+          <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} endVisible={showBeyondWords || showCloseWidget} />
           <AdvertButton {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={activeIconColor} />
         {/if}
 
