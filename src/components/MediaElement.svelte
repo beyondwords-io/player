@@ -3,7 +3,7 @@
   import VastContainer from "./VastContainer.svelte";
   import orderedMediaSources from "../helpers/orderedMediaSources";
   import loadHlsIfNeeded from "../helpers/loadHlsIfNeeded";
-  import loadMedia from "../helpers/loadMedia";
+  import { loadMetadata, loadMedia } from "../helpers/loadMedia";
   import timeFragment, { EPSILON } from "../helpers/timeFragment";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
@@ -54,6 +54,9 @@
   $: contentItem = content[contentIndex];
   $: segments = contentItem?.segments || [];
 
+  $: vastUrl = activeAdvert?.vastUrl;
+  $: customUrl = activeAdvert?.clickThroughUrl;
+
   $: contentIndex, introOrOutro, activeAdvert, loadCount += 1;
   $: isFirstLoad = loadCount === 1;
   $: startPosition = isFirstLoad && initialTime;
@@ -68,11 +71,9 @@
   $: sources, prevPercentage = 0;
 
   $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
-  $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, startPosition);
+  $: hls = loadMetadata(sources[0], video, Hls, hls, handleHlsError, play);
 
-  $: vastUrl = activeAdvert?.vastUrl;
-  $: customUrl = activeAdvert?.clickThroughUrl;
-
+  $: playbackState === "playing" && loadMedia(hls, startPosition);
   $: isLoaded && !vastUrl && (playbackState === "playing" ? play() : pause());
 
   $: videoBehindStaticWidget = videoBehindWidget && widgetTarget;
