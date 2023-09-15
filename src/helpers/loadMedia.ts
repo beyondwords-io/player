@@ -14,9 +14,14 @@ const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
   if (useHlsLibrary(source, video)) {
     if (!Hls) { return "pending"; } // loadMedia will be re-called once Hls is ready.
 
-    hls = new Hls({ enableWorker: false, startPosition, ...hlsLoadPolicies() });
-    hls.on(Hls.Events.ERROR, onError);
+    hls = new Hls({
+      enableWorker: false, // Don't use web workers since it's not our website.
+      maxBufferLength: 5,  // Load audio fragments 5 seconds in advance.
+      startPosition,       // Set the initial time from currentTime set in props.
+      ...hlsLoadPolicies() // Specify the retry logic (always retry, never error).
+    });
 
+    hls.on(Hls.Events.ERROR, onError);
     hls.loadSource(source.url);
     hls.attachMedia(video);
   } else if (wrongSource) {
