@@ -1,4 +1,5 @@
 import { useHlsLibrary } from "./loadHlsIfNeeded";
+import hlsLoadPolicies from "./hlsLoadPolicies";
 
 const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
   hls?.detachMedia?.();
@@ -13,7 +14,7 @@ const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
   if (useHlsLibrary(source, video)) {
     if (!Hls) { return "pending"; } // loadMedia will be re-called once Hls is ready.
 
-    hls = new Hls({ enableWorker: false, startPosition });
+    hls = new Hls({ enableWorker: false, startPosition, ...hlsLoadPolicies() });
     hls.on(Hls.Events.ERROR, onError);
 
     hls.loadSource(source.url);
