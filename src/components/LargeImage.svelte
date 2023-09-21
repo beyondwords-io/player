@@ -28,7 +28,6 @@
 
 <style>
   .large-image {
-    background: rgba(0, 0, 0, 0.5);
     border-radius: 6px;
     overflow: hidden;
     grid-row: 1 / span 2;
