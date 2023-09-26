@@ -2,6 +2,8 @@ import { useHlsLibrary } from "./loadHlsIfNeeded";
 import hlsLoadPolicies from "./hlsLoadPolicies";
 
 const loadMedia = (source, video, Hls, hls, onError, play, startPosition) => {
+  if (window.disableMediaLoad) { return; }
+
   hls?.detachMedia?.();
   hls?.destroy?.();
 
