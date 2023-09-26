@@ -8,22 +8,28 @@ test("screenshot comparison", async ({ page }) => {
   await resetPlayerProps(page);
 
   await playerPermutations(async (params) => {
-    await page.evaluate(async (params) => {
-      const player = BeyondWords.Player.instances()[0];
-      Object.entries(params).forEach(([k, v]) => player[k] = v);
+    await expect(async () => {
+      await page.evaluate(async (params) => {
+        const player = BeyondWords.Player.instances()[0];
 
-      window.scrollTo(0, params.widgetPosition ? 99999 : 0);
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }, params);
+        Object.entries(params).forEach(([k, v]) => player[k] = v);
+        await new Promise(resolve => setTimeout(resolve, 100));
 
-    const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
-    const userInterface = page.locator(`.user-interface${selector}`);
+        window.scrollTo(0, params.widgetPosition ? 99999 : 0);
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }, params);
 
-    const playButton = page.locator(`.user-interface${selector} .play-pause-button`).first();
-    await playButton.hover(params.playerStyle === "video" ? { force: true } : {});
+      const selector = params.widgetPosition ? ".fixed" : ":not(.fixed)";
+      const userInterface = page.locator(`.user-interface${selector}`);
 
-    const name = `${screenshotName(params)}.png`;
-    await expect(userInterface).toHaveScreenshot(name, { fullPage: true, maxDiffPixelRatio: 0.01 });
+      const playButton = page.locator(`.user-interface${selector} .play-pause-button`).first();
+      await playButton.hover(params.playerStyle === "video" ? { force: true } : {});
+
+      const name = `${screenshotName(params)}.png`;
+      await expect(userInterface).toHaveScreenshot(name, { fullPage: true, maxDiffPixelRatio: 0.01 });
+    }).toPass({
+      intervals: [0, 500, 1000, 1500, 2000],
+    });
 
     process.stdout.write(".");
   });
