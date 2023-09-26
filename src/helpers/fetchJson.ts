@@ -1,7 +1,7 @@
 import throwError from "../helpers/throwError";
 
 const fetchJson = async (url, fetchOptions = {}) => {
-  fetchOptions.headers ||= {}
+  fetchOptions.headers ||= {};
   fetchOptions.headers["X-Referer"] = window.location.href;
 
   const response = await fetch(url, fetchOptions).catch(() => {});

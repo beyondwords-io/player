@@ -64,8 +64,8 @@
   $: album = ""; // TODO: maybe set to playlistTitle
 
   $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
-  $: navigator.mediaSession.playbackState = playbackState === "stopped" ? "none" : playbackState
-  $: navigator.mediaSession.setPositionState({ playbackRate, position: currentTime, duration })
+  $: navigator.mediaSession.playbackState = playbackState === "stopped" ? "none" : playbackState;
+  $: navigator.mediaSession.setPositionState({ playbackRate, position: currentTime, duration });
   $: navigator.mediaSession.setByPlayer = true;
 
   // Remove existing handlers, e.g. set by the user's website or other players.
