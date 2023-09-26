@@ -4,7 +4,9 @@ import AxeBuilder from "@axe-core/playwright";
 
 test("accessibility standards", async ({ page }) => {
   await page.goto("http://localhost:8000");
-  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  await waitForStylesToLoad(page);
+  await resetPlayerProps(page);
 
   await playerPermutations(async (params) => {
     await page.evaluate(async (params) => {
@@ -24,3 +26,20 @@ test("accessibility standards", async ({ page }) => {
     process.stdout.write(".");
   });
 });
+
+const waitForStylesToLoad = async (page) => {
+  await page.evaluate(async () => {
+    await new Promise(resolve => {
+      setInterval(() => BeyondWords.Player._styleLoaded && resolve(), 100);
+      window.disableAnimation = true;
+    });
+  });
+};
+
+const resetPlayerProps = async (page) => {
+  await page.evaluate(async () => {
+    BeyondWords.Player.destroyAll();
+    new BeyondWords.Player({ target: ".beyondwords-player" });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  });
+};
