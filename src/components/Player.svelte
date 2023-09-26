@@ -329,6 +329,8 @@
     {contentIndex}
     {activeAdvert}
     {persistentAdvert}
+    {playbackRate}
+    {currentTime}
     {duration}
     {playbackState}
     {skipButtonStyle}
