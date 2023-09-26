@@ -14,7 +14,7 @@ test("accessibility standards", async ({ page }) => {
       Object.entries(params).forEach(([k, v]) => player[k] = v);
 
       window.scrollTo(0, params.widgetPosition ? 99999 : 0);
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 50));
     }, params);
 
     const results = await new AxeBuilder({ page })
