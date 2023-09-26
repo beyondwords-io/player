@@ -29,6 +29,7 @@ test("screenshot comparison", async ({ page }) => {
       await expect(userInterface).toHaveScreenshot(name, { fullPage: true, maxDiffPixelRatio: 0.01 });
     }).toPass({
       intervals: [0, 500, 1000, 1500, 2000],
+      timeout: 5000,
     });
 
     process.stdout.write(".");
@@ -40,6 +41,7 @@ const waitForStylesToLoad = async (page) => {
     await new Promise(resolve => {
       setInterval(() => BeyondWords.Player._styleLoaded && resolve(), 100);
       window.disableAnimation = true;
+      window.disableMediaLoad = true;
     });
   });
 };
