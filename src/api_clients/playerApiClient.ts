@@ -6,23 +6,27 @@ class PlayerApiClient {
   }
 
   byContentId(id) {
-    return fetchJson(`${this.baseUrl}/by_content_id/${id}`);
+    return this.#fetchJson(`by_content_id/${id}`);
   }
 
   byPlaylistId(id) {
-    return fetchJson(`${this.baseUrl}/by_playlist_id/${id}`);
+    return this.#fetchJson(`by_playlist_id/${id}`);
   }
 
   bySourceId(id) {
-    return fetchJson(`${this.baseUrl}/by_source_id/${id}`);
+    return this.#fetchJson(`by_source_id/${id}`);
   }
 
   bySourceUrl(url) {
-    return fetchJson(`${this.baseUrl}/by_source_url/${url}`);
+    return this.#fetchJson(`by_source_url/${url}`);
   }
 
   byIdentifiers(array) {
-    return fetchJson(`${this.baseUrl}/by_identifiers/${encodeURIComponent(JSON.stringify(array))}`);
+    return this.#fetchJson(`by_identifiers/${encodeURIComponent(JSON.stringify(array))}`);
+  }
+
+  #fetchJson(path) {
+    return fetchJson(`${this.baseUrl}/${path}`, { headers: { "X-Referer": window.location.href } });
   }
 }
 
