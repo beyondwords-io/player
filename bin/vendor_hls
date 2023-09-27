@@ -15,8 +15,7 @@
 #
 # Note that when Hls is loaded from dist/ in production mode, it loads a UMD
 # module rather than an ES module. Because of this, there is no default export
-# and Hls is added to the global window object. The loadMedia.ts script tries to
-# prevent overriding any existing Hls value that might be set on window.
+# and Hls is added to the global window object.
 #
 # Note that imports are cached, so if you try to import the UMD module more than
 # once, it will only have the side effect of setting window.Hls the first time.
