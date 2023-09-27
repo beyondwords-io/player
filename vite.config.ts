@@ -17,7 +17,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "src/index.ts"),
-      name: "BeyondWords",
+      name: "_beyond_words_player",
       fileName: format => `${format}.js`,
     },
     sourcemap: true,
