@@ -509,7 +509,6 @@
 
   .video {
     min-width: 300px;
-    max-width: 720px;
     border-radius: 8px;
     transition: background-color 0.25s;
   }
@@ -779,7 +778,6 @@
   }
 
   :global(.beyondwords-player.maximized) .video {
-    max-width: none;
     width: 100%;
     height: 100%;
   }
