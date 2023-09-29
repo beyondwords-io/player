@@ -135,6 +135,8 @@ const setContentProp = (player, data) => {
     })),
     segments: item.segments.map((segment) => ({
       marker: segment.marker,
+      xpath: segment.xpath,
+      md5: segment.md5,
       section: segment.section,
       startTime: segment.start_time ? segment.start_time / 1000 : 0,
       duration: segment.duration ? segment.duration / 1000 : 0,
