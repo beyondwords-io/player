@@ -15,8 +15,6 @@
   export let contentIndex = 0;
   export let activeAdvert = undefined;
   export let persistentAdvert = undefined;
-  export let playbackRate = 1;
-  export let currentTime = 0;
   export let duration = 0;
   export let playbackState = "stopped";
   export let skipButtonStyle = "auto";
@@ -64,8 +62,6 @@
   $: album = ""; // TODO: maybe set to playlistTitle
 
   $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
-  $: navigator.mediaSession.playbackState = playbackState === "stopped" ? "none" : playbackState;
-  $: navigator.mediaSession.setPositionState({ playbackRate, position: currentTime, duration });
   $: navigator.mediaSession.setByPlayer = true;
 
   // Remove existing handlers, e.g. set by the user's website or other players.
@@ -149,6 +145,7 @@
     }));
   } : null);
 
+  // TODO: maybe set playbackState/positionState if it isn't working for VAST ads.
   // TODO: if skipButtonStyle is tracks but there's only one track, should we change it?
 </script>
 
