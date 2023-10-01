@@ -1,35 +1,40 @@
-import { dataAttribute } from "./segmentHighlights";
+import chooseSegmentPerPlayer from "./chooseSegmentPerPlayer";
 import newEvent from "./newEvent";
 
-let called = false;
+let listening = false;
 
 const listenToSegments = () => {
-  if (called) { return; }
-  called = true;
+  if (listening) { return; }
 
   addEventListener("mousedown", handleMouseDown);
-  addEventListener("click", handleMouseUp);
+  addEventListener("click", handleClick);
   addEventListener("mousemove", handleMouseMove);
+
+  listening = true;
 };
+
+let mouseDownX, mouseDownY;
 
 const handleMouseDown = (event) => {
-  startX = event.pageX;
-  startY = event.pageY;
+  mouseDownX = event.pageX;
+  mouseDownY = event.pageY;
 };
 
-const handleMouseUp = (event) => {
+const mouseWasDragged = (event) => {
+  const movedX = event.pageX - mouseDownX;
+  const movedY = event.pageY - mouseDownY;
+
+  const moved = Math.sqrt(movedX * movedX + movedY * movedY);
+  return moved > 5;
+};
+
+const handleClick = (event) => {
   if (event.defaultPrevented) { return; }
-  if (draggedMouse(event)) { return; }
+  if (mouseWasDragged(event)) { return; }
   if (event.button !== 0) { return; }
 
-  const marker = markerElement(event.target)?.getAttribute(dataAttribute);
-  if (!marker) { return; }
-
-  for (const player of BeyondWords.Player.instances()) {
-    const { segment, contentIndex, segmentIndex } = chooseSegment(player, marker);
+  for (const { player, segment, contentIndex, segmentIndex, segmentElement, precedence } of chooseSegmentPerPlayer(event.target)) {
     if (!segment) { continue; }
-
-    // TODO: if multiple players then prefer the one that's playing?
 
     player.onEvent(newEvent({
       type: "PressedSegment",
@@ -39,86 +44,36 @@ const handleMouseUp = (event) => {
       segment,
       contentIndex,
       segmentIndex,
+      segmentElement,
+      precedence,
     }));
   }
 };
 
 const handleMouseMove = (event) => {
-  const target = document.elementFromPoint(event.clientX, event.clientY);
-  const marker = markerElement(target)?.getAttribute(dataAttribute);
+  for (const { p, player, segment, contentIndex, segmentIndex, segmentElement, precedence } of chooseSegmentPerPlayer(event.target)) {
+    if (!segment) { continue; }
+    if (!hoveredChanged(p, contentIndex, segmentIndex)) { continue; }
 
-  // TODO: if multiple players?
-
-  for (const [i, player] of BeyondWords.Player.instances().entries()) {
-    const { segment, contentIndex, segmentIndex } = chooseSegment(player, marker);
-
-    if (changed(i, contentIndex, segmentIndex)) {
-      player.onEvent(newEvent({
-        type: "HoveredSegmentUpdated",
-        description: "The user hovered over a different segment in the article.",
-        initiatedBy: "user",
-        emittedFrom: "segment",
-        segment,
-        contentIndex,
-        segmentIndex,
-      }));
-    }
+    player.onEvent(newEvent({
+      type: "HoveredSegmentUpdated",
+      description: "The user hovered over a different segment in the article.",
+      initiatedBy: "user",
+      emittedFrom: "segment",
+      segment,
+      contentIndex,
+      segmentIndex,
+      segmentElement,
+      precedence,
+    }));
   }
 };
 
-const markerElement = (target) => {
-  while (target && target.hasAttribute) {
-    if (target.hasAttribute(dataAttribute)) { return target; }
+const hoveredIndexes = {};
 
-    if (target.onclick || target.onmousedown) { return; }
-    if (target.nodeName.toLowerCase() === "a") { return; }
-
-    target = target.parentNode;
-  }
-};
-
-const chooseSegment = (player, marker) => {
-  if (!marker) { return {}; }
-
-  let bestSoFar = {};
-  let bestContent = -Infinity;
-
-  for (const [i, content] of (player.content || []).entries()) {
-    for (const [j, segment] of (content.segments || []).entries()) {
-      if (marker !== segment.marker) { continue; }
-
-      // If the segment appears in the content more than once then choose the first
-      // segment that matches the player's contentIndex to avoid changing tracks.
-      const thisContent = player.contentIndex === i ? 1 : 0;
-      if (thisContent < bestContent) { continue; }
-
-      // If the marker appears in the segments more than once then choose the first
-      // segment so that playback starts from the earliest segment.
-      if (thisContent === bestContent && bestSoFar?.segment) { continue; }
-
-      bestSoFar = { contentIndex: i, segmentIndex: j, segment };
-      bestContent = thisContent;
-    }
-  }
-
-  return bestSoFar;
-};
-
-let startX, startY;
-
-const draggedMouse = (event) => {
-  const movedX = event.pageX - startX;
-  const movedY = event.pageY - startY;
-
-  const moved = Math.sqrt(movedX * movedX + movedY * movedY);
-  return moved > 5;
-};
-
-const previousIndexes = {};
-
-const changed = (playerIndex, contentIndex, segmentIndex) => {
-  previousIndexes[playerIndex] ||= {};
-  const previous = previousIndexes[playerIndex];
+const hoveredChanged = (playerIndex, contentIndex, segmentIndex) => {
+  hoveredIndexes[playerIndex] ||= {};
+  const previous = hoveredIndexes[playerIndex];
 
   if (previous.contentIndex === contentIndex && previous.segmentIndex === segmentIndex) {
     return false;
