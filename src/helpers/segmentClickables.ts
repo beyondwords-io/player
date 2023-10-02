@@ -16,18 +16,26 @@ class SegmentClickables {
     const previous = this.previous;
     const current = enabled ? segment?.segmentElement : null;
 
-    if (current) { SegmentClickables.#mediator.addInterest(current, this); }
+    if (current) { SegmentClickables.#mediator.addInterest(current, this, segment.marker); }
     if (previous) { SegmentClickables.#mediator.removeInterest(previous, this); }
 
     this.previous = current;
   }
 
-  static #addClasses(segmentElement) {
+  static #addClasses(segmentElement, marker) {
     segmentElement.classList.add(...clickableClasses);
+    if (!marker) { return; }
+
+    const markerElements = document.querySelectorAll(`[data-beyondwords-marker="${marker}"]`);
+    for (const element of markerElements) { element.classList.add(...clickableClasses); }
   }
 
-  static #removeClasses(segmentElement) {
+  static #removeClasses(segmentElement, marker) {
     safelyRemoveClasses(segmentElement, clickableClasses);
+    if (!marker) { return; }
+
+    const markerElements = document.querySelectorAll(`[data-beyondwords-marker="${marker}"]`);
+    for (const element of markerElements) { safelyRemoveClasses(element, clickableClasses); }
   }
 }
 
