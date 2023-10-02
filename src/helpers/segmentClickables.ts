@@ -1,16 +1,11 @@
 import OwnershipMediator from "./ownershipMediator";
 import sectionEnabled from "./sectionEnabled";
-import { dataAttribute } from "./segmentHighlights";
 
-const markerClasses = ["beyondwords-clickable", "bwp"]; // Also set by SegmentContainers.
+const clickableClasses = ["beyondwords-clickable", "bwp"]; // Also set by SegmentContainers.
 
 // This class only adds/removes a className to show 'cursor: pointer' when hovering.
 // An event is always emitted when you click on a segment and RootController
 // decides whether to act on it by checking if its section is in clickableSections.
-//
-// We don't add 'cursor: pointer' to all data-beyondwords-marker elements becuase
-// some might not be clickable if the marker isn't in the content's segments. It
-// would be confusing if the pointer icon showed but nothing happened when clicking.
 
 class SegmentClickables {
   static #mediator = new OwnershipMediator(this.#addClasses, this.#removeClasses);
@@ -19,7 +14,7 @@ class SegmentClickables {
     const enabled = sectionEnabled("hovered", segment, sections);
 
     const previous = this.previous;
-    const current = enabled ? segment?.marker : null;
+    const current = enabled ? segment?.segmentElement : null;
 
     if (current) { SegmentClickables.#mediator.addInterest(current, this); }
     if (previous) { SegmentClickables.#mediator.removeInterest(previous, this); }
@@ -27,20 +22,12 @@ class SegmentClickables {
     this.previous = current;
   }
 
-  static #addClasses(marker) {
-    const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
-
-    for (const element of markerElements) {
-      element.classList.add(...markerClasses);
-    }
+  static #addClasses(segmentElement) {
+    segmentElement.classList.add(...clickableClasses);
   }
 
-  static #removeClasses(marker) {
-    const markerElements = document.querySelectorAll(`[${dataAttribute}="${marker}"]`);
-
-    for (const element of markerElements) {
-      safelyRemoveClasses(element, markerClasses);
-    }
+  static #removeClasses(segmentElement) {
+    safelyRemoveClasses(segmentElement, clickableClasses);
   }
 }
 

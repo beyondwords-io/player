@@ -145,11 +145,11 @@
   $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker;
   $: showRealTimeInWidget = widgetIsCurrent || activeAdvert || introOrOutro;
 
-  $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
+  //$: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: segmentHighlights.update("current", currentSegment, highlightSections, highlightColor);
-  $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor);
+  //$: segmentHighlights.update("current", currentSegment, highlightSections, highlightColor);
+  //$: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor);
 
   // TODO: if timedTransitions changes then re-apply all transitions.
   // TODO: don't apply transitions during intros/adverts.
