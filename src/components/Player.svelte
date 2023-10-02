@@ -11,6 +11,7 @@
   import SegmentClickables from "../helpers/segmentClickables";
   import SegmentHighlights from "../helpers/segmentHighlights";
   import identifiersEvent from "../helpers/identifiersEvent";
+  import newEvent from "../helpers/newEvent";
   import onStatusChange from "../helpers/onStatusChange";
   import sectionEnabled from "../helpers/sectionEnabled";
   import applyTransitions from "../helpers/applyTransitions";
@@ -130,6 +131,11 @@
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
+  $: mediaSession, onEvent(newEvent({
+    type: "MediaSessionChanged",
+    description: "The Player's mediaSession changed.",
+    initiatedBy: "browser",
+  }))
   $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
   $: lastHovered = hoveredSegment || lastHovered;

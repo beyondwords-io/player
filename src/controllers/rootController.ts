@@ -142,6 +142,11 @@ class RootController {
     });
   }
 
+  handleMediaSessionChanged() {
+    if (this.player.playbackState === "stopped") { return; }
+    chooseMediaSession(this.PlayerClass);
+  }
+
   handleNoContentAvailable({ description }) {
     console.warn(`BeyondWords.Player: ${description}`);
   }
