@@ -1,4 +1,5 @@
 import OwnershipMediator from "./ownershipMediator";
+import SegmentIdGenerator from "./segmentIdGenerator";
 import sectionEnabled from "./sectionEnabled";
 
 const markClasses = (id) => ["beyondwords-highlight", "bwp", `id-${id}`];
@@ -7,14 +8,14 @@ class SegmentHighlights {
   static #mediator = new OwnershipMediator(this.#addHighlights, this.#removeHighlights);
 
   constructor() {
-    this.randomIds = new WeakMap();
+    this.ids = new SegmentIdGenerator();
   }
 
   update(type, segment, sections, background) {
     const enabled = sectionEnabled(type, segment, sections);
 
     const previous = this[`prev${type}`];
-    const current = enabled ? this.#uniqueId(segment) : null;
+    const current = enabled ? this.ids.fetchOrAdd(segment) : null;
 
     if (current) { SegmentHighlights.#mediator.addInterest(current, this, this, segment, background); }
     if (previous) { SegmentHighlights.#mediator.removeInterest(previous, this); }
@@ -67,22 +68,6 @@ class SegmentHighlights {
     }
 
     return set;
-  }
-
-  // Give each segment a uniqueId per player so that we don't remove the
-  // highlight for a segmentElement when other players might still want to show it.
-  #uniqueId(segment) {
-    if (!segment?.segmentElement) { return null; }
-    if (segment.marker) { return segment.marker; }
-
-    const exists = this.uniqueIds.has(segment.segmentElement);
-    if (!exists) { this.uniqueIds.set(segment.segmentElement, this.#randomId()); }
-
-    return this.randomIds.get(segment.segmentElement);
-  }
-
-  #randomId() {
-    return Math.random().toString(36).substring(2);
   }
 }
 

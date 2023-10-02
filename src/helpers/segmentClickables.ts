@@ -1,4 +1,5 @@
 import OwnershipMediator from "./ownershipMediator";
+import SegmentIdGenerator from "./segmentIdGenerator";
 import sectionEnabled from "./sectionEnabled";
 
 const clickableClasses = ["beyondwords-clickable", "bwp"]; // Also set by SegmentContainers.
@@ -11,14 +12,14 @@ class SegmentClickables {
   static #mediator = new OwnershipMediator(this.#addClasses, this.#removeClasses);
 
   constructor() {
-    this.randomIds = new WeakMap();
+    this.ids = new SegmentIdGenerator();
   }
 
   update(segment, sections) {
     const enabled = sectionEnabled("hovered", segment, sections);
 
     const previous = this.previous;
-    const current = enabled ? this.#uniqueId(segment) : null;
+    const current = enabled ? this.ids.fetchOrAdd(segment) : null;
 
     if (current) { SegmentClickables.#mediator.addInterest(current, this, segment); }
     if (previous) { SegmentClickables.#mediator.removeInterest(previous, this); }
@@ -40,22 +41,6 @@ class SegmentClickables {
 
     const markerElements = document.querySelectorAll(`[data-beyondwords-marker="${segment.marker}"]`);
     for (const element of markerElements) { safelyRemoveClasses(element, clickableClasses); }
-  }
-
-  // Give each segment a uniqueId per player so that we don't remove the
-  // highlight for a segmentElement when other players might still want to show it.
-  #uniqueId(segment) {
-    if (!segment?.segmentElement) { return null; }
-    if (segment.marker) { return segment.marker; }
-
-    const exists = this.uniqueIds.has(segment.segmentElement);
-    if (!exists) { this.uniqueIds.set(segment.segmentElement, this.#randomId()); }
-
-    return this.randomIds.get(segment.segmentElement);
-  }
-
-  #randomId() {
-    return Math.random().toString(36).substring(2);
   }
 }
 

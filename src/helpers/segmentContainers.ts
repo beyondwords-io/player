@@ -1,4 +1,5 @@
 import OwnershipMediator from "./ownershipMediator";
+import SegmentIdGenerator from "./segmentIdGenerator";
 import { safelyRemoveClasses } from "./segmentClickables";
 
 const containerClasses = (id, p, s) => ["beyondwords-widget", "bwp", `id-${id}`, `position-${p}`, `for-${s}-player`];
@@ -10,7 +11,7 @@ class SegmentContainers {
   constructor(onUpdate) {
     this.onUpdate = onUpdate;
     this.containers = [];
-    this.randomIds = new WeakMap();
+    this.ids = new SegmentIdGenerator();
   }
 
   update(maybeSegment, sections, position, playerStyle) {
@@ -18,7 +19,7 @@ class SegmentContainers {
     const segment = maybeSegment || sticky && this.previous;
 
     const previous = this.previous;
-    const current = this.#uniqueId(segment);
+    const current = this.ids.fetchOrAdd(segment);
 
     if (current) { SegmentContainers.#mediator.addInterest(current, this, this, segment, position, playerStyle); }
     if (previous) { SegmentContainers.#mediator.removeInterest(previous, this); }
@@ -70,22 +71,6 @@ class SegmentContainers {
     }
 
     self.onUpdate(self.containers);
-  }
-
-  // Give each segment a uniqueId per player so that we don't remove the
-  // highlight for a segmentElement when other players might still want to show it.
-  #uniqueId(segment) {
-    if (!segment?.segmentElement) { return null; }
-    if (segment.marker) { return segment.marker; }
-
-    const exists = this.uniqueIds.has(segment.segmentElement);
-    if (!exists) { this.uniqueIds.set(segment.segmentElement, this.#randomId()); }
-
-    return this.randomIds.get(segment.segmentElement);
-  }
-
-  #randomId() {
-    return Math.random().toString(36).substring(2);
   }
 }
 
