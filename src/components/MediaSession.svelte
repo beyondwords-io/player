@@ -1,5 +1,5 @@
 <script>
-  import { tick } from "svelte";
+  import { onMount, tick } from "svelte";
   import VolumeUp from "./svg_icons/VolumeUp.svelte";
   import blobForImageUrl from "../helpers/blobForImageUrl";
   import blobForSvgNode from "../helpers/blobForSvgNode";
@@ -64,11 +64,7 @@
   $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
   $: navigator.mediaSession.setByPlayer = true;
 
-  // Remove existing handlers, e.g. set by the user's website or other players.
-  $: actionTypes.forEach(type => {
-    // Chrome doesn't support the 'skipad' action type and throws an error.
-    try { navigator.mediaSession.setActionHandler(type, null); } catch (e) { /* Ignore */ }
-  });
+  $: resetActionHandlers();
 
   $: navigator.mediaSession.setActionHandler("play", () => {
     onEvent(newEvent({
@@ -144,6 +140,21 @@
       initiatedBy: "media-session-api",
     }));
   } : null);
+
+  const resetActionHandlers = () => {
+    // Remove existing handlers, e.g. set by the user's website or other players.
+    actionTypes.forEach(type => {
+      // Chrome doesn't support the 'skipad' action type and throws an error.
+      try { navigator.mediaSession.setActionHandler(type, null); } catch (e) { /* Ignore */ }
+    });
+  }
+
+  onMount(() => {
+    return () => {
+      navigator.mediaSession.metadata = null;
+      resetActionHandlers();
+    };
+  });
 
   // TODO: maybe set playbackState/positionState if it isn't working for VAST ads.
   // TODO: if skipButtonStyle is tracks but there's only one track, should we change it?
