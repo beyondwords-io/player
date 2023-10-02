@@ -10,16 +10,17 @@ class SegmentContainers {
   constructor(onUpdate) {
     this.onUpdate = onUpdate;
     this.containers = [];
-    this.uniqueIds = new WeakMap();
+    this.randomIds = new WeakMap();
   }
 
-  update(segment, sections, position, playerStyle) {
+  update(maybeSegment, sections, position, playerStyle) {
     const sticky = sections.includes("all") || sections.includes("body");
+    const segment = maybeSegment || sticky && this.previous;
 
     const previous = this.previous;
-    const current = segment?.segmentElement || (sticky && previous?.segmentElement);
+    const current = this.#uniqueId(segment);
 
-    if (current) { SegmentContainers.#mediator.addInterest(current, this, this, position, playerStyle); }
+    if (current) { SegmentContainers.#mediator.addInterest(current, this, this, segment, position, playerStyle); }
     if (previous) { SegmentContainers.#mediator.removeInterest(previous, this); }
 
     this.previous = current;
@@ -29,9 +30,8 @@ class SegmentContainers {
     this.update(null, "none");
   }
 
-  static #addContainers(segmentElement, self, position, playerStyle) {
-    const uniqueId = self.#uniqueId(segmentElement);
-    const element = segmentElement; // TODO: first that matches marker?
+  static #addContainers(uniqueId, self, segment, position, playerStyle) {
+    const element = segment.segmentElement; // TODO: first that matches marker?
 
     // Don't add 'position: relative' to the segmentelement if we can help it to
     // reduce possible styling side-effects on the publisher's webpage.
@@ -53,8 +53,7 @@ class SegmentContainers {
     self.onUpdate(self.containers);
   }
 
-  static #removeContainers(segmentElement, self, position, playerStyle) {
-    const uniqueId = self.#uniqueId(segmentElement);
+  static #removeContainers(uniqueId, self, _segment, position, playerStyle) {
     const classes = containerClasses(uniqueId, position, playerStyle);
 
     for (let i = 0; i < self.containers.length; i += 1) {
@@ -73,16 +72,19 @@ class SegmentContainers {
     self.onUpdate(self.containers);
   }
 
-  // Give each segmentElement a uniqueId per player so that we don't remove the
-  // widget for a segmentElement when other players might still want to show it.
-  #uniqueId(segmentElement) {
-    const exists = this.uniqueIds.has(segmentElement);
-    if (!exists) { this.uniqueIds.set(segmentElement, this.#randomString()); }
+  // Give each segment a uniqueId per player so that we don't remove the
+  // highlight for a segmentElement when other players might still want to show it.
+  #uniqueId(segment) {
+    if (!segment?.segmentElement) { return null; }
+    if (segment.marker) { return segment.marker; }
 
-    return this.uniqueIds.get(segmentElement);
+    const exists = this.uniqueIds.has(segment.segmentElement);
+    if (!exists) { this.uniqueIds.set(segment.segmentElement, this.#randomId()); }
+
+    return this.randomIds.get(segment.segmentElement);
   }
 
-  #randomString() {
+  #randomId() {
     return Math.random().toString(36).substring(2);
   }
 }

@@ -11,14 +11,14 @@ class OwnershipMediator {
   constructor(onSelected, onDeselected) {
     this.onSelected = onSelected;
     this.onDeselected = onDeselected;
-    this.consumers = new WeakMap();
+    this.consumers = {};
   }
 
   addInterest(resourceId, consumerId, ...args) {
-    this.#setInitialValue(this.consumers, resourceId, []);
-    const last = this.consumers.get(resourceId).slice(-1)[0];
+    this.consumers[resourceId] ||= [];
+    const last = this.consumers[resourceId].slice(-1)[0];
 
-    this.consumers.get(resourceId).push({ consumerId, args });
+    this.consumers[resourceId].push({ consumerId, args });
 
     if (last && this.#arraysEqual(args, last.args)) { return; }
 
@@ -27,15 +27,15 @@ class OwnershipMediator {
   }
 
   removeInterest(resourceId, consumerId) {
-    this.#setInitialValue(this.consumers, resourceId, []);
-    const last = this.consumers.get(resourceId).slice(-1)[0];
+    this.consumers[resourceId] ||= [];
+    const last = this.consumers[resourceId].slice(-1)[0];
 
-    this.#removeLast(this.consumers.get(resourceId), o => o.consumerId === consumerId);
+    this.#removeLast(this.consumers[resourceId], o => o.consumerId === consumerId);
 
     const wasSelected = last && consumerId === last.consumerId;
     if (!wasSelected) { return; }
 
-    const nextLast = this.consumers.get(resourceId).slice(-1)[0];
+    const nextLast = this.consumers[resourceId].slice(-1)[0];
     if (nextLast && this.#arraysEqual(last.args, nextLast.args)) { return; }
 
     this.onDeselected(resourceId, ...last.args);
@@ -43,10 +43,6 @@ class OwnershipMediator {
   }
 
   // private
-
-  #setInitialValue(map, key, value) {
-    if (!map.has(key)) { map.set(key, value); }
-  }
 
   #arraysEqual(arr1, arr2) {
     return arr1.length === arr2.length && arr1.every((e, i) => e === arr2[i]);

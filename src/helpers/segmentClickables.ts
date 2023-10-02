@@ -10,32 +10,52 @@ const clickableClasses = ["beyondwords-clickable", "bwp"]; // Also set by Segmen
 class SegmentClickables {
   static #mediator = new OwnershipMediator(this.#addClasses, this.#removeClasses);
 
+  constructor() {
+    this.randomIds = new WeakMap();
+  }
+
   update(segment, sections) {
     const enabled = sectionEnabled("hovered", segment, sections);
 
     const previous = this.previous;
-    const current = enabled ? segment?.segmentElement : null;
+    const current = enabled ? this.#uniqueId(segment) : null;
 
-    if (current) { SegmentClickables.#mediator.addInterest(current, this, segment.marker); }
+    if (current) { SegmentClickables.#mediator.addInterest(current, this, segment); }
     if (previous) { SegmentClickables.#mediator.removeInterest(previous, this); }
 
     this.previous = current;
   }
 
-  static #addClasses(segmentElement, marker) {
-    segmentElement.classList.add(...clickableClasses);
-    if (!marker) { return; }
+  static #addClasses(_uniqueId, segment) {
+    segment.segmentElement.classList.add(...clickableClasses);
+    if (!segment.marker) { return; }
 
-    const markerElements = document.querySelectorAll(`[data-beyondwords-marker="${marker}"]`);
+    const markerElements = document.querySelectorAll(`[data-beyondwords-marker="${segment.marker}"]`);
     for (const element of markerElements) { element.classList.add(...clickableClasses); }
   }
 
-  static #removeClasses(segmentElement, marker) {
-    safelyRemoveClasses(segmentElement, clickableClasses);
-    if (!marker) { return; }
+  static #removeClasses(_uniqueId, segment) {
+    safelyRemoveClasses(segment.segmentElement, clickableClasses);
+    if (!segment.marker) { return; }
 
-    const markerElements = document.querySelectorAll(`[data-beyondwords-marker="${marker}"]`);
+    const markerElements = document.querySelectorAll(`[data-beyondwords-marker="${segment.marker}"]`);
     for (const element of markerElements) { safelyRemoveClasses(element, clickableClasses); }
+  }
+
+  // Give each segment a uniqueId per player so that we don't remove the
+  // highlight for a segmentElement when other players might still want to show it.
+  #uniqueId(segment) {
+    if (!segment?.segmentElement) { return null; }
+    if (segment.marker) { return segment.marker; }
+
+    const exists = this.uniqueIds.has(segment.segmentElement);
+    if (!exists) { this.uniqueIds.set(segment.segmentElement, this.#randomId()); }
+
+    return this.randomIds.get(segment.segmentElement);
+  }
+
+  #randomId() {
+    return Math.random().toString(36).substring(2);
   }
 }
 
