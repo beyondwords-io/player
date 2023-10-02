@@ -292,18 +292,18 @@ class RootController {
     });
   }
 
-  handleCurrentSegmentUpdated({ segment, segmentIndex, contentIndex }) {
+  handleCurrentSegmentUpdated({ segment, contentIndex, segmentIndex, segmentElement }) {
     if (this.#isContent()) {
-      this.player.currentSegment = { ...segment, segmentIndex, contentIndex };
+      this.player.currentSegment = { ...segment, contentIndex, segmentIndex, segmentElement };
     } else if (!this.segmentPlayed) {
       this.player.segmentContainers?.reset();
       this.player.currentSegment = null;
     }
   }
 
-  handleHoveredSegmentUpdated({ segment, segmentIndex, contentIndex }) {
+  handleHoveredSegmentUpdated({ segment, contentIndex, segmentIndex, segmentElement }) {
     if (segment) {
-      this.player.hoveredSegment = { ...segment, segmentIndex, contentIndex };
+      this.player.hoveredSegment = { ...segment, contentIndex, segmentIndex, segmentElement };
     } else {
       this.player.hoveredSegment = null;
     }

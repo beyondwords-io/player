@@ -159,6 +159,7 @@
       segment: segments[segmentIndex],
       contentIndex,
       segmentIndex,
+      segmentElement: null, // TODO: lookup
     }));
   };
 
