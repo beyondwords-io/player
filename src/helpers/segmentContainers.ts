@@ -1,5 +1,4 @@
 import OwnershipMediator from "./ownershipMediator";
-import { dataAttribute } from "./segmentHighlights";
 import { safelyRemoveClasses } from "./segmentClickables";
 
 const containerClasses = (id, p, s) => ["beyondwords-widget", "bwp", `id-${id}`, `position-${p}`, `for-${s}-player`];
