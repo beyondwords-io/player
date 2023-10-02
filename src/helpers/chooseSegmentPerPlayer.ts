@@ -13,9 +13,8 @@ const chooseSegmentPerPlayer = (target) => {
     if (target.nodeName.toLowerCase() === "a") { break; }
     if (target.nodeName.toLowerCase() === "img") { break; }
 
-    chooseSegmentBy("marker", dataMarker, target, players, segmentPerPlayer, playersRemaining);
-    chooseSegmentBy("xpath", xpathForNode, target, players, segmentPerPlayer, playersRemaining);
-    chooseSegmentBy("md5", textContentMd5, target, players, segmentPerPlayer, playersRemaining);
+    chooseSegmentBy(matchesDataMarker, target, players, segmentPerPlayer, playersRemaining);
+    chooseSegmentBy(matchesXpathAndMd5, target, players, segmentPerPlayer, playersRemaining);
 
     target = target.parentNode;
   }
@@ -40,18 +39,18 @@ const isRoot = (target) => (
   target === document || target === document.body || target === document.head
 );
 
-const chooseSegmentBy = (key, lookupFn, target, players, segmentPerPlayer, playersRemaining) => {
+const chooseSegmentBy = (matchFnFn, target, players, segmentPerPlayer, playersRemaining) => {
   if (playersRemaining.size === 0) { return; }
 
-  const value = lookupFn(target);
-  if (!value) { return; }
+  const matchFn = matchFnFn(target);
+  if (!matchFn) { return; }
 
   outerPlayerLoop: for (const p of playersRemaining) {
     // TODO: implement this logic: https://github.com/beyondwords-io/player/blob/c0c8dc5f137e79ebc22efb3931f88d24e6a636a5/src/helpers/listenToSegments.ts#L90C1-L97
 
     for (const [contentIndex, contentItem] of players[p].content.entries()) {
       for (const [segmentIndex, segment] of contentItem.segments.entries()) {
-        if (segment[key] === value) {
+        if (matchFn(segment)) {
           segmentPerPlayer[p].segment = segment;
           segmentPerPlayer[p].contentIndex = contentIndex;
           segmentPerPlayer[p].segmentIndex = segmentIndex;
@@ -62,6 +61,32 @@ const chooseSegmentBy = (key, lookupFn, target, players, segmentPerPlayer, playe
         }
       }
     }
+  }
+};
+
+const matchesDataMarker = (target) => {
+  const marker = target.getAttribute("data-beyondwords-marker");
+
+  if (marker) {
+    return (segment) => segment.marker === marker;
+  } else {
+    return null; // Avoid iterating remainingPlayers if no marker.
+  }
+}
+
+const matchesXpathAndMd5 = (target) => {
+  const xpath = lazyMemo(() => xpathForNode(target));
+  const md5 = lazyMemo(() => textContentMd5(target));
+
+  return (segment) => segment.xpath === xpath() && segment.md5 === md5();
+};
+
+const lazyMemo = (valueFn) => {
+  let value, called;
+
+  return () => {
+    if (!called) { value = valueFn(); called = true; }
+    return value;
   }
 };
 
