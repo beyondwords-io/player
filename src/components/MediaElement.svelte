@@ -10,6 +10,7 @@
   import blurElement from "../helpers/blurElement";
   import findSegmentIndex from "../helpers/findSegmentIndex";
   import findLoadedMedia from "../helpers/findLoadedMedia";
+  import chooseSegmentElement from "../helpers/chooseSegmentElement";
 
   export let content;
   export let contentIndex;
@@ -152,14 +153,17 @@
   };
 
   const handleSegmentUpdate = () => {
+    const segment = segments[segmentIndex];
+    const segmentElement = chooseSegmentElement(segment);
+
     onEvent(newEvent({
       type: "CurrentSegmentUpdated",
       description: "The media's current segment was updated.",
       initiatedBy: "media",
-      segment: segments[segmentIndex],
+      segment,
       contentIndex,
       segmentIndex,
-      segmentElement: null, // TODO: lookup
+      segmentElement, // Might be undefined.
     }));
   };
 

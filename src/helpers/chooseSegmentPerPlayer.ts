@@ -137,3 +137,4 @@ const textContentMd5 = (node) => {
 };
 
 export default chooseSegmentPerPlayer;
+export { textContentMd5 };
