@@ -9,9 +9,7 @@ const chooseSegmentPerPlayer = (target) => {
 
   while (target && !isRoot(target)) {
     if (playersRemaining.size === 0) { break; }
-    if (target.onclick || target.onmousedown) { break; }
-    if (target.nodeName.toLowerCase() === "a") { break; }
-    if (target.nodeName.toLowerCase() === "img") { break; }
+    if (shouldNotRespondToHoverOrClick(target)) { break; }
 
     chooseSegmentBy(matchesDataMarker, target, players, segmentPerPlayer, playersRemaining);
     chooseSegmentBy(matchesXpathAndMd5, target, players, segmentPerPlayer, playersRemaining);
@@ -38,6 +36,13 @@ const playerIndexesThatHaveSegments = (entries) => {
 const isRoot = (target) => (
   target === document || target === document.body || target === document.head
 );
+
+const shouldNotRespondToHoverOrClick = (target) => {
+  if (target.onclick || target.onmousedown) { return true; }
+
+  const nodeName = target.nodeName.toLowerCase();
+  return nodeName === "a" || nodeName === "img" || nodeName === "audio";
+};
 
 const chooseSegmentBy = (matchFnFn, target, players, segmentPerPlayer, playersRemaining) => {
   if (playersRemaining.size === 0) { return; }
@@ -72,12 +77,13 @@ const matchesDataMarker = (target) => {
   } else {
     return null; // Avoid iterating remainingPlayers if no marker.
   }
-}
+};
 
 const matchesXpathAndMd5 = (target) => {
   const xpath = lazyMemo(() => xpathForNode(target));
   const md5 = lazyMemo(() => textContentMd5(target));
 
+  console.log(xpath(), md5());
   return (segment) => segment.xpath === xpath() && segment.md5 === md5();
 };
 
@@ -87,12 +93,8 @@ const lazyMemo = (valueFn) => {
   return () => {
     if (!called) { value = valueFn(); called = true; }
     return value;
-  }
+  };
 };
-
-const dataMarker = (node) => (
-  node.getAttribute("data-beyondwords-marker")
-);
 
 const xpathForNode = (node) => {
   const parent = node?.parentNode;
@@ -109,21 +111,19 @@ const xpathForNode = (node) => {
   }
 };
 
-const md5Cache = {};
+const md5Cache = new WeakMap();
 
 const textContentMd5 = (node) => {
-  if (node in md5Cache) { return md5Cache[node]; }
+  if (md5Cache.has(node)) { return md5Cache.get(node); }
 
-  const textContent = node.textContent?.replaceAll(/\s+/g, " ")?.trim();
-  const hasContent = textContent && textContent !== " ";
+  let textContent = node.textContent?.replaceAll(/\s+/g, " ")?.trim();
 
-  if (hasContent) {
-    md5Cache[node] = md5(textContent).toString();
-  } else {
-    md5Cache[node] = null;
-  }
+  // The MD5 for image and audio segments should be empty_string_hexdigest.
+  if (!textContent || textContent === " ") { textContent = ""; }
 
-  return md5Cache[node];
+  md5Cache.set(node, md5(textContent).toString());
+
+  return md5Cache.get(node);
 };
 
 export default chooseSegmentPerPlayer;
