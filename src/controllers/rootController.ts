@@ -102,6 +102,7 @@ class RootController {
 
   handleDurationUpdated()              { /* Do nothing */ }
   handleMediaLoaded({ loadedMedia })   { this.player.loadedMedia = loadedMedia; }
+  handleMediaSeeked()                  { /* Do nothing */ }
   handlePlaybackRateUpdated()          { /* Do nothing */ }
 
   handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }

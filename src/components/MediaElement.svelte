@@ -152,6 +152,14 @@
     }));
   };
 
+  const handleSeeked = () => {
+    onEvent(newEvent({
+      type: "MediaSeeked",
+      description: "The media completed the seek operation.",
+      initiatedBy: "media",
+    }));
+  };
+
   const handleSegmentUpdate = () => {
     const segment = segments[segmentIndex];
     const segmentElement = chooseSegmentElement(segment);
@@ -253,6 +261,7 @@
              on:durationchange={handleDurationChange}
              on:loadedmetadata={handleLoadedMetadata}
              on:timeupdate={handleTimeUpdate}
+             on:seeked={handleSeeked}
              on:ratechange={handleRateChange}>
 
         {#if hls !== "pending" && !window.disableMediaLoad}
