@@ -50,19 +50,30 @@ const chooseSegmentBy = (matchFnFn, target, players, segmentPerPlayer, playersRe
   const matchFn = matchFnFn(target);
   if (!matchFn) { return; }
 
-  outerPlayerLoop: for (const p of playersRemaining) {
-    // TODO: implement this logic: https://github.com/beyondwords-io/player/blob/c0c8dc5f137e79ebc22efb3931f88d24e6a636a5/src/helpers/listenToSegments.ts#L90C1-L97
+  for (const p of playersRemaining) {
+    let bestContent = -Infinity;
 
     for (const [contentIndex, contentItem] of players[p].content.entries()) {
       for (const [segmentIndex, segment] of contentItem.segments.entries()) {
         if (matchFn(segment)) {
+          // If the segment appears in the content more than once then choose the first
+          // segment that matches the player's contentIndex to avoid changing tracks.
+          const thisContent = players[p].contentIndex === contentIndex ? 1 : 0;
+          if (thisContent < bestContent) { continue; }
+
+          // If the marker appears in the segments more than once then choose the first
+          // segment so that playback starts from the earliest segment.
+          if (thisContent === bestContent && bestSoFar?.segment) { continue; }
+
+          // This segment is the best so far so update the return object.
+          bestContent = thisContent;
+
           segmentPerPlayer[p].segment = segment;
           segmentPerPlayer[p].contentIndex = contentIndex;
           segmentPerPlayer[p].segmentIndex = segmentIndex;
           segmentPerPlayer[p].segmentElement = target;
 
-          playersRemaining.delete(p);
-          continue outerPlayerLoop;
+          playersRemaining.delete(p); // We found a segment for this player.
         }
       }
     }
@@ -83,7 +94,6 @@ const matchesXpathAndMd5 = (target) => {
   const xpath = lazyMemo(() => xpathForNode(target));
   const md5 = lazyMemo(() => textContentMd5(target));
 
-  console.log(xpath(), md5());
   return (segment) => segment.xpath === xpath() && segment.md5 === md5();
 };
 
