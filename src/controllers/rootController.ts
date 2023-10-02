@@ -309,7 +309,7 @@ class RootController {
     }
   }
 
-  handlePressedSegment({ segment, segmentIndex, contentIndex }) {
+  handlePressedSegment({ segment, contentIndex, segmentIndex, segmentElement }) {
     const enabled = sectionEnabled("hovered", segment, this.player.clickableSections);
     if (!enabled) { return; }
 
@@ -319,7 +319,7 @@ class RootController {
     const changeTrack = contentIndex !== this.player.contentIndex;
     if (changeTrack) { this.#setTrack(() => contentIndex); }
 
-    this.#playFromSegment({ segmentIndex, contentIndex, ...segment });
+    this.#playFromSegment({ contentIndex, segmentIndex, segmentElement, ...segment });
   }
 
   // private
@@ -389,9 +389,9 @@ class RootController {
     }
   }
 
-  #playFromSegment({ segmentIndex, contentIndex, ...segment }) {
+  #playFromSegment({ contentIndex, segmentIndex, segmentElement, ...segment }) {
     this.#setTime(() => segment.startTime, contentIndex);
-    this.player.currentSegment = { segmentIndex, contentIndex, ...segment };
+    this.player.currentSegment = { contentIndex, segmentIndex, segmentElement, ...segment };
     this.player.playbackState = "playing";
     this.segmentPlayed = true;
   }
