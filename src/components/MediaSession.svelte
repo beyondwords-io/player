@@ -22,6 +22,8 @@
   export let iconColor = "black";
   export let onEvent = () => {};
 
+  let element;
+
   let artwork = [];
   let failedUrls = new Set();
 
@@ -62,7 +64,6 @@
   $: album = ""; // TODO: maybe set to playlistTitle
 
   $: navigator.mediaSession.metadata = new MediaMetadata({ title, artist, album, artwork });
-  $: navigator.mediaSession.setByPlayer = true;
 
   $: resetActionHandlers();
 
@@ -150,9 +151,13 @@
   }
 
   onMount(() => {
+    navigator.mediaSession.setByPlayer = element;
     return () => {
-      navigator.mediaSession.metadata = null;
-      resetActionHandlers();
+      if (navigator.mediaSession.setByPlayer === element) {
+        delete navigator.mediaSession.setByPlayer;
+        navigator.mediaSession.metadata = null;
+        resetActionHandlers();
+      }
     };
   });
 
@@ -160,7 +165,7 @@
   // TODO: if skipButtonStyle is tracks but there's only one track, should we change it?
 </script>
 
-<div class="media-session">
+<div bind:this={element} class="media-session">
   {#each imageSizes as size, i}
     <div bind:this={fallbackSvgs[i]} style="display: none">
       <VolumeUp fill={background} color={foreground} scale={size / 18} zoom={0.65} />
