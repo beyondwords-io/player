@@ -59,11 +59,18 @@ class SegmentHighlights {
     }
   }
 
+  // Highlight the segmentElement and all DOM nodes with the same marker. There
+  // might be an edge case where the segment was matched using (xpath, md5) and
+  // the marker set on the DOM node does not match the one from the API. In this
+  // case, pool all elements together anyway and highlight all of them.
   #highlightElements(segment) {
     const set = new Set([segment.segmentElement]);
 
-    if (segment.marker) {
-      const elements = document.querySelectorAll(`[data-beyondwords-marker="${segment.marker}"]`);
+    const marker1 = segment.marker;
+    const marker2 = segment.segmentElement?.getAttribute("data-beyondwords-marker");
+
+    for (const marker of [marker1, marker2].filter(m => m)) {
+      const elements = document.querySelectorAll(`[data-beyondwords-marker="${marker}"]`);
       for (const element of elements) { set.add(element); }
     }
 

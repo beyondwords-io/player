@@ -32,7 +32,7 @@ class SegmentContainers {
   }
 
   static #addContainers(uniqueId, self, segment, position, playerStyle) {
-    const element = segment.segmentElement; // TODO: first that matches marker?
+    const element = self.#containerElement(segment);
 
     // Don't add 'position: relative' to the segmentelement if we can help it to
     // reduce possible styling side-effects on the publisher's webpage.
@@ -71,6 +71,33 @@ class SegmentContainers {
     }
 
     self.onUpdate(self.containers);
+  }
+
+  // Add the container next to the first DOM node that matches the segment's
+  // marker. There might be an edge case where the segment was matched using
+  // (xpath, md5) and the marker set on the DOM node does not match the one from
+  // the API. In this case, pool all of the elements together and add the
+  // container next to the first one on the page. If there are no markers on the
+  // page for the segment then add the container next to the segmentElement.
+  #containerElement(segment) {
+    const marker1 = segment.marker;
+    const marker2 = segment.segmentElement?.getAttribute("data-beyondwords-marker");
+
+    let markerElements;
+
+    if (marker1 || marker2) {
+      const query1 = marker1 && `[data-beyondwords-marker="${marker1}"]`;
+      const query2 = marker2 && `[data-beyondwords-marker="${marker2}"]`;
+
+      const queries = [query1, query2].filter(q => q).join(", ");
+      markerElements = document.querySelectorAll(queries);
+    }
+
+    if (markerElements.length > 0) {
+      return markerElements[0];
+    } else {
+      return segment.segmentElement;
+    }
   }
 }
 
