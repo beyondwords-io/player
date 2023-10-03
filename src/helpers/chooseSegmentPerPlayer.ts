@@ -140,21 +140,35 @@ const textContentMd5 = (node) => {
 // a precedence from 0..N. Otherwise, when you click on a segment, all players
 // would try to play the segment and they'd pause each other (a kind of deadlock).
 const setPrecedenceBasedOnPlaybackState = (segmentPerPlayer) => {
-  const competingPlayers = [...segmentPerPlayer.filter(o => o.segment).entries()]
+  const competingPlayers = segmentPerPlayer.filter(o => o.segment);
 
-  competingPlayers.sort(([i, a], [j, b]) => {
+  competingPlayers.sort((a, b) => {
+    // Give higher precedence (a lower score) to players that are playing.
     const score1 = stateScores[a.player.playbackState] || 0;
     const score2 = stateScores[b.player.playbackState] || 0;
 
     if (score1 > score2) { return -1; }
     if (score1 < score2) { return 1; }
 
-    // JavaScript sort isn't stable in every browser so apply manually.
-    if (i < j) { return -1; }
-    if (j > i) { return 1; }
+    // If the players are tied on playbackState then give higher precedence to
+    // players that are vertically closer to the segmentEelement on the page.
+    const elementTop1 = a.segmentElement.getBoundingClientRect().top;
+    const elementTop2 = b.segmentElement.getBoundingClientRect().top;
+
+    // The user interface will be undefined if the player is used in headless mode.
+    const playerTop1 = a.player.userInterface ? a.player.target.getBoundingClientRect().top : Infinity;
+    const playerTop2 = b.player.userInterface ? b.player.target.getBoundingClientRect().top : Infinity;
+
+    const distance1 = Math.abs(elementTop1 - playerTop1);
+    const distance2 = Math.abs(elementTop2 - playerTop2);
+
+    if (distance1 < distance2) { return -1; }
+    if (distance1 > distance2) { return 1; }
+
+    return 0;
   });
 
-  for (const [rank, [_, object]] of competingPlayers.entries()) {
+  for (const [rank, object] of competingPlayers.entries()) {
     object.precedence = rank;
   }
 };
