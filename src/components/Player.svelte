@@ -41,6 +41,8 @@
   export let introsOutrosIndex = -1;
   export let adverts = [];
   export let advertIndex = -1;
+  export let minDurationForMidroll = 2 * 60;
+  export let minTimeUntilEndForMidroll = 10;
   export let persistentAdImage = false;
   export let persistentIndex = -1;
   export let duration = 0;

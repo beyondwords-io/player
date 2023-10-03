@@ -500,14 +500,14 @@ class RootController {
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored } = {}) {
-    const { adverts, content, currentTime } = this.player;
+    const { adverts, content, currentTime, minDurationForMidroll, minTimeUntilEndForMidroll } = this.player;
 
     let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
     const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
     const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
 
     if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
-    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
+    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll }));
 
     const persistentAdImage = this.player.persistentAdImage;
     const persistentIndex = this.player.persistentIndex;
