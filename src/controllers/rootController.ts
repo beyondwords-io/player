@@ -51,6 +51,8 @@ class RootController {
       event.status = "ignored-due-to-advert";
     } else if (this.#ignoreDueToScrubbing(event)) {
       event.status = "ignored-due-to-scrubbing";
+    } else if (this.#ignoreDueToPrecedence(event)) {
+      event.status = "ignored-due-to-precedence";
     } else if (handler) {
       await handler.call(this, event);
 
@@ -341,6 +343,10 @@ class RootController {
       type.includes("CurrentTimeUpdated") ||
       type.includes("PlaybackEnded")
     );
+  }
+
+  #ignoreDueToPrecedence({ type, precedence }) {
+    return type.includes("PressedSegment") && precedence > 0;
   }
 
   #sendEventToListeners(eventType, event) {

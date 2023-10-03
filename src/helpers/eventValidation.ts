@@ -3,7 +3,7 @@ import { validate as isValidUuid } from "uuid";
 
 const initiators = ["user", "media", "browser", "media-session-api", "google-ima-sdk", "websocket"];
 const emitters = ["inline-player", "bottom-widget", "segment", "segment-widget"];
-const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing"];
+const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing", "ignored-due-to-precedence"];
 const analyticsTypes = ["load", "play", "play_progress", "ad_link_click"];
 const deviceTypes = ["phone", "tablet", "desktop"];
 const mediaTypes = ["content", "ad"];

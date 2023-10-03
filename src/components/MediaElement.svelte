@@ -172,6 +172,7 @@
       contentIndex,
       segmentIndex,
       segmentElement, // Might be undefined.
+      precedence: 0,
     }));
   };
 

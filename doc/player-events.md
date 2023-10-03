@@ -37,7 +37,7 @@ All of the other fields are present in every event. Their schema is explained be
 - **description**: a short human-readable description of the event
 - **initiatedBy**: who initiated the event, one of: { user, media, browser, media-session-api, google-ima-sdk, websocket }
 - **emittedFrom**: which interface emitted the event, one of: { inline-player, bottom-widget, segment, segment-widget }
-- **status**: the status of the event, one of: { handled, ignored-due-to-advert, ignored-due-to-scrubbing }
+- **status**: the status of the event, one of: { handled, ignored-due-to-advert, ignored-due-to-scrubbing, ignored-due-to-precedence }
 - **createdAt**: the time when the event was created in simplified extended ISO 8601 format
 - **processedAt**: the time when the event was processed in simplified extended ISO 8601 format
 - **changedProps**: an object listing the player properties that were changed by the event
