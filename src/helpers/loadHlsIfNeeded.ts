@@ -26,9 +26,8 @@ const useHlsLibrary = (source, video) => {
 const loadHlsLibrary = async () => {
   if (Hls) { return; }
 
-  await import("hls.js/dist/hls.light.min.js");
-
-  Hls = window.Hls;
+  Hls ||= (await import("hls.js/dist/hls.light.min.js")).default;
+  Hls ||= window.Hls;
 };
 
 export default loadHlsIfNeeded;
