@@ -17,7 +17,7 @@ const chooseSegmentPerPlayer = (target) => {
     target = target.parentNode;
   }
 
-  // TODO: add precedence based on playing, etc.
+  setPrecedenceBasedOnPlaybackState(segmentPerPlayer);
 
   return segmentPerPlayer;
 };
@@ -135,6 +135,31 @@ const textContentMd5 = (node) => {
 
   return md5Cache.get(node);
 };
+
+// If multiple players match the clicked/hovered segment then give each player
+// a precedence from 0..N. Otherwise, when you click on a segment, all players
+// would try to play the segment and they'd pause each other (a kind of deadlock).
+const setPrecedenceBasedOnPlaybackState = (segmentPerPlayer) => {
+  const competingPlayers = [...segmentPerPlayer.filter(o => o.segment).entries()]
+
+  competingPlayers.sort(([i, a], [j, b]) => {
+    const score1 = stateScores[a.player.playbackState] || 0;
+    const score2 = stateScores[b.player.playbackState] || 0;
+
+    if (score1 > score2) { return -1; }
+    if (score1 < score2) { return 1; }
+
+    // JavaScript sort isn't stable in every browser so apply manually.
+    if (i < j) { return -1; }
+    if (j > i) { return 1; }
+  });
+
+  for (const [rank, [_, object]] of competingPlayers.entries()) {
+    object.precedence = rank;
+  }
+};
+
+const stateScores = { playing: 2, paused: 1, stopped: 0 };
 
 export default chooseSegmentPerPlayer;
 export { textContentMd5 };
