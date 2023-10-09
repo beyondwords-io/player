@@ -72,6 +72,7 @@
   const onAdProgress = (adEvent) => {
     adData = adEvent.getAdData();
     adData.updatedAt = Date.now();
+    adData.minDuration = minDuration(adData);
 
     onEvent(newEvent({
       type: "CurrentTimeUpdated",
@@ -79,14 +80,19 @@
       initiatedBy: "media",
     }));
 
-    if (duration === adData.duration) { return; }
-    duration = adData.duration;
+    if (duration === adData.minDuration) { return; }
+    duration = adData.minDuration;
 
     onEvent(newEvent({
       type: "DurationUpdated",
       description: "The media's duration was updated.",
       initiatedBy: "google-ima-sdk",
     }));
+  };
+
+  const minDuration = ({ duration, adBreakDuration }) => {
+    const min = Math.min(duration || Infinity, adBreakDuration || Infinity);
+    return min === Infinity ? 0 : min;
   };
 
   const onClick = () => {
