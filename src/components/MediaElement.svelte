@@ -154,6 +154,7 @@
     if (vastUrl) { return; }
 
     clearTimeout(timeUpdateTimeout);
+    timeUpdateTimeout = undefined;
     onEvent(newEvent({
       type: "CurrentTimeUpdated",
       description: "The media's current time was updated.",
