@@ -44,6 +44,7 @@
   const onAdsManagerLoaded = (adsManagerLoadedEvent) => {
     adsManager = adsManagerLoadedEvent.getAdsManager(video);
 
+    adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, onStarted);
     adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress);
     adsManager.addEventListener(google.ima.AdEvent.Type.CLICK, onClick);
     adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, onPaused);
@@ -67,6 +68,25 @@
     } catch (adError) {
       onAdError(null, adError);
     }
+  };
+
+  const onStarted = (adEvent) => {
+    const settings = new google.ima.CompanionAdSelectionSettings();
+
+    settings.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.STATIC;
+    settings.creativeType = google.ima.CompanionAdSelectionSettings.CreativeType.IMAGE;
+    settings.sizeCriteria = google.ima.CompanionAdSelectionSettings.SizeCriteria.IGNORE;
+
+    const companionAds = adEvent.getAd().getCompanionAds(0, 0, settings);
+    const companionData = companionAds[0]?.data;
+
+    if (!companionData) { return; }
+
+    const div = document.createElement("div");
+    div.innerHTML = companionData.content;
+
+    const clickThroughUrl = div.firstChild?.getAttribute("href");
+    const imageUrl = companionData.resourceValue;
   };
 
   const onAdProgress = (adEvent) => {
