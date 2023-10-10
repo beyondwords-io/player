@@ -39,6 +39,7 @@
   let loadCount = 0;
   let initialTime = currentTime;
   let loadedMedia;
+  let timeUpdateTimeout;
 
   const setTime = (t) => time = t;
   const preferVideo = () => videoMightBeShown;
@@ -121,6 +122,13 @@
     }));
   };
 
+  const handlePlaying = () => {
+    clearTimeout(timeUpdateTimeout);
+    timeUpdateTimeout = setTimeout(() => {
+      setTime(video.currentTime - 0.1);
+    }, 3000);
+  };
+
   const handleDurationChange = () => {
     onEvent(newEvent({
       type: "DurationUpdated",
@@ -145,6 +153,8 @@
     // Ensure the correct duration is sent to analytics for vast ads.
     if (vastUrl) { return; }
 
+    clearTimeout(timeUpdateTimeout);
+    timeUpdateTimeout = undefined;
     onEvent(newEvent({
       type: "CurrentTimeUpdated",
       description: "The media's current time was updated.",
@@ -259,6 +269,7 @@
              on:play={handlePlay}
              on:pause={handlePause}
              on:ended={handleEnded}
+             on:playing={handlePlaying}
              on:durationchange={handleDurationChange}
              on:loadedmetadata={handleLoadedMetadata}
              on:timeupdate={handleTimeUpdate}
