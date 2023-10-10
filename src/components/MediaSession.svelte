@@ -15,6 +15,7 @@
   export let contentIndex = 0;
   export let activeAdvert = undefined;
   export let persistentAdvert = undefined;
+  export let companionAdvert = undefined;
   export let duration = 0;
   export let playbackState = "stopped";
   export let skipButtonStyle = "auto";
@@ -46,7 +47,9 @@
   $: foreground = isAdvert && activeAdvert?.iconColor || iconColor;
   $: background, foreground, renderedSvgs = imageSizes.map((_, i) => tick().then(() => fallbackSvgs[i]));
 
-  $: imageUrl_ = isAdvert && activeAdvert.imageUrl || !isStopped && persistentAdvert?.imageUrl || contentItem?.imageUrl;
+  $: advertImageUrl = companionAdvert?.imageUrl || activeAdvert?.imageUrl;
+
+  $: imageUrl_ = isAdvert && advertImageUrl || !isStopped && persistentAdvert?.imageUrl || contentItem?.imageUrl;
   $: imageUrl = failedUrls.has(imageUrl_) ? null : imageUrl_;
 
   $: pngArtworks = imageUrl ? imageSizes.map(s => blobForImageUrl(imageUrl, s, s)) : [];

@@ -1,6 +1,7 @@
 <script>
   import newEvent from "../../helpers/newEvent";
   import ensureProtocol from "../../helpers/ensureProtocol";
+  import chooseAdvertText from "../../helpers/chooseAdvertText";
   import blurElement from "../../helpers/blurElement";
 
   export let href;
@@ -14,15 +15,7 @@
   export let onEvent = () => {};
 
   $: hrefWithProtocol = ensureProtocol(href);
-
-  let text;
-  $: {
-    try {
-      text = hrefWithProtocol && new URL(hrefWithProtocol).hostname;
-    } catch (e) {
-      text = "";
-    }
-  }
+  $: displayText = chooseAdvertText(hrefWithProtocol);
 
   $: style = `font-size: ${12 * scale}px; color: ${color}; border-color: ${color}`;
 
@@ -36,7 +29,7 @@
 </script>
 
 <a class="advert-link {playerStyle} {controlsOrder}" href={hrefWithProtocol} {style} class:no-image={!largeImage} class:no-end={!endVisible} class:mobile={isMobile} target="_blank" on:click={handleClick} on:mouseup={blurElement}>
-  {text || ""}
+  {displayText}
 </a>
 
 <style>

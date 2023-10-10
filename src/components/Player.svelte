@@ -95,6 +95,7 @@
   export let analyticsId = undefined;
   export let listenSessionId = undefined;
   export let sessionCreatedAt = undefined;
+  export let companionAdvert = undefined;
   export let isNewListen = false;
   export let prevPercentage = 0;
   export let segmentWidgets = [];
@@ -201,6 +202,7 @@
     {playbackRate}
     {activeAdvert}
     {persistentAdvert}
+    {companionAdvert}
     {textColor}
     {backgroundColor}
     {iconColor}
@@ -236,6 +238,7 @@
       {playbackRate}
       {activeAdvert}
       {persistentAdvert}
+      {companionAdvert}
       {textColor}
       {backgroundColor}
       {iconColor}
@@ -263,6 +266,7 @@
       playbackState={showRealTimeInWidget ? playbackState : "paused"}
       {activeAdvert}
       {persistentAdvert}
+      {companionAdvert}
       {textColor}
       {backgroundColor}
       {iconColor}
@@ -331,6 +335,7 @@
     {contentIndex}
     {activeAdvert}
     {persistentAdvert}
+    {companionAdvert}
     {duration}
     {playbackState}
     {skipButtonStyle}

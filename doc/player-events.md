@@ -112,6 +112,7 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PlaybackEnded                | media*    | The media finished playing because it reached the end.
 | PlaybackNotAllowed           | media     | The media cannot play because there was no user event.
 | PlaybackErrored              | media*    | The media failed to play.
+| CompanionAdvertChanged       | media*    | The companion advert associated with the VAST advert changed.
 | IdentifiersChanged           | browser   | The Player's content identifiers changed.
 | NoContentAvailable           | browser   | No published and processed content is available for the identifiers.
 | FullScreenModeUpdated        | browser   | The browser entered or exited full screen mode.

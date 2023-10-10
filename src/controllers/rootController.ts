@@ -225,6 +225,10 @@ class RootController {
     }
   }
 
+  handleCompanionAdvertChanged({ clickThroughUrl, imageUrl }) {
+    this.player.companionAdvert = { clickThroughUrl, imageUrl };
+  }
+
   handlePressedMaximize() {
     if (fullScreenElement()) {
       exitFullScreen();

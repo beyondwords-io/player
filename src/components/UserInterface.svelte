@@ -50,6 +50,7 @@
   export let playbackRate = 1;
   export let activeAdvert = undefined;
   export let persistentAdvert = undefined;
+  export let companionAdvert = undefined;
   export let textColor = "#111";
   export let backgroundColor = "#f5f5f5";
   export let iconColor = "black";
@@ -106,8 +107,11 @@
 
   $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
 
-  $: largeImage = isAdvert && activeAdvert.imageUrl || !isStopped && persistentAdvert?.imageUrl ||  contentItem.imageUrl;
-  $: largeImageHref = isAdvert && activeAdvert.clickThroughUrl || !isStopped && persistentAdvert?.clickThroughUrl;
+  $: advertImageUrl = companionAdvert?.imageUrl || activeAdvert?.imageUrl;
+  $: advertClickThroughUrl = companionAdvert?.clickThroughUrl || activeAdvert?.clickThroughUrl;
+
+  $: largeImage = isAdvert && advertImageUrl || !isStopped && persistentAdvert?.imageUrl ||  contentItem.imageUrl;
+  $: largeImageHref = isAdvert && advertClickThroughUrl || !isStopped && persistentAdvert?.clickThroughUrl;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && (fixedWidth === 0 || fixedWidth === "0");
@@ -205,8 +209,8 @@
         {/if}
 
         {#if isAdvert && !forcedCollapsed}
-          <AdvertLink {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} endVisible={showBeyondWords || showCloseWidget} />
-          <AdvertButton {onEvent} href={activeAdvert.clickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={activeIconColor} />
+          <AdvertLink {onEvent} href={advertClickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} endVisible={showBeyondWords || showCloseWidget} />
+          <AdvertButton {onEvent} href={advertClickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={activeIconColor} />
         {/if}
 
         {#if !isStopped}

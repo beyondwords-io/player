@@ -87,6 +87,14 @@
 
     const clickThroughUrl = div.firstChild?.getAttribute("href");
     const imageUrl = companionData.resourceValue;
+
+    onEvent(newEvent({
+      type: "CompanionAdvertChanged",
+      description: "The companion advert associated with the VAST advert changed.",
+      initiatedBy: "google-ima-sdk",
+      clickThroughUrl,
+      imageUrl,
+    }));
   };
 
   const onAdProgress = (adEvent) => {
@@ -139,6 +147,14 @@
       type: "PlaybackEnded",
       description: "The media finished playing because it reached the end.",
       initiatedBy: "google-ima-sdk",
+    }));
+
+    onEvent(newEvent({
+      type: "CompanionAdvertChanged",
+      description: "The companion advert associated with the VAST advert changed.",
+      initiatedBy: "google-ima-sdk",
+      clickThroughUrl: null,
+      imageUrl: null,
     }));
   };
 
