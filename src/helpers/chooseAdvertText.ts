@@ -16,7 +16,7 @@ const chooseAdvertText = (clickThroughUrl) => {
     bestScore = thisScore;
   }
 
-  return bestUrl?.hostname || "";
+  return bestUrl?.hostname?.replace(/^www./, "") || "";
 };
 
 const parseUrl = (string) => {
