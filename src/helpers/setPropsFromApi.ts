@@ -71,6 +71,7 @@ const setProps = (player, data) => {
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
   set(player, "introsOutros", introsOutrosArray(data.settings));
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
+  set(player, "duration", player.content[player.contentIndex]?.audio?.[0]?.duration);
   set(player, "widgetStyle", data.settings.widget_style);
   set(player, "widgetPosition", data.settings.widget_position);
   set(player, "textColor", themeColors.text_color);
