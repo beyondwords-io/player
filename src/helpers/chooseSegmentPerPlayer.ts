@@ -26,7 +26,7 @@ const playerIndexesThatHaveSegments = (entries) => {
   const playerIndexes = new Set();
 
   for (const [p, player] of entries) {
-    const hasSegments = player.content.some(c => c.segments.length);
+    const hasSegments = player.content.some(c => c.segments?.length);
     if (hasSegments) { playerIndexes.add(p); }
   }
 
