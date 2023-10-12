@@ -3,7 +3,7 @@
   import VastContainer from "./VastContainer.svelte";
   import orderedMediaSources from "../helpers/orderedMediaSources";
   import loadHlsIfNeeded from "../helpers/loadHlsIfNeeded";
-  import loadMedia from "../helpers/loadMedia";
+  import { loadMetadata, loadMedia } from "../helpers/loadMedia";
   import timeFragment, { EPSILON } from "../helpers/timeFragment";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
@@ -30,7 +30,7 @@
   export let widgetWidth;
   export let widgetTarget;
   export let onEvent = () => {};
-  export let isLoaded;
+  export let metadataLoaded;
   export let video = undefined;
 
   let Hls, hls;
@@ -66,16 +66,18 @@
 
   $: sources = orderedMediaSources(mediaObject, preferVideo(), startPosition);
 
-  $: sources, isLoaded = false;
+  $: sources, metadataLoaded = false;
   $: sources, prevPercentage = 0;
 
   $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
-  $: hls = loadMedia(sources[0], video, Hls, hls, handleHlsError, play, startPosition);
+  $: hls = loadMetadata(sources[0], video, Hls, hls, handleHlsError, handleLoadedMetadata, play);
+
+  $: playbackState === "playing" && loadMedia(hls, startPosition);
 
   $: vastUrl = activeAdvert?.vastUrl;
   $: customUrl = activeAdvert?.clickThroughUrl;
 
-  $: isLoaded && !vastUrl && (playbackState === "playing" ? play() : pause());
+  $: metadataLoaded && !vastUrl && (playbackState === "playing" ? play() : pause());
 
   $: videoBehindStaticWidget = videoBehindWidget && widgetTarget;
   $: videoBehindSlidingWidget = videoBehindWidget && !widgetTarget;
@@ -137,8 +139,24 @@
     }));
   };
 
-  const handleLoadedMetadata = () => {
-    isLoaded = true;
+  const handleLoadedMetadata = ({ fromHls }) => {
+    const hlsBeingUsed = hls !== "not-used";
+    const alreadyEmitted = hlsBeingUsed && !fromHls;
+
+    if (alreadyEmitted) { return; }
+
+    metadataLoaded = true;
+    loadedMedia = findLoadedMedia(sources, video);
+
+    onEvent(newEvent({
+      type: "MetadataLoaded",
+      description: "The media finished loading its metadata.",
+      initiatedBy: "media",
+      loadedMedia,
+    }));
+  };
+
+  const handleLoadedData = () => {
     loadedMedia = findLoadedMedia(sources, video);
 
     onEvent(newEvent({
@@ -272,6 +290,7 @@
              on:playing={handlePlaying}
              on:durationchange={handleDurationChange}
              on:loadedmetadata={handleLoadedMetadata}
+             on:loadeddata={handleLoadedData}
              on:timeupdate={handleTimeUpdate}
              on:seeked={handleSeeked}
              on:ratechange={handleRateChange}>

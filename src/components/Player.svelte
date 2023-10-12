@@ -84,7 +84,7 @@
   // These are set automatically.
   export let initialProps = {};
   export let showMediaSession = false;
-  export let isLoaded = false;
+  export let metadataLoaded = false;
   export let isFullScreen = false;
   export let mediaElement = undefined;
   export let userInterface = undefined;
@@ -129,7 +129,7 @@
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
 
-  $: showVideoPoster = isAudio && videoMightBeShown && isLoaded;
+  $: showVideoPoster = isAudio && videoMightBeShown && metadataLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
@@ -173,7 +173,7 @@
     bind:currentTime
     bind:playbackRate
     bind:prevPercentage
-    bind:isLoaded
+    bind:metadataLoaded
     {showUserInterface}
     {videoBehindWidget}
     {videoBehindStatic}

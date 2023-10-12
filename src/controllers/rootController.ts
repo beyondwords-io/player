@@ -79,46 +79,47 @@ class RootController {
 
   // Please document all events and keep in-sync with /doc/player-events.md
 
-  handlePressedChangeRate()            { this.#setRate(i => i + 1, { cycle: true }); }
-  handlePressedEnterOnChangeRate()     { this.#setRate(i => i + 1, { cycle: true }); }
-  handlePressedSpaceOnChangeRate()     { this.#setRate(i => i + 1, { cycle: true }); }
-  handlePressedUpOnChangeRate()        { this.#setRate(i => i + 1); }
-  handlePressedRightOnChangeRate()     { this.#setRate(i => i + 1); }
-  handlePressedDownOnChangeRate()      { this.#setRate(i => i - 1); }
-  handlePressedLeftOnChangeRate()      { this.#setRate(i => i - 1); }
+  handlePressedChangeRate()             { this.#setRate(i => i + 1, { cycle: true }); }
+  handlePressedEnterOnChangeRate()      { this.#setRate(i => i + 1, { cycle: true }); }
+  handlePressedSpaceOnChangeRate()      { this.#setRate(i => i + 1, { cycle: true }); }
+  handlePressedUpOnChangeRate()         { this.#setRate(i => i + 1); }
+  handlePressedRightOnChangeRate()      { this.#setRate(i => i + 1); }
+  handlePressedDownOnChangeRate()       { this.#setRate(i => i - 1); }
+  handlePressedLeftOnChangeRate()       { this.#setRate(i => i - 1); }
 
-  handlePressedPrevSegment()           { this.#setSegment(i => i - 1); }
-  handlePressedNextSegment()           { this.#setSegment(i => i + 1); }
+  handlePressedPrevSegment()            { this.#setSegment(i => i - 1); }
+  handlePressedNextSegment()            { this.#setSegment(i => i + 1); }
 
-  handlePressedSeekBack({ seconds })   { this.#setTime(t => t - seconds); }
-  handlePressedSeekAhead({ seconds })  { this.#setTime(t => t + seconds); }
-  handlePressedPrevTrack()             { this.#setTrack(i => i - 1); }
-  handlePressedNextTrack()             { this.#setTrack(i => i + 1); }
+  handlePressedSeekBack({ seconds })    { this.#setTime(t => t - seconds); }
+  handlePressedSeekAhead({ seconds })   { this.#setTime(t => t + seconds); }
+  handlePressedPrevTrack()              { this.#setTrack(i => i - 1); }
+  handlePressedNextTrack()              { this.#setTrack(i => i + 1); }
 
-  handlePressedAdvertLink()            { /* Do nothing */ }
-  handlePressedAdvertButton()          { /* Do nothing */ }
-  handlePressedAdvertImage()           { /* Do nothing */ }
-  handlePressedAdvertVideo()           { /* Do nothing */ }
-  handlePressedBeyondWords()           { /* Do nothing */ }
-  handlePressedSourceUrl()             { /* Do nothing */ }
+  handlePressedAdvertLink()             { /* Do nothing */ }
+  handlePressedAdvertButton()           { /* Do nothing */ }
+  handlePressedAdvertImage()            { /* Do nothing */ }
+  handlePressedAdvertVideo()            { /* Do nothing */ }
+  handlePressedBeyondWords()            { /* Do nothing */ }
+  handlePressedSourceUrl()              { /* Do nothing */ }
 
-  handleDurationUpdated()              { /* Do nothing */ }
-  handleMediaLoaded({ loadedMedia })   { this.player.loadedMedia = loadedMedia; }
-  handleMediaSeeked()                  { /* Do nothing */ }
-  handlePlaybackRateUpdated()          { /* Do nothing */ }
+  handleDurationUpdated()               { /* Do nothing */ }
+  handleMetadataLoaded({ loadedMedia }) { this.player.loadedMedia = loadedMedia; }
+  handleMediaLoaded({ loadedMedia })    { this.player.loadedMedia = loadedMedia; }
+  handleMediaSeeked()                   { /* Do nothing */ }
+  handlePlaybackRateUpdated()           { /* Do nothing */ }
 
-  handleVisibilityChanged()            { chooseWidget(this.PlayerClass); }
+  handleVisibilityChanged()             { chooseWidget(this.PlayerClass); }
 
-  handlePressedVideoBackground()       { this.#playOrPause(); }
-  handlePressedEnterOnProgressBar()    { this.#playOrPause(); }
-  handlePressedSpaceOnProgressBar()    { this.#playOrPause(); }
-  handlePressedEnterOnProgressCircle() { this.#playOrPause(); }
-  handlePressedSpaceOnProgressCircle() { this.#playOrPause(); }
+  handlePressedVideoBackground()        { this.#playOrPause(); }
+  handlePressedEnterOnProgressBar()     { this.#playOrPause(); }
+  handlePressedSpaceOnProgressBar()     { this.#playOrPause(); }
+  handlePressedEnterOnProgressCircle()  { this.#playOrPause(); }
+  handlePressedSpaceOnProgressCircle()  { this.#playOrPause(); }
 
-  handlePressedLeftOnProgressBar()     { this.#setTime(t => t - 5); }
-  handlePressedRightOnProgressBar()    { this.#setTime(t => t + 5); }
-  handlePressedLeftOnProgressCircle()  { this.#setTime(t => t - 5); }
-  handlePressedRightOnProgressCircle() { this.#setTime(t => t + 5); }
+  handlePressedLeftOnProgressBar()      { this.#setTime(t => t - 5); }
+  handlePressedRightOnProgressBar()     { this.#setTime(t => t + 5); }
+  handlePressedLeftOnProgressCircle()   { this.#setTime(t => t - 5); }
+  handlePressedRightOnProgressCircle()  { this.#setTime(t => t + 5); }
 
   handlePressedProgressBar({ ratio }) {
     this.preScrubState = this.player.playbackState;
