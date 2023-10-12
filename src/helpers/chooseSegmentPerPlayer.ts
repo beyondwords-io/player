@@ -63,7 +63,7 @@ const chooseSegmentBy = (matchFnFn, target, players, segmentPerPlayer, playersRe
 
           // If the marker appears in the segments more than once then choose the first
           // segment so that playback starts from the earliest segment.
-          if (thisContent === bestContent && bestSoFar?.segment) { continue; }
+          if (thisContent === bestContent && segmentPerPlayer[p].segment) { continue; }
 
           // This segment is the best so far so update the return object.
           bestContent = thisContent;
