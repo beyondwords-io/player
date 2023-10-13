@@ -1,6 +1,6 @@
 import newEvent from "../../helpers/newEvent";
 
-const handleKeyDown = (onEvent, kind) => (event) => {
+const handleKeyDown = (onEvent, kind, onLeftOrRight = () => {}) => (event) => {
   let key;
 
   if (event.key === "ArrowLeft")  { key = "Left"; }
@@ -16,6 +16,8 @@ const handleKeyDown = (onEvent, kind) => (event) => {
     description: `The ${key.toLowerCase()} key was pressed while the progress ${kind.toLowerCase()} was focussed.`,
     initiatedBy: "user",
   }));
+
+  if (key === "Left" || key === "Right") { onLeftOrRight(); }
 };
 
 export default handleKeyDown;

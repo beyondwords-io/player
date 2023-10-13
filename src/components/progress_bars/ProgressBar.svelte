@@ -13,6 +13,14 @@
 
   let progressBar;
   let mouseDown;
+  let ariaMode = 0;
+
+  $: percent = Math.max(0, Math.min(100, progress * 100));
+  $: ariaLabel = ariaMode === 0 ? translate("scrubProgressBar") : ariaMode === 1 ? `${Math.round(percent)}%` : ariaLabel;
+  $: percent, ariaMode = 2;
+
+  const handleFocus = () => ariaMode = 0;
+  const handleLeftOrRight = () => setTimeout(() => ariaMode = 1, 0);
 
   const handleMouseDown = (event) => {
     mouseDown = true;
@@ -72,9 +80,9 @@
   });
 </script>
 
-<button type="button" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar")} on:mouseup={blurElement} aria-label={translate("scrubProgressBar")}>
+<button type="button" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-valuenow={percent} aria-valuetext={ariaLabel}>
   <div class="background" style="background: {color}"></div>
-  <div class="progress" style="background: {color}; width: {progress * 100}%"></div>
+  <div class="progress" style="background: {color}; width: {percent}%"></div>
 </button>
 
 <style>
