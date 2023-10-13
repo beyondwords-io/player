@@ -55,7 +55,7 @@ const eventFromProps = (player, analyticsEventType) => {
 
   return {
     event_type: analyticsEventType,
-    device_type: deviceType(),
+    device_type: deviceType(player),
     media_type: activeAdvert ? "ad" : "content",
     project_id: player.projectId,
     content_id: contentItem?.id,
@@ -122,7 +122,9 @@ const isNextPercentage = (player) => {
   }
 };
 
-const deviceType = () => {
+const deviceType = (player) => {
+  if (player.analyticsDeviceType !== "auto") { return player.analyticsDeviceType; }
+
   if (maxDeviceWidth(499)) { return "phone"; }  // Return 'phone' for 0 <= width < 499
   if (maxDeviceWidth(999)) { return "tablet"; } // Return 'tablet' for 500 <= width < 1000
 

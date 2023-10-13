@@ -5,7 +5,7 @@ const initiators = ["user", "media", "browser", "media-session-api", "google-ima
 const emitters = ["inline-player", "bottom-widget", "segment", "segment-widget"];
 const postStatuses = ["handled", "ignored-due-to-advert", "ignored-due-to-scrubbing", "ignored-due-to-precedence"];
 const analyticsTypes = ["load", "play", "play_progress", "ad_link_click"];
-const deviceTypes = ["phone", "tablet", "desktop"];
+const deviceTypes = ["phone", "tablet", "desktop", "ios", "android"];
 const mediaTypes = ["content", "ad"];
 
 export const validateEventBeforeCreation = (props) => {

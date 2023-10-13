@@ -72,6 +72,7 @@
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
+  export let analyticsDeviceType = "auto";
   export let analyticsTag = undefined;
   export let writeToken = undefined;
   export let captureErrors = true;
