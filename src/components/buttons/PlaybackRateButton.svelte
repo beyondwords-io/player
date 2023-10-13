@@ -8,8 +8,16 @@
   export let color = "#323232";
   export let onEvent = () => {};
 
+  let resetAriaLabel = true;
+
   $: size = `${40 * scale}px`;
   $: fontSize = `${12 * scale}px`;
+  $: ariaLabel = resetAriaLabel ? translate("changePlaybackRate") : `${rate}x`;
+  $: rate, resetAriaLabel = false;
+
+  const handleFocus = () => {
+    resetAriaLabel = true;
+  };
 
   const handleClick = () => {
     onEvent(newEvent({
@@ -40,7 +48,7 @@
   };
 </script>
 
-<button type="button" class="playback-rate-button" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown} aria-label={translate("changePlaybackRate")}>
+<button type="button" role="menu" class="playback-rate-button" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} on:keydown={handleKeyDown} on:focus={handleFocus} aria-label={ariaLabel}>
   <span style="font-size: {fontSize}; color: {color}">{rate}x</span>
 </button>
 
