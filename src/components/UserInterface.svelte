@@ -271,6 +271,11 @@
     font-family: "InterVariable", sans-serif;
   }
 
+  .user-interface:focus-within :global(.beyondwords) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .fixed {
     position: fixed;
     bottom: 0;
@@ -608,7 +613,6 @@
   }
 
   :global(.video .hoverable):focus-within .controls > :global(*),
-  :global(.video .hoverable):focus-within .end > :global(.beyondwords),
   .video.stopped .controls > :global(*),
   .video.hovering .controls > :global(*),
   .video.advert_ .controls > :global(.time-indicator),
