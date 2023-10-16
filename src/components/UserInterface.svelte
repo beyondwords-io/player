@@ -48,6 +48,7 @@
   export let currentTime = 0;
   export let playbackState = "stopped";
   export let playbackRate = 1;
+  export let playbackRates = [];
   export let activeAdvert = undefined;
   export let persistentAdvert = undefined;
   export let companionAdvert = undefined;
@@ -193,7 +194,7 @@
         {/if}
 
         {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
-          <PlaybackRateButton {onEvent} rate={playbackRate} scale={buttonScale} color={activeTextColor} />
+          <PlaybackRateButton {onEvent} rates={playbackRates} rate={playbackRate} scale={buttonScale} color={activeTextColor} />
           <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
           <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
         {/if}

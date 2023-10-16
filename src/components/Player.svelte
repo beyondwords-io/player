@@ -201,6 +201,7 @@
     {currentTime}
     {playbackState}
     {playbackRate}
+    {playbackRates}
     {activeAdvert}
     {persistentAdvert}
     {companionAdvert}
@@ -237,6 +238,7 @@
       {currentTime}
       {playbackState}
       {playbackRate}
+      {playbackRates}
       {activeAdvert}
       {persistentAdvert}
       {companionAdvert}
