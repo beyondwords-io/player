@@ -13,14 +13,14 @@
 
   let progressBar;
   let mouseDown;
-  let ariaMode = 0;
+  let updatePercent = true;
 
   $: percent = Math.max(0, Math.min(100, progress * 100));
-  $: ariaLabel = ariaMode === 0 ? translate("scrubProgressBar") : ariaMode === 1 ? `${Math.round(percent)}%` : ariaLabel;
-  $: percent, ariaMode = 2;
+  $: stickyPercent = updatePercent ? Math.round(percent) : stickyPercent;
+  $: updatePercent, setTimeout(() => updatePercent = false, 0);
 
-  const handleFocus = () => ariaMode = 0;
-  const handleLeftOrRight = () => setTimeout(() => ariaMode = 1, 0);
+  const handleFocus = () => updatePercent = true;
+  const handleLeftOrRight = () => setTimeout(() => updatePercent = true, 0);
 
   const handleMouseDown = (event) => {
     mouseDown = true;
@@ -80,10 +80,10 @@
   });
 </script>
 
-<button type="button" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-valuenow={percent} aria-valuetext={ariaLabel}>
+<div type="button" tabindex="0" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-label={translate("scrubProgressBar")} aria-valuetext={`${stickyPercent}%`} aria-valuenow={stickyPercent} aria-valuemin={0} aria-valuemax={100}>
   <div class="background" style="background: {color}"></div>
   <div class="progress" style="background: {color}; width: {percent}%"></div>
-</button>
+</div>
 
 <style>
   .progress-bar {
@@ -101,11 +101,6 @@
     position: relative;
   }
 
-  .readonly,
-  .readonly * {
-    cursor: auto;
-  }
-
   .background {
     position: absolute;
     left: 0;
@@ -113,6 +108,12 @@
     top: 0;
     bottom: 0;
     opacity: 0.15;
+    cursor: pointer;
+  }
+
+  .readonly,
+  .readonly * {
+    cursor: auto;
   }
 
   .progress {
