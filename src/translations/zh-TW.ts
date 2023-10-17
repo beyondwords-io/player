@@ -6,6 +6,10 @@ export default {
   // These translations are used by aria-label.
   pauseAudio: "Pause audio",
   playbackTime: "Playback time",
+  secondsSingular: "1 second",
+  secondsPlural: "{n} seconds",
+  minutesSingular: "1 minute",
+  minutesPlural: "{n} minutes",
   visitAdvert: "Visit advert",
   visitBeyondWords: "Visit BeyondWords",
   closeWidget: "Close widget",
