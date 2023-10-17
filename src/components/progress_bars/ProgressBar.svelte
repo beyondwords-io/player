@@ -14,15 +14,17 @@
 
   let progressBar;
   let mouseDown;
-  let updateAria = true;
+  let updateSticky = true;
+  let readFullTime = true;
 
-  $: stickyProgress = updateAria ? Math.max(0, Math.min(progress, 1)) : stickyProgress;
+  $: stickyProgress = updateSticky ? Math.max(0, Math.min(progress, 1)) : stickyProgress;
   $: stickySeconds = stickyProgress * duration;
+  $: updateSticky, setTimeout(() => updateSticky = false, 0);
 
-  $: updateAria, setTimeout(() => updateAria = false, 0);
+  const handleFocus = () => { updateSticky = true; readFullTime = true; };
+  const handleLeftOrRight = () => { updateSticky = true; readFullTime = false; };
 
-  const handleFocus = () => updateAria = true;
-  const handleLeftOrRight = () => setTimeout(() => updateAria = true, 0);
+  $: ariaText = readFullTime ? `${formatTime(stickySeconds)} ${formatTime(duration)}` : formatTime(stickySeconds);
 
   const handleMouseDown = (event) => {
     mouseDown = true;
@@ -68,9 +70,10 @@
   };
 
   const formatTime = (n) => {
-    if (n === 0) { return translate("secondsPlural").replace("{n}", 0); }
-
     const rounded = Math.floor(n);
+
+    if (rounded === 0) { return translate("secondsPlural").replace("{n}", 0); }
+
     const minutes = Math.floor(rounded / 60);
     const seconds = rounded % 60;
 
@@ -98,7 +101,7 @@
   });
 </script>
 
-<div type="button" tabindex="0" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-label={translate("playbackTime")} aria-valuetext={`${formatTime(stickySeconds)} ${formatTime(duration)}`} aria-valuenow={stickySeconds} aria-valuemin={0} aria-valuemax={duration}>
+<div type="button" tabindex="0" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-label={translate("playbackTime")} aria-valuetext={ariaText} aria-valuenow={stickySeconds} aria-valuemin={0} aria-valuemax={Math.floor(duration)}>
   <div class="background" style="background: {color}"></div>
   <div class="progress" style="background: {color}; width: {progress * 100}%"></div>
 </div>
