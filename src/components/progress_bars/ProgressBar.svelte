@@ -80,7 +80,7 @@
   });
 </script>
 
-<div type="button" tabindex="0" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-label={translate("scrubProgressBar")} aria-valuetext={`${stickyPercent}%`} aria-valuenow={stickyPercent} aria-valuemin={0} aria-valuemax={100}>
+<div type="button" tabindex="0" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-label={translate("playbackTime")} aria-valuetext={`${stickyPercent}%`} aria-valuenow={stickyPercent} aria-valuemin={0} aria-valuemax={100}>
   <div class="background" style="background: {color}"></div>
   <div class="progress" style="background: {color}; width: {percent}%"></div>
 </div>

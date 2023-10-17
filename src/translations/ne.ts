@@ -6,7 +6,7 @@ export default {
   // These translations are used by aria-label.
   playAudio: "Play audio",
   pauseAudio: "Pause audio",
-  scrubProgressBar: "Scrub progress bar",
+  playbackTime: "Playback time",
   visitAdvert: "Visit advert",
   visitBeyondWords: "Visit BeyondWords",
   closeWidget: "Close widget",

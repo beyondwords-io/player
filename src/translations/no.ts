@@ -6,7 +6,7 @@ export default {
   // These translations are used by aria-label.
   playAudio: "Spill av lyd",
   pauseAudio: "Sett lyden på pause",
-  scrubProgressBar: "Scrub fremdriftslinje",
+  playbackTime: "Playback time",
   visitAdvert: "Besøk annonsen",
   visitBeyondWords: "Besøk BeyondWords",
   closeWidget: "Lukk widget",
