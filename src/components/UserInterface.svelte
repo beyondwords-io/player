@@ -206,7 +206,7 @@
         <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} {showBeyondWords} color={activeTextColor} />
 
         {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
-          <ProgressBar {onEvent} {progress} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
+          <ProgressBar {onEvent} {progress} {duration} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
         {/if}
 
         {#if isAdvert && !forcedCollapsed}

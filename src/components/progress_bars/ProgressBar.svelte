@@ -6,6 +6,7 @@
   import handleKeyDown from "./handleKeyDown";
 
   export let progress = 0;
+  export let duration = 0;
   export let fullWidth = false;
   export let readonly = false;
   export let color = "#323232";
@@ -13,14 +14,15 @@
 
   let progressBar;
   let mouseDown;
-  let updatePercent = true;
+  let updateAria = true;
 
-  $: percent = Math.max(0, Math.min(100, progress * 100));
-  $: stickyPercent = updatePercent ? Math.round(percent) : stickyPercent;
-  $: updatePercent, setTimeout(() => updatePercent = false, 0);
+  $: stickyProgress = updateAria ? Math.max(0, Math.min(progress, 1)) : stickyProgress;
+  $: stickySeconds = stickyProgress * duration;
 
-  const handleFocus = () => updatePercent = true;
-  const handleLeftOrRight = () => setTimeout(() => updatePercent = true, 0);
+  $: updateAria, setTimeout(() => updateAria = false, 0);
+
+  const handleFocus = () => updateAria = true;
+  const handleLeftOrRight = () => setTimeout(() => updateAria = true, 0);
 
   const handleMouseDown = (event) => {
     mouseDown = true;
@@ -65,6 +67,22 @@
     return Math.max(0, Math.min(1, mouseRatio));
   };
 
+  const formatTime = (n) => {
+    if (n === 0) { return translate("secondsPlural").replace("{n}", 0); }
+
+    const rounded = Math.floor(n);
+    const minutes = Math.floor(rounded / 60);
+    const seconds = rounded % 60;
+
+    return [formatUnit(minutes, "minutes"), formatUnit(seconds, "seconds")].filter(s => s).join(" ");
+  };
+
+  const formatUnit = (n, units) => {
+    if (n === 0) { return; }
+    const key = n === 1 ? `${units}Singular` : `${units}Plural`;
+    return translate(key).replace("{n}", n);
+  };
+
   onMount(() => {
     const mouseup = addEventListener("mouseup", handleMouseUp);
     const mousemove = addEventListener("mousemove", handleMouseMove);
@@ -80,9 +98,9 @@
   });
 </script>
 
-<div type="button" tabindex="0" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-label={translate("playbackTime")} aria-valuetext={`${stickyPercent}%`} aria-valuenow={stickyPercent} aria-valuemin={0} aria-valuemax={100}>
+<div type="button" tabindex="0" role="slider" bind:this={progressBar} class="progress-bar" class:full-width={fullWidth} class:readonly class:mouse-down={mouseDown} on:mousedown={handleMouseDown} on:touchstart={handleMouseDown} on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)} on:mouseup={blurElement} on:focus={handleFocus} aria-label={translate("playbackTime")} aria-valuetext={`${formatTime(stickySeconds)} ${formatTime(duration)}`} aria-valuenow={stickySeconds} aria-valuemin={0} aria-valuemax={duration}>
   <div class="background" style="background: {color}"></div>
-  <div class="progress" style="background: {color}; width: {percent}%"></div>
+  <div class="progress" style="background: {color}; width: {progress * 100}%"></div>
 </div>
 
 <style>
