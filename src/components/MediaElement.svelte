@@ -72,7 +72,7 @@
   $: loadHlsIfNeeded(sources[0], video).then(lib => Hls = lib);
   $: hls = loadMetadata(sources[0], video, Hls, hls, handleHlsError, handleLoadedMetadata, play);
 
-  $: playbackState === "playing" && loadMedia(hls, startPosition);
+  $: (playbackState === "playing" || preferVideo()) && loadMedia(hls, startPosition);
 
   $: vastUrl = activeAdvert?.vastUrl;
   $: customUrl = activeAdvert?.clickThroughUrl;
