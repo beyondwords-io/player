@@ -24,7 +24,8 @@
   const handleFocus = () => { updateSticky = true; readFullTime = true; };
   const handleLeftOrRight = () => { updateSticky = true; readFullTime = false; };
 
-  $: ariaText = readFullTime ? `${formatTime(stickySeconds)} ${formatTime(duration)}` : formatTime(stickySeconds);
+  $: outOf = readFullTime ? `${translate("outOfTotalTime")} ${formatTime(duration)}` : "";
+  $: ariaText = `${formatTime(stickySeconds)} ${outOf}`;
 
   const handleMouseDown = (event) => {
     mouseDown = true;
