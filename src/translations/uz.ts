@@ -11,6 +11,7 @@ export default {
   secondsPlural: "{n} seconds",
   minutesSingular: "1 minute",
   minutesPlural: "{n} minutes",
+  outOfTotalTime: "out of total time",
   visitAdvert: "Visit advert",
   visitBeyondWords: "Visit BeyondWords",
   closeWidget: "Close widget",
