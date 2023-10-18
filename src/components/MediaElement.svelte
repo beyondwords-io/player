@@ -213,6 +213,7 @@
   };
 
   const handlePlayError = (error) => {
+    if (error?.name === "AbortError") { play(); return; }
     if (error?.name !== "NotAllowedError") { throw error; }
 
     onEvent(newEvent({
