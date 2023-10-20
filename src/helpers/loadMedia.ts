@@ -6,6 +6,7 @@ const loadMetadata = (source, video, Hls, hls, onError, onMetadata, play) => {
 
   hls?.detachMedia?.();
   hls?.destroy?.();
+  hls = null;
 
   if (!video || !source) { return; }
 
