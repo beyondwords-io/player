@@ -31,6 +31,8 @@ const loadMetadata = (source, video, Hls, hls, onError, onMetadata, play) => {
   } else if (wrongSource) {
     video.removeAttribute("src");
     video.load();
+  } else if (video.sourceUrl) {
+    onMetadata({});
   }
 
   if (!prevPaused) { play(); }
