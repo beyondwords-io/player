@@ -22,9 +22,13 @@
   };
 </script>
 
-<a class="large-image" href={href ? href : null} target="_blank" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("visitAdvert")}>
-  <img src={src} alt={alt} style="width: {size}; height: {size}" />
-</a>
+{#if href}
+  <a class="large-image" {href} target="_blank" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("visitAdvert")}>
+    <img src={src} alt={alt} style="width: {size}; height: {size}" />
+  </a>
+{:else}
+  <img class="large-image" src={src} alt={alt} style="width: {size}; height: {size}" />
+{/if}
 
 <style>
   .large-image {
