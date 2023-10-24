@@ -1,8 +1,18 @@
 import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
-  constructor(playerApiUrl, projectId) {
+  constructor(playerApiUrl, projectId, clientSideIntegration) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
+
+    this.headers = {
+      "X-Referer": window.location.href,
+      "X-Import": clientSideIntegration?.enabled,
+      "X-Author": clientSideIntegration?.contentAuthor,
+      "X-Title": clientSideIntegration?.contentTitle,
+      "X-Publish-Date": clientSideIntegration?.publishDate,
+      "X-Published": clientSideIntegration?.published,
+      "X-Ads-Enabled": clientSideIntegration?.adsEnabled,
+    };
   }
 
   byContentId(id) {
@@ -26,7 +36,7 @@ class PlayerApiClient {
   }
 
   #fetchJson(path) {
-    return fetchJson(`${this.baseUrl}/${path}`, { headers: { "X-Referer": window.location.href } });
+    return fetchJson(`${this.baseUrl}/${path}`, { headers: this.headers });
   }
 }
 
