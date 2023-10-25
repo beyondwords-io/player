@@ -24,6 +24,8 @@ player to your website using the NPM package.
 player programmatically by using the SDK.
 4. [Player settings](./doc/player-settings.md): A list of all supported player
 settings that can be set in the initializer or via the SDK.
+5. [Client-side integration](./doc/client-side-integration.md): How to import
+content into the BeyondWords platform using the player
 5. [Listening to events](./doc/listening-to-events.md): How to register event
 listeners that are called when player actions are performed.
 6. [Player events](./doc/player-events.md): A list of all events emitted by
