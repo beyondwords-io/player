@@ -13,6 +13,12 @@ class PlayerApiClient {
       "X-Published": clientSideIntegration?.published,
       "X-Ads-Enabled": clientSideIntegration?.adsEnabled,
     };
+
+    for (const key of Object.keys(this.headers)) {
+      if (typeof this.headers[key] === "undefined") {
+        delete this.headers[key];
+      }
+    }
   }
 
   byContentId(id) {
