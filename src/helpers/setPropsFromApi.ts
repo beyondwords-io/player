@@ -8,7 +8,12 @@ const setPropsFromApi = async (player) => {
   if (!player.playerApiUrl || !player.projectId) { return; }
 
   const identifiers = identifiersArray(player);
-  if (identifiers.length === 0) { return; }
+
+  // If no identifiers have been set then identify the content using the page URL.
+  if (identifiers.length === 0) {
+    player.sourceUrl = window.location.href;
+    return;
+  }
 
   const data = await fetchData(client, identifiers).catch(() => {});
   if (!data?.content) { handleNoContent(player); return; }
