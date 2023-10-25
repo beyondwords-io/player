@@ -28,7 +28,7 @@ class PlayerApiClient {
   }
 
   bySourceUrl(url) {
-    return this.#fetchJson(`by_source_url/${url}`);
+    return this.#fetchJson(`by_source_url/${encodeURIComponent(url)}`);
   }
 
   byIdentifiers(array) {
