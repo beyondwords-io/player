@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import VastContainer from "./VastContainer.svelte";
   import orderedMediaSources from "../helpers/orderedMediaSources";
   import loadHlsIfNeeded from "../helpers/loadHlsIfNeeded";
@@ -41,7 +41,7 @@
   let loadedMedia;
   let timeUpdateTimeout;
 
-  const setTime = (t) => time = t;
+  const setTime = (t) => tick().then(() => time = t);
   const preferVideo = () => videoMightBeShown;
 
   const play = () => video?.paused && video?.play()?.catch(handlePlayError);
