@@ -1,24 +1,13 @@
 import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
-  constructor(playerApiUrl, projectId, clientSideIntegration) {
+  constructor(playerApiUrl, projectId, clientSideEnabled) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
 
     this.headers = {
       "X-Referer": window.location.href,
-      "X-Import": clientSideIntegration?.enabled,
-      "X-Author": clientSideIntegration?.contentAuthor,
-      "X-Title": clientSideIntegration?.contentTitle,
-      "X-Publish-Date": clientSideIntegration?.publishDate,
-      "X-Published": clientSideIntegration?.published,
-      "X-Ads-Enabled": clientSideIntegration?.adsEnabled,
+      "X-Import": !!clientSideEnabled,
     };
-
-    for (const key of Object.keys(this.headers)) {
-      if (typeof this.headers[key] === "undefined") {
-        delete this.headers[key];
-      }
-    }
   }
 
   byContentId(id) {

@@ -14,16 +14,14 @@ automatically.
 [BeyondWords platform](https://dash.beyondwords.io). For example, you will need
 to set the list of allowed domains on which the integration is allowed to run.
 
-2) Embed the player on your web page and enable the clientSideIntegration:
+2) Embed the player on your web page and enable the client-side integration:
 
 ```javascript
 <script async defer src="https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js"
   onload="new BeyondWords.Player({
     target: this,
     projectId: <ID>,
-    clientSideIntegration: {
-      enabled: true,
-    },
+    clientSideEnabled: true,
   })">
 </script>
 ```
@@ -79,34 +77,14 @@ article so that BeyondWords can see the full content of your web page.
 
 ## Additional Parameters
 
-The `clientSideIntegration` property supports additional parameters that allow
-you to provide metadata about the article and to control whether it should be
-published immediately or at a future date:
+TODO: document how to set the following properties via data attributes:
 
-```javascript
-clientSideIntegration: {
-  enabled: true,
-  contentAuthor: "Jane Doe",
-  contentTitle: "My Article",
-  publishDate: "2023-01-01 00:00:00Z",
-  published: true,
-  adsEnabled: true,
-}
 ```
-
-The schema is explained below:
-
-- **enabled** &lt;boolean&gt;: Whether to import the current page's content, defaults to false
-- **contentAuthor** &lt;string&gt;: The author to associate with the content, defaults to null
-- **contentTitle** &lt;string&gt;: The title to associate with the content, defaults to the page &lt;title&gt;
-- **publishDate** &lt;string&gt;: The date the content was published, defaults to the current date/time
-- **published** &lt;string&gt;: Whether to publish the audio content for consumption, defaults to true
-- **adsEnabled** &lt;string&gt;: Whether to enable monetization for the audio, defaults to true
-
-In order for the player to load, the `publishDate` must have passed and the
-`published` field must be set to true. If either condition isn't met, the
-content will still be imported into the BeyondWords platform but the player will
-be hidden from the page. The content can then be manually published from the
-BeyondWords dashboard.
+contentAuthor: "Jane Doe",
+contentTitle: "My Article",
+publishDate: "2023-01-01 00:00:00Z",
+published: true,
+adsEnabled: true,
+```
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)

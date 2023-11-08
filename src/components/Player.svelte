@@ -79,7 +79,7 @@
   export let onError = () => {};
   export let transitions = [];
   export let controlPanel = undefined;
-  export let clientSideIntegration = {};
+  export let clientSideEnabled = false;
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
