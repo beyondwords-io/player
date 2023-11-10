@@ -326,7 +326,6 @@
     background: black;
     overflow: hidden;
     min-width: 300px;
-    max-width: 720px;
   }
 
   .media-element:not(.headless) {
