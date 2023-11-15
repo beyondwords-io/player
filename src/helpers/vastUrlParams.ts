@@ -1,7 +1,8 @@
-// Returns Google Ad Tag params for the specified 'advertConsent' property.
-// https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/consent
+const vastUrlParams = (advertConsent, showingVideo) => {
+  return googleAdManagerParams(advertConsent, showingVideo);
+};
 
-const googleAdTagParams = (advertConsent, showingVideo) => {
+const googleAdManagerParams = (advertConsent, showingVideo) => {
   const isLocahost = window.location.hostname === "localhost";
   const params = {};
 
@@ -11,6 +12,7 @@ const googleAdTagParams = (advertConsent, showingVideo) => {
 
   // Set the non-personalized advert flag which limits the ads that can play.
   // This will be set for 'non-personalized' and 'under-the-age-of-consent'.
+  // https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/consent
   params.npa = advertConsent !== "personalized" ? 1 : 0;
 
   // Set the 'Tag For Users under the Age of Consent in Europe' flag.
@@ -39,4 +41,4 @@ const googleAdTagParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-export default googleAdTagParams;
+export default vastUrlParams;

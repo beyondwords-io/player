@@ -1,7 +1,7 @@
 <script>
   import newEvent from "../helpers/newEvent";
   import withQueryParams from "../helpers/withQueryParams";
-  import googleAdTagParams from "../helpers/googleAdTagParams";
+  import vastUrlParams from "../helpers/vastUrlParams";
   import elementIsVisible from "../helpers/elementIsVisible";
 
   export let vastUrl;
@@ -20,7 +20,7 @@
   let adsLoaded;
   let adData;
 
-  $: adParams = googleAdTagParams(advertConsent, elementIsVisible(video));
+  $: adParams = vastUrlParams(advertConsent, elementIsVisible(video));
   $: adTagUrl = withQueryParams(vastUrl, adParams);
 
   $: adsManager && playbackState === "playing" && loadAds();
