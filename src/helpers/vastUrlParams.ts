@@ -86,7 +86,9 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   // VAST request when ip is not specified. We are using the client-to-server
   // integration so we don't need to set X-Forwarded-For HTTP header.
 
-  // TODO: ua
+  // The 'ua' parameter is intentionally left undefined. The User-Agent HTTP
+  // header is set when requesting the VAST URL so we don't need to set this.
+
   // TODO: referrer
   // TODO: language
   // TODO: content_language
