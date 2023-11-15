@@ -1,18 +1,27 @@
 import { GVL, TCModel, TCString } from "@iabtechlabtcf/core";
 import fetch from "node-fetch";
 import fs from "fs";
+import path from "path";
 
-// This function writes a JavaScript file containing IAB TCF daisybit strings
-// that provide GDPR consent for either personalized or or non-personalized ads
-// across all known vendors from the vendor-list.json remote file.
+// The writeDaisybitStringsToFile function writes a JavaScript file containing
+// IAB TCF daisybit strings that provide GDPR consent for either personalized or
+// non-personalized ads across all known vendors from vendor-list.json.
 //
 // We can prepare these strings at build time because they won't change very
 // often and it avoids loading additional dependencies and making additional
 // requests as part of the player's loading process.
 //
-// This page has a handy encoder/decoder: https://iabtcf.com/#/encode
+// This page has a handy daisybit encoder/decoder: https://iabtcf.com/#/encode
 
-const writeDaisybitStrings = async (jsOutputFilename) => {
+const writeDaisybitStrings = () => ({
+  name: "writeDaisybitStrings",
+  enforce: "pre",
+  buildStart: () => {
+    writeDaisybitStringsToFile("src/helpers/daisybitStrings.ts");
+  }
+});
+
+const writeDaisybitStringsToFile = async (jsOutputFilename) => {
   const response = await fetch("https://vendor-list.consensu.org/v2/vendor-list.json");
   const vendorList = await response.json();
 
@@ -44,7 +53,10 @@ const writeDaisybitStrings = async (jsOutputFilename) => {
   const objectToWrite = { nonPersonalizedDaisybit, personalizedDaisybit };
   const jsonToWrite = JSON.stringify(objectToWrite, null, 2);
 
-  fs.writeFileSync(jsOutputFilename, jsonToWrite);
+  const basename = path.basename(__filename);
+  const comment = `// This file is auto-generated at build time by ${basename}\n`;
+
+  fs.writeFileSync(jsOutputFilename, `${comment}export default ${jsonToWrite}`);
 };
 
 export default writeDaisybitStrings;
