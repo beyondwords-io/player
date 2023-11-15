@@ -6,6 +6,7 @@
   import ControlPanel from "./ControlPanel.svelte";
   import MediaSession from "./MediaSession.svelte";
   import GoogleAnalytics from "./GoogleAnalytics.svelte";
+  import SetDaxListenerId from "./SetDaxListenerId.svelte";
   import StyleReset from "./StyleReset.svelte";
   import SegmentContainers from "../helpers/segmentContainers";
   import SegmentClickables from "../helpers/segmentClickables";
@@ -16,6 +17,7 @@
   import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
+  import { isDigitalAdExchange} from "../helpers/vastUrlParams";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -113,6 +115,9 @@
 
   $: isAdvert = activeAdvert && playbackState !== "stopped";
   $: isAudio = loadedMedia?.format === "audio";
+
+  $: hasDaxAdverts = adverts.some(ad => isDigitalAdExchange(ad.vastUrl));
+  $: setDaxListenerId = hasDaxAdverts && advertConsent === "personalized";
 
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
   $: showWidget = showBottomWidget || widgetTarget;
@@ -350,6 +355,10 @@
 
 {#if analyticsTag}
   <GoogleAnalytics {analyticsTag} />
+{/if}
+
+{#if setDaxListenerId}
+  <SetDaxListenerId />
 {/if}
 
 <StyleReset />

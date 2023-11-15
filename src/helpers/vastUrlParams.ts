@@ -1,12 +1,12 @@
 const vastUrlParams = (vastUrl, advertConsent, showingVideo) => {
-  const isGoogleAdManager = vastUrl?.includes("pubads.g.doubleclick.net");
-  if (isGoogleAdManager) { return googleAdManagerParams(advertConsent, showingVideo); }
-
-  const isDigitalAdExchange = vastUrl?.includes("geo.ads.audio.thisisdax.com");
-  if (isDigitalAdExchange) { return digitalAdExchangeParams(advertConsent, showingVideo); }
+  if (isGoogleAdManager(vastUrl)) { return googleAdManagerParams(advertConsent, showingVideo); }
+  if (isDigitalAdExchange(vastUrl)) { return digitalAdExchangeParams(advertConsent, showingVideo); }
 
   return {};
 };
+
+const isGoogleAdManager = (vastUrl) => vastUrl?.includes("pubads.g.doubleclick.net");
+const isDigitalAdExchange = (vastUrl) => vastUrl?.includes("geo.ads.audio.thisisdax.com");
 
 const googleAdManagerParams = (advertConsent, showingVideo) => {
   const isLocahost = window.location.hostname === "localhost";
@@ -106,3 +106,4 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
 };
 
 export default vastUrlParams;
+export { isDigitalAdExchange };
