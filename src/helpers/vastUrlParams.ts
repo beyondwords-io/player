@@ -50,7 +50,7 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (advertConsent, showingVideo) => {
+const digitalAdExchangeParams = (advertConsent, _showingVideo) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -128,7 +128,7 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   // There is no way to log into the player so set this to false for now. We
   // might want to use this for differentiating whether the user is logged into
   // the publisher's site and is listening to paywalled content.
-  params.isLoggedIn = false
+  params.isLoggedIn = false;
 
   // TODO: gps_accuracy
   // TODO: gps_alt

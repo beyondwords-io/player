@@ -1,7 +1,6 @@
 import { GVL, TCModel, TCString } from "@iabtechlabtcf/core";
 import fetch from "node-fetch";
 import fs from "fs";
-import path from "path";
 
 // This file writes a JavaScript file containing IAB TCF daisybit strings that
 // provide GDPR consent for either personalized or non-personalized ads across
@@ -45,9 +44,9 @@ const writeDaisybitStrings = async (jsOutputFilename) => {
   const objectToWrite = { nonPersonalizedDaisybit, personalizedDaisybit };
   const jsonToWrite = JSON.stringify(objectToWrite, null, 2);
 
-  const comment = `// This file is auto-generated at build time by writeDaisybitStrings.ts\n`;
+  const comment = "// This file is auto-generated at build time by writeDaisybitStrings.ts\n";
 
-  fs.writeFileSync(jsOutputFilename, `${comment}export default ${jsonToWrite}`);
+  fs.writeFileSync(jsOutputFilename, `${comment}export default ${jsonToWrite};`);
 };
 
 writeDaisybitStrings("src/helpers/daisybitStrings.ts");
