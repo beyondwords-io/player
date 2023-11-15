@@ -1,3 +1,5 @@
+import { version } from "../../package.json";
+
 const vastUrlParams = (vastUrl, advertConsent, showingVideo) => {
   if (isGoogleAdManager(vastUrl)) { return googleAdManagerParams(advertConsent, showingVideo); }
   if (isDigitalAdExchange(vastUrl)) { return digitalAdExchangeParams(advertConsent, showingVideo); }
@@ -100,10 +102,10 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   // TODO: bundles
   // TODO: explicit
 
-  // This is used to identify the player integration making calls on DAX's side.
+  // These is used to identify the player integration making calls on DAX's side.
   params.dax_player = "BeyondWords Player";
+  params.dax_version = version;
 
-  // TODO: dax_version
   // TODO: dax_platform
   // TODO: cast_platform
   // TODO: age
