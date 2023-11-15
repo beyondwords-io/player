@@ -20,7 +20,7 @@
   let adsLoaded;
   let adData;
 
-  $: adParams = vastUrlParams(advertConsent, elementIsVisible(video));
+  $: adParams = vastUrlParams(vastUrl, advertConsent, elementIsVisible(video));
   $: adTagUrl = withQueryParams(vastUrl, adParams);
 
   $: adsManager && playbackState === "playing" && loadAds();

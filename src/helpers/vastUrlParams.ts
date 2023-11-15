@@ -1,5 +1,11 @@
-const vastUrlParams = (advertConsent, showingVideo) => {
-  return googleAdManagerParams(advertConsent, showingVideo);
+const vastUrlParams = (vastUrl, advertConsent, showingVideo) => {
+  const isGoogleAdManager = vastUrl?.includes("pubads.g.doubleclick.net");
+  if (isGoogleAdManager) { return googleAdManagerParams(advertConsent, showingVideo); }
+
+  const isDigitalAdExchange = vastUrl?.includes("geo.ads.audio.thisisdax.com");
+  if (isDigitalAdExchange) { return digitalAdExchangeParams(advertConsent, showingVideo); }
+
+  return {};
 };
 
 const googleAdManagerParams = (advertConsent, showingVideo) => {
@@ -37,6 +43,64 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   // fall back since we don't want to incorrectly report where ads are served from.
   // https://support.google.com/admanager/answer/10678356?hl=en#description_url
   if (!isLocahost) { params.description_url = window.location.href; }
+
+  return params;
+};
+
+const digitalAdExchangeParams = (advertConsent, showingVideo) => {
+  const params = {};
+
+  // TODO: cid
+  // TODO: dax_listenerid
+  // TODO: gdpr_consent
+  // TODO: gdpr
+  // TODO: att
+  // TODO: idfv
+  // TODO: nlsid
+  // TODO: u
+  // TODO: dur_min
+  // TODO: dur_max
+  // TODO: adc_min
+  // TODO: adc_max
+  // TODO: sd
+  // TODO: midroll
+  // TODO: delivery_type
+  // TODO: feed_type
+  // TODO: bi
+  // TODO: lat
+  // TODO: long
+  // TODO: bcat
+  // TODO: cat
+  // TODO: badv
+  // TODO: ip
+  // TODO: ua
+  // TODO: referrer
+  // TODO: language
+  // TODO: content_language
+  // TODO: collectionid
+  // TODO: showid
+  // TODO: episodeid
+  // TODO: category
+  // TODO: genre
+  // TODO: bundles
+  // TODO: explicit
+  // TODO: dax_player
+  // TODO: dax_version
+  // TODO: dax_platform
+  // TODO: cast_platform
+  // TODO: age
+  // TODO: gender
+  // TODO: audience
+  // TODO: isLoggedIn
+  // TODO: gps_accuracy
+  // TODO: gps_alt
+  // TODO: gps_epoch
+  // TODO: gps_placemarks_geocode
+  // TODO: gps_provider
+  // TODO: gps_speed
+  // TODO: wifi
+  // TODO: is_comp_allowed
+  // TODO: comp_size
 
   return params;
 };
