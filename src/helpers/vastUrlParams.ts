@@ -68,11 +68,12 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   // TODO: adc_max
   // TODO: sd
   // TODO: midroll
-  // TODO: feed_type
 
   // Method content is being consumed, either 'download' or 'streaming'. In our
   // case, we set streaming because 99% of users will receive HLS chunks.
   params.delivery_type = "streaming";
+
+  // The 'feed_type' parameter is intentionally left undefined. Default: Podcast
 
   // TODO: bi
   // TODO: lat
