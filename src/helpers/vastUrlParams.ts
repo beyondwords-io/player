@@ -99,7 +99,10 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   // TODO: genre
   // TODO: bundles
   // TODO: explicit
-  // TODO: dax_player
+
+  // This is used to identify the player integration making calls on DAX's side.
+  params.dax_player = "BeyondWords Player";
+
   // TODO: dax_version
   // TODO: dax_platform
   // TODO: cast_platform
