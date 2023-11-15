@@ -52,7 +52,8 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
 const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   const params = {};
 
-  // TODO: cid
+  // The 'cid' parameter is already included in the URL by the API. It is
+  // publisher specific and is used to attribute advert revenue accordingly.
 
   // Set the listener ID from the window global that is set by SetDaxListenerId
   // in Player.svelte. This won't be present if personalized ads are disabled.
