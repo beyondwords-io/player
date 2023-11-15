@@ -59,7 +59,10 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   if (window.daxListenerId) { params.dax_listenerid = window.daxListenerId; }
 
   // TODO: gdpr_consent
-  // TODO: gdpr
+
+  // The 'gdpr' parameter is intentionally left undefined. DAX will infer
+  // whether GDPR rules apply based on the region of the VAST request IP.
+
   // TODO: att
   // TODO: idfv
   // TODO: nlsid
