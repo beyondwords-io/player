@@ -81,7 +81,11 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   // TODO: bcat
   // TODO: cat
   // TODO: badv
-  // TODO: ip
+
+  // The 'ip' parameter is intentionally left undefined. DAX uses the IP of the
+  // VAST request when ip is not specified. We are using the client-to-server
+  // integration so we don't need to set X-Forwarded-For HTTP header.
+
   // TODO: ua
   // TODO: referrer
   // TODO: language
