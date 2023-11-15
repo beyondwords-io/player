@@ -1,4 +1,5 @@
 import { version } from "../../package.json";
+import daisybitStrings from "./daisybitStrings";
 
 const vastUrlParams = (vastUrl, advertConsent, showingVideo) => {
   if (isGoogleAdManager(vastUrl)) { return googleAdManagerParams(advertConsent, showingVideo); }
@@ -59,7 +60,15 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   // in Player.svelte. This won't be present if personalized ads are disabled.
   if (window.daxListenerId) { params.dax_listenerid = window.daxListenerId; }
 
-  // TODO: gdpr_consent
+  // Set the 'gdpr_consent' parameter based on whether the player is allowed
+  // to request personalized ads. These follow the 'IAB TCF daisybit' standard
+  // and encode data about which purposes are allowed and which vendors are
+  // allowed. See src/helpers/writeDaisybitStrings.ts for more information.
+  if (advertConsent === "personalized") {
+    params.gdpr_consent = daisybitStrings.personalizedDaisybit;
+  } else {
+    params.gdpr_consent = daisybitStrings.nonPersonalizedDaisybit;
+  }
 
   // The 'gdpr' parameter is intentionally left undefined. DAX will infer
   // whether GDPR rules apply based on the region of the VAST request IP.
