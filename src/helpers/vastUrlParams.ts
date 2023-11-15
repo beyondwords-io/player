@@ -51,7 +51,11 @@ const digitalAdExchangeParams = (advertConsent, showingVideo) => {
   const params = {};
 
   // TODO: cid
-  // TODO: dax_listenerid
+
+  // Set the listener ID from the window global that is set by SetDaxListenerId
+  // in Player.svelte. This won't be present if personalized ads are disabled.
+  if (window.daxListenerId) { params.dax_listenerid = window.daxListenerId; }
+
   // TODO: gdpr_consent
   // TODO: gdpr
   // TODO: att
