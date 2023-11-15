@@ -3,9 +3,9 @@ import fetch from "node-fetch";
 import fs from "fs";
 import path from "path";
 
-// The writeDaisybitStringsToFile function writes a JavaScript file containing
-// IAB TCF daisybit strings that provide GDPR consent for either personalized or
-// non-personalized ads across all known vendors from vendor-list.json.
+// This file writes a JavaScript file containing IAB TCF daisybit strings that
+// provide GDPR consent for either personalized or non-personalized ads across
+// all known vendors from the remote vendor-list.json file.
 //
 // We can prepare these strings at build time because they won't change very
 // often and it avoids loading additional dependencies and making additional
@@ -13,15 +13,7 @@ import path from "path";
 //
 // This page has a handy daisybit encoder/decoder: https://iabtcf.com/#/encode
 
-const writeDaisybitStrings = () => ({
-  name: "writeDaisybitStrings",
-  enforce: "pre",
-  buildStart: () => {
-    writeDaisybitStringsToFile("src/helpers/daisybitStrings.ts");
-  }
-});
-
-const writeDaisybitStringsToFile = async (jsOutputFilename) => {
+const writeDaisybitStrings = async (jsOutputFilename) => {
   const response = await fetch("https://vendor-list.consensu.org/v2/vendor-list.json");
   const vendorList = await response.json();
 
@@ -53,10 +45,9 @@ const writeDaisybitStringsToFile = async (jsOutputFilename) => {
   const objectToWrite = { nonPersonalizedDaisybit, personalizedDaisybit };
   const jsonToWrite = JSON.stringify(objectToWrite, null, 2);
 
-  const basename = path.basename(__filename);
-  const comment = `// This file is auto-generated at build time by ${basename}\n`;
+  const comment = `// This file is auto-generated at build time by writeDaisybitStrings.ts\n`;
 
   fs.writeFileSync(jsOutputFilename, `${comment}export default ${jsonToWrite}`);
 };
 
-export default writeDaisybitStrings;
+writeDaisybitStrings("src/helpers/daisybitStrings.ts");

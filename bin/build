@@ -1,3 +1,3 @@
 #!/bin/bash
 
-npx vite build && ./bin/vendor_hls && ./bin/vendor_style
+./bin/write_daisybits && npx vite build && ./bin/vendor_hls && ./bin/vendor_style
