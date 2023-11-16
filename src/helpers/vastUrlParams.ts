@@ -3,7 +3,7 @@ import daisybitStrings from "./daisybitStrings";
 
 const vastUrlParams = (vastUrl, advertConsent, showingVideo) => {
   if (isGoogleAdManager(vastUrl)) { return googleAdManagerParams(advertConsent, showingVideo); }
-  if (isDigitalAdExchange(vastUrl)) { return digitalAdExchangeParams(advertConsent, showingVideo); }
+  if (isDigitalAdExchange(vastUrl)) { return digitalAdExchangeParams(vastUrl, advertConsent); }
 
   return {};
 };
@@ -50,11 +50,14 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (advertConsent, _showingVideo) => {
+const digitalAdExchangeParams = (vastUrl, advertConsent) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
   // publisher specific and is used to attribute advert revenue accordingly.
+  if (!vastUrl?.includes("cid=")) {
+    console.warn("BeyondWords.Player: The DAX VAST URL does not contain the 'cid' parameter.");
+  }
 
   // Set the listener ID from the window global that is set by SetDaxListenerId
   // in Player.svelte. This won't be present if personalized ads are disabled.
