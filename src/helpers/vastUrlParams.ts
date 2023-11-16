@@ -168,6 +168,11 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent) => {
   // TODO: is_comp_allowed
   // TODO: comp_size
 
+  // Set the cachebuster to a random number. This prevents proxies from caching
+  // intermediate results. Use the same 10-digit length that we use for the
+  // bulk_sync.js script in SetDaxListenerId.svelte.
+  params.cb = Math.floor(Math.random() * 10000000000);
+
   return params;
 };
 
