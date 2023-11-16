@@ -147,8 +147,10 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent) => {
 
   // TODO: dax_platform
   // TODO: cast_platform
-  // TODO: age
-  // TODO: gender
+
+  // The 'age' and 'generate parameters are intentionally left blank. We don't
+  // track these attributes of listeners.
+
   // TODO: audience
 
   // There is no way to log into the player so set this to false for now. We
