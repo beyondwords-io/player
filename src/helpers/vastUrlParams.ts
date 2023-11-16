@@ -85,8 +85,12 @@ const digitalAdExchangeParams = (vastUrl, advertConsent) => {
   // TODO: u
   // TODO: dur_min
   // TODO: dur_max
-  // TODO: adc_min
-  // TODO: adc_max
+
+  // Request exactly one audio creative advert. Our audio content is relatively
+  // short so we don't want to play more than one advert in series.
+  params.adc_min = 1;
+  params.adc_max = 1;
+
   // TODO: sd
   // TODO: midroll
 
