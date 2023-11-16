@@ -124,8 +124,14 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent) => {
   // The 'ua' parameter is intentionally left undefined. The User-Agent HTTP
   // header is set when requesting the VAST URL so we don't need to set this.
 
-  // TODO: referrer
-  // TODO: language
+  // The 'referrer' parameter is intentionally left undefined. We are using the
+  // client-server integration so DAX will infer this from HTTP headers.
+
+  // The 'language' parameter is intentionally left undefined. DAX will infer
+  // this from HTTP headers. We might want to explicitly set this in the future
+  // if we allow the player to initialized with an explicit language, rather
+  // than inferring it from the user's browser settings.
+
   // TODO: content_language
   // TODO: collectionid
   // TODO: showid
