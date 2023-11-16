@@ -139,7 +139,11 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent) => {
   // TODO: category
   // TODO: genre
   // TODO: bundles
-  // TODO: explicit
+
+  // Almost all BeyondWords content won't be explicit so I think it's
+  // reasonable to set this to false. In the future, we might want to allow
+  // content to be flagged as explicit, e.g. by setting data-explicit="true".
+  params.explicit = false;
 
   // These is used to identify the player integration making calls on DAX's side.
   params.dax_player = "BeyondWords Player";
