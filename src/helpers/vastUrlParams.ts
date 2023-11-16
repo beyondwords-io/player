@@ -1,9 +1,9 @@
 import { version } from "../../package.json";
 import daisybitStrings from "./daisybitStrings";
 
-const vastUrlParams = (vastUrl, advertConsent, showingVideo) => {
+const vastUrlParams = (vastUrl, placement, advertConsent, showingVideo) => {
   if (isGoogleAdManager(vastUrl)) { return googleAdManagerParams(advertConsent, showingVideo); }
-  if (isDigitalAdExchange(vastUrl)) { return digitalAdExchangeParams(vastUrl, advertConsent); }
+  if (isDigitalAdExchange(vastUrl)) { return digitalAdExchangeParams(vastUrl, placement, advertConsent); }
 
   return {};
 };
@@ -50,7 +50,7 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (vastUrl, advertConsent) => {
+const digitalAdExchangeParams = (vastUrl, placement, advertConsent) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -91,7 +91,14 @@ const digitalAdExchangeParams = (vastUrl, advertConsent) => {
   params.adc_min = 1;
   params.adc_max = 1;
 
-  // TODO: sd
+  // Inform DAX where the advert is being played relative to the content.
+  if (placement === "pre-roll") {
+    params.sd = 0;
+  } else if (placement === "mid-roll") {
+    params.sd = -1;
+  } else if (placement === "post-roll") {
+    params.sd = -2;
+  }
 
   // The 'midroll' parameter is intentionally left undefined. We don't play
   // multiple midroll ads during one content item so it is better not to provide

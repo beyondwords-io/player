@@ -5,6 +5,7 @@
   import elementIsVisible from "../helpers/elementIsVisible";
 
   export let vastUrl;
+  export let placement;
   export let advertConsent;
   export let video;
   export let playbackState;
@@ -20,7 +21,7 @@
   let adsLoaded;
   let adData;
 
-  $: adParams = vastUrlParams(vastUrl, advertConsent, elementIsVisible(video));
+  $: adParams = vastUrlParams(vastUrl, placement, advertConsent, elementIsVisible(video));
   $: adTagUrl = withQueryParams(vastUrl, adParams);
 
   $: adsManager && playbackState === "playing" && loadAds();

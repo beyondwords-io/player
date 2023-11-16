@@ -75,6 +75,7 @@
   $: (playbackState === "playing" || preferVideo()) && loadMedia(hls, startPosition);
 
   $: vastUrl = activeAdvert?.vastUrl;
+  $: placement = activeAdvert?.placement;
   $: customUrl = activeAdvert?.clickThroughUrl;
 
   $: metadataLoaded && !vastUrl && (playbackState === "playing" ? play() : pause());
@@ -304,7 +305,7 @@
       </video>
 
       {#if vastUrl}
-        <VastContainer {onEvent} {vastUrl} {advertConsent} {video} bind:playbackState bind:duration bind:currentTime />
+        <VastContainer {onEvent} {vastUrl} {placement} {advertConsent} {video} bind:playbackState bind:duration bind:currentTime />
       {/if}
 
       {#if customUrl}
