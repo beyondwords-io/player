@@ -78,7 +78,10 @@ const digitalAdExchangeParams = (vastUrl, advertConsent) => {
 
   // TODO: att
   // TODO: idfv
-  // TODO: nlsid
+
+  // The 'nlsid' parameter is intentionally left blank. We don't have a Nielsen
+  // DMP user account so this parameter is irrelevant.
+
   // TODO: u
   // TODO: dur_min
   // TODO: dur_max
