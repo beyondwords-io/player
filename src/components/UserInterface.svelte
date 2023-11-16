@@ -60,6 +60,7 @@
   export let videoIconColor = "white";
   export let logoIconEnabled = true;
   export let logoImagePosition = undefined;
+  export let maxImageSize = 0;
   export let onEvent = () => {};
 
   // These are set automatically.
@@ -113,6 +114,7 @@
 
   $: largeImage = isAdvert && advertImageUrl || !isStopped && persistentAdvert?.imageUrl ||  contentItem.imageUrl;
   $: largeImageHref = isAdvert && advertClickThroughUrl || !isStopped && persistentAdvert?.clickThroughUrl;
+  $: imageSize = isMobile ? 80 : maxImageSize;
 
   $: collapsible = isSmall && fixedPosition && fixedWidth === "auto";
   $: forcedCollapsed = isSmall && (fixedWidth === 0 || fixedWidth === "0");
@@ -172,7 +174,7 @@
 
     <div class="main" role="none" class:no-image={!largeImage} on:mousedown={handleMouseDown} on:keyup={null} style={isVideo ? "" : `background: ${activeBgColor}`}>
       {#if largeImage && (isLarge || isScreen)}
-        <LargeImage {onEvent} src={largeImage} href={largeImageHref} scale={isScreen && !isMobile ? 1.5 : 1} />
+        <LargeImage {onEvent} src={largeImage} href={largeImageHref} size={imageSize} />
       {/if}
 
       {#if isLarge || isScreen}

@@ -122,6 +122,11 @@
   $: interfaceStyle = isFullScreen ? "video" : playerStyle;
   $: showWidget = showBottomWidget || widgetTarget;
 
+  $: isScreen = interfaceStyle === "screen";
+  $: isLarge = interfaceStyle === "large";
+
+  $: maxImageSize = isScreen ? 120 : isLarge ? 80 : 0;
+
   $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
   $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(widgetStyle) && content.length > 0;
 
@@ -175,6 +180,7 @@
     {introOrOutro}
     {activeAdvert}
     {advertConsent}
+    {maxImageSize}
     bind:playbackState
     bind:duration
     bind:currentTime
@@ -219,6 +225,7 @@
     {videoIconColor}
     {logoIconEnabled}
     {logoImagePosition}
+    {maxImageSize}
     {isFullScreen}
     {videoPosterImage}
     videoIsBehind={videoBehindStatic} />
@@ -256,6 +263,7 @@
       {videoIconColor}
       {logoIconEnabled}
       {logoImagePosition}
+      {maxImageSize}
       {videoPosterImage}
       videoIsBehind={videoBehindWidget} />
   </ExternalWidget>

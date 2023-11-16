@@ -1,9 +1,14 @@
 import { version } from "../../package.json";
 import daisybitStrings from "./daisybitStrings";
 
-const vastUrlParams = (vastUrl, placement, advertConsent, showingVideo) => {
-  if (isGoogleAdManager(vastUrl)) { return googleAdManagerParams(advertConsent, showingVideo); }
-  if (isDigitalAdExchange(vastUrl)) { return digitalAdExchangeParams(vastUrl, placement, advertConsent); }
+const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, showingVideo) => {
+  if (isGoogleAdManager(vastUrl)) {
+    return googleAdManagerParams(advertConsent, showingVideo);
+  }
+
+  if (isDigitalAdExchange(vastUrl)) {
+    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize);
+  }
 
   return {};
 };
@@ -32,6 +37,9 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   // video or audio adverts. Otherwise, only request audio adverts.
   params.ad_type = showingVideo ? "audio_video" : "audio";
 
+  // TODO: does Google Ad Manager support a parameter for companion ad size?
+  // If so, we can use maxImageSize like we do with the DAX integration.
+
   // On localhost, the Google IMA SDK does not set the url parameter when it
   // requests adverts which can result in no adverts being returned. Therefore,
   // use the url query parameter from the VAST URL if it is available, otherwise
@@ -50,7 +58,7 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (vastUrl, placement, advertConsent) => {
+const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -169,8 +177,18 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent) => {
   // TODO: gps_provider
   // TODO: gps_speed
   // TODO: wifi
-  // TODO: is_comp_allowed
-  // TODO: comp_size
+
+  // Request companion ads if the large or screen player styles are used. The
+  // companion ad shows in the LargeImage component. Take display scaling into
+  // account when requesting ads so that higher resolution ads are selected.
+  if (maxImageSize > 0) {
+    const scaledSize = maxImageSize * (window.devicePixelRatio || 1);
+
+    params.comp_size = `${scaledSize}x${scaledSize}`;
+    params.is_comp_allowed = 1;
+  } else {
+    params.is_comp_allowed = 0;
+  }
 
   // Set the cachebuster to a random number. This prevents proxies from caching
   // intermediate results. Use the same 10-digit length that we use for the

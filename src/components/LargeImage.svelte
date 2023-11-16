@@ -6,10 +6,8 @@
   export let src;
   export let href;
   export let alt = "Player Image";
-  export let scale = 1;
+  export let size = 80;
   export let onEvent = () => {};
-
-  $: size = `${scale * 80}px`;
 
   const handleClick = () => {
     if (!href) { return; }
@@ -23,11 +21,11 @@
 </script>
 
 {#if href}
-  <a class="large-image" {href} target="_blank" style="width: {size}; height: {size}" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("visitAdvert")}>
-    <img src={src} alt={alt} style="width: {size}; height: {size}" />
+  <a class="large-image" {href} target="_blank" style="width: {size}px; height: {size}px" on:click={handleClick} on:mouseup={blurElement} aria-label={translate("visitAdvert")}>
+    <img src={src} alt={alt} style="width: {size}px; height: {size}px" />
   </a>
 {:else}
-  <img class="large-image" src={src} alt={alt} style="width: {size}; height: {size}" />
+  <img class="large-image" src={src} alt={alt} style="width: {size}px; height: {size}px" />
 {/if}
 
 <style>
