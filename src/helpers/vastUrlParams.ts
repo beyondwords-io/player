@@ -92,7 +92,10 @@ const digitalAdExchangeParams = (vastUrl, advertConsent) => {
   params.adc_max = 1;
 
   // TODO: sd
-  // TODO: midroll
+
+  // The 'midroll' parameter is intentionally left undefined. We don't play
+  // multiple midroll ads during one content item so it is better not to provide
+  // an index since this might suggest we intend to play multiple midroll ads.
 
   // Method content is being consumed, either 'download' or 'streaming'. In our
   // case, we set streaming because 99% of users will receive HLS chunks.
