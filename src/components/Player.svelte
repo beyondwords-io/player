@@ -181,6 +181,7 @@
     {activeAdvert}
     {advertConsent}
     {maxImageSize}
+    {projectId}
     bind:playbackState
     bind:duration
     bind:currentTime

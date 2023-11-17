@@ -1,13 +1,13 @@
 import { version } from "../../package.json";
 import daisybitStrings from "./daisybitStrings";
 
-const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, showingVideo) => {
+const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, showingVideo) => {
   if (isGoogleAdManager(vastUrl)) {
     return googleAdManagerParams(advertConsent, showingVideo);
   }
 
   if (isDigitalAdExchange(vastUrl)) {
-    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize);
+    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize, projectId);
   }
 
   return {};
@@ -58,7 +58,7 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize) => {
+const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize, projectId) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -141,7 +141,11 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize
   // than inferring it from the user's browser settings.
 
   // TODO: content_language
-  // TODO: collectionid
+
+  // We may as well use these parameters to keep track of the BeyondWords
+  // identifiers for the content that is currently loaded into the player.
+  params.collectionid = projectId ? `project-${projectId}` : `no-project`;
+
   // TODO: showid
   // TODO: episodeid
   // TODO: category
