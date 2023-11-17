@@ -1,13 +1,13 @@
 import { version } from "../../package.json";
 import daisybitStrings from "./daisybitStrings";
 
-const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, showingVideo) => {
+const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, showingVideo) => {
   if (isGoogleAdManager(vastUrl)) {
     return googleAdManagerParams(advertConsent, showingVideo);
   }
 
   if (isDigitalAdExchange(vastUrl)) {
-    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage);
+    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform);
   }
 
   return {};
@@ -58,7 +58,7 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage) => {
+const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -162,7 +162,15 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize
   params.dax_player = "BeyondWords Player";
   params.dax_version = version;
 
-  // TODO: dax_platform
+  // Forward the platform to DAX. The iOS and Android SDKs set this in the props.
+  if (platform === "ios") {
+    params.dax_platform = "iOS";
+  } else if (platform === "android") {
+    params.dax_platform = "Android";
+  } else {
+    params.dax_platform = "web";
+  }
+
   // TODO: cast_platform
 
   // The 'age' and 'gender' parameters are intentionally left blank. We don't
