@@ -182,6 +182,7 @@
     {advertConsent}
     {maxImageSize}
     {projectId}
+    {playlistId}
     bind:playbackState
     bind:duration
     bind:currentTime

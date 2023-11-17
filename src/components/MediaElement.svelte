@@ -19,6 +19,7 @@
   export let advertConsent;
   export let maxImageSize;
   export let projectId;
+  export let playlistId;
   export let playbackState;
   export let duration;
   export let currentTime;
@@ -307,7 +308,7 @@
       </video>
 
       {#if vastUrl}
-        <VastContainer {onEvent} {vastUrl} {placement} {advertConsent} {maxImageSize} {projectId} {video} bind:playbackState bind:duration bind:currentTime />
+        <VastContainer {onEvent} {vastUrl} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {video} bind:playbackState bind:duration bind:currentTime />
       {/if}
 
       {#if customUrl}
