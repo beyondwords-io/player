@@ -1,13 +1,13 @@
 import { version } from "../../package.json";
 import daisybitStrings from "./daisybitStrings";
 
-const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, showingVideo) => {
+const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, showingVideo) => {
   if (isGoogleAdManager(vastUrl)) {
     return googleAdManagerParams(advertConsent, showingVideo);
   }
 
   if (isDigitalAdExchange(vastUrl)) {
-    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId);
+    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage);
   }
 
   return {};
@@ -58,7 +58,7 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId) => {
+const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -140,7 +140,8 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize
   // if we allow the player to initialized with an explicit language, rather
   // than inferring it from the user's browser settings.
 
-  // TODO: content_language
+  // Set content language from the project's default voice for title or summary.
+  params.content_language = contentLanguage.split(/[_-]/)[0];
 
   // We may as well use these parameters to keep track of the BeyondWords
   // identifiers for the content that is currently loaded into the player.

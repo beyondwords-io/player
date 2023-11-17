@@ -97,6 +97,7 @@
   export let logoImagePosition = undefined;
   export let analyticsUrl = undefined;
   export let analyticsId = undefined;
+  export let contentLanguage = "en";
   export let listenSessionId = undefined;
   export let sessionCreatedAt = undefined;
   export let companionAdvert = undefined;
@@ -184,6 +185,7 @@
     {projectId}
     {playlistId}
     contentId={contentItem?.id}
+    {contentLanguage}
     bind:playbackState
     bind:duration
     bind:currentTime

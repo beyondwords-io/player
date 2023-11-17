@@ -96,6 +96,8 @@ const setProps = (player, data) => {
   set(player, "analyticsTag", data.settings.analytics_tag);
   set(player, "analyticsUrl", data.settings.analytics_url);
   set(player, "analyticsId", data.settings.analytics_id);
+  set(player, "contentLanguage", data.language);
+
   // TODO: add support for title_enabled
   // TODO: add support for paywall_type
   // TODO: add support for paywall_url

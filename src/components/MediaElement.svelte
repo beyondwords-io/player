@@ -21,6 +21,7 @@
   export let projectId;
   export let playlistId;
   export let contentId;
+  export let contentLanguage;
   export let playbackState;
   export let duration;
   export let currentTime;
@@ -309,7 +310,7 @@
       </video>
 
       {#if vastUrl}
-        <VastContainer {onEvent} {vastUrl} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {contentId} {video} bind:playbackState bind:duration bind:currentTime />
+        <VastContainer {onEvent} {vastUrl} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {contentId} {contentLanguage} {video} bind:playbackState bind:duration bind:currentTime />
       {/if}
 
       {#if customUrl}
