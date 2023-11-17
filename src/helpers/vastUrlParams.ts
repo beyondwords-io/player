@@ -1,13 +1,13 @@
 import { version } from "../../package.json";
 import daisybitStrings from "./daisybitStrings";
 
-const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, showingVideo) => {
+const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, showingVideo) => {
   if (isGoogleAdManager(vastUrl)) {
     return googleAdManagerParams(advertConsent, showingVideo);
   }
 
   if (isDigitalAdExchange(vastUrl)) {
-    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId);
+    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId);
   }
 
   return {};
@@ -58,7 +58,7 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId) => {
+const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -144,10 +144,10 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize
 
   // We may as well use these parameters to keep track of the BeyondWords
   // identifiers for the content that is currently loaded into the player.
-  params.collectionid = projectId ? `project-${projectId}` : `no-project`;
-  params.showid = playlistId ? `playlist-${playlistId}` : `no-playlist`;
+  params.collectionid = projectId ? `project-${projectId}` : "no-project";
+  params.showid = playlistId ? `playlist-${playlistId}` : "no-playlist";
+  params.episodeid = contentId ? `content-${contentId}` : "no-content";
 
-  // TODO: episodeid
   // TODO: category
   // TODO: genre
   // TODO: bundles
@@ -164,7 +164,7 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize
   // TODO: dax_platform
   // TODO: cast_platform
 
-  // The 'age' and 'generate parameters are intentionally left blank. We don't
+  // The 'age' and 'gender' parameters are intentionally left blank. We don't
   // track these attributes of listeners.
 
   // TODO: audience

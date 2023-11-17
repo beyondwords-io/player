@@ -183,6 +183,7 @@
     {maxImageSize}
     {projectId}
     {playlistId}
+    contentId={contentItem?.id}
     bind:playbackState
     bind:duration
     bind:currentTime
