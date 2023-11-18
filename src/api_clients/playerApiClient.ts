@@ -4,10 +4,14 @@ class PlayerApiClient {
   constructor(playerApiUrl, projectId, clientSideEnabled) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
 
-    this.headers = {
-      "X-Referer": window.location.href,
-      "X-Import": !!clientSideEnabled,
-    };
+    // TODO: Find a way to pass this information to the backend while complying
+    // with CORS "simply request" requirements so that OPTIONS aren't sent.
+    if (clientSideEnabled) {
+      this.headers = {
+        "X-Referer": window.location.href,
+        "X-Import": !!clientSideEnabled,
+      };
+    }
   }
 
   byContentId(id) {
