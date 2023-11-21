@@ -2,7 +2,7 @@ import { version } from "../../package.json";
 import { parseUrl} from "./chooseAdvertText";
 import daisybitStrings from "./daisybitStrings";
 
-const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, showingVideo) => {
+const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, bundleIdentifier, showingVideo) => {
   const isLocahost = window.location.hostname === "localhost";
 
   if (isGoogleAdManager(vastUrl)) {
@@ -10,7 +10,7 @@ const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectI
   }
 
   if (isDigitalAdExchange(vastUrl)) {
-    return digitalAdExchangeParams(isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform);
+    return digitalAdExchangeParams(isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, bundleIdentifier);
   }
 
   return {};
@@ -60,7 +60,7 @@ const googleAdManagerParams = (isLocahost, advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform) => {
+const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, bundleIdentifier) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -128,7 +128,10 @@ const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, 
 
   // The 'feed_type' parameter is intentionally left undefined. Default: Podcast
 
-  // TODO: bi
+  // The bundle identifier is fetched by the ios/android SDKs from within the
+  // app they are running inside of. This player property won't be set on web.
+  if (bundleIdentifier) { params.bi = bundleIdentifier; }
+
   // TODO: lat
   // TODO: long
   // TODO: bcat

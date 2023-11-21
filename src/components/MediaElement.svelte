@@ -23,6 +23,7 @@
   export let contentId;
   export let contentLanguage;
   export let platform;
+  export let bundleIdentifier;
   export let playbackState;
   export let duration;
   export let currentTime;
@@ -311,7 +312,7 @@
       </video>
 
       {#if vastUrl}
-        <VastContainer {onEvent} {vastUrl} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {contentId} {contentLanguage} {platform} {video} bind:playbackState bind:duration bind:currentTime />
+        <VastContainer {onEvent} {vastUrl} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {contentId} {contentLanguage} {platform} {bundleIdentifier} {video} bind:playbackState bind:duration bind:currentTime />
       {/if}
 
       {#if customUrl}
