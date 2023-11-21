@@ -98,6 +98,7 @@
   export let analyticsUrl = undefined;
   export let analyticsId = undefined;
   export let platform = "web";
+  export let vendorIdentifier = undefined;
   export let bundleIdentifier = undefined;
   export let contentLanguage = "en";
   export let listenSessionId = undefined;
@@ -189,6 +190,7 @@
     contentId={contentItem?.id}
     {contentLanguage}
     {platform}
+    {vendorIdentifier}
     {bundleIdentifier}
     bind:playbackState
     bind:duration

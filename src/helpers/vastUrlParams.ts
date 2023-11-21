@@ -2,7 +2,7 @@ import { version } from "../../package.json";
 import { parseUrl} from "./chooseAdvertText";
 import daisybitStrings from "./daisybitStrings";
 
-const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, bundleIdentifier, showingVideo) => {
+const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, vendorIdentifier, bundleIdentifier, showingVideo) => {
   const isLocahost = window.location.hostname === "localhost";
 
   if (isGoogleAdManager(vastUrl)) {
@@ -10,7 +10,7 @@ const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectI
   }
 
   if (isDigitalAdExchange(vastUrl)) {
-    return digitalAdExchangeParams(isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, bundleIdentifier);
+    return digitalAdExchangeParams(isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, vendorIdentifier, bundleIdentifier);
   }
 
   return {};
@@ -60,7 +60,7 @@ const googleAdManagerParams = (isLocahost, advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, bundleIdentifier) => {
+const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, vendorIdentifier, bundleIdentifier) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -90,7 +90,10 @@ const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, 
   // app its embedded in might do, but for now, we don't forward this data.
   params.att = 0;
 
-  // TODO: idfv
+  // The bundle identifier is fetched by the ios SDK from within the app it is
+  // running inside of. This player property won't be set on android/web.
+  // https://linear.app/beyondwords/issue/S-3847/set-the-bundleidentifier-player-property-from-the-iosandroid-sdks
+  if (vendorIdentifier) { params.idfv = vendorIdentifier; }
 
   // The 'nlsid' parameter is intentionally left blank. We don't have a Nielsen
   // DMP user account so this parameter is irrelevant.

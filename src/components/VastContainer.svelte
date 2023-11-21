@@ -13,6 +13,7 @@
   export let contentId;
   export let contentLanguage;
   export let platform;
+  export let vendorIdentifier;
   export let bundleIdentifier;
   export let video;
   export let playbackState;
@@ -28,7 +29,7 @@
   let adsLoaded;
   let adData;
 
-  $: adParams = vastUrlParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, bundleIdentifier, elementIsVisible(video));
+  $: adParams = vastUrlParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, vendorIdentifier, bundleIdentifier, elementIsVisible(video));
   $: adTagUrl = withQueryParams(vastUrl, adParams);
 
   $: adsManager && playbackState === "playing" && loadAds();
