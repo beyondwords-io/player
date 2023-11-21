@@ -84,6 +84,10 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize
   // The 'gdpr' parameter is intentionally left undefined. DAX will infer
   // whether GDPR rules apply based on the region of the VAST request IP.
 
+  // The player iOS/Android SDK does not ask to track the user's location. The
+  // app its embedded in might do, but for now, we don't forward this data.
+  params.att = 0;
+
   // TODO: att
   // TODO: idfv
 
