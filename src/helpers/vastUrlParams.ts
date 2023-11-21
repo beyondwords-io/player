@@ -1,13 +1,16 @@
 import { version } from "../../package.json";
+import { parseUrl} from "./chooseAdvertText";
 import daisybitStrings from "./daisybitStrings";
 
 const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, showingVideo) => {
+  const isLocahost = window.location.hostname === "localhost";
+
   if (isGoogleAdManager(vastUrl)) {
-    return googleAdManagerParams(advertConsent, showingVideo);
+    return googleAdManagerParams(isLocahost, advertConsent, showingVideo);
   }
 
   if (isDigitalAdExchange(vastUrl)) {
-    return digitalAdExchangeParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform);
+    return digitalAdExchangeParams(isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform);
   }
 
   return {};
@@ -16,8 +19,7 @@ const vastUrlParams = (vastUrl, placement, advertConsent, maxImageSize, projectI
 const isGoogleAdManager = (vastUrl) => vastUrl?.includes("pubads.g.doubleclick.net");
 const isDigitalAdExchange = (vastUrl) => vastUrl?.includes("geo.ads.audio.thisisdax.com");
 
-const googleAdManagerParams = (advertConsent, showingVideo) => {
-  const isLocahost = window.location.hostname === "localhost";
+const googleAdManagerParams = (isLocahost, advertConsent, showingVideo) => {
   const params = {};
 
   // The player only supports linear adverts that interrupt content.
@@ -58,7 +60,7 @@ const googleAdManagerParams = (advertConsent, showingVideo) => {
   return params;
 };
 
-const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform) => {
+const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform) => {
   const params = {};
 
   // The 'cid' parameter is already included in the URL by the API. It is
@@ -88,13 +90,17 @@ const digitalAdExchangeParams = (vastUrl, placement, advertConsent, maxImageSize
   // app its embedded in might do, but for now, we don't forward this data.
   params.att = 0;
 
-  // TODO: att
   // TODO: idfv
 
   // The 'nlsid' parameter is intentionally left blank. We don't have a Nielsen
   // DMP user account so this parameter is irrelevant.
 
-  // TODO: u
+  // Set the publisher's brand domain from the current URL. This will be null
+  // on mobile because the player is loaded in an iframe. It might not always be
+  // what we want either but we can set explicitly later from props if needed.
+  const hostname = parseUrl(window.location.href)?.hostname?.replace(/^www./, "");
+  if (hostname && !isLocahost) { params.u = hostname; }
+
   // TODO: dur_min
   // TODO: dur_max
 

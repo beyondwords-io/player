@@ -43,3 +43,4 @@ const queryParamScores = {
 };
 
 export default chooseAdvertText;
+export { parseUrl };
