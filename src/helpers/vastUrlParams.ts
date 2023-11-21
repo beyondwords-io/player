@@ -98,11 +98,12 @@ const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, 
   // Set the publisher's brand domain from the current URL. This will be null
   // on mobile because the player is loaded in an iframe. It might not always be
   // what we want either but we can set explicitly later from props if needed.
+  // https://linear.app/beyondwords/issue/S-3848/add-dax-support-for-publisher-brand-domain-to-mobile-apps
   const hostname = parseUrl(window.location.href)?.hostname?.replace(/^www./, "");
   if (hostname && !isLocahost) { params.u = hostname; }
 
-  // TODO: dur_min
-  // TODO: dur_max
+  // TODO: dur_min: https://linear.app/beyondwords/issue/S-3846/consider-whether-to-allow-publishers-to-set-a-minimum-and-maximum
+  // TODO: dur_max: ticket above
 
   // Request exactly one audio creative advert. Our audio content is relatively
   // short so we don't want to play more than one advert in series.
@@ -130,13 +131,14 @@ const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, 
 
   // The bundle identifier is fetched by the ios/android SDKs from within the
   // app they are running inside of. This player property won't be set on web.
+  // https://linear.app/beyondwords/issue/S-3847/set-the-bundleidentifier-player-property-from-the-iosandroid-sdks
   if (bundleIdentifier) { params.bi = bundleIdentifier; }
 
-  // TODO: lat
-  // TODO: long
-  // TODO: bcat
-  // TODO: cat
-  // TODO: badv
+  // TODO: lat: https://linear.app/beyondwords/issue/S-3840/consider-whether-to-provide-gps-and-wifi-data-to-dax
+  // TODO: long: ticket above
+  // TODO: bcat: https://linear.app/beyondwords/issue/S-3845/consider-whether-to-whitelistblacklist-categories-and-domains-for-dax
+  // TODO: cat: ticket above
+  // TODO: badv: ticket above
 
   // The 'ip' parameter is intentionally left undefined. DAX uses the IP of the
   // VAST request when ip is not specified. We are using the client-to-server
@@ -162,9 +164,9 @@ const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, 
   params.showid = playlistId ? `playlist-${playlistId}` : "no-playlist";
   params.episodeid = contentId ? `content-${contentId}` : "no-content";
 
-  // TODO: category
-  // TODO: genre
-  // TODO: bundles
+  // TODO: category: https://linear.app/beyondwords/issue/S-3844/consider-whether-to-provide-categories-and-genres-to-dax
+  // TODO: genre: ticket above
+  // TODO: bundles: https://linear.app/beyondwords/issue/S-3843/consider-whether-to-provide-bundles-to-dax
 
   // Almost all BeyondWords content won't be explicit so I think it's
   // reasonable to set this to false. In the future, we might want to allow
@@ -184,25 +186,25 @@ const digitalAdExchangeParams = (isLocahost, vastUrl, placement, advertConsent, 
     params.dax_platform = "web";
   }
 
-  // TODO: cast_platform
+  // TODO: cast_platform: https://linear.app/beyondwords/issue/S-3842/consider-whether-to-provide-cast-platform-to-dax
 
   // The 'age' and 'gender' parameters are intentionally left blank. We don't
   // track these attributes of listeners.
 
-  // TODO: audience
+  // TODO: audience: https://linear.app/beyondwords/issue/S-3841/consider-whether-to-provide-the-audience-parameter-to-dax
 
   // There is no way to log into the player so set this to false for now. We
   // might want to use this for differentiating whether the user is logged into
   // the publisher's site and is listening to paywalled content.
   params.isLoggedIn = false;
 
-  // TODO: gps_accuracy
-  // TODO: gps_alt
-  // TODO: gps_epoch
-  // TODO: gps_placemarks_geocode
-  // TODO: gps_provider
-  // TODO: gps_speed
-  // TODO: wifi
+  // TODO: gps_accuracy: https://linear.app/beyondwords/issue/S-3840/consider-whether-to-provide-gps-and-wifi-data-to-dax
+  // TODO: gps_alt: ticket above
+  // TODO: gps_epoch: ticket above
+  // TODO: gps_placemarks_geocode: ticket above
+  // TODO: gps_provider: ticket above
+  // TODO: gps_speed: ticket above
+  // TODO: wifi: ticket above
 
   // Request companion ads if the large or screen player styles are used. The
   // companion ad shows in the LargeImage component. Take display scaling into
