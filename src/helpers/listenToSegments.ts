@@ -52,7 +52,6 @@ const handleClick = (event) => {
 
 const handleMouseMove = (event) => {
   for (const { p, player, segment, contentIndex, segmentIndex, segmentElement, precedence } of chooseSegmentPerPlayer(event.target)) {
-    if (!segment) { continue; }
     if (!hoveredChanged(p, contentIndex, segmentIndex)) { continue; }
 
     player.onEvent(newEvent({
