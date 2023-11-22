@@ -1,4 +1,5 @@
 import md5 from "crypto-js/md5";
+import matchesXpath from "./matchesXpath";
 
 const chooseSegmentPerPlayer = (target) => {
   const players = BeyondWords.Player.instances();
@@ -94,7 +95,7 @@ const matchesXpathAndMd5 = (target) => {
   const xpath = lazyMemo(() => xpathForNode(target));
   const md5 = lazyMemo(() => textContentMd5(target));
 
-  return (segment) => segment.xpath === xpath() && segment.md5 === md5();
+  return (segment) => matchesXpath(segment.xpath, xpath()) && segment.md5 === md5();
 };
 
 const lazyMemo = (valueFn) => {
