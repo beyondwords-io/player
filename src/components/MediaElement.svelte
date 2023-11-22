@@ -49,7 +49,7 @@
   let loadedMedia;
   let timeUpdateTimeout;
 
-  const setTime = (t) => tick().then(() => time = t);
+  const setTime = (t) => time = t;
   const preferVideo = () => videoMightBeShown;
 
   const play = () => video?.paused && video?.play()?.catch(handlePlayError);
@@ -58,7 +58,7 @@
   $: stylesNeeded = content.length > 0 && (videoBehindStatic || videoBehindWidget);
   $: if (stylesNeeded) { import("../helpers/loadTheStyles.ts"); }
 
-  $: !activeAdvert && setTime(currentTime);
+  $: !activeAdvert && tick().then(() => setTime(currentTime));
   $: currentTime = time;
 
   $: contentItem = content[contentIndex];
