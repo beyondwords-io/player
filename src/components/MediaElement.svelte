@@ -8,6 +8,7 @@
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
   import blurElement from "../helpers/blurElement";
+  import isIosSafari from "../helpers/isIosSafari";
   import findSegmentIndex from "../helpers/findSegmentIndex";
   import findLoadedMedia from "../helpers/findLoadedMedia";
   import chooseSegmentElement from "../helpers/chooseSegmentElement";
@@ -86,7 +87,8 @@
   $: placement = activeAdvert?.placement;
   $: customUrl = activeAdvert?.clickThroughUrl;
 
-  $: metadataLoaded && !vastUrl && (playbackState === "playing" ? play() : pause());
+  $: controlPlayback = !vastUrl && (metadataLoaded || isIosSafari());
+  $: controlPlayback && (playbackState === "playing" ? play() : pause());
 
   $: videoBehindStaticWidget = videoBehindWidget && widgetTarget;
   $: videoBehindSlidingWidget = videoBehindWidget && !widgetTarget;
