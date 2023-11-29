@@ -24,6 +24,7 @@ const setPropsFromApi = async (player) => {
   // If player.backgroundColor is changed again later and a new API request is made, this
   // change will only persist if it was initially overridden in the script tag.
   setProps(player, data);
+  handleContent(player);
 };
 
 const identifiersArray = (player) => {
@@ -56,6 +57,14 @@ const handleNoContent = (player) => {
   player.onEvent(newEvent({
     type: "NoContentAvailable",
     description: "No published and processed content is available for the identifiers.",
+    initiatedBy: "browser",
+  }));
+};
+
+const handleContent = (player) => {
+  player.onEvent(newEvent({
+    type: "ContentAvailable",
+    description: "Content was loaded into the player and is ready to be played.",
     initiatedBy: "browser",
   }));
 };

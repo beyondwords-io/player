@@ -60,6 +60,10 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 
 | Type                         | Initiator | Description |
 |------------------------------|-----------|-------------|
+| IdentifiersChanged           | browser   | The Player's content identifiers changed.
+| ContentAvailable             | browser   | Content was loaded into the player and is ready to be played.
+| NoContentAvailable           | browser   | No published and processed content is available for the identifiers.
+| FullScreenModeUpdated        | browser   | The browser entered or exited full screen mode.
 | PressedPlay                  | user+     | The play button was pressed.
 | PressedPause                 | user+     | The pause button was pressed.
 | PressedChangeRate            | user      | The change playback rate button was pressed.
@@ -114,9 +118,6 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PlaybackNotAllowed           | media     | The media cannot play because there was no user event.
 | PlaybackErrored              | media*    | The media failed to play.
 | CompanionAdvertChanged       | media*    | The companion advert associated with the VAST advert changed.
-| IdentifiersChanged           | browser   | The Player's content identifiers changed.
-| NoContentAvailable           | browser   | No published and processed content is available for the identifiers.
-| FullScreenModeUpdated        | browser   | The browser entered or exited full screen mode.
 | ContentStatusChanged         | websocket | The processing status of a content item within the project changed.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)

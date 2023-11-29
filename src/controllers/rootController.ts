@@ -102,6 +102,7 @@ class RootController {
   handlePressedBeyondWords()            { /* Do nothing */ }
   handlePressedSourceUrl()              { /* Do nothing */ }
 
+  handleContentAvailable()              { /* Do nothing. */ }
   handleDurationUpdated()               { /* Do nothing */ }
   handleMetadataLoaded({ loadedMedia }) { this.player.loadedMedia = loadedMedia; }
   handleMediaLoaded({ loadedMedia })    { this.player.loadedMedia = loadedMedia; }
