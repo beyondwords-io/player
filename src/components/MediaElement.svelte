@@ -148,11 +148,8 @@
     }));
   };
 
-  const handleLoadedMetadata = ({ fromHls }) => {
-    const hlsBeingUsed = hls !== "not-used";
-    const alreadyEmitted = hlsBeingUsed && !fromHls;
-
-    if (alreadyEmitted) { return; }
+  const handleLoadedMetadata = () => {
+    if (metadataLoaded) { return; }
 
     metadataLoaded = true;
     loadedMedia = findLoadedMedia(sources, video);

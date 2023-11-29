@@ -25,7 +25,7 @@ const loadMetadata = (source, video, Hls, hls, onError, onMetadata, play) => {
     });
 
     hls.on(Hls.Events.ERROR, onError);
-    hls.on(Hls.Events.MANIFEST_LOADED, () => { hls.manifestLoaded = true; onMetadata({ fromHls: true }); });
+    hls.on(Hls.Events.MANIFEST_LOADED, () => { hls.manifestLoaded = true; onMetadata(); });
 
     hls.loadSource(source.url);
     hls.attachMedia(video);
@@ -33,7 +33,7 @@ const loadMetadata = (source, video, Hls, hls, onError, onMetadata, play) => {
     video.removeAttribute("src");
     video.load();
   } else if (video.sourceUrl) {
-    onMetadata({});
+    onMetadata();
   }
 
   if (!prevPaused) { play(); }
