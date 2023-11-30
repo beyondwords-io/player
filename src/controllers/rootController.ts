@@ -185,7 +185,7 @@ class RootController {
 
     const atTheStart = this.player.currentTime <= EPSILON;
     const atTheEnd = this.player.currentTime >= this.player.duration;
-    const videoPaused = this.player.mediaElement.video.paused;
+    const videoPaused = this.player.mediaElement.video.paused || this.#isVastAdvert();
 
     if (!atTheStart && !atTheEnd && !videoPaused) { this.player.playbackState = "playing"; }
   }
@@ -382,6 +382,10 @@ class RootController {
 
   #isMidrollAdvert() {
     return this.player.adverts[this.player.advertIndex]?.placement === "mid-roll";
+  }
+
+  #isVastAdvert() {
+    return !!this.player.adverts[this.player.advertIndex]?.vastUrl;
   }
 
   #isContent() {
