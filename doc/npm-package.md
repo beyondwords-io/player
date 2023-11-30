@@ -13,7 +13,7 @@ First, add the player NPM package:
 npm add @beyondwords/player
 ```
 
-Then, add a div someone in your app:
+Then, add a div somewhere in your app:
 
 ```html
 <div id='beyondwords-player'></div>
