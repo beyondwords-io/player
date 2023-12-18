@@ -30,6 +30,7 @@
   export let duration;
   export let currentTime;
   export let playbackRate;
+  export let fallbackMediaEnabled;
   export let prevPercentage;
   export let showUserInterface;
   export let videoBehindWidget;
@@ -73,7 +74,7 @@
   $: !introOrOutro && (mediaObject = activeAdvert);
   $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
 
-  $: sources = orderedMediaSources(mediaObject, preferVideo(), startPosition);
+  $: sources = orderedMediaSources(mediaObject, preferVideo(), fallbackMediaEnabled, startPosition);
 
   $: sources, metadataLoaded = false;
   $: sources, prevPercentage = 0;
