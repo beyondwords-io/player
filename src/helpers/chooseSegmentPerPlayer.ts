@@ -8,14 +8,26 @@ const chooseSegmentPerPlayer = (target) => {
   const segmentPerPlayer = entries.map(([p, player]) => ({ p, player }));
   const playersRemaining = playerIndexesThatHaveSegments(entries);
 
-  while (target && !isRoot(target)) {
-    if (playersRemaining.size === 0) { break; }
-    if (shouldNotRespondToHoverOrClick(target)) { break; }
+  // Pass 1: Match on data-beyondwords-marker or xpath and md5 combined.
+  let node = target;
+  while (node && !isRoot(node)) {
+    if (playersRemaining.size === 0 || shouldNotRespondToHoverOrClick(node)) { break; }
 
-    chooseSegmentBy(matchesDataMarker, target, players, segmentPerPlayer, playersRemaining);
-    chooseSegmentBy(matchesXpathAndMd5, target, players, segmentPerPlayer, playersRemaining);
+    chooseSegmentBy(matchesDataMarker, node, players, segmentPerPlayer, playersRemaining);
+    chooseSegmentBy(matchesXpathAndMd5, node, players, segmentPerPlayer, playersRemaining);
 
-    target = target.parentNode;
+    node = node.parentNode;
+  }
+
+  // Pass 2: Match on md5 only. This handles the case where the content from the
+  // API has a slightly different DOM tree (xpath) than the one on the page.
+  node = target;
+  while (node && !isRoot(node)) {
+    if (playersRemaining.size === 0 || shouldNotRespondToHoverOrClick(node)) { break; }
+
+    chooseSegmentBy(matchesMd5, node, players, segmentPerPlayer, playersRemaining);
+
+    node = node.parentNode;
   }
 
   setPrecedenceBasedOnPlaybackState(segmentPerPlayer);
@@ -34,21 +46,21 @@ const playerIndexesThatHaveSegments = (entries) => {
   return playerIndexes;
 };
 
-const isRoot = (target) => (
-  target === document || target === document.body || target === document.head
+const isRoot = (node) => (
+  node === document || node === document.body || node === document.head
 );
 
-const shouldNotRespondToHoverOrClick = (target) => {
-  if (target.onclick || target.onmousedown) { return true; }
+const shouldNotRespondToHoverOrClick = (node) => {
+  if (node.onclick || node.onmousedown) { return true; }
 
-  const nodeName = target.nodeName.toLowerCase();
+  const nodeName = node.nodeName.toLowerCase();
   return nodeName === "a" || nodeName === "img" || nodeName === "audio";
 };
 
-const chooseSegmentBy = (matchFnFn, target, players, segmentPerPlayer, playersRemaining) => {
+const chooseSegmentBy = (matchFnFn, node, players, segmentPerPlayer, playersRemaining) => {
   if (playersRemaining.size === 0) { return; }
 
-  const matchFn = matchFnFn(target);
+  const matchFn = matchFnFn(node);
   if (!matchFn) { return; }
 
   for (const p of playersRemaining) {
@@ -72,7 +84,7 @@ const chooseSegmentBy = (matchFnFn, target, players, segmentPerPlayer, playersRe
           segmentPerPlayer[p].segment = segment;
           segmentPerPlayer[p].contentIndex = contentIndex;
           segmentPerPlayer[p].segmentIndex = segmentIndex;
-          segmentPerPlayer[p].segmentElement = target;
+          segmentPerPlayer[p].segmentElement = node;
 
           playersRemaining.delete(p); // We found a segment for this player.
         }
@@ -81,8 +93,8 @@ const chooseSegmentBy = (matchFnFn, target, players, segmentPerPlayer, playersRe
   }
 };
 
-const matchesDataMarker = (target) => {
-  const marker = target.getAttribute("data-beyondwords-marker");
+const matchesDataMarker = (node) => {
+  const marker = node.getAttribute("data-beyondwords-marker");
 
   if (marker) {
     return (segment) => segment.marker === marker;
@@ -91,11 +103,17 @@ const matchesDataMarker = (target) => {
   }
 };
 
-const matchesXpathAndMd5 = (target) => {
-  const xpath = lazyMemo(() => xpathForNode(target));
-  const md5 = lazyMemo(() => textContentMd5(target));
+const matchesXpathAndMd5 = (node) => {
+  const xpath = lazyMemo(() => xpathForNode(node));
+  const md5 = lazyMemo(() => textContentMd5(node));
 
   return (segment) => matchesXpath(segment.xpath, xpath()) && segment.md5 === md5();
+};
+
+const matchesMd5 = (node) => {
+  const md5 = lazyMemo(() => textContentMd5(node));
+
+  return (segment) => segment.md5 === md5();
 };
 
 const lazyMemo = (valueFn) => {

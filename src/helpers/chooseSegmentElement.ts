@@ -9,7 +9,7 @@ import { textContentMd5 } from "./chooseSegmentPerPlayer";
 const chooseSegmentElement = (segment) => {
   if (!segment) { return; }
 
-  // If an element is uniquely identifier by the marker, return it.
+  // If an element is uniquely identified by the marker, return it.
   const markerElements = findAllByMarker(segment.marker);
   if (markerElements.length === 1) { return markerElements[0]; }
 
