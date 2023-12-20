@@ -66,6 +66,9 @@ const chooseSegmentBy = (matchFnFn, node, players, segmentPerPlayer, playersRema
   for (const p of playersRemaining) {
     let bestContent = -Infinity;
 
+    let matchedAtADeeperLevel = !!segmentPerPlayer[p].segment;
+    let matchedAtThisLevel = false;
+
     for (const [contentIndex, contentItem] of players[p].content.entries()) {
       for (const [segmentIndex, segment] of contentItem.segments.entries()) {
         if (matchFn(segment)) {
@@ -86,9 +89,14 @@ const chooseSegmentBy = (matchFnFn, node, players, segmentPerPlayer, playersRema
           segmentPerPlayer[p].segmentIndex = segmentIndex;
           segmentPerPlayer[p].segmentElement = node;
 
-          playersRemaining.delete(p); // We found a segment for this player.
+          matchedAtThisLevel = true;
         }
       }
+    }
+
+    // Set to the highest DOM node that matches a segment for the current player.
+    if (matchedAtADeeperLevel && (!matchedAtThisLevel || isRoot(node.parentNode))) {
+      playersRemaining.delete(p);
     }
   }
 };
