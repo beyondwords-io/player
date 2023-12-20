@@ -31,6 +31,7 @@ const chooseSegmentPerPlayer = (target) => {
   }
 
   setPrecedenceBasedOnPlaybackState(segmentPerPlayer);
+  setMatchedElementOnSegmentAndCheckSiblings(segmentPerPlayer);
 
   return segmentPerPlayer;
 };
@@ -64,10 +65,10 @@ const chooseSegmentBy = (matchFnFn, node, players, segmentPerPlayer, playersRema
   if (!matchFn) { return; }
 
   for (const p of playersRemaining) {
-    let bestContent = -Infinity;
+    const matchedAtADeeperLevel = !!segmentPerPlayer[p].segment;
 
-    let matchedAtADeeperLevel = !!segmentPerPlayer[p].segment;
     let matchedAtThisLevel = false;
+    let bestContent = -Infinity;
 
     for (const [contentIndex, contentItem] of players[p].content.entries()) {
       for (const [segmentIndex, segment] of contentItem.segments.entries()) {
@@ -201,6 +202,26 @@ const setPrecedenceBasedOnPlaybackState = (segmentPerPlayer) => {
 };
 
 const stateScores = { playing: 2, paused: 1, stopped: 0 };
+
+// Check siblings of matched nodes to see if they match other segments within
+// the content. This is so that we can highlight segments as playback advances
+// which wouldn't otherwise be identifiable by data-beyondwords-marker or xpath.
+const setMatchedElementOnSegmentAndCheckSiblings = (segmentPerPlayer) => {
+  for (const { player, segment, segmentElement } of segmentPerPlayer) {
+    if (!segmentElement) { continue; }
+
+    segment.matchedElement = segmentElement;
+
+    const siblings = [...segmentElement.parentNode.children].filter(e => e !== segmentElement);
+    const md5ToSibling = new Map(siblings.map(e => [textContentMd5(e), e]));
+
+    for (const contentItem of player.content) {
+      for (const segment of contentItem.segments) {
+        segment.matchedElement ||= md5ToSibling.get(segment.md5);
+      }
+    }
+  }
+};
 
 export default chooseSegmentPerPlayer;
 export { textContentMd5 };

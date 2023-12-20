@@ -9,6 +9,10 @@ import { textContentMd5 } from "./chooseSegmentPerPlayer";
 const chooseSegmentElement = (segment) => {
   if (!segment) { return; }
 
+  // If we have previously hovered over the element or one of its siblings,
+  // return the element that we previously matched based on MD5 only.
+  if (segment.matchedElement) { return segment.matchedElement; }
+
   // If an element is uniquely identified by the marker, return it.
   const markerElements = findAllByMarker(segment.marker);
   if (markerElements.length === 1) { return markerElements[0]; }
