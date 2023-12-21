@@ -5,6 +5,8 @@ import validateWebContext from "./helpers/validateWebContext";
 import listenToSegments from "./helpers/listenToSegments";
 import resolveTarget from "./helpers/resolveTarget";
 import sendToAnalytics from "./helpers/sendToAnalytics";
+import propertyValues from "./helpers/propertyValues";
+import playerPropsToIgnore from "./helpers/playerPropsToIgnore";
 import throwError from "./helpers/throwError";
 import { version } from "../package.json";
 
@@ -63,6 +65,10 @@ class Player extends PlayerComponent {
 
   get target() {
     return this.$$.root;
+  }
+
+  properties() {
+    return propertyValues(this, playerPropsToIgnore);
   }
 }
 

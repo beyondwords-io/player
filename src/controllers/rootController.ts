@@ -6,7 +6,6 @@ import waitUntil from "../helpers/waitUntil";
 import throwError from "../helpers/throwError";
 import setPropsFromApi from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
-import settableProps from "../helpers/settableProps";
 import diffObject from "../helpers/diffObject";
 import sectionEnabled from "../helpers/sectionEnabled";
 import downloadFile from "../helpers/downloadFile";
@@ -45,7 +44,7 @@ class RootController {
     validateEventBeforeProcessing(event);
 
     const handler = this[`handle${event.type}`];
-    const propsBefore = settableProps(this.player);
+    const propsBefore = this.player.properties();
 
     if (this.#ignoreDueToAdvert(event)) {
       event.status = "ignored-due-to-advert";
@@ -66,7 +65,7 @@ class RootController {
       throwError("No handler function for event.", event);
     }
 
-    const propsAfter = settableProps(this.player);
+    const propsAfter = this.player.properties();
 
     event.changedProps = diffObject(propsBefore, propsAfter);
     event.processedAt = new Date().toISOString();

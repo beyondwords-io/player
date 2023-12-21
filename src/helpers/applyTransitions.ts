@@ -1,5 +1,4 @@
 import waitUntil from "./waitUntil";
-import settableProps from "./settableProps";
 import diffObject from "./diffObject";
 
 // TODO: move state onto player (or into controller?) so that you can use transitions with multiple player instances.
@@ -31,10 +30,10 @@ const transitionIndexAtTime = (i, time, transitions) => {
 
 const callTransitions = (player, previousIndex, currentIndex, transitions) => {
   for (let i = previousIndex + 1; i <= currentIndex; i += 1) {
-    const before = settableProps(player);
+    const before = player.properties();
 
     transitions[i][2](player);
-    const after = settableProps(player);
+    const after = player.properties();
 
     const diff = diffObject(before, after);
     changedProps.push(diff);
