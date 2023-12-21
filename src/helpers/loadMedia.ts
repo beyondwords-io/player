@@ -21,7 +21,7 @@ const loadMetadata = (source, video, Hls, hls, onError, onMetadata, play) => {
       enableWorker: false,  // Don't use web workers since it's not our website.
       autoStartLoad: false, // Defer loading audio fragments until playback begins.
       maxBufferLength: 5,   // Load audio fragments 5 seconds in advance.
-      ...hlsLoadPolicies()  // Specify the retry logic (always retry, never error).
+      ...hlsLoadPolicies()  // Specify the retry logic (always retry non-fatal errors).
     });
 
     hls.on(Hls.Events.ERROR, onError);

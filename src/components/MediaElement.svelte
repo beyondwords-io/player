@@ -250,8 +250,9 @@
   const handleHlsError = async (event, data) => {
     if (!data.fatal) { return; }
 
+    hls?.detachMedia?.();
     hls?.destroy?.();
-    hls = null;
+    // Don't set hls to null, otherwise we'd call loadMetadata again.
 
     onEvent(newEvent({
       type: "PlaybackErrored",
