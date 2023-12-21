@@ -64,16 +64,6 @@ class Player extends PlayerComponent {
   get target() {
     return this.$$.root;
   }
-
-  set target(target) {
-    throwError([
-      "Unable to change the player's target after initialization.",
-      "Call player.destroy() and initialize a new player, instead.",
-      "",
-      "Alternatively, you can show or hide the player with:",
-      "player.showUserInterface = <bool>",
-    ]);
-  }
 }
 
 if (typeof window !== "undefined") {

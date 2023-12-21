@@ -68,13 +68,4 @@ describe("BeyondWords.Player", () => {
       expect(player.target).toEqual(element);
     });
   });
-
-  describe("#target=", () => {
-    it("throws a helpful error with a couple of suggestions", () => {
-      const player = new BeyondWords.Player({});
-
-      expect(() => player.target = "#something").toThrow(/call player.destroy\(\) and initialize a new player/i);
-      expect(() => player.target = "#something").toThrow(/player.showUserInterface = <bool>/);
-    });
-  });
 });
