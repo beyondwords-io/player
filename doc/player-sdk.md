@@ -73,3 +73,27 @@ Additionally, please refer to [Listening to Events](./listening-to-events.md) if
 you want to register event listeners for player events.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)
+
+## Top-level methods
+
+The player has a few top-level methods that you may find useful:
+
+```javascript
+BeyondWords.Player.version // The player version that is loaded, e.g. "0.1.23"
+
+BeyondWords.Player.instances() // See above. This retrieves all initialized instances.
+
+BeyondWords.Player.instances()[0].target // Returns the root DOM node of the player.
+
+BeyondWords.Player.instances()[0].properties() // Returns all reactive properties as a key-value object.
+
+BeyondWords.Player.instances()[0].destroy() // Removes a player instance, freeing its resources.
+
+BeyondWords.Player.destroyAll() // Removes all player instances, freeing their resources.
+```
+
+It is recommended to remove player instances on single-page websites once they
+are no longer needed to free up browser resources.
+
+If you are using the `player@latest` version, it may take up to 12 hours for all
+users to receive a newly released version of the player due to caching.
