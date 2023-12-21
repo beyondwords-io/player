@@ -1,7 +1,7 @@
 import throwError from "./throwError";
 
-const validateWebContext = () => {
-  if (typeof window !== "undefined") { return; }
+const validateWebContext = ({ windowObject } = { windowObject: window }) => {
+  if (typeof windowObject !== "undefined") { return; }
 
   throwError([
     "Trying to initialize BeyondWords.Player in a server context but this is unsupported.",
