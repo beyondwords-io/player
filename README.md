@@ -26,26 +26,20 @@ player programmatically by using the SDK.
 settings that can be set in the initializer or via the SDK.
 5. [Client-side integration](./doc/client-side-integration.md): How to import
 content into the BeyondWords platform using the player
-5. [Listening to events](./doc/listening-to-events.md): How to register event
+6. [Listening to events](./doc/listening-to-events.md): How to register event
 listeners that are called when player actions are performed.
-6. [Player events](./doc/player-events.md): A list of all events emitted by
+7. [Player events](./doc/player-events.md): A list of all events emitted by
 the player that can be listened to.
-7. [Segments playback](./doc/segments-playback.md): How to add support for
+8. [Segments playback](./doc/segments-playback.md): How to add support for
 the 'Playback from Segments' feature to your website.
-8. [Custom analytics](./doc/custom-analytics.md): How to send player analytics
+9. [Custom analytics](./doc/custom-analytics.md): How to send player analytics
 events to a custom URL of your choosing.
-9. [Building your own UI](./doc/building-your-own-ui.md): How to build your own
+10. [Building your own UI](./doc/building-your-own-ui.md): How to build your own
 user-interface on top of the BeyondWords player.
-10. [How it works](./doc/how-it-works.md): A technical overview of how the
-player works, including API calls that are made.
 11. [Dev setup](./doc/dev-setup.md): How to run this project locally, e.g. if
 you are a developer at BeyondWords.
-12. [Dev workflow](./doc/dev-workflow.md): Useful advice for working on the
-player, including what all the [./bin](bin/) scripts do.
-13. [Code layout](./doc/code-layout.md): An explanation of the layout of code in
-the player. Each major subdirectory is listed.
-14. [Deployment](./doc/deployment.md): How to release a new version of the player
-to the public and some things to consider.
+12. [Deployment](./doc/deployment.md): How to release a new version of the player
+to the public and details about caching.
 
 ## Contribution
 
