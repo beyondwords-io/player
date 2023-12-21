@@ -1,7 +1,7 @@
 const EPSILON = 0.00001;
 
-const timeFragment = (isFirstLoad, initialTime, format) => {
-  if (isFirstLoad && initialTime) {
+const timeFragment = (isFirstLoad, initialTime = 0, format) => {
+  if (isFirstLoad && initialTime > 0) {
     return `#t=${initialTime}`;
   } else if (format === "video" && isSafari()) {
     return `#t=${EPSILON}`;
