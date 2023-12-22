@@ -52,10 +52,16 @@ const isRoot = (node) => (
 );
 
 const shouldNotRespondToHoverOrClick = (node) => {
-  if (node.onclick || node.onmousedown) { return true; }
-
   const nodeName = node.nodeName.toLowerCase();
-  return nodeName === "a" || nodeName === "img" || nodeName === "audio";
+
+  const isClickable = nodeName === "a" || node.onclick || node.onmousedown;
+  if (isClickable) { return true; }
+
+  const isMedia = nodeName === "img" || nodeName === "audio";
+  if (isMedia) { return true; }
+
+  const isEditable = nodeName === "input" || nodeName === "textarea" || node.isContentEditable;
+  if (isEditable) { return true; }
 };
 
 const chooseSegmentBy = (matchFnFn, node, players, segmentPerPlayer, playersRemaining) => {
@@ -213,11 +219,13 @@ const setMatchedElementOnSegmentAndCheckSiblings = (segmentPerPlayer) => {
     segment.matchedElement = segmentElement;
 
     const siblings = [...segmentElement.parentNode.children].filter(e => e !== segmentElement);
-    const md5ToSibling = new Map(siblings.map(e => [textContentMd5(e), e]));
+    const candidates = siblings.filter(e => !shouldNotRespondToHoverOrClick(e));
+
+    const md5ToCandidate = new Map(candidates.map(e => [textContentMd5(e), e]));
 
     for (const contentItem of player.content) {
       for (const segment of contentItem.segments) {
-        segment.matchedElement ||= md5ToSibling.get(segment.md5);
+        segment.matchedElement ||= md5ToCandidate.get(segment.md5);
       }
     }
   }
