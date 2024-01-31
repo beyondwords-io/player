@@ -163,7 +163,14 @@ const setContentProp = (player, data) => {
 
 const setAdvertsProp = (player, data) => {
   const imageEnabled = data?.settings?.image_enabled;
-  const advertsArray = data?.ads || [];
+  const advertsArray = (data?.ads || []).filter((item) => {
+    if (item.type === "vast" && typeof item.vast_url === "string") return true;
+    if (item.type !== "vast") {
+      if ((item.audio || item.media || []).some(audio => typeof audio.url === "string")) return true;
+      if ((item.video || []).some(video => typeof video.url === "string")) return true;
+    }
+    return false;
+  });
 
   set(player, "adverts", advertsArray.map((item) => {
     const isVast = item.type === "vast";
@@ -184,13 +191,13 @@ const setAdvertsProp = (player, data) => {
       videoTextColor: videoColors?.text_color,
       videoBackgroundColor: videoColors?.background_color,
       videoIconColor: videoColors?.icon_color,
-      audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
+      audio: isVast ? [] : (item.audio || item.media).filter(audio => typeof audio.url === "string").map((audio) => ({
         id: audio.id,
         url: audio.url,
         contentType: audio.content_type,
         duration: audio.duration ? audio.duration / 1000 : 0,
       })),
-      video: isVast ? [] : (item.video || []).map((video) => ({
+      video: isVast ? [] : (item.video || []).filter(video => typeof video.url === "string").map((video) => ({
         id: video.id,
         url: video.url,
         contentType: video.content_type,
