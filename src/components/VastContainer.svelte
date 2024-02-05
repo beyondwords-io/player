@@ -5,6 +5,7 @@
   import elementIsVisible from "../helpers/elementIsVisible";
 
   export let vastUrl;
+  export let preloading;
   export let placement;
   export let advertConsent;
   export let maxImageSize;
@@ -32,8 +33,8 @@
   $: adParams = vastUrlParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, vendorIdentifier, bundleIdentifier, elementIsVisible(video));
   $: adTagUrl = withQueryParams(vastUrl, adParams);
 
-  $: adsManager && playbackState === "playing" && loadAds();
-  $: adsManager, playbackState === "playing" ? adsManager?.resume() : adsManager?.pause();
+  $: adsManager && !preloading && playbackState === "playing" && loadAds();
+  $: adsManager, !preloading && (playbackState === "playing" ? adsManager?.resume() : adsManager?.pause());
 
   const initializeIMA = () => {
     adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, video);
@@ -51,7 +52,10 @@
   };
 
   const onAdsManagerLoaded = (adsManagerLoadedEvent) => {
-    adsManager = adsManagerLoadedEvent.getAdsManager(video);
+    const adsRenderingSettings = new google.ima.AdsRenderingSettings();
+    adsRenderingSettings.enablePreloading = true;
+
+    adsManager = adsManagerLoadedEvent.getAdsManager(video, adsRenderingSettings);
 
     adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, onStarted);
     adsManager.addEventListener(google.ima.AdEvent.Type.AD_PROGRESS, onAdProgress);
@@ -177,6 +181,7 @@
       initiatedBy: "google-ima-sdk",
       mediaType: "VAST",
       mediaUrl: adTagUrl,
+      preloading,
       errorMessage: `${adError.getMessage()} (code=${adError.getErrorCode()})`,
     }));
   };
@@ -188,6 +193,7 @@
       initiatedBy: "browser",
       mediaType: "VAST",
       mediaUrl: adTagUrl,
+      preloading,
       errorMessage: "The ima3.js script was blocked.",
     }));
   };

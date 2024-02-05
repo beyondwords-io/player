@@ -214,12 +214,12 @@ class RootController {
     this.player.playbackState = atTheStart ? "stopped" : "paused";
   }
 
-  handlePlaybackErrored({ mediaType, errorMessage }) {
+  handlePlaybackErrored({ mediaType, preloading, errorMessage }) {
     console.warn(`BeyondWords.Player: ${mediaType} playback error: ${errorMessage}`);
 
     if (this.#isIntro() || this.#isOutro()) {
       this.#chooseAndSetIntroOutro({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
-    } else if (this.#isAdvert()) {
+    } else if (this.#isAdvert() || (preloading && mediaType === "VAST")) {
       this.#chooseAndSetAdvert({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else {
       this.handlePlaybackEnded();
@@ -516,6 +516,7 @@ class RootController {
     const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
 
     if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
+    this.player.preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll });
     this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll }));
 
     const persistentAdImage = this.player.persistentAdImage;
