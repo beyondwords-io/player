@@ -315,7 +315,7 @@
       </video>
 
       {#if vastUrl || preloadVastUrl}
-        <VastContainer vastUrl={vastUrl || preloadVastUrl} preloading={preloadVastUrl && !vastUrl} {onEvent} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {contentId} {contentLanguage} {platform} {vendorIdentifier} {bundleIdentifier} {video} bind:playbackState bind:duration bind:currentTime />
+        <VastContainer vastUrl={vastUrl || preloadVastUrl} preloading={!!preloadVastUrl && !vastUrl} {onEvent} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {contentId} {contentLanguage} {platform} {vendorIdentifier} {bundleIdentifier} {video} bind:playbackState bind:duration bind:currentTime />
       {/if}
 
       {#if customUrl}
