@@ -518,7 +518,7 @@ class RootController {
     const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
 
     if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
-    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll }));
+    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll }));
     if (!this.#isAdvert()) {
       const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll });
       this.player.preloadAdvertIndex = this.player.adverts[preloadAdvertIndex]?.vastUrl ? preloadAdvertIndex : -1;

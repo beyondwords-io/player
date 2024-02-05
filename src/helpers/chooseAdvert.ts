@@ -2,7 +2,7 @@ import findSegmentIndex from "./findSegmentIndex";
 import { updateErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored, minTimeUntilEndForMidroll, minDurationForMidroll } = {}) => {
+const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored, minTimeUntilEndForMidroll, minDurationForMidroll } = {}) => {
   const currentAdvert = adverts && adverts[advertIndex];
 
   x: if (currentAdvert) {
@@ -28,7 +28,7 @@ const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, content = [], c
     const thisType = typeScores[advert.type] || 0;
     if (thisType < bestType) { continue; }
 
-    const thisRandom = Math.random();
+    const thisRandom = preloadAdvertIndex === thisIndex ? Infinity : Math.random();
     if (thisType === bestType && thisRandom < bestRandom) { continue; }
 
     bestSoFar = thisIndex;
