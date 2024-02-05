@@ -219,8 +219,10 @@ class RootController {
 
     if (this.#isIntro() || this.#isOutro()) {
       this.#chooseAndSetIntroOutro({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
-    } else if (this.#isAdvert() || (preloading && mediaType === "VAST")) {
+    } else if (this.#isAdvert()) {
       this.#chooseAndSetAdvert({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
+    } else if (preloading && mediaType === "VAST") {
+      this.#chooseAndSetAdvert({ preloadingErrored: true });
     } else {
       this.handlePlaybackEnded();
     }
@@ -508,7 +510,7 @@ class RootController {
     this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
   }
 
-  #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored } = {}) {
+  #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored, preloadingErrored } = {}) {
     const { adverts, content, currentTime, minDurationForMidroll, minTimeUntilEndForMidroll } = this.player;
 
     let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
@@ -518,7 +520,7 @@ class RootController {
     if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
     this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll }));
     if (!this.#isAdvert()) {
-      const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll });
+      const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll });
       this.player.preloadAdvertIndex = this.player.adverts[preloadAdvertIndex]?.vastUrl ? preloadAdvertIndex : -1;
     } else {
       this.player.preloadAdvertIndex = -1;
