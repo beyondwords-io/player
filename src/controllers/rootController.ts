@@ -577,12 +577,15 @@ class RootController {
     if (defer) { this.nextAdvert = index; return; } else { delete this.nextAdvert; }
 
     const wasAdvert = this.#isAdvert();
-    this.player.advertIndex = index;
+    const isAdvert = index !== -1;
 
-    const advertsStarted = !wasAdvert && this.#isAdvert();
-    const advertsFinished = wasAdvert && !this.#isAdvert();
+    const advertsStarted = !wasAdvert && isAdvert;
+    const advertsFinished = wasAdvert && !isAdvert;
 
     if (advertsStarted)   { this.#overridePlayerState(); }
+
+    this.player.advertIndex = index;
+
     if (advertsFinished)  { this.#restorePlayerState(); }
   }
 
