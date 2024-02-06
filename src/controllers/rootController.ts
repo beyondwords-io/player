@@ -214,13 +214,15 @@ class RootController {
     this.player.playbackState = atTheStart ? "stopped" : "paused";
   }
 
-  handlePlaybackErrored({ mediaType, errorMessage }) {
+  handlePlaybackErrored({ mediaType, preloading, errorMessage }) {
     console.warn(`BeyondWords.Player: ${mediaType} playback error: ${errorMessage}`);
 
     if (this.#isIntro() || this.#isOutro()) {
       this.#chooseAndSetIntroOutro({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else if (this.#isAdvert()) {
       this.#chooseAndSetAdvert({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
+    } else if (preloading && mediaType === "VAST") {
+      this.#chooseAndSetAdvert({ preloadingErrored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else {
       this.handlePlaybackEnded();
     }
@@ -508,7 +510,7 @@ class RootController {
     this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
   }
 
-  #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored } = {}) {
+  #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored, preloadingErrored } = {}) {
     const { adverts, content, currentTime, minDurationForMidroll, minTimeUntilEndForMidroll } = this.player;
 
     let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
@@ -516,7 +518,13 @@ class RootController {
     const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
 
     if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
-    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll }));
+    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll }));
+    if (!this.#isAdvert()) {
+      const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll });
+      this.player.preloadAdvertIndex = this.player.adverts?.[preloadAdvertIndex]?.vastUrl ? preloadAdvertIndex : -1;
+    } else {
+      this.player.preloadAdvertIndex = -1;
+    }
 
     const persistentAdImage = this.player.persistentAdImage;
     const persistentIndex = this.player.persistentIndex;
@@ -572,12 +580,15 @@ class RootController {
     if (defer) { this.nextAdvert = index; return; } else { delete this.nextAdvert; }
 
     const wasAdvert = this.#isAdvert();
-    this.player.advertIndex = index;
+    const isAdvert = index !== -1;
 
-    const advertsStarted = !wasAdvert && this.#isAdvert();
-    const advertsFinished = wasAdvert && !this.#isAdvert();
+    const advertsStarted = !wasAdvert && isAdvert;
+    const advertsFinished = wasAdvert && !isAdvert;
 
     if (advertsStarted)   { this.#overridePlayerState(); }
+
+    this.player.advertIndex = index;
+
     if (advertsFinished)  { this.#restorePlayerState(); }
   }
 

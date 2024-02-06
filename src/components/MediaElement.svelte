@@ -17,6 +17,7 @@
   export let contentIndex;
   export let introOrOutro;
   export let activeAdvert;
+  export let preloadAdvert;
   export let advertConsent;
   export let maxImageSize;
   export let projectId;
@@ -86,6 +87,7 @@
   $: vastUrl = activeAdvert?.vastUrl;
   $: placement = activeAdvert?.placement;
   $: customUrl = activeAdvert?.clickThroughUrl;
+  $: preloadVastUrl = preloadAdvert?.vastUrl;
 
   $: controlPlayback = !vastUrl && (metadataLoaded || isIosSafari());
   $: controlPlayback && (playbackState === "playing" ? play() : pause());
@@ -312,8 +314,10 @@
         {/if}
       </video>
 
-      {#if vastUrl}
-        <VastContainer {onEvent} {vastUrl} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {contentId} {contentLanguage} {platform} {vendorIdentifier} {bundleIdentifier} {video} bind:playbackState bind:duration bind:currentTime />
+      {#if vastUrl || preloadVastUrl}
+        {#key vastUrl || preloadVastUrl}
+          <VastContainer vastUrl={vastUrl || preloadVastUrl} preloading={!!preloadVastUrl && !vastUrl} {onEvent} {placement} {advertConsent} {maxImageSize} {projectId} {playlistId} {contentId} {contentLanguage} {platform} {vendorIdentifier} {bundleIdentifier} {video} bind:playbackState bind:duration bind:currentTime />
+        {/key}
       {/if}
 
       {#if customUrl}

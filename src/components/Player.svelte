@@ -43,6 +43,7 @@
   export let introsOutrosIndex = -1;
   export let adverts = [];
   export let advertIndex = -1;
+  export let preloadAdvertIndex = -1;
   export let minDurationForMidroll = 2 * 60;
   export let minTimeUntilEndForMidroll = 10;
   export let persistentAdImage = false;
@@ -115,6 +116,7 @@
   $: contentItem = content[contentIndex];
   $: introOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
+  $: preloadAdvert = adverts[preloadAdvertIndex];
   $: persistentAdvert = adverts[persistentIndex];
 
   $: isAdvert = activeAdvert && playbackState !== "stopped";
@@ -182,6 +184,7 @@
     {content}
     {contentIndex}
     {introOrOutro}
+    {preloadAdvert}
     {activeAdvert}
     {advertConsent}
     {maxImageSize}
