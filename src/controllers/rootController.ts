@@ -222,7 +222,7 @@ class RootController {
     } else if (this.#isAdvert()) {
       this.#chooseAndSetAdvert({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else if (preloading && mediaType === "VAST") {
-      this.#chooseAndSetAdvert({ preloadingErrored: true });
+      this.#chooseAndSetAdvert({ preloadingErrored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else {
       this.handlePlaybackEnded();
     }
