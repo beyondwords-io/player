@@ -35,7 +35,7 @@ All of the other fields are present in every event. Their schema is explained be
 - **id**: a random UUID generated and assigned to the event at creation
 - **type**: the type of event, see the table below for a listing of event types
 - **description**: a short human-readable description of the event
-- **initiatedBy**: who initiated the event, one of: { user, media, browser, media-session-api, google-ima-sdk, websocket }
+- **initiatedBy**: who initiated the event, one of: { user, media, browser, media-session-api, google-ima-sdk }
 - **emittedFrom**: which interface emitted the event, one of: { inline-player, bottom-widget, segment, segment-widget }
 - **status**: the status of the event, one of: { handled, ignored-due-to-advert, ignored-due-to-scrubbing, ignored-due-to-precedence }
 - **createdAt**: the time when the event was created in simplified extended ISO 8601 format
@@ -118,6 +118,5 @@ To inspect the events further, it is recommended you [listen to "\<any\>" event]
 | PlaybackNotAllowed           | media     | The media cannot play because there was no user event.
 | PlaybackErrored              | media*    | The media failed to play.
 | CompanionAdvertChanged       | media*    | The companion advert associated with the VAST advert changed.
-| ContentStatusChanged         | websocket | The processing status of a content item within the project changed.
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)

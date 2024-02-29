@@ -284,24 +284,6 @@ class RootController {
     }
   }
 
-  handleContentStatusChanged({ contentId, legacyId, sourceId, sourceUrl, contentStatus }) {
-    if (contentStatus !== "processed") { return; }
-
-    // Only reload if listening hasn't started yet so that audio isn't interrupted.
-    if (this.player.playbackState !== "stopped") { return; }
-    if (this.player.contentIndex !== 0) { return; }
-    if (this.player.currentTime !== 0) { return; }
-
-    // The websocket sends status changes for all content in the project so check
-    // that this event is for a content item that is one of the player's identifiers.
-    if (!this.#matchesIdentifiers({ contentId, legacyId, sourceId, sourceUrl })) { return; }
-
-    setPropsFromApi(this.player).then(() => {
-      this.#chooseAndSetIntroOutro({ atTheStart: true });
-      this.#chooseAndSetAdvert({ atTheStart: true });
-    });
-  }
-
   handleCurrentSegmentUpdated({ segment, contentIndex, segmentIndex, segmentElement }) {
     if (this.#isContent()) {
       this.player.currentSegment = { ...segment, contentIndex, segmentIndex, segmentElement };
@@ -611,17 +593,6 @@ class RootController {
     delete this.prevTime;
     delete this.prevRate;
     delete this.prevContent;
-  }
-
-  #matchesIdentifiers({ contentId, legacyId, sourceId, sourceUrl }) {
-    return this.player.contentId === contentId ||
-      this.player.contentId === legacyId ||
-      this.player.sourceId === sourceId ||
-      this.player.sourceUrl === sourceUrl ||
-      this.player.playlist?.some(o => o.contentId === contentId) ||
-      this.player.playlist?.some(o => o.contentId === legacyId) ||
-      this.player.playlist?.some(o => o.sourceId === sourceId) ||
-      this.player.playlist?.some(o => o.sourceUrl === sourceUrl);
   }
 
   #currentSegmentChanged({ contentIndex, segmentIndex }) {

@@ -12,7 +12,6 @@
   import SegmentClickables from "../helpers/segmentClickables";
   import SegmentHighlights from "../helpers/segmentHighlights";
   import identifiersEvent from "../helpers/identifiersEvent";
-  import onStatusChange from "../helpers/onStatusChange";
   import sectionEnabled from "../helpers/sectionEnabled";
   import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
@@ -77,7 +76,6 @@
   export let analyticsCustomUrl = undefined;
   export let analyticsDeviceType = "auto";
   export let analyticsTag = undefined;
-  export let writeToken = undefined;
   export let captureErrors = true;
   export let onError = () => {};
   export let transitions = [];
@@ -151,7 +149,6 @@
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, onEvent(identifiersEvent());
-  $: onStatusChange(playerApiUrl, projectId, writeToken, (statusEvent) => onEvent(statusEvent));
 
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, currentAllowedInWidget && resetHovered();
