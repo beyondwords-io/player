@@ -26,6 +26,7 @@
   export let sourceId = undefined;
   export let sourceUrl = undefined;
   export let playlist = [];
+  export let clientSideEnabled = false;
   export let showUserInterface = true;
   export let showBottomWidget = false;
   export let playerStyle = "standard";
@@ -80,7 +81,6 @@
   export let onError = () => {};
   export let transitions = [];
   export let controlPanel = undefined;
-  export let clientSideEnabled = false;
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
