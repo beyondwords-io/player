@@ -1,8 +1,9 @@
 import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
-  constructor(playerApiUrl, projectId, clientSideEnabled) {
+  constructor(playerApiUrl, projectId, clientSideEnabled, previewToken) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
+    this.search = new URLSearchParams();
 
     // TODO: Find a way to pass this information to the backend while complying
     // with CORS "simply request" requirements so that OPTIONS aren't sent.
@@ -11,6 +12,10 @@ class PlayerApiClient {
         "X-Referer": window.location.href,
         "X-Import": !!clientSideEnabled,
       };
+    }
+
+    if (previewToken) {
+      this.search.set("preview_token", previewToken);
     }
   }
 
@@ -35,7 +40,11 @@ class PlayerApiClient {
   }
 
   #fetchJson(path) {
-    return fetchJson(`${this.baseUrl}/${path}`, { headers: this.headers });
+    return fetchJson(`${this.baseUrl}/${path}${this.#searchQuery()}`, { headers: this.headers });
+  }
+
+  #searchQuery() {
+    return this.search.size ? `?${this.search}` : "";
   }
 }
 
