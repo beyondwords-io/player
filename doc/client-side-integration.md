@@ -83,6 +83,8 @@ shared secret of your choosing. You would then need to detect the presence of
 this header in the backend of your website and render the full, un-paywalled
 article so that BeyondWords can see the full content of your web page.
 
+When requesting content, the User-Agent will be set to `BeyondWords Importer`.
+
 ## Data Attributes
 
 The client-side integration will automatically extract relevant data from your
