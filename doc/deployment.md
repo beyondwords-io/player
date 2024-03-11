@@ -2,15 +2,10 @@
 
 ## Deployment
 
-1. Ensure you have no local changes: `git checkout . && git clean -df`
-2. Update the version in `package.json`
-3. Run `npm install` to update `package-lock.json`
-4. Update the player version in index.html
-5. Commit the changes with `Release version <version>`
-6. Push the changes and wait for CI to pass
-7. Run `git tag <version>` to create a tag
-8. Run `git push --tags` to push the tag to GitHub
-9. Run `./bin/publish` to publish the package to NPM
+1. Update the version with `./bin/version <version>`
+2. Commit the changes with `Release version <version>`
+3. Push the changes and wait for CI to pass
+4. Create a GitHub Release with `<version>` and wait for CD to pass
 
 It might take up to 12 hours for the jsdelivr CDN cache to expire. Speak to the
 Rails backend developers if you need to expire that cache sooner than this.
