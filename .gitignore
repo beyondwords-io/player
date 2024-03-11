@@ -2,3 +2,4 @@ node_modules
 dist
 test/results
 src/helpers/daisybitStrings.ts
+*.backup
