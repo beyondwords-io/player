@@ -503,7 +503,12 @@ class RootController {
     this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll }));
     if (!this.#isAdvert()) {
       const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll });
-      this.player.preloadAdvertIndex = this.player.adverts?.[preloadAdvertIndex]?.vastUrl ? preloadAdvertIndex : -1;
+      const preloadAdvert = this.player.adverts?.[preloadAdvertIndex];
+      if (preloadAdvert?.vastUrl && ["mid-roll", "post-roll"].includes(preloadAdvert?.placement)) {
+        this.player.preloadAdvertIndex = preloadAdvertIndex;
+      } else {
+        this.player.preloadAdvertIndex = -1;
+      }
     } else {
       this.player.preloadAdvertIndex = -1;
     }
