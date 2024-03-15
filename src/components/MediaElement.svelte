@@ -293,31 +293,33 @@
 {#if content.length > 0}
   <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic || videoBehindStaticWidget} class:behind-sliding-widget={videoBehindSlidingWidget} class:headless={!showUserInterface} {style}>
     <div class="inner">
-      <!-- svelte-ignore a11y-media-has-caption -->
-      <video bind:this={video}
-             bind:duration
-             bind:currentTime={time}
-             bind:playbackRate
-             preload="metadata"
-             playsinline
-             disablepictureinpicture
-             on:play={handlePlay}
-             on:pause={handlePause}
-             on:ended={handleEnded}
-             on:playing={handlePlaying}
-             on:durationchange={handleDurationChange}
-             on:loadedmetadata={handleLoadedMetadata}
-             on:loadeddata={handleLoadedData}
-             on:timeupdate={handleTimeUpdate}
-             on:seeked={handleSeeked}
-             on:ratechange={handleRateChange}>
+      {#key sources.map(({ url }) => url).join('')}
+        <!-- svelte-ignore a11y-media-has-caption -->
+        <video bind:this={video}
+              bind:duration
+              bind:currentTime={time}
+              bind:playbackRate
+              preload="metadata"
+              playsinline
+              disablepictureinpicture
+              on:play={handlePlay}
+              on:pause={handlePause}
+              on:ended={handleEnded}
+              on:playing={handlePlaying}
+              on:durationchange={handleDurationChange}
+              on:loadedmetadata={handleLoadedMetadata}
+              on:loadeddata={handleLoadedData}
+              on:timeupdate={handleTimeUpdate}
+              on:seeked={handleSeeked}
+              on:ratechange={handleRateChange}>
 
-        {#if hls !== "pending" && !window.disableMediaLoad}
-          {#each sources as { url, contentType, format }, i}
-            <source src={`${url}${timeFragment(isFirstLoad, initialTime, format)}`} type={contentType} on:error={handleSourceError(i)}>
-          {/each}
-        {/if}
-      </video>
+          {#if hls !== "pending" && !window.disableMediaLoad}
+            {#each sources as { url, contentType, format }, i}
+              <source src={`${url}${timeFragment(isFirstLoad, initialTime, format)}`} type={contentType} on:error={handleSourceError(i)}>
+            {/each}
+          {/if}
+        </video>
+      {/key}
 
       {#if vastUrl || preloadVastUrl}
         {#key vastUrl || preloadVastUrl}
