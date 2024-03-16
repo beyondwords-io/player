@@ -293,7 +293,7 @@
 {#if content.length > 0}
   <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic || videoBehindStaticWidget} class:behind-sliding-widget={videoBehindSlidingWidget} class:headless={!showUserInterface} {style}>
     <div class="inner">
-      {#key sources.map(({ url }) => url).join('')}
+      {#key sources.map(({ url }) => url).join("")}
         <!-- svelte-ignore a11y-media-has-caption -->
         <video bind:this={video}
               bind:duration
