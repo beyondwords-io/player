@@ -16,6 +16,7 @@
   import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
+  import { knownContentVariant } from "../helpers/contentVariants";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
@@ -26,6 +27,8 @@
   export let sourceId = undefined;
   export let sourceUrl = undefined;
   export let playlist = [];
+  export let loadContentAs = ["article"];
+  export let contentVariant = loadContentAs[0];
   export let clientSideEnabled = false;
   export let showUserInterface = true;
   export let showBottomWidget = false;
@@ -114,6 +117,8 @@
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
   $: contentItem = content[contentIndex];
+  $: contentVariant = contentVariant === "summary" && contentItem && !contentItem.summary ? "article" : contentVariant;
+  $: summary = contentVariant === "summary" && contentItem?.summary;
   $: introOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
   $: preloadAdvert = adverts[preloadAdvertIndex];
@@ -133,8 +138,8 @@
 
   $: maxImageSize = isScreen ? 120 : isLarge ? 80 : 0;
 
-  $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
-  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(widgetStyle) && content.length > 0;
+  $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && knownContentVariant(contentVariant) && content.length > 0;
+  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(widgetStyle) && knownContentVariant(contentVariant) && content.length > 0;
 
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
@@ -182,6 +187,7 @@
     {onEvent}
     {content}
     {contentIndex}
+    {summary}
     {introOrOutro}
     {preloadAdvert}
     {activeAdvert}

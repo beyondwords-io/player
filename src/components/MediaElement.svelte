@@ -16,6 +16,7 @@
 
   export let content;
   export let contentIndex;
+  export let summary;
   export let introOrOutro;
   export let activeAdvert;
   export let preloadAdvert;
@@ -74,7 +75,8 @@
 
   $: mediaObject = introOrOutro;
   $: !introOrOutro && (mediaObject = activeAdvert);
-  $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
+  $: !introOrOutro && !activeAdvert && (mediaObject = summary);
+  $: !introOrOutro && !activeAdvert && !summary && (mediaObject = contentItem);
 
   $: sources = orderedMediaSources(mediaObject, preferVideo(), startPosition);
 
