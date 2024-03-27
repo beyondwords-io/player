@@ -150,6 +150,20 @@ const setContentProp = (player, data) => {
       contentType: video.content_type,
       duration: video.duration ? video.duration / 1000 : 0,
     })),
+    summary: {
+      audio: (item.summary?.audio || []).map((audio) => ({
+        id: audio.id,
+        url: audio.url,
+        contentType: audio.content_type,
+        duration: audio.duration ? audio.duration / 1000 : 0,
+      })) ?? [],
+      video: (item.summary?.video || []).map((video) => ({
+        id: video.id,
+        url: video.url,
+        contentType: video.content_type,
+        duration: video.duration ? video.duration / 1000 : 0,
+      })),
+    },
     segments: item.segments.map((segment) => ({
       marker: segment.marker,
       xpath: segment.xpath,
