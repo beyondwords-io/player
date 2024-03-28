@@ -16,7 +16,6 @@
   import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
-  import { knownContentVariant } from "../helpers/contentVariants";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
