@@ -16,7 +16,7 @@
   import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
-  import { contentVariantFallback, knownContentVariant } from "../helpers/contentVariants";
+  import { knownContentVariant } from "../helpers/contentVariants";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
@@ -117,7 +117,6 @@
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
   $: contentItem = content[contentIndex];
-  $: contentVariant = contentVariantFallback(contentVariant, contentItem, loadContentAs);
   $: introOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
   $: preloadAdvert = adverts[preloadAdvertIndex];
@@ -137,8 +136,8 @@
 
   $: maxImageSize = isScreen ? 120 : isLarge ? 80 : 0;
 
-  $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && knownContentVariant(contentVariant) && content.length > 0;
-  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(widgetStyle) && knownContentVariant(contentVariant) && content.length > 0;
+  $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
+  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(widgetStyle) && content.length > 0;
 
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
