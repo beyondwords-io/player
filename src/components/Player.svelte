@@ -16,7 +16,7 @@
   import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
-  import { knownContentVariant } from "../helpers/contentVariants";
+  import { contentVariantFallback, knownContentVariant } from "../helpers/contentVariants";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
@@ -117,8 +117,7 @@
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
   $: contentItem = content[contentIndex];
-  $: contentVariant = contentVariant === "summary" && contentItem && !contentItem.summary ? "article" : contentVariant;
-  $: summary = contentVariant === "summary" && contentItem?.summary;
+  $: contentVariant = contentVariantFallback(contentVariant, contentItem, loadContentAs);
   $: introOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
   $: preloadAdvert = adverts[preloadAdvertIndex];
@@ -188,7 +187,6 @@
     {content}
     {contentIndex}
     {contentVariant}
-    {summary}
     {introOrOutro}
     {preloadAdvert}
     {activeAdvert}
