@@ -23,8 +23,8 @@ const dimensions = {
   playerStyle: ["large", "screen", "small", "standard", "video"],
   playbackState: ["paused", "playing", "stopped"],
   adverts: [
-    [{ clickThroughUrl: "https://deliveroo.com", imageUrl: advertImage, iconColor: "#00cdbc" }],
-    [{ clickThroughUrl: "https://advert-without-image.com" }],
+    [{ clickThroughUrl: "https://deliveroo.com", imageUrl: advertImage, iconColor: "#00cdbc", audio }],
+    [{ clickThroughUrl: "https://advert-without-image.com", audio }],
   ],
   advertIndex: [0, -1],
   playerTitle: [`A ${"very ".repeat(50)} long player title`],
