@@ -186,6 +186,7 @@
     {onEvent}
     {content}
     {contentIndex}
+    {contentVariant}
     {summary}
     {introOrOutro}
     {preloadAdvert}

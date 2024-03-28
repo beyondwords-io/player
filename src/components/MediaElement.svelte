@@ -15,6 +15,7 @@
 
   export let content;
   export let contentIndex;
+  export let contentVariant;
   export let summary;
   export let introOrOutro;
   export let activeAdvert;
@@ -105,7 +106,7 @@
   // TODO: is it possible to also set the currentTime when changing to video for continuity?
   $: videoMightBeShown && loadedMedia?.format === "audio" && atTheStart && (mediaObject = mediaObject);
 
-  $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime);
+  $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime, contentVariant);
   $: segmentIndex, handleSegmentUpdate();
 
   $: videoBehindSlidingWidget && animate();
