@@ -115,6 +115,8 @@
 
   $: videoBehindSlidingWidget && animate();
 
+  $: mediaObject && sources.length === 0 && handleNoSourcesError();
+
   const animate = () => {
     if (timeout) { clearTimeout(timeout); }
     timeout = setTimeout(() => timeout = null, 500);
@@ -237,6 +239,19 @@
       type: "PlaybackNotAllowed",
       description: "The media cannot play because there was no user event.",
       initiatedBy: "media",
+    }));
+  };
+
+  const handleNoSourcesError = () => {
+    console.warn("BeyondWords.Player: error while loading media");
+
+    onEvent(newEvent({
+      type: "PlaybackErrored",
+      description: "The media failed to play.",
+      initiatedBy: "media",
+      mediaType: "native",
+      mediaUrl: null,
+      errorMessage: "The video tag does not contains any sources.",
     }));
   };
 
