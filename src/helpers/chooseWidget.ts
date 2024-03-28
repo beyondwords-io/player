@@ -1,5 +1,4 @@
 import { knownPlayerStyle } from "./playerStyles";
-import { knownContentVariant } from "./contentVariants";
 
 const chooseWidget = (Player) => {
   let somePlayerIsVisible = false;
@@ -13,9 +12,6 @@ const chooseWidget = (Player) => {
 
     const knownStyle = knownPlayerStyle(player.widgetStyle);
     if (!knownStyle) { continue; }
-
-    const knownVariant = knownContentVariant(player.contentVariant);
-    if (!knownVariant) { continue; }
 
     const withinViewport = player.userInterface.isVisible;
     if (withinViewport) { somePlayerIsVisible = true; continue; }
