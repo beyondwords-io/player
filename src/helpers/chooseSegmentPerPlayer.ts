@@ -1,5 +1,6 @@
 import md5 from "crypto-js/md5";
 import matchesXpath from "./matchesXpath";
+import { knownContentVariant } from "./contentVariants";
 
 const chooseSegmentPerPlayer = (target) => {
   const players = BeyondWords.Player.instances();
@@ -78,6 +79,10 @@ const chooseSegmentBy = (matchFnFn, node, players, segmentPerPlayer, playersRema
 
     for (const [contentIndex, contentItem] of players[p].content.entries()) {
       for (const [segmentIndex, segment] of contentItem.segments.entries()) {
+        if (!knownContentVariant(players[p].contentVariant)) continue;
+        if (players[p].contentVariant === "article" && segment.section !== "title" && segment.section !== "body") continue;
+        if (players[p].contentVariant === "summary" && segment.section !== "summary") continue;
+
         if (matchFn(segment)) {
           // If the segment appears in the content more than once then choose the first
           // segment that matches the player's contentIndex to avoid changing tracks.

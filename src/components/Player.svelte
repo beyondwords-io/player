@@ -26,6 +26,8 @@
   export let sourceId = undefined;
   export let sourceUrl = undefined;
   export let playlist = [];
+  export let loadContentAs = ["article"];
+  export let contentVariant = loadContentAs[0];
   export let clientSideEnabled = false;
   export let showUserInterface = true;
   export let showBottomWidget = false;
@@ -181,6 +183,7 @@
     {onEvent}
     {content}
     {contentIndex}
+    {contentVariant}
     {introOrOutro}
     {preloadAdvert}
     {activeAdvert}
