@@ -154,6 +154,8 @@
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, onEvent(identifiersEvent());
 
+  $: contentVariant = loadContentAs[0];
+
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, currentAllowedInWidget && resetHovered();
 
