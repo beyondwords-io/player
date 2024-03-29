@@ -76,7 +76,7 @@
   $: mediaObject = introOrOutro;
   $: !introOrOutro && (mediaObject = activeAdvert);
   $: !introOrOutro && !activeAdvert && contentVariant === "article" && (mediaObject = contentItem);
-  $: !introOrOutro && !activeAdvert && contentVariant === "summary" && (mediaObject = contentItem?.summary);
+  $: !introOrOutro && !activeAdvert && contentVariant === "summary" && (mediaObject = contentItem?.summarization);
 
   $: sources = orderedMediaSources(mediaObject, preferVideo(), startPosition);
 
