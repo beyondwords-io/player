@@ -250,7 +250,6 @@
       description: "The media failed to play.",
       initiatedBy: "media",
       mediaType: "native",
-      mediaUrl: null,
       errorMessage: "The video tag does not contains any sources.",
     }));
   };
