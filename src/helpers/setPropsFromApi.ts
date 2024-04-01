@@ -165,6 +165,7 @@ const setContentProp = (player, data) => {
       })),
     },
     segments: item.segments.map((segment) => ({
+      text: segment.text,
       marker: segment.marker,
       xpath: segment.xpath,
       md5: segment.md5,
