@@ -126,10 +126,10 @@ const matchesXpathAndMd5 = (node) => {
 };
 
 const matchesMd5 = (node) => {
-  const textContent = lazyMemo(() => node.textContent?.trim());
+  const text = lazyMemo(() => node.textContent?.trim());
   const md5 = lazyMemo(() => textContentMd5(node));
 
-  return (segment) => textContent().length > 0 && segment.md5 === md5();
+  return (segment) => text()?.length > 0 && segment.md5 === md5();
 };
 
 const lazyMemo = (valueFn) => {
