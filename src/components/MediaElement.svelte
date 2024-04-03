@@ -6,6 +6,7 @@
   import { loadMetadata, loadMedia } from "../helpers/loadMedia";
   import timeFragment, { EPSILON } from "../helpers/timeFragment";
   import newEvent from "../helpers/newEvent";
+  import parseMargin from "../helpers/parseMargin";
   import translate from "../helpers/translate";
   import blurElement from "../helpers/blurElement";
   import isIosSafari from "../helpers/isIosSafari";
@@ -38,6 +39,7 @@
   export let videoMightBeShown;
   export let widgetPosition;
   export let widgetWidth;
+  export let widgetMargin;
   export let widgetTarget;
   export let onEvent = () => {};
   export let metadataLoaded;
@@ -95,8 +97,11 @@
   $: videoBehindStaticWidget = videoBehindWidget && widgetTarget;
   $: videoBehindSlidingWidget = videoBehindWidget && !widgetTarget;
 
+  $: margin = parseMargin(widgetMargin);
+  $: marginWidth = `calc(${margin.left} + ${margin.right})`;
+
   $: position = videoBehindSlidingWidget && widgetPosition !== "auto" ? `fixed-${widgetPosition}` : "";
-  $: style = videoBehindSlidingWidget ? `width: ${widgetWidth}` : "";
+  $: style = videoBehindSlidingWidget ? `width: ${widgetWidth}; --margin: ${widgetMargin}; --margin-width: ${marginWidth}` : "";
 
   $: atTheStart = playbackState !== "playing" && currentTime <= EPSILON;
 
@@ -375,7 +380,7 @@
     width: 0;
     bottom: -100px /* ~!important */;
     right: 0;
-    margin: 16px;
+    margin: var(--margin);
     animation: fly-widget 0.33s forwards;
     opacity: 0 /* ~!important */;
     z-index: 999;
@@ -395,7 +400,7 @@
     left: 0;
     margin-left: auto;
     margin-right: auto;
-    max-width: min(720px, 100% - 32px);
+    max-width: min(720px, 100% - var(--margin-width));
   }
 
   .custom-advert-link {

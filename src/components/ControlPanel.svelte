@@ -29,6 +29,7 @@
   export let widgetStyle;
   export let widgetPosition;
   export let widgetWidth;
+  export let widgetMargin;
   export let widgetTarget;
   export let textColor;
   export let backgroundColor;
@@ -160,6 +161,16 @@
       <option>fit-content</option>
       <option>initial</option>
       <option>0</option>
+    </select>
+  </div>
+
+  <div class="control">
+    widgetMargin:
+    <select tabindex={-1} bind:value={widgetMargin}>
+      <option>16px</option>
+      <option>32px</option>
+      <option>32px 16px</option>
+      <option>10px 20px 30px 40px</option>
     </select>
   </div>
 

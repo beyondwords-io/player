@@ -28,6 +28,7 @@
   import Hoverable from "./helpers/Hoverable.svelte";
   import Visibility from "./helpers/Visibility.svelte";
   import belowBreakpoint from "../helpers/belowBreakpoint";
+  import parseMargin from "../helpers/parseMargin";
   import controlsOrderFn from "../helpers/controlsOrder";
   import newEvent from "../helpers/newEvent";
   import translate from "../helpers/translate";
@@ -42,6 +43,7 @@
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
+  export let fixedMargin = "0";
   export let content = [];
   export let contentIndex = 0;
   export let duration = 0;
@@ -107,6 +109,9 @@
   $: positionClasses = fixedPosition ? `fixed fixed-${position}` : "";
   $: flyWidget = (e) => fixedPosition && !window.disableAnimation && fly(e, { y: isSmall || isStandard ? 40 : 100 });
 
+  $: margin = parseMargin(fixedMargin);
+  $: marginWidth = `calc(${margin.left} + ${margin.right})`;
+
   $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
 
   $: advertImageUrl = companionAdvert?.imageUrl || activeAdvert?.imageUrl;
@@ -161,7 +166,7 @@
   });
 </script>
 
-<div bind:this={element} class={classes} style="width: {widthStyle}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
+<div bind:this={element} class={classes} style="width: {widthStyle}; --margin: {fixedMargin}; --margin-width: {marginWidth}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
   <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
     {#if isVideo && (videoPosterImage || !videoIsBehind)}
       <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""}>
@@ -281,8 +286,8 @@
   .fixed {
     position: fixed;
     bottom: 0;
-    margin: 16px;
-    max-width: calc(100% - 32px);
+    margin: var(--margin);
+    max-width: calc(100% - var(--margin-width));
     z-index: 1000;
   }
 
@@ -540,7 +545,7 @@
   }
 
   .video.fixed {
-    max-width: min(720px, 100% - 32px);
+    max-width: min(720px, 100% - var(--margin-width));
   }
 
   .video :global(.hoverable) {

@@ -56,6 +56,7 @@
   export let widgetStyle = "standard";
   export let widgetPosition = "auto";
   export let widgetWidth = "auto";
+  export let widgetMargin = "16px";
   export let widgetTarget = undefined;
   export let textColor = "#111";
   export let backgroundColor = "#f5f5f5";
@@ -205,6 +206,7 @@
     {videoMightBeShown}
     {widgetPosition}
     {widgetWidth}
+    {widgetMargin}
     {widgetTarget} />
 </ExternalWidget>
 
@@ -257,6 +259,7 @@
       {playerTitle}
       fixedPosition={!widgetTarget && widgetPosition}
       fixedWidth={widgetWidth}
+      fixedMargin={widgetMargin}
       {content}
       {contentIndex}
       {duration}
@@ -336,6 +339,7 @@
       bind:widgetStyle
       bind:widgetPosition
       bind:widgetWidth
+      bind:widgetMargin
       bind:widgetTarget
       bind:textColor
       bind:backgroundColor
