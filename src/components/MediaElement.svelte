@@ -16,6 +16,7 @@
 
   export let content;
   export let contentIndex;
+  export let contentVariant;
   export let introOrOutro;
   export let activeAdvert;
   export let preloadAdvert;
@@ -74,7 +75,8 @@
 
   $: mediaObject = introOrOutro;
   $: !introOrOutro && (mediaObject = activeAdvert);
-  $: !introOrOutro && !activeAdvert && (mediaObject = contentItem);
+  $: !introOrOutro && !activeAdvert && contentVariant === "article" && (mediaObject = contentItem);
+  $: !introOrOutro && !activeAdvert && contentVariant === "summary" && (mediaObject = contentItem?.summarization);
 
   $: sources = orderedMediaSources(mediaObject, preferVideo(), startPosition);
 
@@ -108,10 +110,12 @@
   // TODO: is it possible to also set the currentTime when changing to video for continuity?
   $: videoMightBeShown && loadedMedia?.format === "audio" && atTheStart && (mediaObject = mediaObject);
 
-  $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime);
+  $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime, contentVariant);
   $: segmentIndex, handleSegmentUpdate();
 
   $: videoBehindSlidingWidget && animate();
+
+  $: mediaObject && sources.length === 0 && handleNoSourcesError();
 
   const animate = () => {
     if (timeout) { clearTimeout(timeout); }
@@ -235,6 +239,18 @@
       type: "PlaybackNotAllowed",
       description: "The media cannot play because there was no user event.",
       initiatedBy: "media",
+    }));
+  };
+
+  const handleNoSourcesError = () => {
+    console.warn("BeyondWords.Player: error while loading media");
+
+    onEvent(newEvent({
+      type: "PlaybackErrored",
+      description: "The media failed to play.",
+      initiatedBy: "media",
+      mediaType: "native",
+      errorMessage: "The video tag does not contains any sources.",
     }));
   };
 

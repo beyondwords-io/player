@@ -85,7 +85,10 @@ const setProps = (player, data) => {
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
   set(player, "introsOutros", introsOutrosArray(data.settings));
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
-  set(player, "duration", player.content[player.contentIndex]?.audio?.[0]?.duration);
+  set(player, "duration", player.contentVariant === "summary"
+    ? player.content[player.contentIndex]?.summarization?.audio?.[0]?.duration
+    : player.content[player.contentIndex]?.audio?.[0]?.duration
+  );
   set(player, "widgetStyle", data.settings.widget_style);
   set(player, "widgetPosition", data.settings.widget_position);
   set(player, "textColor", themeColors.text_color);
@@ -150,7 +153,22 @@ const setContentProp = (player, data) => {
       contentType: video.content_type,
       duration: video.duration ? video.duration / 1000 : 0,
     })),
+    summarization: {
+      audio: (item.summarization?.audio || []).map((audio) => ({
+        id: audio.id,
+        url: audio.url,
+        contentType: audio.content_type,
+        duration: audio.duration ? audio.duration / 1000 : 0,
+      })) ?? [],
+      video: (item.summarization?.video || []).map((video) => ({
+        id: video.id,
+        url: video.url,
+        contentType: video.content_type,
+        duration: video.duration ? video.duration / 1000 : 0,
+      })),
+    },
     segments: item.segments.map((segment) => ({
+      text: segment.text,
       marker: segment.marker,
       xpath: segment.xpath,
       md5: segment.md5,

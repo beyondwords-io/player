@@ -26,6 +26,8 @@
   export let sourceId = undefined;
   export let sourceUrl = undefined;
   export let playlist = [];
+  export let loadContentAs = ["article"];
+  export let contentVariant = loadContentAs[0];
   export let clientSideEnabled = false;
   export let showUserInterface = true;
   export let showBottomWidget = false;
@@ -152,6 +154,8 @@
 
   $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, onEvent(identifiersEvent());
 
+  $: contentVariant = loadContentAs[0];
+
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, currentAllowedInWidget && resetHovered();
 
@@ -182,6 +186,7 @@
     {onEvent}
     {content}
     {contentIndex}
+    {contentVariant}
     {introOrOutro}
     {preloadAdvert}
     {activeAdvert}

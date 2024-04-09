@@ -5,7 +5,9 @@ const sectionEnabled = (type, segment, sections) => {
   hoveredSections ||= currentSections;
 
   const typeSections = type === "current" ? currentSections : hoveredSections;
-  return typeSections === "all" || typeSections === "body" && segment?.section === "body";
+  return typeSections === "all" ||
+    (typeSections === "body" && segment?.section === "body") ||
+    (typeSections === "summary" && segment?.section === "summary");
 };
 
 export default sectionEnabled;

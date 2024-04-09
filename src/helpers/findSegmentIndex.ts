@@ -1,17 +1,23 @@
-const findSegmentIndex = (segments, time) => {
-  const nextIndex = segments.findIndex(s => s.startTime > time);
+import { contentVariantHasSection } from "./contentVariants";
+
+const findSegmentIndex = (segments, time, contentVariant) => {
+  const segmentsForVariant = segments.filter(s => contentVariantHasSection(contentVariant, s.section));
+  const nextIndex = segmentsForVariant.findIndex(s => s.startTime > time);
   const afterTheEnd = nextIndex === -1;
 
   const thisIndex = nextIndex - 1;
   const beforeTheStart = thisIndex === -1;
 
+  let index;
   if (beforeTheStart) {
-    return 0;
+    index = 0;
   } else if (afterTheEnd) {
-    return segments.length - 1;
+    index = segmentsForVariant.length - 1;
   } else {
-    return thisIndex;
+    index = thisIndex;
   }
+
+  return segments.indexOf(segmentsForVariant[index]);
 };
 
 export default findSegmentIndex;

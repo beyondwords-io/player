@@ -4,6 +4,8 @@ import { v4 as randomUuid } from "uuid";
 import { version } from "../../package.json";
 
 const sendToAnalytics = (player, playerEvent) => {
+  if (player.contentVariant !== "article") return;
+
   const eventType = analyticsEventType(player, playerEvent.type);
   if (!eventType) { return; }
 
