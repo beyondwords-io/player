@@ -1,9 +1,7 @@
+import { contentVariantHasSection } from "./contentVariants";
+
 const findSegmentIndex = (segments, time, contentVariant) => {
-  const segmentsForVariant = segments.filter(s => {
-    if (contentVariant === "article" && (s.section === "title" || s.section === "body")) return true;
-    if (contentVariant === "summary" && s.section === "summary") return true;
-    return false;
-  });
+  const segmentsForVariant = segments.filter(s => contentVariantHasSection(contentVariant, s.section));
   const nextIndex = segmentsForVariant.findIndex(s => s.startTime > time);
   const afterTheEnd = nextIndex === -1;
 
