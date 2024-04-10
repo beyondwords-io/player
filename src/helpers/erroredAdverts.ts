@@ -1,8 +1,9 @@
-const erroredAdverts = { vastUrls: new Set(), mediaSources: new Set() };
+const erroredAdverts = { vastUrls: new Map(), mediaSources: new Set() };
+const vastBanDuration = 60000; // 60 seconds
 
 const updateErroredAdverts = (advert) => {
   if (advert.vastUrl) {
-    erroredAdverts.vastUrls.add(advert.vastUrl);
+    erroredAdverts.vastUrls.set(advert.vastUrl, Date.now());
   }
 
   for (const media of [...(advert.audio || []), ...(advert.video || [])]) {
@@ -12,7 +13,8 @@ const updateErroredAdverts = (advert) => {
 
 const resultedInAPlaybackError = (advert) => {
   if (advert.vastUrl) {
-    if (erroredAdverts.vastUrls.has(advert.vastUrl)) { return true; }
+    const erroredAt = erroredAdverts.vastUrls.get(advert.vastUrl) || -Infinity;
+    if (Date.now() - erroredAt < vastBanDuration) { return true; }
   }
 
   for (const media of [...(advert.audio || []), ...(advert.video || [])]) {
@@ -22,5 +24,4 @@ const resultedInAPlaybackError = (advert) => {
   return false;
 };
 
-export default erroredAdverts;
 export { updateErroredAdverts, resultedInAPlaybackError };
