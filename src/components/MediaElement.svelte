@@ -115,7 +115,7 @@
 
   $: videoBehindSlidingWidget && animate();
 
-  $: mediaObject && sources.length === 0 && handleNoSourcesError();
+  $: mediaObject && sources.length === 0 && !vastUrl && handleNoSourcesError();
 
   const animate = () => {
     if (timeout) { clearTimeout(timeout); }
