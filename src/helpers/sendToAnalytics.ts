@@ -4,8 +4,6 @@ import { v4 as randomUuid } from "uuid";
 import { version } from "../../package.json";
 
 const sendToAnalytics = (player, playerEvent) => {
-  if (player.contentVariant !== "article") return;
-
   const eventType = analyticsEventType(player, playerEvent.type);
   if (!eventType) { return; }
 
@@ -59,6 +57,7 @@ const eventFromProps = (player, analyticsEventType) => {
     event_type: analyticsEventType,
     device_type: deviceType(player),
     media_type: activeAdvert ? "ad" : "content",
+    media_variant: player.contentVariant,
     project_id: player.projectId,
     content_id: contentItem?.id,
     source_id: contentItem?.sourceId,
