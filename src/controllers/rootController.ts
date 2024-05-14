@@ -188,10 +188,12 @@ class RootController {
 
     if (!atTheStart && !atTheEnd && !videoPaused) { this.player.playbackState = "playing"; }
 
+    const nearTheStart = this.player.currentTime <= 0.5;
+    const mediaRestarted = !this.#isAdvert() && this.midrollPlayed && nearTheStart;
+
     // Fix Safari restarting the media from the beginning after a mid-roll advert.
     // We've already restored the player state once, but I think ima.js is then overriding it.
-    const mediaRestartedAfterMidroll = !this.#isAdvert() && this.midrollPlayed && atTheStart;
-    if (mediaRestartedAfterMidroll && this.prevTime) { this.#restorePlayerState(true); }
+    if (mediaRestarted && this.prevTime) { this.#restorePlayerState(true); }
   }
 
   handlePlaybackEnded() {
