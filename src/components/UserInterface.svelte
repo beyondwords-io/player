@@ -272,6 +272,7 @@
 <style>
   .user-interface {
     overflow: hidden;
+    touch-action: manipulation;
   }
 
   .user-interface :global(*) {
