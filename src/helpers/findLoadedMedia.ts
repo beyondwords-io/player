@@ -7,7 +7,10 @@ const findLoadedMedia = (sources, videoElement) => {
     return matchesUrl || matchesHls;
   });
 
-  if (!source) { console.warn("BeyondWords.Player: media was loaded but failed to set loadedMedia"); }
+  if (sources.length > 0 && !source) {
+    console.warn("BeyondWords.Player: media was loaded but failed to set loadedMedia");
+  }
+
   return source;
 };
 
