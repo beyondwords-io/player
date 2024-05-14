@@ -1,4 +1,5 @@
 import findSegmentIndex from "./findSegmentIndex";
+import isIosSafari from "./isIosSafari";
 import { updateErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
@@ -53,7 +54,7 @@ const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart,
 
   const midrollIndex = isPlaylist ? null : midrollSegmentIndex(segments, minDurationForMidroll, contentVariant);
   const midrollSegment = segments[midrollIndex];
-  const isAfterMidroll = midrollSegment && currentTime > midrollSegment.startTime;
+  const isAfterMidroll = midrollSegment && currentTime > midrollSegment.startTime && !isIosSafari();
 
   // Don't play mid-roll adverts if seeked to the last N seconds of content.
   const duration = lastSegment ? lastSegment.startTime + lastSegment.duration : 0;
