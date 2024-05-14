@@ -221,6 +221,7 @@ class RootController {
 
   handlePlaybackErrored({ mediaType, preloading, errorMessage }) {
     console.warn(`BeyondWords.Player: ${mediaType} playback error: ${errorMessage}`);
+    const wasMidroll = this.#isMidrollAdvert();
 
     if (this.#isIntro() || this.#isOutro()) {
       this.#chooseAndSetIntroOutro({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
@@ -231,6 +232,8 @@ class RootController {
     } else {
       this.handlePlaybackEnded();
     }
+
+    if (wasMidroll && !this.#isAdvert()) { this.midrollPlayed = true; }
   }
 
   handleCompanionAdvertChanged({ clickThroughUrl, imageUrl }) {
