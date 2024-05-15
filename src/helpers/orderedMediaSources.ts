@@ -11,7 +11,7 @@ const orderedMediaSources = (mediaObject, preferVideo, startPosition) => {
 
   const sources = preferVideo ? [...sortedVideo, ...sortedAudio] : sortedAudio;
 
-  if (startPosition && browserDoesNotSupportHlsTimeFragments()) {
+  if (startPosition && browserDoesNotSupportHlsTimeFragments() || preferVideo && browserFreezeFramesWhenPlayingHlsVideo()) {
     const nonHlsSources = sources.filter(s => !s.url.endsWith(".m3u8"));
     const hlsSources = sources.filter(s => s.url.endsWith(".m3u8"));
 
@@ -24,6 +24,12 @@ const orderedMediaSources = (mediaObject, preferVideo, startPosition) => {
 const browserDoesNotSupportHlsTimeFragments = () => {
   const userAgent = navigator?.userAgent?.toLowerCase?.() || "";
   return userAgent.includes("android") && userAgent.includes("chrome");
+};
+
+const browserFreezeFramesWhenPlayingHlsVideo = () => {
+  const userAgent = navigator?.userAgent?.toLowerCase?.() || "";
+  const androidVersion = userAgent.match(/android\s([0-9.]+)/i)?.[1];
+  return androidVersion && parseInt(androidVersion, 10) <= 13;
 };
 
 const sortByHlsFirst = (a, b) => {
