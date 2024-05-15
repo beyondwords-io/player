@@ -56,6 +56,7 @@
 
   const setTime = (t) => time = t;
   const preferVideo = () => videoMightBeShown;
+  const hasVideo = () => sources.some(s => s.format === "video");
 
   const play = () => video?.paused && video?.play()?.catch(handlePlayError);
   const pause = () => !video?.paused && video?.pause();
@@ -108,7 +109,7 @@
   $: atTheStart = playbackState !== "playing" && currentTime <= EPSILON;
 
   // TODO: is it possible to also set the currentTime when changing to video for continuity?
-  $: videoMightBeShown && loadedMedia?.format === "audio" && atTheStart && (mediaObject = mediaObject);
+  $: videoMightBeShown && loadedMedia?.format === "audio" && hasVideo() && atTheStart && (mediaObject = mediaObject);
 
   $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime, contentVariant);
   $: segmentIndex, handleSegmentUpdate();
