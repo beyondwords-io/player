@@ -37,6 +37,8 @@
   $: adsManager, !preloading && (playbackState === "playing" ? adsManager?.resume() : adsManager?.pause());
 
   const initializeIMA = () => {
+    google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
+
     adDisplayContainer = new google.ima.AdDisplayContainer(adContainer, video);
 
     adsLoader = new google.ima.AdsLoader(adDisplayContainer);

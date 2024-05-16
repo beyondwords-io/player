@@ -1,3 +1,4 @@
+import srcWithoutHash from "./srcWithoutHash";
 import { useHlsLibrary } from "./loadHlsIfNeeded";
 import hlsLoadPolicies from "./hlsLoadPolicies";
 
@@ -12,7 +13,7 @@ const loadMetadata = (source, video, Hls, hls, onError, onMetadata, play) => {
 
   const prevPaused = video.paused;
   const prevRate = video.playbackRate;
-  const wrongSource = video.sourceUrl && video.sourceUrl !== source.url;
+  const wrongSource = video.currentSrc && srcWithoutHash(video.currentSrc) !== source.url;
 
   if (useHlsLibrary(source, video)) {
     if (!Hls) { return "pending"; } // loadMedia will be re-called once Hls is ready.
@@ -32,14 +33,13 @@ const loadMetadata = (source, video, Hls, hls, onError, onMetadata, play) => {
   } else if (wrongSource) {
     video.removeAttribute("src");
     video.load();
-  } else if (video.sourceUrl) {
+  } else if (video.currentSrc) {
     onMetadata();
   }
 
   if (!prevPaused) { play(); }
 
   video.playbackRate = prevRate;
-  video.sourceUrl = source.url;
 
   return hls || "not-used";
 };

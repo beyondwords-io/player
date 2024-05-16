@@ -595,7 +595,6 @@ class RootController {
     this.prevRate = this.player.playbackRate;
     this.prevContent = this.player.contentIndex;
 
-    this.player.currentTime = 0;
     this.player.playbackRate = 1;
   }
 
