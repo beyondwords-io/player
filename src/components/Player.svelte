@@ -316,6 +316,7 @@
 {#if controlPanel}
   <ExternalWidget root={controlPanel}>
     <ControlPanel
+      bind:controlPanel
       bind:projectId
       bind:contentId
       bind:playlistId

@@ -1,6 +1,7 @@
 <script>
   import("../helpers/loadTheStyles.ts");
 
+  export let controlPanel;
   export let projectId;
   export let contentId;
   export let playlistId;
@@ -389,11 +390,15 @@
 
   <br/>
 
-  {#if showAdvancedSettings}
-    <a tabindex={-1} href="#_" on:click={() => showAdvancedSettings = false}>hide advanced settings</a>
-  {:else}
-    <a tabindex={-1} href="#_" on:click={() => showAdvancedSettings = true}>show advanced settings</a>
-  {/if}
+  <div class="settings-toggle">
+    {#if showAdvancedSettings}
+      <a tabindex={-1} href="#_" on:click={() => showAdvancedSettings = false}>hide advanced settings</a>
+    {:else}
+      <a tabindex={-1} href="#_" on:click={() => showAdvancedSettings = true}>show advanced settings</a>
+    {/if}
+
+    <a class="close" tabindex={-1} href="#_" on:click={() => controlPanel.remove()}>close</a>
+  </div>
 </div>
 
 <style>
@@ -428,5 +433,14 @@
 
   a {
     text-decoration: underline;
+  }
+
+  .settings-toggle {
+    display: flex;
+  }
+
+  .close {
+    color: maroon;
+    flex: 1;
   }
 </style>
