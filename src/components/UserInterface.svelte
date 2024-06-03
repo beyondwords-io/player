@@ -418,6 +418,10 @@
     height: 144px;
   }
 
+  .large.mobile.advert_ .controls {
+    flex-direction: row-reverse;
+  }
+
   .large .no-image .summary {
     grid-column: 1 / span 2;
   }

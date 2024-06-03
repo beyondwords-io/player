@@ -75,10 +75,7 @@
     margin-left: -8px;
   }
 
-  .standard.advert_ {
-    justify-content: flex-end;
-  }
-
+  .standard.advert_,
   .standard.fixed-left.advert_ {
     justify-content: flex-start;
   }
@@ -89,16 +86,21 @@
     top: 28px;
   }
 
-  .small.stopped.mobile .inner,
-  .standard.stopped.mobile .inner {
+  .small.stopped.mobile .inner {
     position: absolute;
     left: 40px;
     top: 28px;
   }
 
+  .standard.stopped.mobile .inner {
+    position: absolute;
+    left: 52px;
+    top: 28px;
+  }
+
   .standard.stopped.fixed-right .inner {
     position: absolute;
-    left: 36px;
+    left: 52px;
     top: 28px;
   }
 
@@ -106,10 +108,6 @@
     position: absolute;
     left: 52px;
     top: 28px;
-  }
-
-  .standard.stopped.mobile.no-logo .inner {
-    left: 24px;
   }
 
   .large .inner {
