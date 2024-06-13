@@ -46,4 +46,8 @@
     position: relative;
     bottom: 20px;
   }
+
+  .video {
+    margin-left: 4px;
+  }
 </style>

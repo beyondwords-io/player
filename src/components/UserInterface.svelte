@@ -100,6 +100,7 @@
 
   $: buttonScale = isSmall || isVideo && fixedPosition ? 0.8 : isScreen && !isMobile ? 2 : 1;
   $: playPauseScale = buttonScale * (isScreen ? 1.5 : isVideo && isStopped ? 1.6 : 1);
+  $: playerTitleScale = isVideo && !fixedPosition ? 1.2 : 1;
   $: logoScale = isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1;
   $: closeScale = isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1;
   $: closeMargin = isScreen && !isMobile ? "12px 0" : isScreen ? "4px 0" : "auto";
@@ -196,8 +197,8 @@
           </ProgressCircle>
         </Visibility>
 
-        {#if isStandard && isStopped || isSmall}
-          <PlayerTitle title={callToAction || translate("listenToThisArticle")} visible={!isAdvert} {playerStyle} {collapsible} {collapsed} color={activeTextColor} />
+        {#if (isStandard || isVideo) && isStopped || isSmall}
+          <PlayerTitle title={callToAction || translate("listenToThisArticle")} visible={!isAdvert} {playerStyle} scale={playerTitleScale} {collapsible} {collapsed} color={activeTextColor} />
         {/if}
 
         {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
