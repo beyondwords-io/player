@@ -63,6 +63,9 @@ const shouldNotRespondToHoverOrClick = (node) => {
 
   const isEditable = nodeName === "input" || nodeName === "textarea" || node.isContentEditable;
   if (isEditable) { return true; }
+
+  const isPlayer = !!node.closest(".beyondwords-player");
+  if (isPlayer) { return true; }
 };
 
 const chooseSegmentBy = (matchFnFn, node, players, segmentPerPlayer, playersRemaining) => {
