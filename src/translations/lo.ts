@@ -1,6 +1,7 @@
 export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "ຟັງບົດຄວາມນີ້",
+  minutesSingularOrPlural: "{n} ນາທີ",
   videoInWidget: "Video is playing in widget",
 
   // These translations are used by aria-label.

@@ -1,6 +1,7 @@
 export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "האזינו למאמר הזה",
+  minutesSingularOrPlural: "{n} דק",
   videoInWidget: "Video is playing in widget",
 
   // These translations are used by aria-label.

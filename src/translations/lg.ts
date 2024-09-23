@@ -1,6 +1,7 @@
 export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "Wuliriza ekitundu kino",
+  minutesSingularOrPlural: "{n} ddk",
   videoInWidget: "Video is playing in widget",
 
   // These translations are used by aria-label.

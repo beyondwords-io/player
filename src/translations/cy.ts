@@ -1,6 +1,7 @@
 export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "Gwrandewch ar yr erthygl hon",
+  minutesSingularOrPlural: "{n} mun",
   videoInWidget: "Video is playing in widget",
 
   // These translations are used by aria-label.

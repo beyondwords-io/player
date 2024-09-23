@@ -1,4 +1,6 @@
 <script>
+  import translate from "../../helpers/translate";
+
   export let duration = 0;
   export let bold = false;
   export let scale = 1;
@@ -8,7 +10,7 @@
 </script>
 
 <div class="duration-in-mins" class:bold={bold} style="font-size: {10 * scale}px; color: {color}">
-  {minutes} min
+  {translate("minutesSingularOrPlural").replace("{n}", minutes)}
 </div>
 
 <style>

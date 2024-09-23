@@ -1,5 +1,6 @@
 export default {
   listenToThisArticle: "聽這篇文章",
+  minutesSingularOrPlural: "{n} 分鐘",
   videoInWidget: "Video is playing in widget",
   playAudio: "Play audio",
 

@@ -1,6 +1,7 @@
 export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "기사를 들어보세요.",
+  minutesSingularOrPlural: "{n} 분",
   videoInWidget: "Video is playing in widget",
 
   // These translations are used by aria-label.
