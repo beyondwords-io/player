@@ -38,6 +38,7 @@
   export let playlistStyle = "auto-5-4";
   export let playlistToggle = "auto";
   export let downloadFormats = [];
+  export let durationFormat = undefined;
   export let mediaSession = "auto";
   export let content = [];
   export let contentIndex = 0;
@@ -225,6 +226,7 @@
     {playlistStyle}
     {playlistToggle}
     {downloadFormats}
+    {durationFormat}
     {playerTitle}
     {content}
     {contentIndex}
@@ -261,6 +263,7 @@
       playlistStyle="hide"
       playlistToggle="hide"
       {downloadFormats}
+      {durationFormat}
       {playerTitle}
       fixedPosition={!widgetTarget && widgetPosition}
       fixedWidth={widgetWidth}

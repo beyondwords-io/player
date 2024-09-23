@@ -4,6 +4,7 @@
   import PlaybackTime from "./PlaybackTime.svelte";
 
   export let duration = 0;
+  export let durationFormat = undefined;
   export let currentTime = 0;
   $: remaining = Math.max(0, duration - currentTime);
 
@@ -30,7 +31,7 @@
     {:else if isAdvert}
       <CountdownTime text="Ad" remaining={remaining} {scale} {color} />
     {:else if isStopped}
-      <DurationInMins {duration} {scale} {color} />
+      <DurationInMins {duration} {durationFormat} {scale} {color} />
     {:else}
       <PlaybackTime {duration} {currentTime} {scale} {color} />
     {/if}

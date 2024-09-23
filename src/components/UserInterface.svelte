@@ -40,6 +40,7 @@
   export let playlistStyle = "auto-5-4";
   export let playlistToggle = "auto";
   export let downloadFormats = [];
+  export let durationFormat = undefined;
   export let playerTitle = undefined;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
@@ -211,7 +212,7 @@
           <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
         {/if}
 
-        <TimeIndicator {currentTime} {duration} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} {showBeyondWords} color={activeTextColor} />
+        <TimeIndicator {currentTime} {duration} {durationFormat} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} {showBeyondWords} color={activeTextColor} />
 
         {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
           <ProgressBar {onEvent} {progress} {duration} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
