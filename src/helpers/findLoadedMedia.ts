@@ -4,7 +4,7 @@ const findLoadedMedia = (sources, videoElement) => {
   const videoSrc = srcWithoutHash(videoElement?.currentSrc);
   const source = sources.find(source => {
     const matchesUrl = source.url && videoSrc === absoluteUrl(source.url);
-    const matchesHls = source.url?.endsWith(".m3u8") && videoSrc?.startsWith("blob:");
+    const matchesHls = (source.url?.endsWith(".m3u8") || source.url?.startsWith("blob:")) && videoSrc?.startsWith("blob:");
 
     return matchesUrl || matchesHls;
   });

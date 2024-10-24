@@ -143,26 +143,26 @@ const setContentProp = (player, data) => {
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
     audio: item.audio.map((audio) => ({
       id: audio.id,
-      url: audio.url,
+      url: localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type),
       contentType: audio.content_type,
       duration: audio.duration ? audio.duration / 1000 : 0,
     })),
     video: item.video.map((video) => ({
       id: video.id,
-      url: video.url,
+      url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
       contentType: video.content_type,
       duration: video.duration ? video.duration / 1000 : 0,
     })),
     summarization: {
       audio: (item.summarization?.audio || []).map((audio) => ({
         id: audio.id,
-        url: audio.url,
+        url: localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type),
         contentType: audio.content_type,
         duration: audio.duration ? audio.duration / 1000 : 0,
       })) ?? [],
       video: (item.summarization?.video || []).map((video) => ({
         id: video.id,
-        url: video.url,
+        url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
         contentType: video.content_type,
         duration: video.duration ? video.duration / 1000 : 0,
       })),
@@ -204,13 +204,13 @@ const setAdvertsProp = (player, data) => {
       videoIconColor: videoColors?.icon_color,
       audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
         id: audio.id,
-        url: audio.url,
+        url: localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type),
         contentType: audio.content_type,
         duration: audio.duration ? audio.duration / 1000 : 0,
       })),
       video: isVast ? [] : (item.video || []).map((video) => ({
         id: video.id,
-        url: video.url,
+        url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
         contentType: video.content_type,
         duration: video.duration ? video.duration / 1000 : 0,
       })),
@@ -238,6 +238,26 @@ const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {
   if (!analytics_uuid_enabled) { return "without-local-storage"; }
 
   return "allowed";
+};
+
+const localOrRemoteUrl = (remoteUrl, base64, contentType) => {
+  if (!base64) { return remoteUrl; }
+
+  try {
+    const absolutePath = remoteUrl.replace(/\.m3u8$/, "");
+    const relativePath = absolutePath.split("/").pop();
+
+    const originalM3u8 = atob(base64);
+    const replacedM3u8 = originalM3u8.replaceAll(relativePath, absolutePath);
+
+    const m3u8Blob = new Blob([replacedM3u8], { type: contentType });
+    const localUrl = URL.createObjectURL(m3u8Blob);
+
+    return localUrl;
+  } catch (error) {
+    console.warn(`BeyondWords.Player: ${error}`);
+    return remoteUrl;
+  }
 };
 
 export default setPropsFromApi;
