@@ -79,7 +79,7 @@
   $: !introOrOutro && !activeAdvert && contentVariant === "article" && (mediaObject = contentItem);
   $: !introOrOutro && !activeAdvert && contentVariant === "summary" && (mediaObject = contentItem?.summarization);
 
-  $: sources = orderedMediaSources(mediaObject, preferVideo(), startPosition);
+  $: sources = orderedMediaSources(mediaObject, preferVideo());
 
   $: sources, metadataLoaded = false;
   $: sources, prevPercentage = 0;
