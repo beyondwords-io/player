@@ -13,7 +13,8 @@ const useHlsLibrary = (source, video) => {
   if (!isHlsSource) { return false; }
 
   const nativeSupport = video?.canPlayType("application/vnd.apple.mpegurl");
-  if (nativeSupport) { return false; }
+  const supportIsBuggy = navigator?.userAgent?.toLowerCase?.()?.includes("android");
+  if (nativeSupport && !supportIsBuggy) { return false; }
 
   // Hls will be null the first time through this code but we call this function
   // again in loadMedia before choosing to use the Hls library for playback.

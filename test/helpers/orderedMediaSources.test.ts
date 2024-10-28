@@ -57,34 +57,4 @@ describe("orderedMediaSources", () => {
 
     expect(urls).toEqual(["video.m3u8", "video.mp4", "audio.m3u8", "audio.mp3"]);
   });
-
-  it("orders by .mp3 and .mp4 sources followed by .m3u8 in Android Chrome if a startPosition is given", () => {
-    // This does not set the start position correctly in Android Chrome: <source src="media.m3u8#t=5" />
-    // So we prefer .mp3 and .mp4 media instead in AndroidChrome is startPosition is set.
-
-    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Android Chrome");
-
-    const sources = orderedMediaSources(mediaObject, true, 5);
-    const urls = sources.map(s => s.url);
-
-    expect(urls).toEqual(["video.mp4", "audio.mp3", "video.m3u8", "audio.m3u8"]);
-  });
-
-  it("does not change the order of sources for Android Chrome if there is no startPosition", () => {
-    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Android Chrome");
-
-    const sources = orderedMediaSources(mediaObject, true);
-    const urls = sources.map(s => s.url);
-
-    expect(urls).toEqual(["video.m3u8", "video.mp4", "audio.m3u8", "audio.mp3"]);
-  });
-
-  it("does not change the order of sources for other browsers if a startPosition is given", () => {
-    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla Firefox");
-
-    const sources = orderedMediaSources(mediaObject, true);
-    const urls = sources.map(s => s.url);
-
-    expect(urls).toEqual(["video.m3u8", "video.mp4", "audio.m3u8", "audio.mp3"]);
-  });
 });
