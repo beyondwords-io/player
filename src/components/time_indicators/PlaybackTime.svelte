@@ -15,5 +15,6 @@
   .playback-time {
     font-weight: 300;
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
   }
 </style>
