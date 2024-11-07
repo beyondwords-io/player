@@ -51,7 +51,9 @@ const eventFromProps = (player, analyticsEventType) => {
 
   const activeAdvert = player.adverts[player.advertIndex];
   const contentItem = player.content[player.contentIndex];
-  const percentage = player.duration ? (player.currentTime / player.duration) * 100 : 0;
+
+  const duration = (player.duration === Infinity) ? 0 : player.duration || 0;
+  const percentage = player.currentTime / duration * 100;
 
   return {
     event_type: analyticsEventType,
@@ -68,7 +70,7 @@ const eventFromProps = (player, analyticsEventType) => {
     local_storage_id: withoutStorage ? null : JSON.parse(localStorage.beyondwords),
     listen_session_id: player.listenSessionId,
     session_created_at: player.sessionCreatedAt,
-    duration: player.duration,
+    duration: duration,
     listen_length_seconds: player.currentTime,
     listen_length_percent: Math.max(0, Math.min(100, percentage)),
     speed: player.playbackRate,
