@@ -17,7 +17,7 @@
   };
 </script>
 
-<a class="beyondwords" href="https://beyondwords.io/" target="_blank" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px" on:mouseup={blurElement} aria-label={translate("visitBeyondWords")}>
+<a class="beyondwords" href="https://beyondwords.io/?utm_source=player&utm_medium=referral" target="_blank" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px" on:mouseup={blurElement} aria-label={translate("visitBeyondWords")}>
   <Logo {scale} />
 </a>
 
