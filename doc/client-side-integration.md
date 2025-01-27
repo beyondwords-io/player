@@ -102,7 +102,11 @@ HTML page, for example:
     data-beyondwords-author="Jane Doe"
     data-beyondwords-publish-date="2023-01-01T:12:00:00Z"
     data-beyondwords-published="false"
-    data-beyondwords-ads-enabled="false">
+    data-beyondwords-ads-enabled="false"
+    data-beyondwords-title-voice-id="784"
+    data-beyondwords-body-voice-id="2194"
+    data-beyondwords-summary-voice-id="2194"
+    data-beyondwords-article-language="en_GB">
   </body>
 </html>
 ```
@@ -140,10 +144,31 @@ to a `p` tag or a container:
 </div>
 ```
 
-If not specified, the article will be read out using the default voices for
-title and body configured for your project. You can retrieve a list of available
-voices for your account from
+If not specified, the article will be read out using the title, body or summary
+voice ID data attributes (see above). Otherwise, the default voices that have
+been configured for your project will be used. You can retrieve a list of
+available voices for your account from
 [our API](https://developers.beyondwords.io/reference/organizationvoicesindex).
 
+### Language
+
+You can override the language that should be used by adding the following
+attribute to a `p` tag or a container:
+
+```html
+<p data-beyondwords-language="en_GB">
+  This paragraph will be read out in British English.
+</p>
+
+<p data-beyondwords-language="fr_FR">
+  Ce paragraphe sera lu en français.
+</p>
+```
+
+If not specified, the language from the `data-beyondwords-article-language` will
+be used. Otherwise, the default language that has been configured for your
+project will be used. You can retrieve a list of available languages for your
+account from
+[our API](https://developers.beyondwords.io/reference/organizationlanguagesindex)
 
 [< back to README](https://github.com/BeyondWords-io/player#readme)
