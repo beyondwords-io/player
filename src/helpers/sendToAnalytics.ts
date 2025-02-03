@@ -53,7 +53,7 @@ const eventFromProps = (player, analyticsEventType) => {
   const contentItem = player.content[player.contentIndex];
 
   const duration = (player.duration === Infinity) ? 0 : player.duration || 0;
-  const percentage = player.currentTime / duration * 100;
+  const percentage = (duration === 0) ? 0 : player.currentTime / duration * 100;
 
   return {
     event_type: analyticsEventType,
