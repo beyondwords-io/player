@@ -1,9 +1,10 @@
 import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
-  constructor(playerApiUrl, projectId, clientSideEnabled, previewToken) {
+  constructor(playerApiUrl, projectId, contentVariant, clientSideEnabled, previewToken) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
-    this.search = new URLSearchParams();
+    this.variant = contentVariant;
+    this.params = new URLSearchParams() ;
 
     // TODO: Find a way to pass this information to the backend while complying
     // with CORS "simply request" requirements so that OPTIONS aren't sent.
@@ -15,7 +16,7 @@ class PlayerApiClient {
     }
 
     if (previewToken) {
-      this.search.set("preview_token", previewToken);
+      this.params.set("preview_token", previewToken);
     }
   }
 
@@ -24,7 +25,7 @@ class PlayerApiClient {
   }
 
   byPlaylistId(id) {
-    return this.#fetchJson(`by_playlist_id/${id}`);
+    return this.#fetchJson(`by_playlist_id/${id}`, this.#paramsWithVariant());
   }
 
   bySourceId(id) {
@@ -36,15 +37,23 @@ class PlayerApiClient {
   }
 
   byIdentifiers(array) {
-    return this.#fetchJson(`by_identifiers/${encodeURIComponent(JSON.stringify(array))}`);
+    return this.#fetchJson(`by_identifiers/${encodeURIComponent(JSON.stringify(array))}`, this.#paramsWithVariant());
   }
 
-  #fetchJson(path) {
-    return fetchJson(`${this.baseUrl}/${path}${this.#searchQuery()}`, { headers: this.headers });
+  #fetchJson(path, params = this.params) {
+    return fetchJson(`${this.baseUrl}/${path}${this.#queryString(params)}`, { headers: this.headers });
   }
 
-  #searchQuery() {
-    return this.search.size ? `?${this.search}` : "";
+  #queryString(params) {
+    return params.size ? `?${params}` : "";
+  }
+
+  #paramsWithVariant() {
+    if (this.variant === "summary") {
+      return new URLSearchParams({ ...this.params, summary: true });
+    } else {
+      return this.params;
+    }
   }
 }
 

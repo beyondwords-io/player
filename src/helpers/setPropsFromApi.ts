@@ -4,7 +4,7 @@ import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 
 const setPropsFromApi = async (player) => {
-  const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.clientSideEnabled, player.previewToken);
+  const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.contentVariant, player.clientSideEnabled, player.previewToken);
   if (!player.playerApiUrl || !player.projectId) { return; }
 
   const identifiers = identifiersArray(player);
