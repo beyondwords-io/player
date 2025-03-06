@@ -85,6 +85,7 @@ const midrollSegmentIndex = (segments, minDurationForMidroll, contentVariant) =>
 
   const halfWayTime = duration / 2;
   const halfWayIndex = findSegmentIndex(segments, duration / 2, contentVariant);
+  if (halfWayIndex === -1) { return; }
 
   const startTime = segments[halfWayIndex].startTime;
   const isHalfWay = startTime >= halfWayTime - halfWayTimeToleranceForMidroll;
