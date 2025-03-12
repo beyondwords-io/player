@@ -124,13 +124,12 @@ const resetSomeProps = (player) => {
 };
 
 const setContentProp = (player, data) => {
-  const imageEnabled = data?.settings?.image_enabled;
   const contentArray = data?.content || [];
 
   set(player, "content", contentArray.map((item) => ({
     id: item.id,
     title: item.title,
-    imageUrl: imageEnabled ? (data.playlist?.image_url || data.settings.image_url || item.image_url) : null,
+    imageUrl: data.playlist?.image_url || data.settings.image_url || item.image_url,
     sourceId: item.source_id,
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
@@ -174,7 +173,6 @@ const setContentProp = (player, data) => {
 };
 
 const setAdvertsProp = (player, data) => {
-  const imageEnabled = data?.settings?.image_enabled;
   const advertsArray = data?.ads || [];
 
   set(player, "adverts", advertsArray.map((item) => {
@@ -189,7 +187,7 @@ const setAdvertsProp = (player, data) => {
       placement: item.placement,
       vastUrl: isVast ? item.vast_url : null,
       clickThroughUrl: !isVast ? item.click_through_url : null,
-      imageUrl: imageEnabled ? item.image_url : null,
+      imageUrl: item.image_url,
       textColor: themeColors?.text_color,
       backgroundColor: themeColors?.background_color,
       iconColor: themeColors?.icon_color,
