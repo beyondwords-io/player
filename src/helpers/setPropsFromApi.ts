@@ -83,7 +83,7 @@ const setProps = (player, data) => {
   set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
-  set(player, "introsOutros", introsOutrosArray(data.settings));
+  set(player, "introsOutros", data.settings.intros_outros);
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
   set(player, "duration", player.contentVariant === "summary"
     ? player.content[player.contentIndex]?.summarization?.audio?.[0]?.duration
@@ -213,16 +213,6 @@ const setAdvertsProp = (player, data) => {
 const set = (player, propName, value) => {
   const overridden = typeof player.initialProps?.[propName] !== "undefined";
   if (!overridden) { player[propName] = value; }
-};
-
-const introsOutrosArray = ({ intro_outro_enabled, intro_url, outro_url }) => {
-  if (!intro_outro_enabled) { return []; }
-  const array = [];
-
-  if (intro_url) { array.push({ placement: "pre-roll", audio: [{ url: intro_url }], video: [] }); }
-  if (outro_url) { array.push({ placement: "post-roll", audio: [{ url: outro_url }], video: [] }); }
-
-  return array;
 };
 
 const analyticsConsent = ({ analytics_enabled, analytics_uuid_enabled }) => {
