@@ -102,19 +102,13 @@ const setProps = (player, data) => {
   set(player, "logoImagePosition", data.video_settings.logo_image_position);
   set(player, "highlightSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
-  set(player, "segmentWidgetSections", data.settings.segment_playback_enabled ? "none" : "none"); // TODO: default to body?
+  set(player, "segmentWidgetSections", "none");
   set(player, "analyticsConsent", analyticsConsent(data.settings));
   set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
   set(player, "analyticsTag", data.settings.analytics_tag);
   set(player, "analyticsUrl", data.settings.analytics_url);
   set(player, "analyticsId", data.settings.analytics_id);
   set(player, "contentLanguage", data.language);
-
-  // TODO: add support for title_enabled
-  // TODO: add support for paywall_type
-  // TODO: add support for paywall_url
-  // TODO: add support for share_button_enabled
-  // TODO: add support for voice_icon_enabled
 };
 
 const resetSomeProps = (player) => {
