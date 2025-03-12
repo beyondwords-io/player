@@ -173,8 +173,8 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: segmentHighlights.update("current", currentSegment, highlightSections, highlightColor);
-  $: segmentHighlights.update("hovered", hoveredSegment, highlightSections, highlightColor);
+  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor);
+  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor);
 
   // TODO: if timedTransitions changes then re-apply all transitions.
   // TODO: don't apply transitions during intros/adverts.

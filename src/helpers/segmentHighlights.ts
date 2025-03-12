@@ -12,7 +12,7 @@ class SegmentHighlights {
   }
 
   update(type, segment, sections, background) {
-    const enabled = sectionEnabled(type, segment, sections);
+    const enabled = sections.every(s => sectionEnabled(type, segment, s));
 
     const previous = this[`prev${type}`];
     const current = enabled ? this.ids.fetchOrAdd(segment) : null;
