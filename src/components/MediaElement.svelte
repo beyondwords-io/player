@@ -233,6 +233,7 @@
   };
 
   const handlePlayError = (error) => {
+    if (error?.name === "NotSupportedError") { video.src = null; }
     if (error?.name === "AbortError") { play(); return; }
     if (error?.name !== "NotAllowedError") { throw error; }
 
