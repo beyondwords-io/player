@@ -11,6 +11,8 @@
   export let onEvent = () => {};
 
   const callback = ([entry]) => {
+    if (!enabled) { return; }
+
     relativeY = entry.boundingClientRect.y;
     absoluteY = relativeY + window.scrollY;
 
@@ -26,7 +28,7 @@
   };
 
   onMount(() => {
-    if (!enabled || typeof IntersectionObserver === "undefined") { return; }
+    if (typeof IntersectionObserver === "undefined") { return; }
 
     const observer = new IntersectionObserver(callback, { threshold: 0.5 });
     observer.observe(element);
