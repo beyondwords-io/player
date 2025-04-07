@@ -35,7 +35,7 @@
 
     return () => {
       observer.unobserve(element);
-      callback([{ isIntersecting: true, boundingClientRect: { y: Infinity } }]);
+      callback([{ isIntersecting: false, boundingClientRect: { y: Infinity } }]);
     };
   });
 </script>
