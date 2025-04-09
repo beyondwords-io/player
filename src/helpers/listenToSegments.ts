@@ -52,6 +52,7 @@ const handleClick = (event) => {
 
 const handleMouseMove = (event) => {
   for (const { p, player, segment, contentIndex, segmentIndex, segmentElement, precedence } of chooseSegmentPerPlayer(event.target)) {
+    if (textIsSelected()) { continue; }
     if (!hoveredChanged(p, contentIndex, segmentIndex)) { continue; }
 
     player.onEvent(newEvent({
@@ -67,6 +68,10 @@ const handleMouseMove = (event) => {
     }));
   }
 };
+
+const textIsSelected = () => (
+  typeof getSelection !== "undefined" && getSelection().toString() !== ""
+);
 
 const hoveredIndexes = {};
 
