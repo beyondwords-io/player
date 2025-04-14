@@ -5,6 +5,7 @@ import validateWebContext from "./helpers/validateWebContext";
 import listenToSegments from "./helpers/listenToSegments";
 import resolveTarget from "./helpers/resolveTarget";
 import sendToAnalytics from "./helpers/sendToAnalytics";
+import renameProp from "./helpers/renameProp";
 import propertyValues from "./helpers/propertyValues";
 import playerPropsToIgnore from "./helpers/playerPropsToIgnore";
 import { version } from "../package.json";
@@ -24,6 +25,9 @@ class Player extends PlayerComponent {
 
     const controller = new RootController(null, Player);
     controller.addEventListener("<any>", e => sendToAnalytics(this, e));
+
+    renameProp("xdv3rts", "adverts", props);
+    renameProp("xdv3rtIndex", "advertIndex", props);
 
     const initialProps = { showUserInterface, ...props };
     super({ target: newTarget, props: { controller, ...initialProps, initialProps } });
