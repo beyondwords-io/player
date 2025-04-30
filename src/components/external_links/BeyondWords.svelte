@@ -4,6 +4,7 @@
   import translate from "../../helpers/translate";
   import blurElement from "../../helpers/blurElement";
 
+  export let analyticsId = undefined;
   export let scale = 1;
   export let visible = true;
   export let onEvent = () => {};
@@ -17,7 +18,7 @@
   };
 </script>
 
-<a class="beyondwords" href="https://beyondwords.io/?utm_source=player&utm_medium=referral" target="_blank" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px" on:mouseup={blurElement} aria-label={translate("visitBeyondWords")}>
+<a class="beyondwords" href="https://beyondwords.io/?utm_source={window.location.origin}&utm_medium=player&utm_campaign={analyticsId}" target="_blank" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px" on:mouseup={blurElement} aria-label={translate("visitBeyondWords")}>
   <Logo {scale} />
 </a>
 

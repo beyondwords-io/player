@@ -55,6 +55,7 @@
   export let activeAdvert = undefined;
   export let persistentAdvert = undefined;
   export let companionAdvert = undefined;
+  export let analyticsId = undefined;
   export let textColor = "#111";
   export let backgroundColor = "#f5f5f5";
   export let iconColor = "black";
@@ -238,7 +239,7 @@
             {/if}
 
             {#if isVideo && showBeyondWords}
-              <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+              <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
             {/if}
           </SecondaryButtons>
         {/if}
@@ -249,7 +250,7 @@
           {#if showCloseWidget}
             <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
           {:else if showBeyondWords && !isVideo}
-            <BeyondWords {onEvent} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+            <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
           {/if}
         </div>
       {/if}

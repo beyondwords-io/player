@@ -238,6 +238,7 @@
     {activeAdvert}
     {persistentAdvert}
     {companionAdvert}
+    {analyticsId}
     {textColor}
     {backgroundColor}
     {iconColor}
@@ -278,6 +279,7 @@
       {activeAdvert}
       {persistentAdvert}
       {companionAdvert}
+      {analyticsId}
       {textColor}
       {backgroundColor}
       {iconColor}
@@ -307,6 +309,7 @@
       {activeAdvert}
       {persistentAdvert}
       {companionAdvert}
+      {analyticsId}
       {textColor}
       {backgroundColor}
       {iconColor}
