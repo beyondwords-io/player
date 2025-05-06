@@ -18,7 +18,7 @@
   };
 </script>
 
-<a class="beyondwords" href="https://beyondwords.io/?utm_source={window.location.origin}&utm_medium=player&utm_campaign={analyticsId}" target="_blank" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px" on:mouseup={blurElement} aria-label={translate("visitBeyondWords")}>
+<a class="beyondwords" href="https://beyondwords.io/?utm_source={encodeURIComponent(window.location.origin)}&utm_medium=player&utm_campaign={analyticsId}" target="_blank" on:click={handleClick} class:visible style="outline-offset: {6.4 * scale}px" on:mouseup={blurElement} aria-label={translate("visitBeyondWords")}>
   <Logo {scale} />
 </a>
 
