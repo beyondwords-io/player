@@ -14,8 +14,8 @@ const orderedMediaSources = (mediaObject, preferVideo) => {
 };
 
 const sortByHlsFirst = (a, b) => {
-  const isHlsA = a.url.endsWith(".m3u8");
-  const isHlsB = b.url.endsWith(".m3u8");
+  const isHlsA = a.url.endsWith(".m3u8") || a.url.startsWith("blob:");
+  const isHlsB = b.url.endsWith(".m3u8") || b.url.startsWith("blob:");
 
   if (isHlsA && !isHlsB) { return -1; }
   if (!isHlsA && isHlsB) { return 1; }
