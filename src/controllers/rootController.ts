@@ -584,6 +584,7 @@ class RootController {
 
     if (advertsStarted)   { this.#overridePlayerState(); }
 
+    if (index !== -1) { this.#setTime(() => 0); }
     this.player.advertIndex = index;
 
     if (advertsFinished)  { this.#restorePlayerState(); }
