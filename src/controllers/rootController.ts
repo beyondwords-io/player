@@ -430,7 +430,7 @@ class RootController {
     const currentIndex = findSegmentIndex(segments, this.player.currentTime, this.player.contentVariant);
     const tryIndex = indexFn(currentIndex);
 
-    // If the user clicks next during the intro, skip to the content.
+    // If the user clicks next during the intro, skip to the advert or content.
     if (this.#isIntro() && tryIndex >= 0) {
       this.handlePlaybackEnded();
 
@@ -483,7 +483,7 @@ class RootController {
   }
 
   #setTime(timeFn, contentIndex) {
-    if (this.#isAdvert()) {
+    if (this.#isAdvert() || this.#isIntro()) {
       this.prevTime = timeFn();
       this.prevContent = contentIndex;
     } else {
@@ -549,26 +549,19 @@ class RootController {
     const defer = this.player.playbackState !== "playing" && index !== -1;
     if (defer) { this.nextIntroOutro = index; return; } else { delete this.nextIntroOutro; }
 
-    const atTheStart = this.player.contentIndex <= 0 && this.player.currentTime <= EPSILON;
-    const skippedIntro = !atTheStart && this.#isIntro(index);
-
-    // We were at the start and were going to play an intro but the user skipped
-    // past it so clear the index and check if an advert should now play.
-    if (skippedIntro) {
-      this.player.introsOutrosIndex = -1;
-      this.#chooseAndSetAdvert({ atTheStart: true });
-      return;
-    }
-
     const wasIntro = this.#isIntro();
     const wasOutro = this.#isOutro();
 
+    const introStarted = !wasIntro && index !== -1;
+    const introFinished = wasIntro && index === -1;
+    const outroFinished = wasOutro && index === -1;
+
+    if (introStarted)   { this.#overridePlayerState(); }
+
+    if (index !== -1) { this.#setTime(() => 0); }
     this.player.introsOutrosIndex = index;
 
-    const introFinished = wasIntro && !this.#isIntro();
-    const outroFinished = wasOutro && !this.#isOutro();
-
-    if (introFinished) { this.player.currentTime = 0; }
+    if (introFinished) { this.#restorePlayerState(); }
     if (outroFinished) { this.#setTrack(() => Infinity); }
   }
 
