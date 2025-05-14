@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -e
+
+echo -e "Note: This script requires that you publish the package to NPM first (see cd.yml)."
+echo -e "If this script isn't called, the player@latest URLs should expire after 12 hours.\n"
+
+package_version=$(npm pkg get version | tr -d '"')
+echo "Version from package.json:     $package_version"
+
+jsdelivr_version=$(curl -s https://cdn.jsdelivr.net/npm/@beyondwords/player@latest/dist/umd.js | grep -o '! version:"[^"]*"' | cut -d'"' -f2)
+echo "Version from jsDelivr CDN:     $jsdelivr_version"
+
+azure_version=$(curl -s https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js | grep -o '! version:"[^"]*"' | cut -d'"' -f2)
+echo "Version from Azure Front Door: $azure_version"
+
+if [ "$jsdelivr_version" != "$package_version" ]; then
+  echo -e "\nPurging jsDelivr..."
+
+  curl https://purge.jsdelivr.net//npm/@beyondwords/player@latest
+  curl https://purge.jsdelivr.net//npm/@beyondwords/player@latest/dist/umd.js
+  curl https://purge.jsdelivr.net//npm/@beyondwords/player@latest/dist/style.js
+  curl https://purge.jsdelivr.net//npm/@beyondwords/player@latest/dist/hls.light.min.js
+
+  echo -e "\nWaiting for jsDelivr to update..."
+
+  while true; do
+      sleep 5
+
+      jsdelivr_version=$(curl -s https://cdn.jsdelivr.net/npm/@beyondwords/player@latest/dist/umd.js | grep -o '! version:"[^"]*"' | cut -d'"' -f2)
+      echo "Detected $jsdelivr_version"
+
+      if [ "$jsdelivr_version" == "$package_version" ]; then
+          echo "Version updated."
+          break
+      fi
+  done
+fi
+
+if [ "$azure_version" != "$package_version" ]; then
+  echo -e "\nPurging Azure..."
+
+  az afd endpoint purge \
+    --profile-name beyondwordsneproduction \
+    --resource-group beyondwords-north-europe \
+    --endpoint-name beyondwords-cdn \
+    --domains proxy.beyondwords.io \
+    --content-paths '/npm/@beyondwords/player@latest/*'
+
+  echo -e "Waiting for Azure to update..."
+
+  while true; do
+      sleep 5
+
+      azure_version=$(curl -s https://proxy.beyondwords.io/npm/@beyondwords/player@latest/dist/umd.js | grep -o '! version:"[^"]*"' | cut -d'"' -f2)
+      echo "Detected $azure_version"
+
+      if [ "$azure_version" == "$package_version" ]; then
+          echo "Version updated."
+          break
+      fi
+  done
+fi
