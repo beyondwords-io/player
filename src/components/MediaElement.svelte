@@ -58,7 +58,13 @@
   const preferVideo = () => videoMightBeShown;
   const hasVideo = () => sources.some(s => s.format === "video");
 
-  const play = () => video?.paused && video?.play()?.catch(handlePlayError);
+  const play = () => {
+    if (video?.paused) {
+      video?.play()?.catch(handlePlayError);
+      video.playbackRate = playbackRate || 1;
+    }
+  };
+
   const pause = () => !video?.paused && video?.pause();
 
   $: stylesNeeded = content.length > 0 && (videoBehindStatic || videoBehindWidget);
