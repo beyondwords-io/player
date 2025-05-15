@@ -547,18 +547,21 @@ class RootController {
     if (defer) { this.nextIntroOutro = index; return; } else { delete this.nextIntroOutro; }
 
     const wasIntro = this.#isIntro();
+    const isIntro = this.#isIntro(index);
+    const introStarted = !wasIntro && isIntro;
+    const introFinished = wasIntro && !isIntro;
+
     const wasOutro = this.#isOutro();
+    const isOutro = this.#isOutro(index);
+    const outroStarted = !wasOutro && isOutro;
+    const outroFinished = wasOutro && !isOutro;
 
-    const introStarted = !wasIntro && index !== -1;
-    const introFinished = wasIntro && index === -1;
-    const outroFinished = wasOutro && index === -1;
+    if (introStarted) { this.#overridePlayerState(); }
+    if (introStarted || outroStarted) { this.player.currentTime = 0; }
 
-    if (introStarted)   { this.#overridePlayerState(); }
-
-    if (index !== -1) { this.#setTime(() => 0); }
     this.player.introsOutrosIndex = index;
 
-    if (introFinished) { this.#restorePlayerState(); }
+    if (introFinished && !this.#isAdvert()) { this.#restorePlayerState(); }
     if (outroFinished) { this.#setTrack(() => Infinity); }
   }
 
@@ -572,12 +575,11 @@ class RootController {
     const advertsStarted = !wasAdvert && isAdvert;
     const advertsFinished = wasAdvert && !isAdvert;
 
-    if (advertsStarted)   { this.#overridePlayerState(); }
+    if (advertsStarted)  { this.#overridePlayerState(); this.player.currentTime = 0; }
 
-    if (index !== -1) { this.#setTime(() => 0); }
     this.player.advertIndex = index;
 
-    if (advertsFinished)  { this.#restorePlayerState(); }
+    if (advertsFinished) { this.#restorePlayerState(); }
   }
 
   #overridePlayerState() {
