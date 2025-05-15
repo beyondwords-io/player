@@ -1,9 +1,9 @@
 import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
-  constructor(playerApiUrl, projectId, contentVariant, clientSideEnabled, previewToken) {
+  constructor(playerApiUrl, projectId, summary, clientSideEnabled, previewToken) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
-    this.variant = contentVariant;
+    this.summary = summary;
     this.params = new URLSearchParams() ;
 
     // TODO: Find a way to pass this information to the backend while complying
@@ -25,7 +25,7 @@ class PlayerApiClient {
   }
 
   byPlaylistId(id) {
-    return this.#fetchJson(`by_playlist_id/${id}`, this.#paramsWithVariant());
+    return this.#fetchJson(`by_playlist_id/${id}`, this.#paramsWithSummary());
   }
 
   bySourceId(id) {
@@ -37,7 +37,7 @@ class PlayerApiClient {
   }
 
   byIdentifiers(array) {
-    return this.#fetchJson(`by_identifiers/${encodeURIComponent(JSON.stringify(array))}`, this.#paramsWithVariant());
+    return this.#fetchJson(`by_identifiers/${encodeURIComponent(JSON.stringify(array))}`, this.#paramsWithSummary());
   }
 
   #fetchJson(path, params = this.params) {
@@ -48,8 +48,8 @@ class PlayerApiClient {
     return params.size ? `?${params}` : "";
   }
 
-  #paramsWithVariant() {
-    if (this.variant === "summary") {
+  #paramsWithSummary() {
+    if (this.summary) {
       return new URLSearchParams({ ...this.params, summary: true });
     } else {
       return this.params;

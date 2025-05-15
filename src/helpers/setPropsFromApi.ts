@@ -4,7 +4,7 @@ import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 
 const setPropsFromApi = async (player) => {
-  const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.contentVariant, player.clientSideEnabled, player.previewToken);
+  const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.summary, player.clientSideEnabled, player.previewToken);
   if (!player.playerApiUrl || !player.projectId) { return; }
 
   const identifiers = identifiersArray(player);
@@ -78,6 +78,8 @@ const setProps = (player, data) => {
   setContentProp(player, data);
   setAdvertsProp(player, data);
 
+  const content = player.content[player.contentIndex];
+
   set(player, "playerStyle", data.settings.player_style);
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
   set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
@@ -85,10 +87,7 @@ const setProps = (player, data) => {
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
   set(player, "introsOutros", data.settings.intros_outros);
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
-  set(player, "duration", player.contentVariant === "summary"
-    ? player.content[player.contentIndex]?.summarization?.audio?.[0]?.duration
-    : player.content[player.contentIndex]?.audio?.[0]?.duration
-  );
+  set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);
   set(player, "widgetStyle", data.settings.widget_style);
   set(player, "widgetPosition", data.settings.widget_position);
   set(player, "textColor", themeColors.text_color);

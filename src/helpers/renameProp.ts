@@ -1,7 +1,7 @@
-const renameProp = (from, to, object) => {
+const renameProp = (from, to, object, mapFn = () => {}) => {
   if (typeof object[from] === "undefined") { return; }
 
-  object[to] = object[from];
+  object[to] = mapFn(object[from]);
   delete object[from];
 };
 

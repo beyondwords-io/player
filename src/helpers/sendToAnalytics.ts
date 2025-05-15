@@ -59,7 +59,7 @@ const eventFromProps = (player, analyticsEventType) => {
     event_type: analyticsEventType,
     device_type: deviceType(player),
     media_type: activeAdvert ? "ad" : "content",
-    media_variant: player.contentVariant,
+    media_variant: player.summary ? "summary" : "article",
     project_id: player.projectId,
     content_id: contentItem?.id,
     source_id: contentItem?.sourceId,

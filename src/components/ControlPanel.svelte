@@ -7,6 +7,7 @@
   export let playlistId;
   export let sourceId;
   export let sourceUrl;
+  export let summary;
   export let showUserInterface;
   export let playerStyle;
   export let playerTitle;
@@ -78,6 +79,14 @@
       <option>stopped</option>
       <option>playing</option>
       <option>paused</option>
+    </select>
+  </div>
+
+  <div class="control">
+    summary:
+    <select tabindex={-1} bind:value={summary}>
+      <option>{false}</option>
+      <option>{true}</option>
     </select>
   </div>
 
@@ -217,26 +226,6 @@
     </select>
   </div>
 
-  <div class="control">
-    segmentWidgetSections:
-    <select tabindex={-1} bind:value={segmentWidgetSections}>
-      <option>all</option>
-      <option>body</option>
-      <option>none</option>
-      <option>all-none</option>
-      <option>none-all</option>
-    </select>
-  </div>
-
-  <div class="control">
-    segmentWidgetPosition:
-    <select tabindex={-1} bind:value={segmentWidgetPosition}>
-      {#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as hour}
-        <option>{hour}-oclock</option>
-      {/each}
-    </select>
-  </div>
-
   {#if showAdvancedSettings}
     <br/>
     <strong>Advanced settings:</strong>
@@ -272,6 +261,26 @@
       <select tabindex={-1} bind:value={showUserInterface}>
         <option>{false}</option>
         <option>{true}</option>
+      </select>
+    </div>
+
+    <div class="control">
+      segmentWidgetSections:
+      <select tabindex={-1} bind:value={segmentWidgetSections}>
+        <option>all</option>
+        <option>body</option>
+        <option>none</option>
+        <option>all-none</option>
+        <option>none-all</option>
+      </select>
+    </div>
+
+    <div class="control">
+      segmentWidgetPosition:
+      <select tabindex={-1} bind:value={segmentWidgetPosition}>
+        {#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as hour}
+          <option>{hour}-oclock</option>
+        {/each}
       </select>
     </div>
 

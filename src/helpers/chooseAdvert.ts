@@ -2,7 +2,7 @@ import findSegmentIndex from "./findSegmentIndex";
 import { updateErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored, minTimeUntilEndForMidroll, minDurationForMidroll, contentVariant } = {}) => {
+const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored, minTimeUntilEndForMidroll, minDurationForMidroll, summary } = {}) => {
   const currentAdvert = adverts && adverts[advertIndex];
 
   x: if (currentAdvert) {
@@ -14,7 +14,7 @@ const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIn
   if (!content[contentIndex]?.adsEnabled) { return -1; }
   if (introsOutrosIndex !== -1) { return -1; } // Wait until the intro/outro has finished.
 
-  const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd, minTimeUntilEndForMidroll, minDurationForMidroll, contentVariant });
+  const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd, minTimeUntilEndForMidroll, minDurationForMidroll, summary });
 
   let bestSoFar = -1;
   let bestType = -Infinity;
@@ -41,7 +41,7 @@ const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIn
 
 const typeScores = { vast: 1, custom: 0 };
 
-const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart, atTheEnd, minTimeUntilEndForMidroll, minDurationForMidroll, contentVariant }) => {
+const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart, atTheEnd, minTimeUntilEndForMidroll, minDurationForMidroll, summary }) => {
   const isFirstItem = contentIndex === 0;
   const isLastItem = contentIndex === content.length - 1;
 
@@ -51,7 +51,7 @@ const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart,
   const segments = content[contentIndex].segments;
   const lastSegment = segments[segments.length - 1];
 
-  const midrollIndex = isPlaylist ? null : midrollSegmentIndex(segments, minDurationForMidroll, contentVariant);
+  const midrollIndex = isPlaylist ? null : midrollSegmentIndex(segments, minDurationForMidroll, summary);
   const midrollSegment = segments[midrollIndex];
   const isAfterMidroll = midrollSegment && currentTime > midrollSegment.startTime;
 
@@ -75,7 +75,7 @@ const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart,
 // Play mid-roll adverts from segments starting after half-way time minus 0.5 seconds.
 const halfWayTimeToleranceForMidroll = 0.5;
 
-const midrollSegmentIndex = (segments, minDurationForMidroll, contentVariant) => {
+const midrollSegmentIndex = (segments, minDurationForMidroll, summary) => {
   const lastSegment = segments[segments.length - 1];
   if (!lastSegment) { return; }
 
@@ -84,7 +84,7 @@ const midrollSegmentIndex = (segments, minDurationForMidroll, contentVariant) =>
   if (duration < minDurationForMidroll) { return; }
 
   const halfWayTime = duration / 2;
-  const halfWayIndex = findSegmentIndex(segments, duration / 2, contentVariant);
+  const halfWayIndex = findSegmentIndex(segments, duration / 2, summary);
   if (halfWayIndex === -1) { return; }
 
   const startTime = segments[halfWayIndex].startTime;
