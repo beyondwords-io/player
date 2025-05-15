@@ -273,16 +273,18 @@ class RootController {
     this.player.playlistStyle = parts.join("-");
   }
 
-  handlePressedDownload({ contentIndex, audioIndex, videoIndex }) {
+  handlePressedDownload({ contentIndex, audioIndex, videoIndex, summary }) {
     const contentItem = this.player.content[contentIndex];
 
-    const audioItem = contentItem.audio?.[audioIndex];
-    const videoItem = contentItem.video?.[videoIndex];
+    const audio = (summary ? contentItem.summarization.audio : contentItem.audio) || [];
+    const video = (summary ? contentItem.summarization.video : contentItem.video) || [];
 
-    const mediaUrl = (audioItem || videoItem).url;
+    const mediaUrl = (audio[audioIndex] || video[videoIndex])?.url;
+    if (!mediaUrl) { console.warn("BeyondWords.Player: No media URL found for download."); return; }
 
     const extension = mediaUrl.split(".").pop();
-    const filename = `${contentItem.title}.${extension}`;
+    const suffix = summary ? " - Summary" : "";
+    const filename = `${contentItem.title}${suffix}.${extension}`;
 
     return downloadFile(mediaUrl, filename);
   }

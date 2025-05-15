@@ -28,7 +28,7 @@ class Player extends PlayerComponent {
 
     renameProp("xdv3rts", "adverts", props);
     renameProp("xdv3rtIndex", "advertIndex", props);
-    renameProp("loadContentAs", "summary", props, value => value?.[0] == "summary");
+    renameProp("loadContentAs", "summary", props, value => value?.[0] === "summary");
     renameProp("video", "playerStyle", props, bool => bool ? "video" : props.playerStyle);
 
     const initialProps = { showUserInterface, ...props };

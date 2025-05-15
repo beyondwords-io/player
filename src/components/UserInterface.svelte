@@ -47,6 +47,7 @@
   export let fixedMargin = "0";
   export let content = [];
   export let contentIndex = 0;
+  export let summary = false;
   export let duration = 0;
   export let currentTime = 0;
   export let playbackState = "stopped";
@@ -135,6 +136,9 @@
 
   $: showPlaylist = (playlistParts[0] === "show" || playlistParts[0] === "auto" && isPlaylist) && !isSmall;
   $: showPlaylistToggle = (playlistToggle === "show" || playlistToggle === "auto" && isPlaylist) && !isSmall && !isFullScreen;
+
+  $: downloadAudio = (summary ? contentItem.summarization.audio : contentItem.audio) || [];
+  $: downloadVideo = (summary ? contentItem.summarization.video : contentItem.video) || [];
 
   $: classes = `user-interface ${playerStyle} ${playbackState} ${positionClasses} ${controlsOrder}`;
   $: fixedPosition && animate();
@@ -231,7 +235,7 @@
             {:else if showPlaylistToggle}
               <PlaylistButton {onEvent} scale={(isVideo ? 1.25 : 1) * buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
             {:else if !showPlaylist && !isAdvert && !(isVideo && width < 320)}
-              <DownloadButton {onEvent} scale={isScreen ? buttonScale : logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={contentItem?.audio} video={contentItem?.video} />
+              <DownloadButton {onEvent} scale={isScreen ? buttonScale : logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={downloadAudio} video={downloadVideo} {summary} />
             {/if}
 
             {#if isVideo && canFullScreen()}
@@ -265,6 +269,7 @@
       larger={isScreen && !isMobile}
       {content}
       index={contentIndex}
+      {summary}
       isMobile={isMobile}
       textColor={nonVideoTextColor}
       backgroundColor={nonVideoBgColor}

@@ -14,6 +14,7 @@
   export let iconColor = "#000";
   export let content = [];
   export let index = 0;
+  export let summary = false;
   export let isMobile;
   export let onEvent;
   let downloadIsVisible;
@@ -60,9 +61,13 @@
 
 <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
   <div class="scrollable" tabindex="-1">
-    {#each content as { title, duration, audio, video }, i}
+    {#each content as item, i}
+      {@const duration = (summary ? item.summarization.duration : item.duration) || 0}
+      {@const downloadAudio = (summary ? item.summarization.audio : item.audio) || []}
+      {@const downloadVideo = (summary ? item.summarization.video : item.video) || []}
+
       <div class="row">
-        <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={title}>
+        <button type="button" class="item" class:active={i === index} on:click={handleClick(i)} on:keydown={handleKeydown} on:focus={handleFocus} on:mouseup={blurElement} aria-label={item.title}>
           {#if i === index}
             <span class="speaker"><VolumeUp color={iconColor} {scale} /></span>
           {:else}
@@ -70,7 +75,7 @@
           {/if}
 
           <span class="title" class:download-is-visible={downloadIsVisible}>
-            <ContentTitle {title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
+            <ContentTitle title={item.title} {scale} maxLines={isMobile ? 3 : 2} bold={i === index} color={textColor} />
           </span>
 
           <span class="duration">
@@ -79,7 +84,7 @@
         </button>
 
         <span class="download">
-          <DownloadButton {onEvent} color={iconColor} {downloadFormats} contentIndex={i} {audio} {video} padding={isMobile ? 8 : 0} bind:isVisible={downloadIsVisible} />
+          <DownloadButton {onEvent} color={iconColor} {downloadFormats} contentIndex={i} audio={downloadAudio} video={downloadVideo} {summary} padding={isMobile ? 8 : 0} bind:isVisible={downloadIsVisible} />
         </span>
       </div>
     {/each}

@@ -8,6 +8,7 @@
   export let contentIndex;
   export let audio;
   export let video;
+  export let summary;
   export let scale = 1;
   export let color = "#323232";
   export let padding = 0;
@@ -43,7 +44,8 @@
       initiatedBy: "user",
       contentIndex,
       audioIndex,
-      videoIndex
+      videoIndex,
+      summary
     }));
   };
 </script>

@@ -227,6 +227,7 @@
     {playerTitle}
     {content}
     {contentIndex}
+    {summary}
     {duration}
     {currentTime}
     {playbackState}
@@ -268,6 +269,7 @@
       fixedMargin={widgetMargin}
       {content}
       {contentIndex}
+      {summary}
       {duration}
       {currentTime}
       {playbackState}
@@ -300,6 +302,7 @@
       logoIconEnabled={false}
       {content}
       {contentIndex}
+      {summary}
       {duration}
       currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
       playbackState={showRealTimeInWidget ? playbackState : "paused"}
