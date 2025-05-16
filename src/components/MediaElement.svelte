@@ -62,7 +62,7 @@
     if (video?.paused) {
       video?.play()?.catch(handlePlayError);
 
-      if (video.playbackRate != playbackRate) {
+      if (video.playbackRate !== playbackRate) {
         video.playbackRate = playbackRate;
       }
     }
