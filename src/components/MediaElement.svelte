@@ -61,7 +61,10 @@
   const play = () => {
     if (video?.paused) {
       video?.play()?.catch(handlePlayError);
-      video.playbackRate = playbackRate || 1;
+
+      if (video.playbackRate != playbackRate) {
+        video.playbackRate = playbackRate;
+      }
     }
   };
 
