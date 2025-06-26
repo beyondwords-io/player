@@ -30,6 +30,7 @@
   export let clientSideEnabled = false;
   export let showUserInterface = true;
   export let showBottomWidget = false;
+  export let showCloseWidget = true;
   export let playerStyle = "standard";
   export let playerTitle = undefined;
   export let callToAction = undefined;
@@ -144,6 +145,7 @@
   $: videoBehindWidget = showWidget && widgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
 
+  $: showClose = showCloseWidget && widgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
@@ -267,6 +269,7 @@
       fixedPosition={!widgetTarget && widgetPosition}
       fixedWidth={widgetWidth}
       fixedMargin={widgetMargin}
+      {showClose}
       {content}
       {contentIndex}
       {summary}

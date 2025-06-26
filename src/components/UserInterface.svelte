@@ -45,6 +45,7 @@
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
   export let fixedMargin = "0";
+  export let showClose = false;
   export let content = [];
   export let contentIndex = 0;
   export let summary = false;
@@ -129,7 +130,6 @@
   $: forcedCollapsed = isSmall && (fixedWidth === 0 || fixedWidth === "0");
   $: collapsed = forcedCollapsed || collapsible && !isAdvert && !isStopped && !isHovering;
 
-  $: showCloseWidget = fixedPosition && !isSmall && !(isStandard && isAdvert);
   $: showBeyondWords = logoIconEnabled && (!isAdvert || isScreen) && !(fixedPosition && isSmall) && !forcedCollapsed;
 
   $: playlistParts = playlistStyle.split("-");
@@ -224,7 +224,7 @@
         {/if}
 
         {#if isAdvert && !forcedCollapsed}
-          <AdvertLink {onEvent} href={advertClickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} endVisible={showBeyondWords || showCloseWidget} />
+          <AdvertLink {onEvent} href={advertClickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} endVisible={showBeyondWords || showClose} />
           <AdvertButton {onEvent} href={advertClickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={activeIconColor} />
         {/if}
 
@@ -249,9 +249,9 @@
         {/if}
       </div>
 
-      {#if showCloseWidget || (showBeyondWords && !isVideo) || (!isAdvert && !isSmall)}
-        <div class="end" class:logo-image-right={logoImagePosition !== "top-left"} class:has-content={showCloseWidget || (showBeyondWords && !isVideo)} >
-          {#if showCloseWidget}
+      {#if showClose || (showBeyondWords && !isVideo) || (!isAdvert && !isSmall)}
+        <div class="end" class:logo-image-right={logoImagePosition !== "top-left"} class:has-content={showClose || (showBeyondWords && !isVideo)} >
+          {#if showClose}
             <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
           {:else if showBeyondWords && !isVideo}
             <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
