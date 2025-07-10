@@ -182,6 +182,7 @@
 
   onDestroy(() => {
     segmentHighlights.update("current", undefined, [highlightSections], highlightColor);
+    segmentHighlights.update("hovered", undefined, [highlightSections, clickableSections], highlightColor);
   });
 </script>
 
