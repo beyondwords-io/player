@@ -27,6 +27,10 @@ class SegmentClickables {
     this.previous = current;
   }
 
+  reset() {
+    this.update(null, "none");
+  }
+
   static #addClasses(_uniqueId, segment) {
     segment.segmentElement.classList.add(...clickableClasses);
     if (!segment.marker) { return; }
