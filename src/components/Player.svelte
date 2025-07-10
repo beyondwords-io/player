@@ -181,8 +181,8 @@
   $: applyTransitions(transitions, controller, currentTime);
 
   onDestroy(() => {
-    segmentHighlights.update("current", undefined, [highlightSections], highlightColor);
-    segmentHighlights.update("hovered", undefined, [highlightSections, clickableSections], highlightColor);
+    segmentHighlights.reset("current");
+    segmentHighlights.reset("hovered");
   });
 </script>
 

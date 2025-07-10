@@ -23,6 +23,10 @@ class SegmentHighlights {
     this[`prev${type}`] = current;
   }
 
+  reset(type) {
+    this.update(type, null, ["none"]);
+  }
+
   static #addHighlights(uniqueId, self, segment, background) {
     for (const element of self.#highlightElements(segment)) {
       const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
