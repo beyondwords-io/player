@@ -1,5 +1,6 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
+  import { onDestroy } from "svelte";
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import ExternalWidget from "./ExternalWidget.svelte";
@@ -178,6 +179,10 @@
   // TODO: if timedTransitions changes then re-apply all transitions.
   // TODO: don't apply transitions during intros/adverts.
   $: applyTransitions(transitions, controller, currentTime);
+
+  onDestroy(() => {
+    segmentHighlights.update("current", undefined, [highlightSections], highlightColor);
+  });
 </script>
 
 <ExternalWidget prepend root={videoRoot}>
