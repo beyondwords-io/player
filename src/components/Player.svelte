@@ -181,6 +181,7 @@
   $: applyTransitions(transitions, controller, currentTime);
 
   onDestroy(() => {
+    segmentContainers.reset();
     segmentClickables.reset();
     segmentHighlights.reset("current");
     segmentHighlights.reset("hovered");
