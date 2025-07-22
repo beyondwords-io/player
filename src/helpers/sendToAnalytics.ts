@@ -66,7 +66,7 @@ const eventFromProps = (player, analyticsEventType) => {
     analytics_id: player.analyticsId,
     ad_id: activeAdvert?.id,
     media_id: player.loadedMedia?.id,
-    media_format: player.loadedMedia?.format,
+    media_format: player.loadedMedia?.format || defaultMediaFormat({ player, contentItem }),
     local_storage_id: withoutStorage ? null : JSON.parse(localStorage.beyondwords),
     listen_session_id: player.listenSessionId,
     session_created_at: player.sessionCreatedAt,
@@ -79,6 +79,17 @@ const eventFromProps = (player, analyticsEventType) => {
     player_version: "1",
     player_npm_version: version,
   };
+};
+
+const defaultMediaFormat = ({ player, contentItem }) => {
+  const videoMightBeShown = player.playerStyle === "video" || player.widgetStyle === "video";
+  const hasVideo = contentItem?.video?.length > 0;
+
+  if (videoMightBeShown && hasVideo) {
+    return "video";
+  } else {
+    return "audio";
+  }
 };
 
 const gaEventName = ({ event_type, listen_length_percent }) => {
