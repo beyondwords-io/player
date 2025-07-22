@@ -74,6 +74,7 @@ const eventFromProps = (player, analyticsEventType) => {
     listen_length_seconds: player.currentTime,
     listen_length_percent: Math.max(0, Math.min(100, percentage)),
     speed: player.playbackRate,
+    segment_playback_enabled: player.clickableSections !== "none",
     location: window.location.href,
     referrer: document.referrer,
     player_version: "1",
