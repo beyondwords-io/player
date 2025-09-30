@@ -65,6 +65,8 @@ class Player extends PlayerComponent {
 
   destroy() {
     this.$destroy();
+    this.target.style.removeProperty("display");
+    this.target.classList.remove("beyondwords-player", "bwp");
     Player.#instances = Player.#instances.filter(p => p !== this);
   }
 
