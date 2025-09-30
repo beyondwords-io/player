@@ -84,4 +84,6 @@ if (typeof window !== "undefined") {
   window.BeyondWords.Player ||= Player;
 }
 
+export { Player };
+
 export default { Player };
