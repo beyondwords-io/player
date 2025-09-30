@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeyondWords Player - UIKit</title>
+  </head>
+  <body>
+    <script id="player-script" async defer type="module" onload='
+       document
+          .querySelectorAll("beyondwords-player-provider")
+          .forEach((element) => element.removeAttribute("style"));
+    '></script>
+
+    <script>
+      const script = document.querySelector("#player-script");
+      const isLocal =
+        location.hostname === "localhost" ||
+        location.hostname.includes("ngrok-free");
+
+      script.src = isLocal
+        ? "src/index.ts"
+        : "https://proxy.beyondwords.io/npm/@beyondwords/player@0.3.17/dist/umd.js";
+    </script>
+
+    <beyondwords-player-provider
+      style="display: none"
+      project-id="52165"
+      content-id="621f3ec7-3be0-4e26-8fa6-698d6439b7d4"
+    >
+      <div style="display: flex; align-items: center; gap: 10px">
+        <beyondwords-play-pause-button style="height: 20px; width: 20px">
+          <svg slot="play" viewBox="0 0 24 24">
+            <path d="m6 21 15-9L6 3v18Z" />
+          </svg>
+          <svg slot="pause" viewBox="0 0 24 24">
+            <path d="M6 20h4V4H6v16Zm8-16v16h4V4h-4Z" />
+          </svg>
+        </beyondwords-play-pause-button>
+        <beyondwords-play-pause-button></beyondwords-play-pause-button>
+      </div>
+    </beyondwords-player-provider>
+
+    <style>
+      body {
+        font-family: Arial;
+      }
+    </style>
+  </body>
+</html>
