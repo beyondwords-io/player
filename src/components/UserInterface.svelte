@@ -1,8 +1,16 @@
+<svelte:options
+ customElement={{
+  tag: "bw-user-interface",
+  shadow: 'none',
+ }}
+/>
+
 <script>
   import("../helpers/loadTheStyles.ts");
   import "@fontsource/inter/variable.css";
   import { onMount } from "svelte";
   import { fly } from "svelte/transition";
+  import { writable } from 'svelte/store';
   import ResizeObserver from "resize-observer-polyfill";
   import PlayPauseButton from "./buttons/PlayPauseButton.svelte";
   import PlaybackRateButton from "./buttons/PlaybackRateButton.svelte";
@@ -67,7 +75,9 @@
   export let logoIconEnabled = true;
   export let logoImagePosition = undefined;
   export let maxImageSize = 0;
-  export let onEvent = () => {};
+  export let controller = undefined;
+  export let emittedFrom = undefined;
+  const onEvent = (e) => controller.processEvent({ emittedFrom, ...e });
 
   // These are set automatically.
   export let videoPosterImage = "";
@@ -83,7 +93,8 @@
   $: isLarge = playerStyle === "large";
   $: isScreen = playerStyle === "screen";
   $: isVideo = playerStyle === "video";
-  $: isPlaying = playbackState === "playing";
+  export const isPlaying = writable();
+  $: $isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
   $: isPlaylist = content.length > 1;
@@ -98,12 +109,14 @@
 
   $: activeTextColor = isVideo ? (isAdvert && activeAdvert.videoTextColor || videoTextColor) : nonVideoTextColor;
   $: activeBgColor = isVideo ? (isAdvert && activeAdvert.videoBackgroundColor || videoBackgroundColor) : nonVideoBgColor;
-  $: activeIconColor = isVideo ? (isAdvert && activeAdvert.videoIconColor || videoIconColor) : nonVideoIconColor;
+  export const activeIconColor = writable();
+  $: $activeIconColor = isVideo ? (isAdvert && activeAdvert.videoIconColor || videoIconColor) : nonVideoIconColor;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
 
   $: buttonScale = isSmall || isVideo && fixedPosition ? 0.8 : isScreen && !isMobile ? 2 : 1;
-  $: playPauseScale = buttonScale * (isScreen ? 1.5 : isVideo && isStopped ? 1.6 : 1);
+  export const playPauseScale = writable();
+  $: $playPauseScale = buttonScale * (isScreen ? 1.5 : isVideo && isStopped ? 1.6 : 1);
   $: playerTitleScale = isVideo && !fixedPosition ? 1.2 : 1;
   $: logoScale = isScreen && !isMobile ? 3 : isScreen ? 2 : isVideo && !isMobile ? 1.5 : 1;
   $: closeScale = isScreen && !isMobile ? 2.5 : isScreen ? 1.75 : isVideo && !isMobile ? 2 : isVideo ? 1.5 : 1;
@@ -178,7 +191,7 @@
     {#if isVideo && (videoPosterImage || !videoIsBehind)}
       <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""}>
         {#if !videoPosterImage}
-          <VideoInWidget color={activeIconColor} />
+          <VideoInWidget color={$activeIconColor} />
           <span style="color: {activeTextColor}">{translate("videoInWidget")}</span>
         {/if}
       </div>
@@ -198,8 +211,9 @@
 
       <div class="controls">
         <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
-          <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={activeIconColor}>
-            <PlayPauseButton {onEvent} {isPlaying} scale={playPauseScale} color={activeIconColor} />
+          <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={$playPauseScale} color={$activeIconColor}>
+            <!-- <PlayPauseButton {controller} {emittedFrom} isPlaying={$isPlaying} scale={$playPauseScale} color={$activeIconColor} /> -->
+             <bw-play-pause-button />
           </ProgressCircle>
         </Visibility>
 
@@ -209,8 +223,8 @@
 
         {#if !isSmall && !isStopped && !isAdvert || (isScreen && isAdvert)}
           <PlaybackRateButton {onEvent} rates={playbackRates} rate={playbackRate} scale={buttonScale} color={activeTextColor} />
-          <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
-          <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
+          <PrevButton {onEvent} style={skipStyle} scale={buttonScale} color={$activeIconColor} />
+          <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={$activeIconColor} />
         {/if}
 
         {#if isStandard && fixedPosition && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
@@ -220,30 +234,30 @@
         <TimeIndicator {currentTime} {duration} {durationFormat} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} {showBeyondWords} color={activeTextColor} />
 
         {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
-          <ProgressBar {onEvent} {progress} {duration} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
+          <ProgressBar {onEvent} {progress} {duration} fullWidth={isVideo} readonly={isAdvert} color={$activeIconColor} />
         {/if}
 
         {#if isAdvert && !forcedCollapsed}
           <AdvertLink {onEvent} href={advertClickThroughUrl} {playerStyle} scale={isScreen && !isMobile ? 2 : isScreen ? 1.6 : 1} {controlsOrder} color={activeTextColor} {largeImage} {isMobile} endVisible={showBeyondWords || showClose} />
-          <AdvertButton {onEvent} href={advertClickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={activeIconColor} />
+          <AdvertButton {onEvent} href={advertClickThroughUrl} {playerStyle} scale={buttonScale} {controlsOrder} color={$activeIconColor} />
         {/if}
 
         {#if !isStopped}
           <SecondaryButtons {playerStyle} {isMobile} {isAdvert} scale={buttonScale} {controlsOrder} {fixedPosition}>
             {#if isScreen && contentItem.sourceUrl}
-              <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={activeIconColor} />
+              <SourceUrlButton {onEvent} scale={buttonScale} href={contentItem.sourceUrl} color={$activeIconColor} />
             {:else if showPlaylistToggle}
-              <PlaylistButton {onEvent} scale={(isVideo ? 1.25 : 1) * buttonScale} color={activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
+              <PlaylistButton {onEvent} scale={(isVideo ? 1.25 : 1) * buttonScale} color={$activeIconColor} playlistShowing={showPlaylist} {playerStyle} />
             {:else if !showPlaylist && !isAdvert && !(isVideo && width < 320)}
-              <DownloadButton {onEvent} scale={isScreen ? buttonScale : logoScale} color={activeIconColor} {downloadFormats} {contentIndex} audio={downloadAudio} video={downloadVideo} {summary} />
+              <DownloadButton {onEvent} scale={isScreen ? buttonScale : logoScale} color={$activeIconColor} {downloadFormats} {contentIndex} audio={downloadAudio} video={downloadVideo} {summary} />
             {/if}
 
             {#if isVideo && canFullScreen()}
-              <MaximizeButton {onEvent} scale={buttonScale} color={activeIconColor} />
+              <MaximizeButton {onEvent} scale={buttonScale} color={$activeIconColor} />
             {/if}
 
             {#if isVideo && showBeyondWords}
-              <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+              <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || $isPlaying} />
             {/if}
           </SecondaryButtons>
         {/if}
@@ -252,9 +266,9 @@
       {#if showClose || (showBeyondWords && !isVideo) || (!isAdvert && !isSmall)}
         <div class="end" class:logo-image-right={logoImagePosition !== "top-left"} class:has-content={showClose || (showBeyondWords && !isVideo)} >
           {#if showClose}
-            <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
+            <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={$activeIconColor} />
           {:else if showBeyondWords && !isVideo}
-            <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+            <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || $isPlaying} />
           {/if}
         </div>
       {/if}

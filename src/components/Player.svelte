@@ -1,3 +1,10 @@
+<svelte:options
+ customElement={{
+  tag: "bw-player",
+  shadow: 'open',
+ }}
+/>
+
 <!-- svelte-ignore unused-export-let -->
 <script>
   import { onDestroy } from "svelte";
@@ -224,9 +231,10 @@
 </ExternalWidget>
 
 {#if showStaticInterface}
-  <UserInterface
+  <bw-user-interface
     bind:this={userInterface}
-    {onEvent}
+    {controller}
+    {emittedFrom}
     playerStyle={interfaceStyle}
     {callToAction}
     {skipButtonStyle}
@@ -265,7 +273,8 @@
   <ExternalWidget root={widgetTarget}>
     <UserInterface
       bind:this={widgetInterface}
-      {onEvent}
+      {controller}
+      {emittedFrom}
       playerStyle={widgetStyle}
       {callToAction}
       {skipButtonStyle}
@@ -304,10 +313,12 @@
   </ExternalWidget>
 {/if}
 
+<!-- TODO: fix widgetSegment & widgetIsCurrent missing from event args -->
 {#each segmentWidgets as root (root)}
   <ExternalWidget {root}>
     <UserInterface
-      onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
+      {controller}
+      emittedFrom="segment-widget"
       playerStyle="small"
       fixedWidth={0}
       logoIconEnabled={false}

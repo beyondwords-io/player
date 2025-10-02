@@ -1,4 +1,4 @@
-import { resolve } from "path"
+import { resolve } from "path";
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { version } from "./package.json";
@@ -9,7 +9,10 @@ import prefixCssSelectors from "./src/helpers/prefixCssSelectors";
 export default defineConfig({
   plugins: [
     fixRequireJsIssue(),
-    svelte({ emitCss: true, compilerOptions: { accessors: true } }),
+    svelte({
+      emitCss: true,
+      compilerOptions: { accessors: true, customElement: true },
+    }),
     makeCssImportant({ type: "inline-styles" }),
     makeCssImportant({ type: "style-tags" }),
     prefixCssSelectors(".bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp.bwp"),

@@ -1,4 +1,6 @@
 import PlayerComponent from "./components/Player.svelte";
+import PlayPauseButton from "./components/buttons/PlayPauseButton.svelte";
+import UserInterface from "./components/UserInterface.svelte";
 import RootController from "./controllers/rootController";
 import setErrorHandler from "./helpers/setErrorHandler";
 import validateWebContext from "./helpers/validateWebContext";
@@ -80,6 +82,14 @@ class Player extends PlayerComponent {
 if (typeof window !== "undefined") {
   window.BeyondWords ||= {};
   window.BeyondWords.Player ||= Player;
+}
+
+if (!customElements.get("bw-play-pause-button")) {
+  customElements.define("bw-play-pause-button", PlayPauseButton.element);
+}
+
+if (!customElements.get("bw-user-interface")) {
+  customElements.define("bw-user-interface", UserInterface.element);
 }
 
 export default { Player };
