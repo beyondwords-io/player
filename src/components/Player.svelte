@@ -2,6 +2,16 @@
  customElement={{
   tag: "bw-player",
   shadow: 'open',
+  // extend: (customElementConstructor) => {
+  //   return class CustomPlayer extends customElementConstructor {
+  //     constructor(args) {
+  //       super(args);
+  //         debugger
+  //         // console.log("CustomPlayer constructor", CustomPlayer, args, window.BeyondWords.RootController);
+  //         this.rootController = new window.BeyondWords.RootController(this, CustomPlayer);
+  //     }
+  //   };
+  // }
  }}
 />
 

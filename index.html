@@ -83,7 +83,12 @@
       const isLocal = location.hostname === "localhost" || location.hostname.includes("ngrok-free");
 
       script.src = isLocal ? "src/index.ts" : "https://proxy.beyondwords.io/npm/@beyondwords/player@0.3.17/dist/umd.js";
+      script.addEventListener("load", () => {
+        // document.querySelector("#custom-player-container").innerHTML = '<bw-player project-id="26027" playlist-id="86791" />'
+      });
     </script>
+
+    <div id="custom-player-container"></div>
 
     <p data-beyondwords-marker="7dbf51e6-f8e7-4c17-85f5-3614d3dc096d">
       This is a demo page for the

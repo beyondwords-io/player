@@ -82,6 +82,7 @@ class Player extends PlayerComponent {
 if (typeof window !== "undefined") {
   window.BeyondWords ||= {};
   window.BeyondWords.Player ||= Player;
+  window.BeyondWords.RootController ||= RootController;
 }
 
 if (!customElements.get("bw-play-pause-button")) {
@@ -90,6 +91,10 @@ if (!customElements.get("bw-play-pause-button")) {
 
 if (!customElements.get("bw-user-interface")) {
   customElements.define("bw-user-interface", UserInterface.element);
+}
+
+if (!customElements.get("bw-player")) {
+  customElements.define("bw-player", Player.element);
 }
 
 export default { Player };
