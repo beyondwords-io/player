@@ -29,6 +29,7 @@
   :global(.beyondwords-widget a[href]),
   :global(.beyondwords-widget a[href] *) {
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
 
   :global(.beyondwords-highlight) {
