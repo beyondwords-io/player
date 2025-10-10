@@ -18,11 +18,30 @@
     const name = isPlaying ? "Pause" : "Play";
 
     onEvent(newEvent({
-      type: `Pressed${name}`,
-      description: `The ${name.toLowerCase()} button was pressed.`,
-      initiatedBy: "user",
-    }));
+        type: `Pressed${name}`,
+        description: `The ${name.toLowerCase()} button was pressed.`,
+        initiatedBy: "user",
+      }));
   };
+
+  export const handlePropsChange = () => {
+    onEvent(
+      newEvent({
+        type: "PlayPauseButtonPropsChange",
+        description: "The PlayPauseButton props were changed.",
+        initiatedBy: "browser",
+        props: {
+          isPlaying,
+          tabindex,
+          scale,
+          color,
+          ariaLabel,
+        },
+      }),
+    );
+  };
+
+  $: isPlaying, tabindex, scale, color, ariaLabel, handlePropsChange();
 </script>
 
 <button type="button" class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {3.2 * scale}px" aria-label={ariaLabel}>

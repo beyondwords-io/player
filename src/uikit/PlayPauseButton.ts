@@ -1,6 +1,5 @@
 import { Player } from "../Player";
 import newEvent from "../helpers/newEvent";
-import translate from "../helpers/translate";
 import blurElement from "../helpers/blurElement";
 import { PlayerProvider } from "./PlayerProvider";
 
@@ -41,45 +40,47 @@ class PlayPauseButton extends globalThis.HTMLElement {
         </slot>
       </slot>
     `;
-    this.setAttribute("role", "button");
-    this.tabIndex = 0;
   }
 
   connectedCallback() {
+    this.setAttribute("role", "button");
+
     const playerProvider = this.closest("beyondwords-player-provider");
     if (!(playerProvider instanceof PlayerProvider)) {
       console.error("PlayPauseButton must be used within a PlayerProvider");
       return;
     }
     this.player = playerProvider.player!;
-    this.player.addEventListener("PlaybackPlaying", this.#updateAttributes);
-    this.player.addEventListener("PlaybackPaused", this.#updateAttributes);
-    this.#updateAttributes();
+    this.player.addEventListener(
+      "PlayPauseButtonPropsChange",
+      this.#updateAttributes,
+    );
     this.addEventListener("click", this.#handleClick);
     this.addEventListener("mouseup", blurElement);
   }
 
   disconnectedCallback() {
-    this.player?.removeEventListener("PlaybackPlaying", this.#updateAttributes);
-    this.player?.removeEventListener("PlaybackPaused", this.#updateAttributes);
+    this.player?.removeEventListener(
+      "PlayPauseButtonPropsChange",
+      this.#updateAttributes,
+    );
     this.player = null;
-    this.#updateAttributes();
+    this.#updateAttributes(null);
     this.removeEventListener("click", this.#handleClick);
     this.removeEventListener("mouseup", blurElement);
   }
 
-  #updateAttributes = () => {
-    this.style.setProperty("--icon-color", this.player?.iconColor || "#323232");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  #updateAttributes = (event: any) => {
+    this.tabIndex = event?.props?.tabindex ?? 0;
+    this.style.setProperty("--icon-color", event?.props?.color ?? "#323232");
     this.setAttribute(
       "data-state",
-      this.player?.playbackState === "playing" ? "playing" : "paused",
+      event?.props?.isPlaying ? "playing" : "paused",
     );
-    this.setAttribute(
-      "aria-label",
-      this.player?.playbackState === "playing"
-        ? translate("pauseAudio")
-        : translate("playAudio"),
-    );
+    event?.props?.ariaLabel
+      ? this.setAttribute("aria-label", event.props.ariaLabel)
+      : this.removeAttribute("aria-label");
   };
 
   #handleClick = (event: PointerEvent) => {

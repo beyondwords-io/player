@@ -9,7 +9,16 @@
     <script id="player-script" async defer type="module" onload='
        document
           .querySelectorAll("beyondwords-player-provider")
-          .forEach((element) => element.removeAttribute("style"));
+          .forEach((element) => {
+            element.removeAttribute("style")
+            setTimeout(() => {
+              document
+                .querySelector("#control-bar")
+                .appendChild(
+                  document.createElement("beyondwords-play-pause-button")
+                );
+            }, 1_000);
+          });
     '></script>
 
     <script>
@@ -28,8 +37,8 @@
       project-id="52165"
       content-id="621f3ec7-3be0-4e26-8fa6-698d6439b7d4"
     >
-      <div style="display: flex; align-items: center; gap: 10px">
-        <beyondwords-play-pause-button></beyondwords-play-pause-button>
+      <div id="control-bar" style="display: flex; align-items: center; gap: 10px">
+        <!-- <beyondwords-play-pause-button></beyondwords-play-pause-button> -->
       </div>
     </beyondwords-player-provider>
 

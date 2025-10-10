@@ -31,6 +31,10 @@ class RootController {
     this.eventListeners[eventType] = this.eventListeners[eventType] || {};
     this.eventListeners[eventType][listenerHandle] = callback;
 
+    if (eventType === "PlayPauseButtonPropsChange") {
+      this.player?.userInterface?.playPauseButton?.handlePropsChange();
+    }
+
     return listenerHandle;
   }
 
@@ -78,6 +82,7 @@ class RootController {
 
   // Please document all events and keep in-sync with /doc/player-events.md
 
+  handlePlayPauseButtonPropsChange()    { /* Do nothing */ }
   handlePressedChangeRate()             { this.#setRate(i => i + 1, { cycle: true }); }
   handlePressedEnterOnChangeRate()      { this.#setRate(i => i + 1, { cycle: true }); }
   handlePressedSpaceOnChangeRate()      { this.#setRate(i => i + 1, { cycle: true }); }

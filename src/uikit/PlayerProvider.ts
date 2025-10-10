@@ -11,6 +11,11 @@ class PlayerProvider extends globalThis.HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot!.innerHTML = `
+      <style>
+        #target {
+          display: none;
+        }
+      </style>
       <div id="target"></div>
       <slot></slot>
     `;
@@ -19,7 +24,7 @@ class PlayerProvider extends globalThis.HTMLElement {
   connectedCallback() {
     this.player = new Player({
       target: this.shadowRoot?.querySelector("#target"),
-      showUserInterface: false,
+      // showUserInterface: false,
       projectId: this.projectId ?? undefined,
       contentId: this.contentId ?? undefined,
     });
