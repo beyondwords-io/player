@@ -55,6 +55,7 @@ class PlayPauseButton extends globalThis.HTMLElement {
       "PlayPauseButtonPropsChange",
       this.#updateAttributes,
     );
+    this.player?.userInterface?.playPauseButton?.handlePropsChange();
     this.addEventListener("click", this.#handleClick);
     this.addEventListener("mouseup", blurElement);
   }

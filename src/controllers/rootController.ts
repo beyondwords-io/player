@@ -31,10 +31,6 @@ class RootController {
     this.eventListeners[eventType] = this.eventListeners[eventType] || {};
     this.eventListeners[eventType][listenerHandle] = callback;
 
-    if (eventType === "PlayPauseButtonPropsChange") {
-      this.player?.userInterface?.playPauseButton?.handlePropsChange();
-    }
-
     return listenerHandle;
   }
 
