@@ -5,7 +5,6 @@
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
 
-  export let headless = false;
   export let isPlaying = false;
   export let tabindex = 0;
   export let scale = 1;
@@ -24,35 +23,15 @@
       initiatedBy: "user",
     }));
   };
-
-  export const handleStateChange = () => {
-    onEvent(
-      newEvent({
-        type: "PlayPauseButtonStateChange",
-        description: "The PlayPauseButton state changed.",
-        initiatedBy: "browser",
-        state: {
-          isPlaying,
-          tabindex,
-          color,
-          ariaLabel,
-        },
-      }),
-    );
-  };
-
-  $: isPlaying, tabindex, color, ariaLabel, handleStateChange();
 </script>
 
-{#if !headless}
-  <button type="button" class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {3.2 * scale}px" aria-label={ariaLabel}>
-    {#if isPlaying}
-      <Pause {scale} {color} />
-    {:else}
-      <Play {scale} {color} />
-    {/if}
-  </button>
-{/if}
+<button type="button" class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {3.2 * scale}px" aria-label={ariaLabel}>
+  {#if isPlaying}
+    <Pause {scale} {color} />
+  {:else}
+    <Play {scale} {color} />
+  {/if}
+</button>
 
 <style>
   .play-pause-button {

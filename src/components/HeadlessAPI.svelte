@@ -173,18 +173,23 @@
         initiatedBy: "browser",
         state: {
           isAdvert,
+          isStopped,
+          isPlaying,
+          callToAction,
           activeBgColor,
+          activeTextColor,
+          activeIconColor,
           videoBackgroundColor,
           nonVideoBgColor,
           largeImage,
           largeImageHref,
-          imageSize, 
+          imageSize,
         },
       }),
     );
   };
 
-  $: isAdvert, activeBgColor, videoBackgroundColor, nonVideoBgColor, largeImage, largeImageHref, imageSize, handleStateChange();
+  $: isAdvert, isStopped, isPlaying, callToAction, activeBgColor, activeTextColor, activeIconColor, videoBackgroundColor, nonVideoBgColor, largeImage, largeImageHref, imageSize, handleStateChange();
 
   // onMount(() => {
   //   const observer = new ResizeObserver(([entry]) => {
@@ -194,5 +199,3 @@
   //   return () => observer.unobserve(element);
   // });
 </script>
-
-<PlayPauseButton bind:this={playPauseButton} {onEvent} {isPlaying} headless={true} scale={playPauseScale} color={activeIconColor} />
