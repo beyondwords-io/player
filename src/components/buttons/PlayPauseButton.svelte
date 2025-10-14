@@ -34,7 +34,6 @@
         state: {
           isPlaying,
           tabindex,
-          scale,
           color,
           ariaLabel,
         },
@@ -42,7 +41,7 @@
     );
   };
 
-  $: isPlaying, tabindex, scale, color, ariaLabel, handleStateChange();
+  $: isPlaying, tabindex, color, ariaLabel, handleStateChange();
 </script>
 
 {#if !headless}
