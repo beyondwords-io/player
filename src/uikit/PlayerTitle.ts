@@ -14,7 +14,7 @@ class PlayerTitle extends globalThis.HTMLElement {
             font-size: 12px;
             font-weight: 500;
             line-height: 1.25;
-
+            color: var(--active-text-color);
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
@@ -43,9 +43,11 @@ class PlayerTitle extends globalThis.HTMLElement {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   #updateAttributes = (event: any) => {
-    const titleElement = this.shadowRoot?.querySelector("#value");
-    titleElement!.textContent =
-      event?.state?.callToAction || translate("listenToThisArticle");
+    const valueElement = this.shadowRoot?.querySelector("#value");
+    if (valueElement) {
+      valueElement.textContent =
+        event?.state?.callToAction || translate("listenToThisArticle");
+    }
   };
 }
 

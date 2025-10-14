@@ -22,6 +22,9 @@
       beyondwords-player-provider:not([data-playback-state="stopped"]) beyondwords-player-title {
         display: none;
       }
+      beyondwords-player-provider[data-playback-state="stopped"] beyondwords-playback-rate-button {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -45,13 +48,8 @@
       <div class="control-bar">
         <beyondwords-play-pause-button></beyondwords-play-pause-button>
         <beyondwords-player-title></beyondwords-player-title>
+        <beyondwords-playback-rate-button></beyondwords-playback-rate-button>
       </div>
     </beyondwords-player-provider>
-
-    <style>
-      body {
-        font-family: Arial;
-      }
-    </style>
   </body>
 </html>
