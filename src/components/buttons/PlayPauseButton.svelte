@@ -53,23 +53,23 @@
       <Play {scale} {color} />
     {/if}
   </button>
-
-  <style>
-    .play-pause-button {
-      display: flex;
-      cursor: pointer;
-      position: relative;
-
-      background: none;
-      border: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .play-pause-button:hover {
-        opacity: 0.8;
-      }
-    }
-  </style>
 {/if}
+
+<style>
+  .play-pause-button {
+    display: flex;
+    cursor: pointer;
+    position: relative;
+
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .play-pause-button:hover {
+      opacity: 0.8;
+    }
+  }
+</style>
