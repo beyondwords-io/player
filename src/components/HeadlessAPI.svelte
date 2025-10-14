@@ -174,4 +174,4 @@
   // });
 </script>
 
-<PlayPauseButton bind:this={playPauseButton} {onEvent} {isPlaying} scale={playPauseScale} color={activeIconColor} />
+<PlayPauseButton bind:this={playPauseButton} {onEvent} {isPlaying} headless={true} scale={playPauseScale} color={activeIconColor} />

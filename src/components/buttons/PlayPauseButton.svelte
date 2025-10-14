@@ -5,7 +5,7 @@
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
 
-  export let showUserInterface = true;
+  export let headless = false;
   export let isPlaying = false;
   export let tabindex = 0;
   export let scale = 1;
@@ -45,7 +45,7 @@
   $: isPlaying, tabindex, scale, color, ariaLabel, handleStateChange();
 </script>
 
-{#if showUserInterface}
+{#if !headless}
   <button type="button" class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {3.2 * scale}px" aria-label={ariaLabel}>
     {#if isPlaying}
       <Pause {scale} {color} />
