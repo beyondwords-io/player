@@ -28,11 +28,21 @@ class PlayerProvider extends globalThis.HTMLElement {
       projectId: this.projectId ?? undefined,
       contentId: this.contentId ?? undefined,
     });
+    this.player?.addEventListener(
+      "RootStateChange",
+      this.#updateAttributes,
+    );
+    this.player?.headlessAPI?.handleStateChange();
   }
 
   disconnectedCallback() {
+    this.player?.removeEventListener(
+      "RootStateChange",
+      this.#updateAttributes,
+    );
     this.player?.destroy();
     this.player = null;
+    this.#updateAttributes(null);
   }
 
   async attributeChangedCallback(
@@ -76,6 +86,11 @@ class PlayerProvider extends globalThis.HTMLElement {
       this.setAttribute("content-id", value);
     }
   }
+
+  #updateAttributes = (event: any) => {
+    this.style.setProperty("--background-color", event?.state?.backgroundColor ?? "#f5f5f5");
+    this.style.setProperty("--active-bg-color", event?.state?.activeBgColor ?? "#f5f5f5");
+  };
 }
 
 if (!globalThis.customElements.get("beyondwords-player-provider")) {

@@ -165,6 +165,27 @@
     }));
   };
 
+  export const handleStateChange = () => {
+    onEvent(
+      newEvent({
+        type: "RootStateChange",
+        description: "The Root state changed.",
+        initiatedBy: "browser",
+        state: {
+          isAdvert,
+          activeBgColor,
+          videoBackgroundColor,
+          nonVideoBgColor,
+          largeImage,
+          largeImageHref,
+          imageSize, 
+        },
+      }),
+    );
+  };
+
+  $: isAdvert, activeBgColor, videoBackgroundColor, nonVideoBgColor, largeImage, largeImageHref, imageSize, handleStateChange();
+
   // onMount(() => {
   //   const observer = new ResizeObserver(([entry]) => {
   //     width = entry.contentRect.width;
