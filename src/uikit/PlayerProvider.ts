@@ -92,6 +92,7 @@ class PlayerProvider extends globalThis.HTMLElement {
     this.style.setProperty("--active-bg-color", event?.state?.activeBgColor ?? "#f5f5f5");
     this.style.setProperty("--active-text-color", event?.state?.activeTextColor ?? "#111");
     this.style.setProperty("--active-icon-color", event?.state?.activeIconColor ?? "#323232");
+    this.setAttribute("data-playback-state", event?.state?.playbackState || "stopped");
   };
 }
 

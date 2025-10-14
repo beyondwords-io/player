@@ -10,12 +10,17 @@
       }
       .control-bar {
         width: min-content;
+        min-width: 512px;
         height: 48px;
         display: flex;
         align-items: center;
         padding: 4px;
+        column-gap: 8px;
         border-radius: 25px;
         background-color: var(--active-bg-color);
+      }
+      beyondwords-player-provider:not([data-playback-state="stopped"]) beyondwords-player-title {
+        display: none;
       }
     </style>
   </head>
@@ -39,6 +44,7 @@
     >
       <div class="control-bar">
         <beyondwords-play-pause-button></beyondwords-play-pause-button>
+        <beyondwords-player-title></beyondwords-player-title>
       </div>
     </beyondwords-player-provider>
 

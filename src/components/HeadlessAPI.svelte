@@ -175,6 +175,7 @@
           isAdvert,
           isStopped,
           isPlaying,
+          playbackState,
           callToAction,
           activeBgColor,
           activeTextColor,
@@ -189,7 +190,7 @@
     );
   };
 
-  $: isAdvert, isStopped, isPlaying, callToAction, activeBgColor, activeTextColor, activeIconColor, videoBackgroundColor, nonVideoBgColor, largeImage, largeImageHref, imageSize, handleStateChange();
+  $: isAdvert, isStopped, isPlaying, playbackState, callToAction, activeBgColor, activeTextColor, activeIconColor, videoBackgroundColor, nonVideoBgColor, largeImage, largeImageHref, imageSize, handleStateChange();
 
   // onMount(() => {
   //   const observer = new ResizeObserver(([entry]) => {
