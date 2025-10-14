@@ -24,7 +24,7 @@ class PlayerProvider extends globalThis.HTMLElement {
   connectedCallback() {
     this.player = new Player({
       target: this.shadowRoot?.querySelector("#target"),
-      // showUserInterface: false,
+      showUserInterface: false,
       projectId: this.projectId ?? undefined,
       contentId: this.contentId ?? undefined,
     });
@@ -42,12 +42,12 @@ class PlayerProvider extends globalThis.HTMLElement {
   ) {
     if (!this.player || newValue === oldValue) return;
     switch (attrName) {
-      case "project-id":
-        this.player.projectId = newValue;
-        break;
-      case "content-id":
-        this.player.contentId = newValue;
-        break;
+    case "project-id":
+      this.player.projectId = newValue;
+      break;
+    case "content-id":
+      this.player.contentId = newValue;
+      break;
     }
   }
 

@@ -5,6 +5,7 @@
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
 
+  export let showUserInterface = true;
   export let isPlaying = false;
   export let tabindex = 0;
   export let scale = 1;
@@ -44,29 +45,31 @@
   $: isPlaying, tabindex, scale, color, ariaLabel, handleStateChange();
 </script>
 
-<button type="button" class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {3.2 * scale}px" aria-label={ariaLabel}>
-  {#if isPlaying}
-    <Pause {scale} {color} />
-  {:else}
-    <Play {scale} {color} />
-  {/if}
-</button>
+{#if showUserInterface}
+  <button type="button" class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {3.2 * scale}px" aria-label={ariaLabel}>
+    {#if isPlaying}
+      <Pause {scale} {color} />
+    {:else}
+      <Play {scale} {color} />
+    {/if}
+  </button>
 
-<style>
-  .play-pause-button {
-    display: flex;
-    cursor: pointer;
-    position: relative;
+  <style>
+    .play-pause-button {
+      display: flex;
+      cursor: pointer;
+      position: relative;
 
-    background: none;
-    border: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .play-pause-button:hover {
-      opacity: 0.8;
+      background: none;
+      border: none;
+      margin: 0;
+      padding: 0;
     }
-  }
-</style>
+
+    @media (hover: hover) and (pointer: fine) {
+      .play-pause-button:hover {
+        opacity: 0.8;
+      }
+    }
+  </style>
+{/if}

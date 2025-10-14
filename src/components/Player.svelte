@@ -3,6 +3,7 @@
   import { onDestroy } from "svelte";
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
+  import HeadlessAPI from "./HeadlessAPI.svelte";
   import ExternalWidget from "./ExternalWidget.svelte";
   import ControlPanel from "./ControlPanel.svelte";
   import MediaSession from "./MediaSession.svelte";
@@ -98,6 +99,7 @@
   export let mediaElement = undefined;
   export let userInterface = undefined;
   export let widgetInterface = undefined;
+  export let headlessAPI = undefined;
   export let controller = undefined;
   export let logoImagePosition = undefined;
   export let analyticsUrl = undefined;
@@ -398,6 +400,45 @@
     {skipButtonStyle}
     {backgroundColor}
     {iconColor}
+  />
+{/if}
+
+{#if !showUserInterface}
+  <HeadlessAPI 
+    bind:this={headlessAPI}
+    {onEvent}
+    playerStyle={interfaceStyle}
+    {callToAction}
+    {skipButtonStyle}
+    {playlistStyle}
+    {playlistToggle}
+    {downloadFormats}
+    {durationFormat}
+    {playerTitle}
+    {content}
+    {contentIndex}
+    {summary}
+    {duration}
+    {currentTime}
+    {playbackState}
+    {playbackRate}
+    {playbackRates}
+    {activeAdvert}
+    {persistentAdvert}
+    {companionAdvert}
+    {analyticsId}
+    {textColor}
+    {backgroundColor}
+    {iconColor}
+    {videoTextColor}
+    {videoBackgroundColor}
+    {videoIconColor}
+    {logoIconEnabled}
+    {logoImagePosition}
+    {maxImageSize}
+    {isFullScreen}
+    {videoPosterImage}
+    videoIsBehind={videoBehindStatic}
   />
 {/if}
 

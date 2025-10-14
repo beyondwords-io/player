@@ -76,7 +76,6 @@
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
-  export let playPauseButton = undefined;
   let element, width, isHovering, timeout;
 
   $: isSmall = playerStyle === "small";
@@ -200,7 +199,7 @@
       <div class="controls">
         <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
           <ProgressCircle {onEvent} {progress} enabled={isScreen || isSmall} bold={isSmall} scale={playPauseScale} color={activeIconColor}>
-            <PlayPauseButton bind:this={playPauseButton} {onEvent} {isPlaying} scale={playPauseScale} color={activeIconColor} />
+            <PlayPauseButton {onEvent} {isPlaying} scale={playPauseScale} color={activeIconColor} />
           </ProgressCircle>
         </Visibility>
 
