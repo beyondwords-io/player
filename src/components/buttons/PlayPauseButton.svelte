@@ -24,11 +24,11 @@
     }));
   };
 
-  export const handlePropsChange = () => {
+  export const handleStateChange = () => {
     onEvent(
       newEvent({
-        type: "PlayPauseButtonPropsChange",
-        description: "The PlayPauseButton props were changed.",
+        type: "PlayPauseButtonStateChange",
+        description: "The PlayPauseButton state changed.",
         initiatedBy: "browser",
         props: {
           isPlaying,
@@ -41,7 +41,7 @@
     );
   };
 
-  $: isPlaying, tabindex, scale, color, ariaLabel, handlePropsChange();
+  $: isPlaying, tabindex, scale, color, ariaLabel, handleStateChange();
 </script>
 
 <button type="button" class="play-pause-button" {tabindex} on:click={handleClick} on:mouseup={blurElement} style="outline-offset: {3.2 * scale}px" aria-label={ariaLabel}>

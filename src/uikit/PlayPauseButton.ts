@@ -51,18 +51,18 @@ class PlayPauseButton extends globalThis.HTMLElement {
       return;
     }
     this.player = playerProvider.player!;
-    this.player.addEventListener(
-      "PlayPauseButtonPropsChange",
+    this.player?.addEventListener(
+      "PlayPauseButtonStateChange",
       this.#updateAttributes,
     );
-    this.player?.userInterface?.playPauseButton?.handlePropsChange();
+    this.player?.userInterface?.playPauseButton?.handleStateChange();
     this.addEventListener("click", this.#handleClick);
     this.addEventListener("mouseup", blurElement);
   }
 
   disconnectedCallback() {
     this.player?.removeEventListener(
-      "PlayPauseButtonPropsChange",
+      "PlayPauseButtonStateChange",
       this.#updateAttributes,
     );
     this.player = null;
