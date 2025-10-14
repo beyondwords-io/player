@@ -18,10 +18,10 @@
     const name = isPlaying ? "Pause" : "Play";
 
     onEvent(newEvent({
-        type: `Pressed${name}`,
-        description: `The ${name.toLowerCase()} button was pressed.`,
-        initiatedBy: "user",
-      }));
+      type: `Pressed${name}`,
+      description: `The ${name.toLowerCase()} button was pressed.`,
+      initiatedBy: "user",
+    }));
   };
 
   export const handlePropsChange = () => {
