@@ -73,14 +73,14 @@ class PlayPauseButton extends globalThis.HTMLElement {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   #updateAttributes = (event: any) => {
-    this.tabIndex = event?.props?.tabindex ?? 0;
-    this.style.setProperty("--icon-color", event?.props?.color ?? "#323232");
+    this.tabIndex = event?.state?.tabindex ?? 0;
+    this.style.setProperty("--icon-color", event?.state?.color ?? "#323232");
     this.setAttribute(
       "data-state",
-      event?.props?.isPlaying ? "playing" : "paused",
+      event?.state?.isPlaying ? "playing" : "paused",
     );
-    event?.props?.ariaLabel
-      ? this.setAttribute("aria-label", event.props.ariaLabel)
+    event?.state?.ariaLabel
+      ? this.setAttribute("aria-label", event.state.ariaLabel)
       : this.removeAttribute("aria-label");
   };
 

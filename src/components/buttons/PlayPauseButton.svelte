@@ -31,7 +31,7 @@
         type: "PlayPauseButtonStateChange",
         description: "The PlayPauseButton state changed.",
         initiatedBy: "browser",
-        props: {
+        state: {
           isPlaying,
           tabindex,
           scale,
