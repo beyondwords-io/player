@@ -29,6 +29,7 @@
   }
 
   const handleClick = () => {
+    // TODO ??? event.preventDefault();
     let type, description, props;
 
     if (isSegments) {
