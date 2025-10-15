@@ -15,6 +15,7 @@
         display: flex;
         align-items: center;
         padding: 4px;
+        padding-right: 12px;
         column-gap: 8px;
         border-radius: 25px;
         background-color: var(--active-bg-color);
@@ -28,8 +29,13 @@
       beyondwords-player-provider[data-playback-state="stopped"]
         beyondwords-prev-segment-button,
       beyondwords-player-provider[data-playback-state="stopped"]
-        beyondwords-next-segment-button {
+        beyondwords-next-segment-button,
+      beyondwords-player-provider[data-playback-state="stopped"]
+        beyondwords-progress-bar {
         display: none;
+      }
+      beyondwords-progress-bar {
+        flex-grow: 1;
       }
     </style>
   </head>
@@ -57,6 +63,7 @@
         <beyondwords-playback-rate-button></beyondwords-playback-rate-button>
         <beyondwords-prev-segment-button></beyondwords-prev-segment-button>
         <beyondwords-next-segment-button></beyondwords-next-segment-button>
+        <beyondwords-progress-bar></beyondwords-progress-bar>
       </div>
     </beyondwords-player-provider>
   </body>
