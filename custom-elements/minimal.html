@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeyondWords Player - UIKit</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      beyondwords-player:not([data-initialized]) {
+        display: none;
+      }
+
+      beyondwords-play-pause-button {
+        display: inline-flex;
+        width: 50px;
+        height: 50px;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bw-background-color);
+        border-radius: 9999px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      beyondwords-play-pause-button:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      beyondwords-play-pause-button:active {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      beyondwords-play-pause-button .play-icon,
+      beyondwords-play-pause-button .pause-icon {
+        color: var(--bw-icon-color);
+      }
+    </style>
+    <script src="../src/index.ts" defer type="module"></script>
+    <script src="./Player.js" defer type="module"></script>
+    <script src="./PlayPauseButton.js" defer type="module"></script>
+  </head>
+  <body>
+    <beyondwords-player
+      project-id="52165"
+      content-id="621f3ec7-3be0-4e26-8fa6-698d6439b7d4"
+    >
+      <beyondwords-play-pause-button>
+        <svg class="play-icon" viewBox="0 0 24 24" slot="play">
+          <path fill="currentColor" d="M8 5v14l11-7-11-7z" />
+        </svg>
+        <svg class="pause-icon" viewBox="0 0 24 24" slot="pause">
+          <path fill="currentColor" d="M6 19h4V5H6zm8 0h4V5h-4z" />
+        </svg>
+      </beyondwords-play-pause-button>
+    </beyondwords-player>
+  </body>
+</html>
