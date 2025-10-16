@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8" />
+  <title>React</title>
+  <div id="root"></div>
+  <script async defer type="module" src="src/index.ts"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import React from "https://esm.sh/react@18";
+    import ReactDOM from "https://esm.sh/react-dom@18/client";
+    import htm from "https://esm.sh/htm@3.1.1";
+
+    const html = htm.bind(React.createElement);
+
+    function useBeyondWordsNamespace() {
+      const [value, setValue] = React.useState(() => {
+        if (typeof window === "undefined") return null;
+        if ("BeyondWords" in window) return window.BeyondWords;
+        else return null;
+      });
+      React.useEffect(() => {
+        const onLoad = () => {
+          if ("BeyondWords" in window) setValue(window.BeyondWords);
+          else setValue(null);
+        };
+        const script = document.querySelector('script[src="src/index.ts"]');
+        if (script instanceof HTMLScriptElement) {
+          script.addEventListener("load", onLoad);
+          return () => {
+            script.removeEventListener("load", onLoad);
+          };
+        } else {
+          const script = document.createElement("script");
+          script.src = "src/index.ts";
+          script.async = true;
+          script.defer = true;
+          script.addEventListener("load", onLoad);
+          document.head.appendChild(script);
+          return () => {
+            script.removeEventListener("load", onLoad);
+          };
+        }
+      }, []);
+      return value;
+    }
+
+    function useBeyondWordsPlayer({ target, projectId, contentId }) {
+      const BeyondWords = useBeyondWordsNamespace();
+      const [player, setPlayer] = React.useState(null);
+      React.useEffect(() => {
+        if (!BeyondWords?.Player || !target) {
+          setPlayer(null);
+          return;
+        }
+        const player = new BeyondWords.Player({
+          target,
+          projectId,
+          contentId,
+          showUserInterface: false,
+        });
+        setPlayer(player);
+        return () => {
+          setPlayer(null);
+          player.destroy();
+        };
+      }, [BeyondWords?.Player, target, projectId, contentId]);
+      return player;
+    }
+
+    const BeyondWordsPlayerContext = React.createContext(null);
+
+    function BeyondWordsPlayerProvider({ projectId, contentId, ...props }) {
+      const [target, setTarget] = React.useState(null);
+      const player = useBeyondWordsPlayer({ target, projectId, contentId });
+      return html`
+        <${BeyondWordsPlayerContext.Provider} value=${player}>
+          <div ref=${setTarget} ...${props}></div>
+          ${player && props.children}
+        <//>
+      `;
+    }
+
+    function useBeyondWordsPlayerContext() {
+      return React.useContext(BeyondWordsPlayerContext);
+    }
+
+    function PlayPauseButton(props) {
+      const player = useBeyondWordsPlayerContext();
+      const [playbackState, setPlaybackState] = React.useState(null);
+      React.useEffect(() => {
+        if (!player) return;
+        const onStateChange = (event) => {
+          setPlaybackState(event?.state?.isPlaying ? "playing" : "paused");
+        };
+        player.addEventListener("RootStateChange", onStateChange);
+        return () => {
+          player.removeEventListener("RootStateChange", onStateChange);
+        };
+      }, [player]);
+      if (!player) return null;
+      return html`
+        <button
+          className="size-10 rounded-full bg-red-500 text-white"
+          onClick=${(event) => {
+            event.preventDefault();
+            const name = player?.playbackState === "playing" ? "Pause" : "Play";
+            player?.controller.processEvent(
+              window.BeyondWords.newEvent({
+                type: `Pressed${name}`,
+                description: `The ${name.toLowerCase()} button was pressed.`,
+                initiatedBy: "user",
+                emittedFrom: "inline-player",
+              }),
+            );
+          }}
+          ...${props}
+        >
+          ${playbackState === "playing" ? "⏸️ Pause" : "▶️ Play"}
+        </button>
+      `;
+    }
+
+    function App() {
+      const [count, setCount] = React.useState(0);
+      return html`
+        <div style=${{ fontFamily: "system-ui", padding: "20px" }}>
+          <${BeyondWordsPlayerProvider}
+            projectId="52165"
+            contentId="621f3ec7-3be0-4e26-8fa6-698d6439b7d4"
+            className="mt-4"
+          >
+            <${PlayPauseButton} className="" />
+          <//>
+        </div>
+      `;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(html`<${App} />`);
+  </script>
+</html>
