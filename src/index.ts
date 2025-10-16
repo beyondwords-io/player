@@ -10,6 +10,7 @@ import propertyValues from "./helpers/propertyValues";
 import playerPropsToIgnore from "./helpers/playerPropsToIgnore";
 import newEvent from "./helpers/newEvent";
 import translate from "./helpers/translate";
+import blurElement from "./helpers/blurElement";
 import { version } from "../package.json";
 
 class Player extends PlayerComponent {
@@ -84,6 +85,7 @@ if (typeof window !== "undefined") {
   window.BeyondWords.Player ||= Player;
   window.BeyondWords.newEvent ||= newEvent;
   window.BeyondWords.translate ||= translate;
+  window.BeyondWords.blurElement ||= blurElement;
 }
 
 export default { Player };

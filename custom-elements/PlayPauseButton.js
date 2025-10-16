@@ -12,10 +12,10 @@ class PlayPauseButton extends globalThis.HTMLElement {
           display: none !important;
         }
       </style>
-      <slot name="icon">
-        <slot name="play"></slot>
-        <slot name="pause"></slot>
-      </slot>
+        <slot name="icon">
+          <slot name="play"></slot>
+          <slot name="pause"></slot>
+        </slot>
     `;
     this.tabIndex = 0;
     this.setAttribute("role", "button");
@@ -36,6 +36,8 @@ class PlayPauseButton extends globalThis.HTMLElement {
     );
     this.#updateAttributes();
     if (this.onclick === null) this.onclick = this.#handleClick;
+    if (this.onmouseup === null)
+      this.onmouseup = window.BeyondWords.blurElement;
   }
 
   disconnectedCallback() {
@@ -44,6 +46,8 @@ class PlayPauseButton extends globalThis.HTMLElement {
     this.#listenerHandle = null;
     this.#instance = null;
     if (this.onclick === this.#handleClick) this.onclick = null;
+    if (this.onmouseup === window.BeyondWords.blurElement)
+      this.onmouseup = null;
     this.removeAttribute("data-state");
   }
 
