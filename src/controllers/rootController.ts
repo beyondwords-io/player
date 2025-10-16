@@ -78,6 +78,8 @@ class RootController {
 
   // Please document all events and keep in-sync with /doc/player-events.md
 
+  handlePlayerSettingsChanged()         { /* Do nothing */ }
+
   handlePressedChangeRate()             { this.#setRate(i => i + 1, { cycle: true }); }
   handlePressedEnterOnChangeRate()      { this.#setRate(i => i + 1, { cycle: true }); }
   handlePressedSpaceOnChangeRate()      { this.#setRate(i => i + 1, { cycle: true }); }

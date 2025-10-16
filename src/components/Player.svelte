@@ -18,6 +18,7 @@
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
+  import newEvent from "../helpers/newEvent";
 
   // Please document all settings and keep in-sync with /doc/player-settings.md
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
@@ -116,6 +117,13 @@
   export let segmentClickables = new SegmentClickables();
   export let segmentHighlights = new SegmentHighlights();
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
+
+  $: playerApiUrl, projectId, contentId, playlistId, sourceId, sourceUrl, playlist, summary, clientSideEnabled, showUserInterface, showBottomWidget, showCloseWidget, playerStyle, playerTitle, callToAction, skipButtonStyle, playlistStyle, playlistToggle, downloadFormats, durationFormat, mediaSession, content, contentIndex, introsOutros, introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex, minDurationForMidroll, minTimeUntilEndForMidroll, persistentAdImage, persistentIndex, duration, currentTime, playbackState, playbackRate, playbackRates, widgetStyle, widgetPosition, widgetWidth, widgetMargin, widgetTarget, textColor, backgroundColor, iconColor, highlightColor, videoTextColor, videoBackgroundColor, videoIconColor, logoIconEnabled, highlightSections, clickableSections, segmentWidgetSections, segmentWidgetPosition, currentSegment, hoveredSegment, loadedMedia, previewToken, advertConsent, analyticsConsent, analyticsCustomUrl, analyticsDeviceType, analyticsTag, captureErrors, onError, transitions, controlPanel, initialProps, showMediaSession, metadataLoaded, isFullScreen, mediaElement, userInterface, widgetInterface, controller, logoImagePosition, analyticsUrl, analyticsId, platform, vendorIdentifier, bundleIdentifier, contentLanguage, listenSessionId, sessionCreatedAt, companionAdvert, isNewListen, prevPercentage, segmentWidgets, segmentContainers, segmentClickables, segmentHighlights, onEvent(newEvent({
+        type: "PlayerSettingsChanged",
+        description: "The Player settings changed.",
+        initiatedBy: "browser",
+        emittedFrom: "root"
+      }));
 
   $: contentItem = content[contentIndex];
   $: introOrOutro = introsOutros[introsOutrosIndex];
