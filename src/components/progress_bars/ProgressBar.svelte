@@ -3,6 +3,7 @@
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
+  import humanizeTime from '../../helpers/humanizeTime';
   import handleKeyDown from "./handleKeyDown";
 
   export let progress = 0;
@@ -24,8 +25,8 @@
   const handleFocus = () => { updateSticky = true; readFullTime = true; };
   const handleLeftOrRight = () => { updateSticky = true; readFullTime = false; };
 
-  $: outOf = readFullTime ? `${translate("outOfTotalTime")} ${formatTime(duration)}` : "";
-  $: ariaText = `${formatTime(stickySeconds)} ${outOf}`;
+  $: outOf = readFullTime ? `${translate("outOfTotalTime")} ${humanizeTime(duration)}` : "";
+  $: ariaText = `${humanizeTime(stickySeconds)} ${outOf}`;
 
   const handleMouseDown = (event) => {
     mouseDown = true;
@@ -68,23 +69,6 @@
     const mouseRatio = (clientX - x) / width;
 
     return Math.max(0, Math.min(1, mouseRatio));
-  };
-
-  const formatTime = (n) => {
-    const rounded = Math.floor(n);
-
-    if (rounded === 0) { return translate("secondsPlural").replace("{n}", 0); }
-
-    const minutes = Math.floor(rounded / 60);
-    const seconds = rounded % 60;
-
-    return [formatUnit(minutes, "minutes"), formatUnit(seconds, "seconds")].filter(s => s).join(" ");
-  };
-
-  const formatUnit = (n, units) => {
-    if (n === 0) { return; }
-    const key = n === 1 ? `${units}Singular` : `${units}Plural`;
-    return translate(key).replace("{n}", n);
   };
 
   onMount(() => {

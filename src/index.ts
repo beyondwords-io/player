@@ -11,6 +11,7 @@ import playerPropsToIgnore from "./helpers/playerPropsToIgnore";
 import newEvent from "./helpers/newEvent";
 import translate from "./helpers/translate";
 import blurElement from "./helpers/blurElement";
+import humanizeTime from "./helpers/humanizeTime";
 import { version } from "../package.json";
 
 class Player extends PlayerComponent {
@@ -86,6 +87,7 @@ if (typeof window !== "undefined") {
   window.BeyondWords.newEvent ||= newEvent;
   window.BeyondWords.translate ||= translate;
   window.BeyondWords.blurElement ||= blurElement;
+  window.BeyondWords.humanizeTime ||= humanizeTime;
 }
 
 export default { Player };
