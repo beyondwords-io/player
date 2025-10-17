@@ -20,14 +20,23 @@
         gap: 4px;
       }
 
+      beyondwords-next-segment-button::part(root) {
+        width: 30px;
+        height: 30px;
+      }
+
+      beyondwords-play-pause-button::part(root) {
+        width: 50px;
+        height: 50px;
+      }
+
+      beyondwords-next-segment-button::part(root),
       beyondwords-play-pause-button::part(root) {
         display: flex;
         margin: 0;
         padding: 0;
         background: none;
         border: none;
-        width: 50px;
-        height: 50px;
         align-items: center;
         justify-content: center;
         background-color: var(--beyondwords-background-color);
@@ -36,18 +45,30 @@
         user-select: none;
       }
 
+      beyondwords-next-segment-button::part(root):hover,
       beyondwords-play-pause-button::part(root):hover {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
+      beyondwords-next-segment-button::part(root):active,
       beyondwords-play-pause-button::part(root):active {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
+      beyondwords-next-segment-button .next-segment-icon {
+        width: 24px;
+        height: 24px;
+      }
+
       beyondwords-play-pause-button .play-icon,
       beyondwords-play-pause-button .pause-icon {
-        width: 70%;
-        height: 70%;
+        width: 30px;
+        height: 30px;
+      }
+
+      beyondwords-next-segment-button .next-segment-icon,
+      beyondwords-play-pause-button .play-icon,
+      beyondwords-play-pause-button .pause-icon {
         color: var(--beyondwords-icon-color);
       }
 
@@ -85,6 +106,7 @@
     <script src="../src/index.ts" defer type="module"></script>
     <script src="./Player.js" defer type="module"></script>
     <script src="./PlayPauseButton.js" defer type="module"></script>
+    <script src="./NextSegmentButton.js" defer type="module"></script>
     <script src="./ProgressBar.js" defer type="module"></script>
   </head>
   <body>
@@ -100,6 +122,14 @@
           <path fill="currentColor" d="M6 19h4V5H6zm8 0h4V5h-4z" />
         </svg>
       </beyondwords-play-pause-button>
+      <beyondwords-next-segment-button>
+        <svg class="next-segment-icon" viewBox="-13 -12 35 36">
+          <path
+            fill="currentColor"
+            d="M9.75 4.70093C10.75 5.27828 10.75 6.72166 9.75 7.29901L2.25 11.6291C1.25 12.2065 0 11.4848 0 10.3301V1.66984C0 0.515139 1.25 -0.206548 2.25 0.370802L9.75 4.70093Z"
+          />
+        </svg>
+      </beyondwords-next-segment-button>
       <beyondwords-progress-bar>
         <div class="progress-thumb"></div>
       </beyondwords-progress-bar>
