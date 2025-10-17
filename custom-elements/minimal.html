@@ -19,7 +19,7 @@
         flex-direction: row;
         gap: 4px;
       }
-
+      beyondwords-prev-segment-button::part(root),
       beyondwords-next-segment-button::part(root) {
         width: 30px;
         height: 30px;
@@ -30,6 +30,7 @@
         height: 50px;
       }
 
+      beyondwords-prev-segment-button::part(root),
       beyondwords-next-segment-button::part(root),
       beyondwords-play-pause-button::part(root) {
         display: flex;
@@ -45,16 +46,19 @@
         user-select: none;
       }
 
+      beyondwords-prev-segment-button::part(root):hover,
       beyondwords-next-segment-button::part(root):hover,
       beyondwords-play-pause-button::part(root):hover {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
+      beyondwords-prev-segment-button::part(root):active,
       beyondwords-next-segment-button::part(root):active,
       beyondwords-play-pause-button::part(root):active {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
+      beyondwords-prev-segment-button .prev-segment-icon,
       beyondwords-next-segment-button .next-segment-icon {
         width: 24px;
         height: 24px;
@@ -66,6 +70,7 @@
         height: 30px;
       }
 
+      beyondwords-prev-segment-button .prev-segment-icon,
       beyondwords-next-segment-button .next-segment-icon,
       beyondwords-play-pause-button .play-icon,
       beyondwords-play-pause-button .pause-icon {
@@ -107,6 +112,7 @@
     <script src="./Player.js" defer type="module"></script>
     <script src="./PlayPauseButton.js" defer type="module"></script>
     <script src="./NextSegmentButton.js" defer type="module"></script>
+    <script src="./PrevSegmentButton.js" defer type="module"></script>
     <script src="./ProgressBar.js" defer type="module"></script>
   </head>
   <body>
@@ -114,6 +120,14 @@
       project-id="52165"
       content-id="621f3ec7-3be0-4e26-8fa6-698d6439b7d4"
     >
+      <beyondwords-prev-segment-button>
+        <svg class="prev-segment-icon" viewBox="-11 -12 35 36">
+          <path
+            fill="currentColor"
+            d="M1.25 7.29901C0.249999 6.72166 0.250001 5.27828 1.25 4.70093L8.75 0.370802C9.75 -0.206548 11 0.51514 11 1.66984V10.3301C11 11.4848 9.75 12.2065 8.75 11.6291L1.25 7.29901Z"
+          />
+        </svg>
+      </beyondwords-prev-segment-button>
       <beyondwords-play-pause-button>
         <svg class="play-icon" viewBox="0 0 24 24" slot="play">
           <path fill="currentColor" d="M8 5v14l11-7-11-7z" />
