@@ -10,15 +10,9 @@ class Player extends globalThis.HTMLElement {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = `
-      <style>
-        #target {
-          display: none;
-        }
-      </style>
       <div id="target"></div>
       <slot></slot>
     `;
-    this.setAttribute("data-initialized", "");
   }
 
   connectedCallback() {
@@ -30,9 +24,10 @@ class Player extends globalThis.HTMLElement {
     });
     this.#listenerHandle = this.#instance.addEventListener(
       "<any>",
-      this.#updateAttributes,
+      this.#updateDOM,
     );
-    this.#updateAttributes();
+
+    this.#updateDOM();
   }
 
   disconnectedCallback() {
@@ -48,15 +43,14 @@ class Player extends globalThis.HTMLElement {
     this.style.removeProperty("--beyondwords-highlight-color");
   }
 
-  async attributeChangedCallback(attrName, oldValue, newValue) {
+  attributeChangedCallback(attrName, oldValue, newValue) {
     if (newValue === oldValue) return;
-    if (!this.#instance) return;
     switch (attrName) {
       case "project-id":
-        this.#instance.projectId = newValue;
+        if (this.#instance) this.#instance.projectId = newValue;
         break;
       case "content-id":
-        this.#instance.contentId = newValue;
+        if (this.#instance) this.#instance.contentId = newValue;
         break;
     }
   }
@@ -91,7 +85,7 @@ class Player extends globalThis.HTMLElement {
     }
   }
 
-  #updateAttributes = () => {
+  #updateDOM = () => {
     this.setAttribute("data-initialized", "");
     this.setAttribute(
       "data-playback-state",
