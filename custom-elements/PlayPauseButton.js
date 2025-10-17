@@ -1,6 +1,7 @@
 class PlayPauseButton extends globalThis.HTMLElement {
   #instance = null;
   #listenerHandle = null;
+  #buttonElement = null;
 
   constructor() {
     super();
@@ -11,14 +12,21 @@ class PlayPauseButton extends globalThis.HTMLElement {
         :host([data-state="paused"]) slot[name=pause] {
           display: none !important;
         }
+
+        button {
+          margin: 0;
+          padding: 0;
+          background: none;
+          border: none;
+        }
       </style>
-        <slot name="icon">
+      <slot name="root">
+        <button type="button" tabindex="0" role="button" part="root">
           <slot name="play"></slot>
           <slot name="pause"></slot>
-        </slot>
+        </button>
+      </slot>
     `;
-    this.tabIndex = 0;
-    this.setAttribute("role", "button");
   }
 
   connectedCallback() {
@@ -34,10 +42,14 @@ class PlayPauseButton extends globalThis.HTMLElement {
       "<any>",
       this.#updateAttributes,
     );
+
+    this.#buttonElement = this.shadowRoot.querySelector("button");
+    if (this.#buttonElement) {
+      this.#buttonElement.onclick = this.#handleClick;
+      this.#buttonElement.onmouseup = window.BeyondWords.blurElement;
+    }
+
     this.#updateAttributes();
-    if (this.onclick === null) this.onclick = this.#handleClick;
-    if (this.onmouseup === null)
-      this.onmouseup = window.BeyondWords.blurElement;
   }
 
   disconnectedCallback() {
@@ -45,9 +57,13 @@ class PlayPauseButton extends globalThis.HTMLElement {
     this.#instance?.destroy();
     this.#listenerHandle = null;
     this.#instance = null;
-    if (this.onclick === this.#handleClick) this.onclick = null;
-    if (this.onmouseup === window.BeyondWords.blurElement)
-      this.onmouseup = null;
+
+    if (this.#buttonElement) {
+      this.#buttonElement.onclick = null;
+      this.#buttonElement.onmouseup = null;
+      this.#buttonElement = null;
+    }
+
     this.removeAttribute("data-state");
   }
 
@@ -56,7 +72,7 @@ class PlayPauseButton extends globalThis.HTMLElement {
       "data-state",
       this.#instance?.playbackState === "playing" ? "playing" : "paused",
     );
-    this.setAttribute(
+    this.#buttonElement?.setAttribute(
       "aria-label",
       this.#instance?.playbackState === "playing"
         ? window.BeyondWords.translate("pauseAudio")

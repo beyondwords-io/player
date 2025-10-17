@@ -13,8 +13,15 @@
         display: none;
       }
 
-      beyondwords-play-pause-button {
-        display: inline-flex;
+      beyondwords-player {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 4px;
+      }
+
+      beyondwords-play-pause-button::part(root) {
+        display: flex;
         width: 50px;
         height: 50px;
         align-items: center;
@@ -25,16 +32,18 @@
         user-select: none;
       }
 
-      beyondwords-play-pause-button:hover {
+      beyondwords-play-pause-button::part(root):hover {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
 
-      beyondwords-play-pause-button:active {
+      beyondwords-play-pause-button::part(root):active {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
       beyondwords-play-pause-button .play-icon,
       beyondwords-play-pause-button .pause-icon {
+        width: 70%;
+        height: 70%;
         color: var(--bw-icon-color);
       }
     </style>
