@@ -41,12 +41,13 @@ class PlayPauseButton extends globalThis.HTMLElement {
 
     this.#playSlot = this.shadowRoot.querySelector('slot[name="play"]');
     this.#pauseSlot = this.shadowRoot.querySelector('slot[name="pause"]');
-    this.#buttonElement = this.shadowRoot.querySelector("button");
+    this.#buttonElement = this.shadowRoot.querySelector("button[part='root']");
 
-    if (this.#buttonElement) {
-      this.#buttonElement.onclick = this.#handleClick;
-      this.#buttonElement.onmouseup = window.BeyondWords.blurElement;
-    }
+    this.#buttonElement?.addEventListener("click", this.#handleClick);
+    this.#buttonElement?.addEventListener(
+      "mouseup",
+      window.BeyondWords.blurElement,
+    );
 
     this.#updateDOM();
   }
@@ -57,11 +58,11 @@ class PlayPauseButton extends globalThis.HTMLElement {
     this.#instance = null;
     this.#listenerHandle = null;
 
-    if (this.#buttonElement) {
-      this.#buttonElement.onclick = null;
-      this.#buttonElement.onmouseup = null;
-    }
-
+    this.#buttonElement?.removeEventListener("click", this.#handleClick);
+    this.#buttonElement?.removeEventListener(
+      "mouseup",
+      window.BeyondWords.blurElement,
+    );
     this.#buttonElement?.removeAttribute("aria-label");
     this.#playSlot?.removeAttribute("hidden");
     this.#pauseSlot?.removeAttribute("hidden");
