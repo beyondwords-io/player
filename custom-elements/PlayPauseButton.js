@@ -2,17 +2,13 @@ class PlayPauseButton extends globalThis.HTMLElement {
   #instance = null;
   #listenerHandle = null;
   #buttonElement = null;
+  #playSlot = null;
+  #pauseSlot = null;
 
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = `
-      <style>
-        :host([data-state="playing"]) slot[name=play],
-        :host([data-state="paused"]) slot[name=pause] {
-          display: none;
-        }
-      </style>
       <slot name="root">
         <button type="button" tabindex="0" role="button" part="root">
           <slot name="play"></slot>
@@ -30,37 +26,54 @@ class PlayPauseButton extends globalThis.HTMLElement {
       );
       return;
     }
+    if (!playerElement.instance) {
+      console.error(
+        "beyondwords-play-pause-button created with uninitialized beyondwords-player",
+      );
+      return;
+    }
+
     this.#instance = playerElement.instance;
     this.#listenerHandle = this.#instance.addEventListener(
       "<any>",
-      this.#updateAttributes,
+      this.#updateDOM,
     );
 
+    this.#playSlot = this.shadowRoot.querySelector('slot[name="play"]');
+    this.#pauseSlot = this.shadowRoot.querySelector('slot[name="pause"]');
     this.#buttonElement = this.shadowRoot.querySelector("button");
+
     if (this.#buttonElement) {
       this.#buttonElement.onclick = this.#handleClick;
       this.#buttonElement.onmouseup = window.BeyondWords.blurElement;
     }
 
-    this.#updateAttributes();
+    this.#updateDOM();
   }
 
   disconnectedCallback() {
     this.#instance?.removeEventListener("<any>", this.#listenerHandle);
     this.#instance?.destroy();
-    this.#listenerHandle = null;
     this.#instance = null;
+    this.#listenerHandle = null;
 
     if (this.#buttonElement) {
       this.#buttonElement.onclick = null;
       this.#buttonElement.onmouseup = null;
-      this.#buttonElement = null;
     }
+
+    this.#buttonElement?.removeAttribute("aria-label");
+    this.#playSlot?.removeAttribute("hidden");
+    this.#pauseSlot?.removeAttribute("hidden");
+
+    this.#buttonElement = null;
+    this.#playSlot = null;
+    this.#pauseSlot = null;
 
     this.removeAttribute("data-state");
   }
 
-  #updateAttributes = () => {
+  #updateDOM = () => {
     this.setAttribute(
       "data-state",
       this.#instance?.playbackState === "playing" ? "playing" : "paused",
@@ -71,6 +84,13 @@ class PlayPauseButton extends globalThis.HTMLElement {
         ? window.BeyondWords.translate("pauseAudio")
         : window.BeyondWords.translate("playAudio"),
     );
+    if (this.#instance?.playbackState === "playing") {
+      this.#playSlot?.setAttribute("hidden", "");
+      this.#pauseSlot?.removeAttribute("hidden");
+    } else {
+      this.#pauseSlot?.setAttribute("hidden", "");
+      this.#playSlot?.removeAttribute("hidden");
+    }
   };
 
   #handleClick = (event) => {
