@@ -9,6 +9,10 @@
         box-sizing: border-box;
       }
 
+      h1 {
+        margin: 0;
+      }
+
       beyondwords-player:not([data-initialized]) {
         display: none;
       }
@@ -16,9 +20,18 @@
       beyondwords-player {
         display: flex;
         align-items: center;
-        flex-direction: row;
-        gap: 4px;
+        flex-direction: column;
+        gap: 12px;
+        padding: 0 12px;
       }
+
+      .control-bar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+      }
+
       beyondwords-prev-segment-button::part(root),
       beyondwords-next-segment-button::part(root) {
         width: 30px;
@@ -78,7 +91,8 @@
       }
 
       beyondwords-progress-bar {
-        flex-grow: 1;
+        width: 600px;
+        max-width: 100%;
       }
 
       beyondwords-progress-bar::part(root) {
@@ -114,36 +128,42 @@
     <script src="./NextSegmentButton.js" defer type="module"></script>
     <script src="./PrevSegmentButton.js" defer type="module"></script>
     <script src="./ProgressBar.js" defer type="module"></script>
+    <script src="./Title.js" defer type="module"></script>
   </head>
   <body>
     <beyondwords-player
       project-id="52165"
       content-id="621f3ec7-3be0-4e26-8fa6-698d6439b7d4"
     >
-      <beyondwords-prev-segment-button>
-        <svg class="prev-segment-icon" viewBox="-11 -12 35 36">
-          <path
-            fill="currentColor"
-            d="M1.25 7.29901C0.249999 6.72166 0.250001 5.27828 1.25 4.70093L8.75 0.370802C9.75 -0.206548 11 0.51514 11 1.66984V10.3301C11 11.4848 9.75 12.2065 8.75 11.6291L1.25 7.29901Z"
-          />
-        </svg>
-      </beyondwords-prev-segment-button>
-      <beyondwords-play-pause-button>
-        <svg class="play-icon" viewBox="0 0 24 24" slot="play">
-          <path fill="currentColor" d="M8 5v14l11-7-11-7z" />
-        </svg>
-        <svg class="pause-icon" viewBox="0 0 24 24" slot="pause">
-          <path fill="currentColor" d="M6 19h4V5H6zm8 0h4V5h-4z" />
-        </svg>
-      </beyondwords-play-pause-button>
-      <beyondwords-next-segment-button>
-        <svg class="next-segment-icon" viewBox="-13 -12 35 36">
-          <path
-            fill="currentColor"
-            d="M9.75 4.70093C10.75 5.27828 10.75 6.72166 9.75 7.29901L2.25 11.6291C1.25 12.2065 0 11.4848 0 10.3301V1.66984C0 0.515139 1.25 -0.206548 2.25 0.370802L9.75 4.70093Z"
-          />
-        </svg>
-      </beyondwords-next-segment-button>
+      <h1>
+        <beyondwords-title></beyondwords-title>
+      </h1>
+      <div class="control-bar">
+        <beyondwords-prev-segment-button>
+          <svg class="prev-segment-icon" viewBox="-11 -12 35 36">
+            <path
+              fill="currentColor"
+              d="M1.25 7.29901C0.249999 6.72166 0.250001 5.27828 1.25 4.70093L8.75 0.370802C9.75 -0.206548 11 0.51514 11 1.66984V10.3301C11 11.4848 9.75 12.2065 8.75 11.6291L1.25 7.29901Z"
+            />
+          </svg>
+        </beyondwords-prev-segment-button>
+        <beyondwords-play-pause-button>
+          <svg class="play-icon" viewBox="0 0 24 24" slot="play">
+            <path fill="currentColor" d="M8 5v14l11-7-11-7z" />
+          </svg>
+          <svg class="pause-icon" viewBox="0 0 24 24" slot="pause">
+            <path fill="currentColor" d="M6 19h4V5H6zm8 0h4V5h-4z" />
+          </svg>
+        </beyondwords-play-pause-button>
+        <beyondwords-next-segment-button>
+          <svg class="next-segment-icon" viewBox="-13 -12 35 36">
+            <path
+              fill="currentColor"
+              d="M9.75 4.70093C10.75 5.27828 10.75 6.72166 9.75 7.29901L2.25 11.6291C1.25 12.2065 0 11.4848 0 10.3301V1.66984C0 0.515139 1.25 -0.206548 2.25 0.370802L9.75 4.70093Z"
+            />
+          </svg>
+        </beyondwords-next-segment-button>
+      </div>
       <beyondwords-progress-bar>
         <div class="progress-thumb"></div>
       </beyondwords-progress-bar>
