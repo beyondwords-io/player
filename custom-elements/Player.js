@@ -38,13 +38,14 @@ class Player extends globalThis.HTMLElement {
   disconnectedCallback() {
     this.#instance?.removeEventListener("<any>", this.#listenerHandle);
     this.#instance?.destroy();
-    this.#listenerHandle = null;
     this.#instance = null;
-    this.style.removeProperty("--text-color");
-    this.style.removeProperty("--background-color");
-    this.style.removeProperty("--icon-color");
-    this.style.removeProperty("--highlight-color");
+    this.#listenerHandle = null;
+
     this.removeAttribute("data-playback-state");
+    this.style.removeProperty("--beyondwords-text-color");
+    this.style.removeProperty("--beyondwords-background-color");
+    this.style.removeProperty("--beyondwords-icon-color");
+    this.style.removeProperty("--beyondwords-highlight-color");
   }
 
   async attributeChangedCallback(attrName, oldValue, newValue) {
@@ -91,25 +92,26 @@ class Player extends globalThis.HTMLElement {
   }
 
   #updateAttributes = () => {
-    this.style.setProperty(
-      "--bw-text-color",
-      this.#instance?.textColor ?? "#111",
-    );
-    this.style.setProperty(
-      "--bw-background-color",
-      this.#instance?.backgroundColor ?? "#f5f5f5",
-    );
-    this.style.setProperty(
-      "--bw-icon-color",
-      this.#instance?.iconColor ?? "rgba(0, 0, 0, 0.8)",
-    );
-    this.style.setProperty(
-      "--bw-highlight-color",
-      this.#instance?.highlightColor ?? "#eee",
-    );
+    this.setAttribute("data-initialized", "");
     this.setAttribute(
       "data-playback-state",
       this.#instance?.playbackState ?? "stopped",
+    );
+    this.style.setProperty(
+      "--beyondwords-text-color",
+      this.#instance?.textColor ?? "",
+    );
+    this.style.setProperty(
+      "--beyondwords-background-color",
+      this.#instance?.backgroundColor ?? "",
+    );
+    this.style.setProperty(
+      "--beyondwords-icon-color",
+      this.#instance?.iconColor ?? "",
+    );
+    this.style.setProperty(
+      "--beyondwords-highlight-color",
+      this.#instance?.highlightColor ?? "",
     );
   };
 }
