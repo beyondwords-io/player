@@ -50,10 +50,42 @@
         height: 70%;
         color: var(--beyondwords-icon-color);
       }
+
+      beyondwords-progress-bar {
+        flex-grow: 1;
+      }
+
+      beyondwords-progress-bar::part(root) {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 10px;
+        border-radius: 4px;
+        outline-offset: 3.2px;
+        background-color: var(--beyondwords-background-color);
+        cursor: pointer;
+      }
+
+      beyondwords-progress-bar .progress-thumb {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        translate: -50%;
+        background-color: var(--beyondwords-icon-color);
+        border-radius: 9999px;
+        left: clamp(8px, var(--beyondwords-progress, 0), calc(100% - 8px));
+      }
+
+      beyondwords-progress-bar .progress-thumb:hover,
+      beyondwords-progress-bar[data-scrubbing] .progress-thumb {
+        scale: 1.2;
+      }
     </style>
     <script src="../src/index.ts" defer type="module"></script>
     <script src="./Player.js" defer type="module"></script>
     <script src="./PlayPauseButton.js" defer type="module"></script>
+    <script src="./ProgressBar.js" defer type="module"></script>
   </head>
   <body>
     <beyondwords-player
@@ -68,6 +100,9 @@
           <path fill="currentColor" d="M6 19h4V5H6zm8 0h4V5h-4z" />
         </svg>
       </beyondwords-play-pause-button>
+      <beyondwords-progress-bar>
+        <div class="progress-thumb"></div>
+      </beyondwords-progress-bar>
     </beyondwords-player>
   </body>
 </html>
