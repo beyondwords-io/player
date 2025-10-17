@@ -10,14 +10,7 @@ class PlayPauseButton extends globalThis.HTMLElement {
       <style>
         :host([data-state="playing"]) slot[name=play],
         :host([data-state="paused"]) slot[name=pause] {
-          display: none !important;
-        }
-
-        button {
-          margin: 0;
-          padding: 0;
-          background: none;
-          border: none;
+          display: none;
         }
       </style>
       <slot name="root">
