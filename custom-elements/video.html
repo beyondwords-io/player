@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeyondWords Player - UIKit</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      beyondwords-player:not([data-initialized]) {
+        display: none;
+      }
+
+      beyondwords-player {
+        position: relative;
+        display: block;
+        margin: auto;
+        width: min-content;
+      }
+
+      beyondwords-player [data-player-target] {
+        width: 500px;
+      }
+
+      beyondwords-player:hover .control-bar,
+      beyondwords-player:has(beyondwords-progress-bar[data-scrubbing])
+        .control-bar {
+        display: grid;
+      }
+
+      .control-bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: none;
+        grid-template-columns: minmax(0, 1fr) min-content minmax(0, 1fr);
+        grid-template-rows: repeat(2, auto);
+        align-items: center;
+        padding: 4px;
+        column-gap: 16px;
+        row-gap: 4px;
+        backdrop-filter: blur(4px);
+      }
+
+      beyondwords-prev-segment-button {
+        justify-self: end;
+      }
+
+      beyondwords-prev-segment-button::part(root),
+      beyondwords-next-segment-button::part(root) {
+        width: 30px;
+        height: 30px;
+      }
+
+      beyondwords-play-pause-button::part(root) {
+        width: 50px;
+        height: 50px;
+      }
+
+      beyondwords-prev-segment-button::part(root),
+      beyondwords-next-segment-button::part(root),
+      beyondwords-play-pause-button::part(root) {
+        display: flex;
+        margin: 0;
+        padding: 0;
+        background: none;
+        border: none;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--beyondwords-background-color);
+        border-radius: 9999px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      beyondwords-prev-segment-button::part(root):hover,
+      beyondwords-next-segment-button::part(root):hover,
+      beyondwords-play-pause-button::part(root):hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      beyondwords-prev-segment-button::part(root):active,
+      beyondwords-next-segment-button::part(root):active,
+      beyondwords-play-pause-button::part(root):active {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      beyondwords-prev-segment-button .prev-segment-icon,
+      beyondwords-next-segment-button .next-segment-icon {
+        width: 24px;
+        height: 24px;
+      }
+
+      beyondwords-play-pause-button .play-icon,
+      beyondwords-play-pause-button .pause-icon {
+        width: 30px;
+        height: 30px;
+      }
+
+      beyondwords-prev-segment-button .prev-segment-icon,
+      beyondwords-next-segment-button .next-segment-icon,
+      beyondwords-play-pause-button .play-icon,
+      beyondwords-play-pause-button .pause-icon {
+        color: var(--beyondwords-icon-color);
+      }
+
+      beyondwords-progress-bar {
+        grid-column: 1 / -1;
+      }
+
+      beyondwords-progress-bar::part(root) {
+        position: relative;
+        height: 6px;
+        outline-offset: 3.2px;
+        background-color: var(--beyondwords-background-color);
+        cursor: pointer;
+      }
+
+      beyondwords-progress-bar .progress-track {
+        height: 6px;
+        background-color: blueviolet;
+        width: var(--beyondwords-progress, 0);
+      }
+    </style>
+    <script src="../src/index.ts" defer type="module"></script>
+    <script src="./Player.js" defer type="module"></script>
+    <script src="./PlayPauseButton.js" defer type="module"></script>
+    <script src="./NextSegmentButton.js" defer type="module"></script>
+    <script src="./PrevSegmentButton.js" defer type="module"></script>
+    <script src="./ProgressBar.js" defer type="module"></script>
+    <script src="./Title.js" defer type="module"></script>
+  </head>
+  <body>
+    <beyondwords-player
+      project-id="51446"
+      content-id="b138eb35-1950-43f1-a393-87c29170c746"
+      video
+    >
+      <div class="control-bar">
+        <beyondwords-progress-bar>
+          <div class="progress-track"></div>
+        </beyondwords-progress-bar>
+        <beyondwords-prev-segment-button>
+          <svg class="prev-segment-icon" viewBox="-11 -12 35 36">
+            <path
+              fill="currentColor"
+              d="M1.25 7.29901C0.249999 6.72166 0.250001 5.27828 1.25 4.70093L8.75 0.370802C9.75 -0.206548 11 0.51514 11 1.66984V10.3301C11 11.4848 9.75 12.2065 8.75 11.6291L1.25 7.29901Z"
+            />
+          </svg>
+        </beyondwords-prev-segment-button>
+        <beyondwords-play-pause-button>
+          <svg class="play-icon" viewBox="0 0 24 24" slot="play">
+            <path fill="currentColor" d="M8 5v14l11-7-11-7z" />
+          </svg>
+          <svg class="pause-icon" viewBox="0 0 24 24" slot="pause">
+            <path fill="currentColor" d="M6 19h4V5H6zm8 0h4V5h-4z" />
+          </svg>
+        </beyondwords-play-pause-button>
+        <beyondwords-next-segment-button>
+          <svg class="next-segment-icon" viewBox="-13 -12 35 36">
+            <path
+              fill="currentColor"
+              d="M9.75 4.70093C10.75 5.27828 10.75 6.72166 9.75 7.29901L2.25 11.6291C1.25 12.2065 0 11.4848 0 10.3301V1.66984C0 0.515139 1.25 -0.206548 2.25 0.370802L9.75 4.70093Z"
+            />
+          </svg>
+        </beyondwords-next-segment-button>
+      </div>
+    </beyondwords-player>
+  </body>
+</html>
