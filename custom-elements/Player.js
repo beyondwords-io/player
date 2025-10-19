@@ -7,8 +7,14 @@ class Player extends globalThis.HTMLElement {
   #listenerHandle = null;
 
   connectedCallback() {
+    let target = this.querySelector("[data-player-target]");
+    if (!target) {
+      target = document.createElement("div");
+      target.setAttribute("data-player-target", "");
+      this.prepend(target);
+    }
     this.#instance = new window.BeyondWords.Player({
-      target: this.querySelector("[data-target]") ?? this,
+      target,
       projectId: this.projectId ?? undefined,
       contentId: this.contentId ?? undefined,
       video: this.video ?? undefined,
