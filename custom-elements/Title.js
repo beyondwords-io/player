@@ -12,7 +12,9 @@ class Title extends globalThis.HTMLElement {
   }
 
   connectedCallback() {
-    const playerElement = this.closest("beyondwords-player");
+    const playerElement =
+      this.closest("beyondwords-player") ??
+      document.getElementById(this.playerId);
     if (!(playerElement instanceof HTMLElement)) {
       console.error(
         "beyondwords-title must be used within a beyondwords-player",
@@ -44,6 +46,19 @@ class Title extends globalThis.HTMLElement {
     this.#listenerHandle = null;
 
     this.#rootSlot = null;
+  }
+
+  get playerId() {
+    return this.getAttribute("player-id");
+  }
+
+  set playerId(value) {
+    if (this.playerId === value) return;
+    if (value === null) {
+      this.removeAttribute("player-id");
+    } else {
+      this.setAttribute("player-id", value);
+    }
   }
 
   #updateDOM = () => {

@@ -9,6 +9,11 @@
         box-sizing: border-box;
       }
 
+      h1 {
+        margin: 0 auto 10px;
+        width: max-content;
+      }
+
       beyondwords-player:not([data-initialized]) {
         display: none;
       }
@@ -134,7 +139,11 @@
     <script src="./Title.js" defer type="module"></script>
   </head>
   <body>
+    <h1>
+      <beyondwords-title player-id="#player"></beyondwords-title>
+    </h1>
     <beyondwords-player
+      id="#player"
       project-id="51446"
       content-id="b138eb35-1950-43f1-a393-87c29170c746"
       video
