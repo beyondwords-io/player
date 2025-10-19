@@ -6,18 +6,9 @@ class Player extends globalThis.HTMLElement {
   #instance = null;
   #listenerHandle = null;
 
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.innerHTML = `
-      <div id="target"></div>
-      <slot></slot>
-    `;
-  }
-
   connectedCallback() {
     this.#instance = new window.BeyondWords.Player({
-      target: this.shadowRoot?.querySelector("#target"),
+      target: this.querySelector("[data-target]") ?? this,
       projectId: this.projectId ?? undefined,
       contentId: this.contentId ?? undefined,
       video: this.video ?? undefined,
