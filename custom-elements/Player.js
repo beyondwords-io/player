@@ -1,6 +1,6 @@
 class Player extends globalThis.HTMLElement {
   static get observedAttributes() {
-    return ["project-id", "content-id"];
+    return ["project-id", "content-id", "video"];
   }
 
   #instance = null;
@@ -20,6 +20,7 @@ class Player extends globalThis.HTMLElement {
       target: this.shadowRoot?.querySelector("#target"),
       projectId: this.projectId ?? undefined,
       contentId: this.contentId ?? undefined,
+      video: this.video ?? undefined,
       showUserInterface: false,
     });
     this.#listenerHandle = this.#instance.addEventListener(
@@ -52,6 +53,9 @@ class Player extends globalThis.HTMLElement {
       case "content-id":
         if (this.#instance) this.#instance.contentId = newValue;
         break;
+      case "video":
+        if (this.#instance) this.#instance.video = newValue;
+        break;
     }
   }
 
@@ -82,6 +86,19 @@ class Player extends globalThis.HTMLElement {
       this.removeAttribute("content-id");
     } else {
       this.setAttribute("content-id", value);
+    }
+  }
+
+  get video() {
+    return this.hasAttribute("video");
+  }
+
+  set video(value) {
+    if (this.video === value) return;
+    if (value) {
+      this.setAttribute("video", "");
+    } else {
+      this.removeAttribute("video");
     }
   }
 
