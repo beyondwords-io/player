@@ -19,7 +19,9 @@ class PlayPauseButton extends globalThis.HTMLElement {
   }
 
   connectedCallback() {
-    const playerElement = this.closest("beyondwords-player");
+    const playerElement =
+      this.closest("beyondwords-player") ??
+      document.getElementById(this.playerId);
     if (!(playerElement instanceof HTMLElement)) {
       console.error(
         "beyondwords-play-pause-button must be used within a beyondwords-player",
@@ -72,6 +74,19 @@ class PlayPauseButton extends globalThis.HTMLElement {
     this.#pauseSlot = null;
 
     this.removeAttribute("data-state");
+  }
+
+  get playerId() {
+    return this.getAttribute("player-id");
+  }
+
+  set playerId(value) {
+    if (this.playerId === value) return;
+    if (value === null) {
+      this.removeAttribute("player-id");
+    } else {
+      this.setAttribute("player-id", value);
+    }
   }
 
   #updateDOM = () => {

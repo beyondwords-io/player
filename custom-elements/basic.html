@@ -121,6 +121,15 @@
       beyondwords-progress-bar[data-scrubbing] .progress-thumb {
         scale: 1.2;
       }
+
+      .floating-widget {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: lightgray;
+        padding: 8px 20px;
+      }
     </style>
     <script src="../src/index.ts" defer type="module"></script>
     <script src="./Player.js" defer type="module"></script>
@@ -132,6 +141,7 @@
   </head>
   <body>
     <beyondwords-player
+      id="player"
       project-id="52165"
       content-id="ee1ea2d7-9c3c-4053-8e4b-98cd68c15486"
     >
@@ -182,5 +192,15 @@
       The mural appeared on an external wall of the Queen's Building, in the
       Royal Courts of Justice complex, on Monday.
     </p>
+    <div class="floating-widget">
+      <beyondwords-play-pause-button player-id="player">
+        <svg class="play-icon" viewBox="0 0 24 24" slot="play">
+          <path fill="currentColor" d="M8 5v14l11-7-11-7z" />
+        </svg>
+        <svg class="pause-icon" viewBox="0 0 24 24" slot="pause">
+          <path fill="currentColor" d="M6 19h4V5H6zm8 0h4V5h-4z" />
+        </svg>
+      </beyondwords-play-pause-button>
+    </div>
   </body>
 </html>
