@@ -12,34 +12,46 @@ detailed explanation for each of the player's settings. You can see a demo of
 the player
 [here](https://beyondwords-io.github.io/player-demo).
 
-## Documentation
+Please refer to our **[official documentation](https://docs.beyondwords.io/docs-and-guides/distribution/player/overview)** for more information.
 
-The [doc/](doc/) directory contains these useful resources:
+## Development setup
 
-1. [Getting started](./doc/getting-started.md): A guide for how
-to embed the player on your website using a `<script>` tag.
-2. [NPM package](./doc/npm-package.md): A guide for how to add the
-player to your website using the NPM package.
-3. [Player SDK](./doc/player-sdk.md): An explanation of how to control the
-player programmatically by using the SDK.
-4. [Player settings](./doc/player-settings.md): A list of all supported player
-settings that can be set in the initializer or via the SDK.
-5. [Client-side integration](./doc/client-side-integration.md): How to import
-content into the BeyondWords platform using the player
-6. [Listening to events](./doc/listening-to-events.md): How to register event
-listeners that are called when player actions are performed.
-7. [Player events](./doc/player-events.md): A list of all events emitted by
-the player that can be listened to.
-8. [Segments playback](./doc/segments-playback.md): How to add support for
-the 'Playback from Segments' feature to your website.
-9. [Custom analytics](./doc/custom-analytics.md): How to send player analytics
-events to a custom URL of your choosing.
-10. [Building your own UI](./doc/building-your-own-ui.md): How to build your own
-user-interface on top of the BeyondWords player.
-11. [Dev setup](./doc/dev-setup.md): How to run this project locally, e.g. if
-you are a developer at BeyondWords.
-12. [Deployment](./doc/deployment.md): How to release a new version of the player
-to the public and details about caching.
+We recommend you use nodenv for managing node versions. There is a `.nodenv`
+file in the root of the repository. You will need to set this up first. Then,
+run the following to install dependencies and start a server on port 8000:
+
+```sh
+./bin/setup
+./bin/server
+```
+
+The player will live-reload when you make changes to the code.
+
+## Testing
+
+You can run the tests with:
+
+```sh
+./bin/test_units
+./bin/test_screenshots
+./bin/test_accessibility
+./bin/lint
+```
+
+The screenshot and accessibility tests use Playwright and are Dockerized to
+avoid test failures as a result of browser version differences. You will need
+Docker installed to run these tests. These tests run automatically when pushing
+to GitHub.
+
+## Deployment
+
+1. Update the version with `./bin/version <version>`
+2. Commit the changes with `Release version <version>`
+3. Push the changes and wait for CI to pass
+4. Add a tag with the version: `git tag <version>`
+5. Push the tag with `git push --tags`
+6. Create a GitHub Release from the tag and wait for CD to pass
+7. Run `./bin/purge_cache` or wait ~12 hours for the cache to expire
 
 ## Contribution
 
