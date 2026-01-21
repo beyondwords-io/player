@@ -144,6 +144,7 @@ const setContentProp = (player, data) => {
       url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
       contentType: video.content_type,
       duration: video.duration ? video.duration / 1000 : 0,
+      videoSize: video.video_size,
     })),
     summarization: {
       audio: (item.summarization?.audio || []).map((audio) => ({
@@ -157,6 +158,7 @@ const setContentProp = (player, data) => {
         url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
         contentType: video.content_type,
         duration: video.duration ? video.duration / 1000 : 0,
+        videoSize: video.video_size,
       })),
     },
     segments: item.segments.map((segment) => ({
@@ -204,6 +206,7 @@ const setAdvertsProp = (player, data) => {
         url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
         contentType: video.content_type,
         duration: video.duration ? video.duration / 1000 : 0,
+        videoSize: video.video_size,
       })),
     };
   }));

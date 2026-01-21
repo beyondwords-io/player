@@ -19,7 +19,8 @@
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
 
-  // Please document all settings and keep in-sync with /doc/player-settings.md
+  // Please document all settings and keep in-sync with the developer docs:
+  // https://github.com/beyondwords-core/docs/blob/main/docs-and-guides/distribution/player/sdk/javascript/player-settings.mdx
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
   export let projectId = undefined;
   export let contentId = undefined;
@@ -33,6 +34,7 @@
   export let showBottomWidget = false;
   export let showCloseWidget = true;
   export let playerStyle = "standard";
+  export let videoSizes = [];
   export let playerTitle = undefined;
   export let callToAction = undefined;
   export let skipButtonStyle = "auto";
@@ -125,6 +127,7 @@
 
   $: isAdvert = activeAdvert && playbackState !== "stopped";
   $: isAudio = loadedMedia?.format === "audio";
+  $: isVideo = loadedMedia?.format === "video";
 
   $: hasDaxAdverts = adverts.some(ad => isDigitalAdExchange(ad.vastUrl));
   $: setDaxListenerId = hasDaxAdverts && advertConsent === "personalized";
@@ -151,6 +154,7 @@
 
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
+  $: aspectRatio = isVideo ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
 
   $: showVideoPoster = isAudio && videoMightBeShown && metadataLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
@@ -192,6 +196,7 @@
   <MediaElement
     bind:this={mediaElement}
     {onEvent}
+    {videoSizes}
     {content}
     {contentIndex}
     {summary}
@@ -217,6 +222,7 @@
     {videoBehindWidget}
     {videoBehindStatic}
     {videoMightBeShown}
+    {aspectRatio}
     {widgetPosition}
     {widgetWidth}
     {widgetMargin}
@@ -257,6 +263,7 @@
     {logoImagePosition}
     {maxImageSize}
     {isFullScreen}
+    {aspectRatio}
     {videoPosterImage}
     videoIsBehind={videoBehindStatic} />
 {/if}
@@ -299,6 +306,7 @@
       {logoIconEnabled}
       {logoImagePosition}
       {maxImageSize}
+      {aspectRatio}
       {videoPosterImage}
       videoIsBehind={videoBehindWidget} />
   </ExternalWidget>

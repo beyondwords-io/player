@@ -70,6 +70,7 @@
   export let onEvent = () => {};
 
   // These are set automatically.
+  export let aspectRatio = 16 / 9;
   export let videoPosterImage = "";
   export let videoIsBehind = false;
   export let isFullScreen = false;
@@ -173,7 +174,7 @@
   });
 </script>
 
-<div bind:this={element} class={classes} style="width: {widthStyle}; --margin: {fixedMargin}; --margin-width: {marginWidth}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
+<div bind:this={element} class={classes} style="width: {widthStyle}; --margin: {fixedMargin}; --margin-width: {marginWidth}; --aspect-ratio: {aspectRatio}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
   <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
     {#if isVideo && (videoPosterImage || !videoIsBehind)}
       <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""}>
@@ -563,7 +564,7 @@
 
   .video :global(.hoverable) {
     position: relative;
-    padding-bottom: 56.25%;
+    padding-bottom: calc(100% / var(--aspect-ratio));
     border-radius: 8px;
     overflow: hidden;
     transition: background-color 0.25s;

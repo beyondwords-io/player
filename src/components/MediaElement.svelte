@@ -14,6 +14,7 @@
   import findLoadedMedia from "../helpers/findLoadedMedia";
   import chooseSegmentElement from "../helpers/chooseSegmentElement";
 
+  export let videoSizes;
   export let content;
   export let contentIndex;
   export let summary;
@@ -38,6 +39,7 @@
   export let videoBehindWidget;
   export let videoBehindStatic;
   export let videoMightBeShown;
+  export let aspectRatio;
   export let widgetPosition;
   export let widgetWidth;
   export let widgetMargin;
@@ -88,7 +90,7 @@
   $: !introOrOutro && !activeAdvert && !summary && (mediaObject = contentItem);
   $: !introOrOutro && !activeAdvert && summary && (mediaObject = contentItem?.summarization);
 
-  $: sources = orderedMediaSources(mediaObject, preferVideo());
+  $: sources = orderedMediaSources(mediaObject, preferVideo(), videoSizes);
 
   $: sources, metadataLoaded = false;
   $: sources, prevPercentage = 0;
@@ -319,7 +321,7 @@
 
 {#if content.length > 0}
   <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic || videoBehindStaticWidget} class:behind-sliding-widget={videoBehindSlidingWidget} class:headless={!showUserInterface} {style}>
-    <div class="inner">
+    <div class="inner" style={`--aspect-ratio: ${aspectRatio}`}>
       {#key platform === "ios" && sources.map(({ url }) => url).join("")}
         <!-- svelte-ignore a11y-media-has-caption -->
         <video bind:this={video}
@@ -382,7 +384,7 @@
   .inner {
     width: 100%;
     height: 0;
-    padding-bottom: 56.25%;
+    padding-bottom: calc(100% / var(--aspect-ratio));
     position: relative;
   }
 
@@ -457,5 +459,12 @@
     max-width: none;
     border-radius: 0;
     position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  :global(.beyondwords-player.maximized) .media-element .inner {
+    height: 100%;
+    padding-bottom: 0;
   }
 </style>
