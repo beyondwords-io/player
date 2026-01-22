@@ -138,18 +138,6 @@
     top: 24px;
   }
 
-  .small.fixed-right .inner {
-    position: absolute;
-    left: 16px;
-    top: 24px;
-  }
-
-  .small.fixed-right.advert_ .inner {
-    position: absolute;
-    left: 44px;
-    top: 24px;
-  }
-
   .screen {
     position: absolute;
     bottom: 54px;

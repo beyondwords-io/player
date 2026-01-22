@@ -23,10 +23,6 @@
     column-gap: 16px;
   }
 
-  .right-to-left {
-    flex-direction: row-reverse;
-  }
-
   .advert_ {
     display: none;
   }
@@ -60,11 +56,6 @@
   .video.advert_ {
     margin-left: 0;
     display: flex;
-  }
-
-  .video.right-to-left {
-    margin-left: 0;
-    margin-right: auto;
   }
 
   .video.advert_ :global(.playlist-button) {

@@ -214,7 +214,7 @@
           <NextButton {onEvent} style={skipStyle} scale={buttonScale} color={activeIconColor} />
         {/if}
 
-        {#if isStandard && fixedPosition && !isStopped && !isAdvert && width > 720 && controlsOrder !== "left-to-right-but-swap-ends"}
+        {#if isStandard && fixedPosition && !isStopped && !isAdvert && width > 720}
           <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
         {/if}
 
@@ -348,24 +348,11 @@
     transition: column-gap 1.25s;
   }
 
-  .right-to-left .controls :global(.advert-button)        { order: 1; }
-  .right-to-left .controls :global(.advert-link)          { order: 2; }
-  .right-to-left .controls :global(.progress-bar)         { order: 3; }
-  .right-to-left .controls :global(.player-title)         { order: 4; }
-  .right-to-left .controls :global(.time-indicator)       { order: 5; }
-  .right-to-left .controls :global(.prev-button)          { order: 6; }
-  .right-to-left .controls :global(.next-button)          { order: 7; }
-  .right-to-left .controls :global(.playback-rate-button) { order: 8; }
-  .right-to-left .controls :global(.visibility)           { order: 9; }
-
   .symmetrical .controls :global(.prev-button)          { order: 1; }
   .symmetrical .controls :global(.playback-rate-button) { order: 2; }
   .symmetrical .controls :global(.visibility)           { order: 3; }
   .symmetrical .controls :global(.secondary-buttons)    { order: 4; }
   .symmetrical .controls :global(.next-button)          { order: 5; }
-
-  .left-to-right-but-swap-ends .controls :global(.visibility) { order: 1; }
-  .left-to-right-but-swap-ends .controls :global(.secondary-buttons) { display: none; }
 
   .advert_ .controls {
     justify-content: space-between;
@@ -387,19 +374,8 @@
     align-items: center;
   }
 
-  .standard.right-to-left .main,
-  .standard.left-to-right-but-swap-ends .main {
-    flex-direction: row-reverse;
-  }
-
   .standard .end.has-content {
     margin-right: 12px;
-  }
-
-  .standard.right-to-left .end,
-  .standard.left-to-right-but-swap-ends .end {
-    margin-left: 12px;
-    margin-right: 0;
   }
 
   .large {
@@ -468,20 +444,8 @@
     padding-right: 0;
   }
 
-  .small.right-to-left .main {
-    padding-left: 16px;
-  }
-
   .small.left-to-right.advert_ .main {
     padding-right: 4px;
-  }
-
-  .small.right-to-left.advert_ .main {
-    padding-left: 4px;
-  }
-
-  .small.collapsed.right-to-left .main {
-    padding-left: 0;
   }
 
   .screen {
@@ -707,10 +671,6 @@
   .video.stopped .controls {
     pointer-events: none;
     padding: 16px;
-  }
-
-  .video.stopped.right-to-left .controls {
-    flex-direction: row-reverse;
   }
 
   .video.stopped .main,

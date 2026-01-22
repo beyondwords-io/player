@@ -82,9 +82,4 @@
     margin-left: auto;
     margin-right: 0;
   }
-
-  a.video.right-to-left {
-    margin-left: 0;
-    margin-right: auto;
-  }
 </style>
