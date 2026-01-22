@@ -21,61 +21,6 @@
       segmentWidgetPosition: "9-oclock",
       controlPanel: ".control-panel",
       clickableSections: "all",
-      transitions: [
-        // Player Style
-        [1, 8.873,  p => p.playerStyle = "small"],
-        [1, 8.873,  p => p.widgetStyle = "small"],
-        [1, 24.713, p => p.playerStyle = "standard"],
-        [1, 24.713, p => p.widgetStyle = "standard"],
-        [1, 35,     p => p.widgetWidth = "0"],
-        [1, 40.768, p => p.playerStyle = "large"],
-        [1, 40.768, p => p.widgetStyle = "large"],
-        [1, 56.512, p => p.playerStyle = "screen"],
-        [1, 56.512, p => p.widgetStyle = "screen"],
-        [1, 72.664, p => p.playerStyle = "video"],
-        [1, 72.664, p => p.widgetStyle = "video"],
-
-        // Player Colors
-        // TODO: fix highlightColor not updating for currentSegment
-        // TODO: demonstrate highlightColor linear gradient
-        [2, 0,      p => p.playerStyle = "standard"],
-        [2, 0,      p => p.widgetStyle = "standard"],
-        [2, 0,      p => p.widgetWidth = "auto"],
-        [2, 14.585, p => p.backgroundColor = "#cdf"],
-        [2, 22.1,   p => p.backgroundColor = "linear-gradient(to right, #fcf, #cff)"],
-        [2, 26.7,   p => p.backgroundColor = "linear-gradient(to bottom, #ffb, #fc6)"],
-        [2, 28.697, p => p.backgroundColor = "#F5F5F5"],
-        [2, 28.697, p => p.textColor = "red"],
-        [2, 33.5,   p => p.textColor = "#323232"],
-        [2, 33.5,   p => p.iconColor = "blue"],
-        [2, 38.6,   p => p.iconColor = "#323232"],
-        [2, 38.6,   p => p.highlightColor = "#fdf"],
-        [2, 47.1,   p => p.backgroundColor = "linear-gradient(to right, #fcf, #cff)"],
-        [2, 47.1,   p => p.textColor = "purple"],
-        [2, 47.1,   p => p.iconColor = "#009"],
-        [2, 52.2,   p => p.backgroundColor = "#222"],
-        [2, 52.2,   p => p.textColor = "white"],
-        [2, 52.2,   p => p.iconColor = "#d00"],
-        [2, 52.2,   p => p.highlightColor = "#eee"],
-        [2, 55,     p => p.backgroundColor = "#F3F1DE"],
-        [2, 55,     p => p.textColor = "#2D5440"],
-        [2, 55,     p => p.iconColor = "#2D5440"],
-        [2, 62.7,   p => p.backgroundColor = "linear-gradient(22.5deg, #29628D 0%, #29628D 50%, #D0343E 50%, #D0343E 100%)"],
-        [2, 62.7,   p => p.textColor = "white"],
-        [2, 62.7,   p => p.iconColor = "white"],
-
-        // Segment Playback
-        [3, 0,      p => p.backgroundColor = "#F5F5F5"],
-        [3, 0,      p => p.textColor = "#323232"],
-        [3, 0,      p => p.iconColor = "#323232"],
-        [3, 28.5,   p => p.highlightSections = "none-all"],
-        [3, 32.224, p => p.segmentWidgetSections = "all"],
-        [3, 36,     p => p.clickableSections = "none"],
-        [3, 36,     p => p.highlightSections = "none"],
-        [3, 47.776, p => p.clickableSections = "all"],
-        [3, 47.776, p => p.highlightSections = "all"],
-        [3, 64.1,   p => p.segmentWidgetSections = "none"],
-      ],
     })'></script>
 
     <script>

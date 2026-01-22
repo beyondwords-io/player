@@ -14,7 +14,6 @@
   import SegmentHighlights from "../helpers/segmentHighlights";
   import identifiersEvent from "../helpers/identifiersEvent";
   import sectionEnabled from "../helpers/sectionEnabled";
-  import applyTransitions from "../helpers/applyTransitions";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
@@ -179,10 +178,6 @@
 
   $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor);
   $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor);
-
-  // TODO: if timedTransitions changes then re-apply all transitions.
-  // TODO: don't apply transitions during intros/adverts.
-  $: applyTransitions(transitions, controller, currentTime);
 
   onDestroy(() => {
     segmentContainers.reset();
