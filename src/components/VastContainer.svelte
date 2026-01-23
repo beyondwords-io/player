@@ -29,6 +29,7 @@
   let adsManager;
   let adsLoaded;
   let adData;
+  let adStarted;
 
   $: adParams = vastUrlParams(vastUrl, placement, advertConsent, maxImageSize, projectId, playlistId, contentId, contentLanguage, platform, vendorIdentifier, bundleIdentifier, elementIsVisible(video));
   $: adTagUrl = withQueryParams(vastUrl, adParams);
@@ -86,6 +87,7 @@
   };
 
   const onStarted = (adEvent) => {
+    adStarted = true;
     const settings = new google.ima.CompanionAdSelectionSettings();
 
     settings.resourceType = google.ima.CompanionAdSelectionSettings.ResourceType.STATIC;
@@ -239,4 +241,14 @@
   <script on:load={initializeIMA} on:error={onScriptError} src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
 </svelte:head>
 
-<div class="vast-container" bind:this={adContainer}></div>
+<div class="vast-container" bind:this={adContainer} class:started={adStarted}></div>
+
+<style>
+  .vast-container {
+    display: none;
+  }
+
+  .vast-container.started {
+    display: block;
+  }
+</style>

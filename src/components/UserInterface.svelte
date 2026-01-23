@@ -89,6 +89,7 @@
   $: isAdvert = activeAdvert && !isStopped;
   $: isPlaylist = content.length > 1;
   $: isMobile = belowBreakpoint({ playerStyle, width });
+  $: isMinimalUi = isVideo && aspectRatio < 1 && !isFullScreen;
 
   $: contentItem = content[contentIndex] || {};
   $: progress = currentTime / duration;
@@ -136,7 +137,7 @@
   $: playlistParts = playlistStyle.split("-");
 
   $: showPlaylist = (playlistParts[0] === "show" || playlistParts[0] === "auto" && isPlaylist) && !isSmall;
-  $: showPlaylistToggle = (playlistToggle === "show" || playlistToggle === "auto" && isPlaylist) && !isSmall && !isFullScreen;
+  $: showPlaylistToggle = (playlistToggle === "show" || playlistToggle === "auto" && isPlaylist) && !isSmall && !isFullScreen && !isMinimalUi;
 
   $: downloadAudio = (summary ? contentItem.summarization.audio : contentItem.audio) || [];
   $: downloadVideo = (summary ? contentItem.summarization.video : contentItem.video) || [];
@@ -174,7 +175,7 @@
   });
 </script>
 
-<div bind:this={element} class={classes} style="width: {widthStyle}; --margin: {fixedMargin}; --margin-width: {marginWidth}; --aspect-ratio: {aspectRatio}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:collapsed class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
+<div bind:this={element} class={classes} style="width: {widthStyle}; --margin: {fixedMargin}; --margin-width: {marginWidth}; --aspect-ratio: {aspectRatio}" class:mobile={isMobile} class:advert_={isAdvert} class:hovering={isHovering} class:minimal-ui={isMinimalUi} class:collapsed class:animating={timeout} transition:flyWidget|global on:outrostart={animate}>
   <Hoverable bind:isHovering exitDelay={collapsible ? 500 : 0} idleDelay={isVideo ? 1500 : Infinity}>
     {#if isVideo && (videoPosterImage || !videoIsBehind)}
       <div class="video-placeholder" style={videoPosterImage ? `background-image: url(${videoPosterImage})` : ""}>
@@ -194,6 +195,14 @@
         <div class="summary">
           <PlayerTitle title={playerTitle} visible={!isAdvert} {playerStyle} scale={isScreen ? 2 : 1} color={activeTextColor} />
           <ContentTitle title={contentItem.title} maxLines={isMobile || isScreen ? 3 : 1} center={isScreen} scale={isScreen ? 2 : 1} maxWidth={isScreen && !isMobile ? 640 : isScreen ? 320 : null} color={activeTextColor} />
+        </div>
+      {/if}
+
+      {#if isMinimalUi && !isAdvert}
+        <div class="minimal-ui-play-pause-button">
+          <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
+            <PlayPauseButton {onEvent} {isPlaying} scale={fixedPosition ? 1.75 : 2.5} color={activeIconColor} />
+          </Visibility>
         </div>
       {/if}
 
@@ -218,7 +227,7 @@
           <ContentTitle title={contentItem.title} maxLines={1} bold={true} scale={1.2} flex={0.52} color={activeTextColor} />
         {/if}
 
-        <TimeIndicator {currentTime} {duration} {durationFormat} {playerStyle} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} {showBeyondWords} color={activeTextColor} />
+        <TimeIndicator {currentTime} {duration} {durationFormat} {playerStyle} {isMinimalUi} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} {showBeyondWords} color={activeTextColor} />
 
         {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
           <ProgressBar {onEvent} {progress} {duration} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
@@ -597,6 +606,20 @@
     transition: opacity 0.25s, height 0.1s, top 0.1s;
   }
 
+  .video .minimal-ui-play-pause-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.25s;
+    opacity: 0;
+  }
+
+  .video.stopped .minimal-ui-play-pause-button,
+  .video.hovering .minimal-ui-play-pause-button {
+    opacity: 0.8;
+  }
+
   :global(.video .hoverable):focus-within .controls > :global(*),
   .video.stopped .controls > :global(*),
   .video.hovering .controls > :global(*),
@@ -761,6 +784,37 @@
   .video.fixed .controls {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  .video.minimal-ui {
+    min-width: 200px;
+  }
+
+  .video.minimal-ui .controls {
+    column-gap: 0;
+  }
+
+  .video.minimal-ui .controls :global(.player-title),
+  .video.minimal-ui .controls :global(.playback-rate-button),
+  .video.minimal-ui .controls :global(.prev-button),
+  .video.minimal-ui .controls :global(.next-button),
+  .video.minimal-ui .controls :global(.playlist-button),
+  .video.minimal-ui .controls :global(.download-button),
+  .video.minimal-ui .controls :global(.maximize-button) {
+    display: none;
+  }
+
+  .video.minimal-ui:not(.advert_) .controls :global(.visibility),
+  .video.minimal-ui:not(.advert_) .controls :global(.source-url-button) {
+    display: none;
+  }
+
+  .video.minimal-ui:not(.advert_) .controls :global(.time-indicator) {
+    margin-left: 0;
+  }
+
+  .video.minimal-ui:not(.advert_) .controls :global(.beyondwords) {
+    padding: 8px 0;
   }
 
   :global(.beyondwords-player.maximized) .fixed {

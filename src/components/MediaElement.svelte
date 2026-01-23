@@ -40,6 +40,7 @@
   export let videoBehindStatic;
   export let videoMightBeShown;
   export let aspectRatio;
+  export let isFullScreen;
   export let widgetPosition;
   export let widgetWidth;
   export let widgetMargin;
@@ -121,6 +122,7 @@
 
   // TODO: is it possible to also set the currentTime when changing to video for continuity?
   $: videoMightBeShown && loadedMedia?.format === "audio" && hasVideo() && atTheStart && (mediaObject = mediaObject);
+  $: isMinimalUi = loadedMedia?.format === "video" && aspectRatio < 1 && !isFullScreen;
 
   $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime, summary);
   $: segmentIndex, handleSegmentUpdate();
@@ -320,7 +322,7 @@
 </script>
 
 {#if content.length > 0}
-  <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic || videoBehindStaticWidget} class:behind-sliding-widget={videoBehindSlidingWidget} class:headless={!showUserInterface} {style}>
+  <div class="media-element {position}" class:animating={timeout} class:behind-static={videoBehindStatic || videoBehindStaticWidget} class:behind-sliding-widget={videoBehindSlidingWidget} class:headless={!showUserInterface} class:minimal-ui={isMinimalUi} {style}>
     <div class="inner" style={`--aspect-ratio: ${aspectRatio}`}>
       {#key platform === "ios" && sources.map(({ url }) => url).join("")}
         <!-- svelte-ignore a11y-media-has-caption -->
@@ -375,6 +377,10 @@
     background: black;
     overflow: hidden;
     min-width: 300px;
+  }
+
+  .media-element.minimal-ui {
+    min-width: 200px;
   }
 
   .media-element:not(.headless) {

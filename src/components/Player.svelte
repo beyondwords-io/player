@@ -218,6 +218,7 @@
     {videoBehindStatic}
     {videoMightBeShown}
     {aspectRatio}
+    {isFullScreen}
     {widgetPosition}
     {widgetWidth}
     {widgetMargin}
