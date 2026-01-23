@@ -8,14 +8,12 @@
   <body>
     <div class="control-panel"></div>
 
-    <h1 data-beyondwords-marker="cbe5f90b-0e73-4135-967a-a6241e3f02ee">
-      BeyondWords Player
-    </h1>
+    <h1>New Zealand Gas Supply Report</h1>
 
     <script id="player-script" async defer type="module" onload='new BeyondWords.Player({
       target: this,
-      projectId: 26027,
-      playlistId: 86791,
+      projectId: 38147,
+      contentId: "c3e5b02d-7906-4e95-ac6c-ade3aa3ae019",
       playlistStyle: "hide",
       skipButtonStyle: "segments",
       segmentWidgetPosition: "9-oclock",
@@ -30,161 +28,8 @@
       script.src = isLocal ? "src/index.ts" : "https://proxy.beyondwords.io/npm/@beyondwords/player@0.3.19/dist/umd.js";
     </script>
 
-    <p data-beyondwords-marker="7dbf51e6-f8e7-4c17-85f5-3614d3dc096d">
-      This is a demo page for the
-      <a href="https://beyondwords.io/" target="_blank">BeyondWords</a> Player.
-      As you listen to the audio, the player will automatically update to
-      demonstrate its key features. Additionally, on desktop, you can use the
-      control panel on the right to customize the player and inspect its
-      properties.
-    </p>
-
-    <p data-beyondwords-marker="5cb87696-8333-4874-961d-c0acf3ffdcf8">
-      This page is intended to help integrators understand the capabilities of
-      the player and to make it easier to add the player to your website. For
-      more detailed documentation, please refer to the
-      <a href="https://github.com/beyondwords-io/player" target="_blank">player repository</a>
-      on GitHub which includes guides and reference material.
-    </p>
-
-    <p data-beyondwords-marker="677d53fe-29ea-433a-9976-6dbbd4882bf0">
-      The explanations on this page are split into sections. You can click on
-      the playlist icon in the player above to jump to a specific section to
-      hear about a particular feature. If you have any feedback on this page,
-      please open a
-      <a href="https://github.com/beyondwords-io/player/issues/new/choose" target="_blank">GitHub issue</a>.
-      Thank you.
-    </p>
-
-    <h2 data-beyondwords-marker="c8517247-b416-401f-a783-15e345381e3a">
-      Player Styles
-    </h2>
-
-    <p data-beyondwords-marker="a160fb43-0fc9-4032-9ffc-51c863d2739e">
-      The player supports five different styles: 'small', 'standard', 'large', 'screen'
-      and 'video'.
-    </p>
-
-    <p data-beyondwords-marker="e2af6c9e-241f-45d9-a7dc-2e70e50d4187">
-      The <strong>small</strong> player style, currently visible, is our most
-      compact style and takes up minimal space on your page. When used in the
-      widget at the bottom of the page, it automatically expands and collapses
-      when interacting with it, although you can customize this behavior.
-    </p>
-
-    <p data-beyondwords-marker="f33c7e8e-78b2-4a0c-989b-c300aff144fd">
-      The <strong>standard</strong> player style is the default and it's what we recommend for
-      most people. It provides a balance of functionality while taking up a
-      small-ish amount of space on the page. On mobile, a right-to-left layout
-      is used since most users are right-handed.
-    </p>
-
-    <p data-beyondwords-marker="c3419771-64e8-47d5-8114-efe934a40c73">
-      The <strong>large</strong> player style turns the player into more of a feature on your
-      webpage. It shows an image and supports an additional title that can vary
-      depending on the content or advert that is playing. We recommend this
-      style for playlists of multiple content items.
-    </p>
-
-    <p data-beyondwords-marker="dd0fe86a-ec06-4490-b756-988ed881a6c8">
-      The <strong>screen</strong> player style is intended to be used when the player takes up
-      the full screen, i.e. to create a dedicated landing page for your content.
-      We use this style at BeyondWords to provide a URL that allows content to
-      be shared on social media, such as
-      <a href="https://audio.beyondwords.io/playlist/86791" target="_blank">this one</a>.
-    </p>
-
-    <p data-beyondwords-marker="0dbdb40f-2100-4273-bab6-594a225f6def">
-      The <strong>video</strong> player style is our latest addition that
-      supports video playback. You will soon be able to generate videos of your
-      content being read out word-by-word to make the experience more engaging
-      for your users. We haven't launched this quite yet, but you can see a demo
-      of this feature on
-      <a href="https://beyondwords-io.github.io/player-demo" target="_blank">this page</a>
-      by setting the 'Player style' dropdown to 'video'.
-    </p>
-
-    <h2 data-beyondwords-marker="a728775a-4b7e-4715-b404-2ba12d9a4a9d">
-      Player Colors
-    </h2>
-
-    <p data-beyondwords-marker="6b31d9cf-d407-47a6-bd39-8ef769eb31c3">
-      The player supports a range of color settings to make it fit with your
-      brand. Colors can be set to any CSS value, such as 'red', '#F00' and
-      'rgb(255, 0, 0)'.
-    </p>
-
-    <p data-beyondwords-marker="ab7d6acf-559e-450a-9c7d-4c5bb9123a4c">
-      The <strong>backgroundColor</strong> setting affects the background of the
-      player in all user interfaces, including the widget that appears at the
-      bottom of the screen. Additionally, a linear-gradient can be set to add
-      visual interest. Horizontal and vertical gradients are supported.
-    </p>
-
-    <p data-beyondwords-marker="6b7eef67-b6b7-4fd7-b64c-c062573ffc46">
-      The <strong>textColor</strong> setting is self-explanatory and sets the
-      text color throughout the player. Similarly, the <strong>iconColor</strong>
-      property allows the buttons and progress bar color to change.
-    </p>
-
-    <p data-beyondwords-marker="93f2c00d-e763-4e0e-bbb0-0219aa9bd00f">
-      The <strong>highlightColor</strong> setting changes the color of
-      the text highlights on the page as the article is being read out. Again,
-      this setting supports linear-gradients.
-    </p>
-
-    <p data-beyondwords-marker="b1b2cca0-4f47-46fd-9309-c61b26471b66">
-      When combined, these color settings create a distinctive look for the
-      player that can fit your brand. Here is an example of a player that might
-      fit a news brand and here is an example of a player that might fit an
-      eco-friendly brand.
-    </p>
-
-    <p data-beyondwords-marker="bc0a38f4-eb68-4452-90b3-112299339f87">
-      Finally, the player allows adverts to "take over" the look of the player.
-      For example, a Domino's Pizza advert could set the colors to match its
-      brand.
-    </p>
-
-    <h2 data-beyondwords-marker="c8633ed6-6ecb-4847-a477-bfcfbb0f374d">
-      Segment Playback
-    </h2>
-
-    <p data-beyondwords-marker="cb48d272-6498-4135-a572-a3ec259632f5">
-      As you have probably noticed by now, one of the key features of the
-      BeyondWords player is the ability to playback from segments. This feature
-      allows users to click on a paragraph within your article and the audio
-      will immediately skip to that location.
-    </p>
-
-    <p data-beyondwords-marker="5e941dd2-3dbd-43ac-9bc3-989953846ef8">
-      The added text highlights help users follow along with the content as it
-      is being read out and the hover effect emphasizes that paragraphs can
-      be clicked on. These behaviors can be configured independently, e.g. you
-      can choose not to highlight the current segment.
-    </p>
-
-    <p data-beyondwords-marker="e56fd498-c55d-4ccb-b55b-966d93e7381d">
-      The segment widget that appears next to paragraphs can be switched on or
-      off or used instead of the ability to click on paragraphs. The segment
-      widget's progress bar changes as you hover over paragraphs within the
-      article to show their start time within the audio.
-    </p>
-
-    <p data-beyondwords-marker="17c3efab-2eb4-4518-bacf-71288822ee70">
-      The segment widget can be positioned in one of twelve positions next to
-      the paragraph. For convenience, these are named after hours on a clock,
-      for example 12-oclock appears at the top, 3-oclock on the right, 6-oclock
-      at the bottom and 9-oclock on the left.
-    </p>
-
-    <p data-beyondwords-marker="0c1c7361-30cc-4326-aec8-84c7560083e2">
-      To support segment playback on your website, you will need to add some
-      markers into the HTML of your page, although, if you are using our
-      <a href="https://wordpress.org/plugins/speechkit/" target="_blank">WordPress plugin</a>,
-      they will be added automatically. Please refer to our
-      <a href="https://github.com/beyondwords-io/player/blob/main/doc/segments-playback.md" target="_blank">dedicated guide</a>
-      for more information.
+    <p data-beyondwords-marker="07aa00ca-dcca-4bf8-a20f-24cd73533bac">
+      A recent report by the Boston Consulting Group highlights that New Zealand's gas supply could potentially halve again in the next five years, emphasizing the need for immediate intervention to secure remaining resources. The report notes that New Zealand's gas supply has already decreased by 50% since 2015, with prices more than doubling during that time, contributing to last year's significant spike in power prices. Factors such as the decline of aging offshore fields and the potential exit of major gas users are expected to continue pressuring both gas and electricity affordability and security.
     </p>
 
     <div style="height: 50px"></div>
