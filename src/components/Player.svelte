@@ -1,6 +1,6 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
-  import { onDestroy } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import ExternalWidget from "./ExternalWidget.svelte";
@@ -176,14 +176,44 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor);
-  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor);
+  $: isPlaying = playbackState === "playing";
+  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, currentTime, isPlaying);
+  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, currentTime, isPlaying);
+
+  // Handle click-to-seek from word highlights
+  const handleSeekEvent = (event) => {
+    const { time } = event.detail;
+    if (typeof time === "number" && !isNaN(time)) {
+      currentTime = time;
+      if (playbackState !== "playing") {
+        playbackState = "playing";
+      }
+    }
+  };
+
+  // Handle pause from clicking currently playing word
+  const handlePauseEvent = () => {
+    if (playbackState === "playing") {
+      playbackState = "paused";
+    }
+  };
+
+  onMount(() => {
+    document.addEventListener("beyondwords-seek", handleSeekEvent);
+    document.addEventListener("beyondwords-pause", handlePauseEvent);
+    return () => {
+      document.removeEventListener("beyondwords-seek", handleSeekEvent);
+      document.removeEventListener("beyondwords-pause", handlePauseEvent);
+    };
+  });
 
   onDestroy(() => {
     segmentContainers.reset();
     segmentClickables.reset();
     segmentHighlights.reset("current");
     segmentHighlights.reset("hovered");
+    document.removeEventListener("beyondwords-seek", handleSeekEvent);
+    document.removeEventListener("beyondwords-pause", handlePauseEvent);
   });
 </script>
 
