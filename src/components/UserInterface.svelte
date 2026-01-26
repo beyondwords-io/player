@@ -200,9 +200,7 @@
 
       {#if isMinimalUi && !isAdvert}
         <div class="minimal-ui-play-pause-button">
-          <Visibility {onEvent} enabled={!fixedPosition} bind:isVisible bind:relativeY bind:absoluteY>
-            <PlayPauseButton {onEvent} {isPlaying} scale={fixedPosition ? 1.75 : 2.5} color={activeIconColor} />
-          </Visibility>
+          <PlayPauseButton {onEvent} {isPlaying} scale={fixedPosition ? 1.75 : 2.5} color={activeIconColor} />
         </div>
       {/if}
 
@@ -804,7 +802,10 @@
     display: none;
   }
 
-  .video.minimal-ui:not(.advert_) .controls :global(.visibility),
+  .video.minimal-ui:not(.advert_) .controls :global(.visibility .play-pause-button) {
+    display: none;
+  }
+
   .video.minimal-ui:not(.advert_) .controls :global(.source-url-button) {
     display: none;
   }
