@@ -3,9 +3,9 @@
   "version": "0.3.18",
   "license": "See license in README.md",
   "author": "BeyondWords Developers",
-  "homepage": "https://github.com/BeyondWords-io/player",
-  "repository": "github:BeyondWords-io/player",
-  "bugs": "https://github.com/BeyondWords-io/player/issues",
+  "homepage": "https://github.com/beyondwords-io/player",
+  "repository": "https://github.com/beyondwords-io/player",
+  "bugs": "https://github.com/beyondwords-io/player/issues",
   "type": "module",
   "files": [
     "dist"

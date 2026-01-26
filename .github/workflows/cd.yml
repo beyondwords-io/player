@@ -2,19 +2,21 @@ name: CD
 on:
   release:
     types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   CD:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
-        node-version: 18.15.0
-        registry-url: https://registry.npmjs.org/
-        cache: "npm"
+        node-version: '24'
+        registry-url: 'https://registry.npmjs.org/'
 
     - run: ./bin/setup
     - run: ./bin/build
     - run: ./bin/publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
