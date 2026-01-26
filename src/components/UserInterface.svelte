@@ -794,8 +794,6 @@
 
   .video.minimal-ui .controls :global(.player-title),
   .video.minimal-ui .controls :global(.playback-rate-button),
-  .video.minimal-ui .controls :global(.prev-button),
-  .video.minimal-ui .controls :global(.next-button),
   .video.minimal-ui .controls :global(.playlist-button),
   .video.minimal-ui .controls :global(.download-button),
   .video.minimal-ui .controls :global(.maximize-button) {
