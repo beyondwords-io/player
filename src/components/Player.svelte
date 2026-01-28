@@ -177,8 +177,8 @@
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
   $: isPlaying = playbackState === "playing";
-  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, currentTime, isPlaying);
-  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, currentTime, isPlaying);
+  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, currentTime, isPlaying, isAdvert, currentSegment?.marker);
+  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, currentTime, isPlaying, isAdvert, currentSegment?.marker);
 
   // Handle click-to-seek from word highlights
   const handleSeekEvent = (event) => {
