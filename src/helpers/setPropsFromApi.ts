@@ -4,6 +4,13 @@ import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 
 const setPropsFromApi = async (player) => {
+  // If the user has provided JSON directly, use it instead of fetching from the API.
+  if (player.json) {
+    setContentProp(player, player.json);
+    handleContent(player);
+    return;
+  }
+
   const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.summary, player.clientSideEnabled, player.previewToken);
   if (!player.playerApiUrl || !player.projectId) { return; }
 
@@ -128,7 +135,7 @@ const setContentProp = (player, data) => {
   set(player, "content", contentArray.map((item) => ({
     id: item.id,
     title: item.title,
-    imageUrl: data.playlist?.image_url || data.settings.image_url || item.image_url,
+    imageUrl: data.playlist?.image_url || data.settings?.image_url || item.image_url,
     sourceId: item.source_id,
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
@@ -169,6 +176,11 @@ const setContentProp = (player, data) => {
       section: segment.section,
       startTime: segment.start_time ? segment.start_time / 1000 : 0,
       duration: segment.duration ? segment.duration / 1000 : 0,
+      words: (segment.words || []).map((word) => ({
+        text: word.text,
+        startTime: word.start_time ? word.start_time / 1000 : 0,
+        duration: word.duration ? word.duration / 1000 : 0,
+      })),
     })),
   })));
 };
