@@ -119,7 +119,7 @@
   $: margin = parseMargin(fixedMargin);
   $: marginWidth = `calc(${margin.left} + ${margin.right})`;
 
-  $: controlsOrder = controlsOrderFn({ playerStyle, position, isMobile, isAdvert });
+  $: controlsOrder = controlsOrderFn({ playerStyle, isMobile });
 
   $: advertImageUrl = companionAdvert?.imageUrl || activeAdvert?.imageUrl;
   $: advertClickThroughUrl = companionAdvert?.clickThroughUrl || activeAdvert?.clickThroughUrl;
