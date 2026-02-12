@@ -215,6 +215,7 @@ const setPrecedenceBasedOnPlaybackState = (segmentPerPlayer) => {
 };
 
 const stateScores = { playing: 2, paused: 1, stopped: 0 };
+const listTags = new Set(["ol", "ul"]);
 
 // Check siblings of matched nodes to see if they match other segments within
 // the content. This is so that we can highlight segments as playback advances
@@ -226,8 +227,9 @@ const setMatchedElementOnSegmentAndCheckSiblings = (segmentPerPlayer) => {
     segment.matchedElement = segmentElement;
 
     const siblings = [...segmentElement.parentNode.children].filter(e => e !== segmentElement);
-    const candidates = siblings.filter(e => !shouldNotRespondToHoverOrClick(e));
+    const listItems = siblings.flatMap(e => listTags.has(e.nodeName.toLowerCase()) ? [...e.children] : []);
 
+    const candidates = [...siblings, ...listItems].filter(e => !shouldNotRespondToHoverOrClick(e));
     const md5ToCandidate = new Map(candidates.map(e => [textContentMd5(e), e]));
 
     for (const contentItem of player.content) {
