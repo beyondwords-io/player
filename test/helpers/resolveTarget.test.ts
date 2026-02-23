@@ -1,6 +1,19 @@
 import resolveTarget from "../../src/helpers/resolveTarget";
 
 describe("resolveTarget", () => {
+  let rootElement = null;
+
+  beforeEach(() => {
+    rootElement = document.createElement("div");
+    document.body.appendChild(rootElement);
+  });
+
+  afterEach(() => {
+    document.body.className = "";
+    document.body.removeChild(rootElement);
+    rootElement = null;
+  });
+
   it("resolves to a new div and disables the UI when target is null", () => {
     const { newTarget, showUserInterface } = resolveTarget(null);
 
@@ -65,6 +78,69 @@ describe("resolveTarget", () => {
     const { newTarget, showUserInterface } = resolveTarget(element);
 
     expect(newTarget).toEqual(element);
+    expect(showUserInterface).toEqual(true);
+  });
+
+  it("resolves to a .beyondwords-target element and enables the UI when initialized on a Ghost post and target is null", () => {
+    const element = document.createElement("div");
+    element.className = "beyondwords-target";
+    rootElement.appendChild(element);
+
+    const { newTarget, showUserInterface } = resolveTarget(null, true);
+
+    expect(newTarget).toEqual(element);
+    expect(showUserInterface).toEqual(true);
+  });
+
+  it("throws an error when initialized on a non-Ghost post or page and target is null", () => {
+    expect(() => resolveTarget(null, true)).toThrowError(/Player is only available on Ghost Posts and Pages./);
+  });
+
+  it("resolves to a .post-full-content element and enables the UI when initialized on a Ghost post and target is null", () => {
+    document.body.className = "post-template";
+    const element = document.createElement("div");
+    element.className = "post-full-content";
+    rootElement.appendChild(element);
+
+    const { newTarget, showUserInterface } = resolveTarget(null, true);
+
+    expect(newTarget).toEqual(element);
+    expect(showUserInterface).toEqual(true);
+  });
+
+  it("resolves to a header element and enables the UI when initialized on a Ghost post and target is null", () => {    
+    document.body.className = "post-template";
+    const article = document.createElement("article");
+    const header = document.createElement("header");
+    article.appendChild(header);
+    rootElement.appendChild(article);
+
+    const { newTarget, showUserInterface } = resolveTarget(null, true);
+
+    expect(newTarget).toEqual(header);
+    expect(showUserInterface).toEqual(true);
+  });
+
+  it("resolves to an article element and enables the UI when initialized on a Ghost post and target is null", () => {
+    document.body.className = "post-template";
+    const article = document.createElement("article");
+    rootElement.appendChild(article);
+
+    const { newTarget, showUserInterface } = resolveTarget(null, true);
+
+    expect(newTarget).toEqual(article);
+    expect(showUserInterface).toEqual(true);
+  });
+
+  it("resolves to a .content element and enables the UI when initialized on a Ghost post and target is null", () => {
+    document.body.className = "post-template";
+    const content = document.createElement("div");
+    content.className = "content";
+    rootElement.appendChild(content);
+
+    const { newTarget, showUserInterface } = resolveTarget(null, true);
+
+    expect(newTarget).toEqual(content);
     expect(showUserInterface).toEqual(true);
   });
 });
