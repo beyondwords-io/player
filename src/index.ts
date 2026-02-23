@@ -18,7 +18,7 @@ class Player extends PlayerComponent {
     setErrorHandler(props);
     listenToSegments();
 
-    const { newTarget, showUserInterface } = resolveTarget(target);
+    const { newTarget, showUserInterface } = resolveTarget(target, props.ghost);
 
     newTarget.classList.add("beyondwords-player", "bwp");
     if (!Player._styleLoaded) { newTarget.style.display = "none"; }

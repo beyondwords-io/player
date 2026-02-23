@@ -1,7 +1,11 @@
 import throwError from "./throwError";
 
-const resolveTarget = (target) => {
+const resolveTarget = (target, ghost) => {
   if (!target) {
+    if (ghost) {
+      return resolveGhostTarget();
+    }
+
     return { newTarget: appendDivToBody(), showUserInterface: false };
   }
 
@@ -17,6 +21,41 @@ const resolveTarget = (target) => {
 };
 
 // private
+
+const resolveGhostTarget = () => {
+  const beyondwordsTargetElement = document.querySelector(".beyondwords-target");
+  if (beyondwordsTargetElement) {
+    return { newTarget: beyondwordsTargetElement, showUserInterface: true };
+  }
+
+  const isPostTemplate = document.body.classList.contains("post-template");
+  const isPageTemplate = document.body.classList.contains("page-template");
+  if (!isPostTemplate && !isPageTemplate) {
+    throwError("Player is only available on Ghost Posts and Pages.");
+  }
+
+  const postFullContentElement = document.querySelector(".post-full-content");
+  if (postFullContentElement) {
+    return { newTarget: postFullContentElement, showUserInterface: true };
+  }
+
+  const articleElement = document.querySelector("article");
+  if (articleElement) {
+    const headerElement = articleElement.querySelector("header");
+    if (headerElement) {
+      return { newTarget: headerElement, showUserInterface: true };
+    }
+
+    return { newTarget: articleElement, showUserInterface: true };
+  }
+
+  const contentElement = document.querySelector(".content");
+  if (contentElement) {
+    return { newTarget: contentElement, showUserInterface: true };
+  }
+
+  throwError("Failed to initialize player because the target could not be found.");
+};
 
 const isScriptTag = (target) => {
   return typeof target === "object" && target.nodeName.toLowerCase() === "script";
