@@ -86,14 +86,14 @@ describe("resolveTarget", () => {
     element.className = "beyondwords-target";
     rootElement.appendChild(element);
 
-    const { newTarget, showUserInterface } = resolveTarget(null, true);
+    const { newTarget, showUserInterface } = resolveTarget(null, { ghost: true });
 
     expect(newTarget).toEqual(element);
     expect(showUserInterface).toEqual(true);
   });
 
   it("throws an error when initialized on a non-Ghost post or page and target is null", () => {
-    expect(() => resolveTarget(null, true)).toThrowError(/Player is only available on Ghost Posts and Pages./);
+    expect(() => resolveTarget(null, { ghost: true })).toThrowError(/Player is only available on Ghost Posts and Pages./);
   });
 
   it("resolves to a .post-full-content element and enables the UI when initialized on a Ghost post and target is null", () => {
@@ -102,7 +102,7 @@ describe("resolveTarget", () => {
     element.className = "post-full-content";
     rootElement.appendChild(element);
 
-    const { newTarget, showUserInterface } = resolveTarget(null, true);
+    const { newTarget, showUserInterface } = resolveTarget(null, { ghost: true });
 
     expect(newTarget).toEqual(element);
     expect(showUserInterface).toEqual(true);
@@ -115,7 +115,7 @@ describe("resolveTarget", () => {
     article.appendChild(header);
     rootElement.appendChild(article);
 
-    const { newTarget, showUserInterface } = resolveTarget(null, true);
+    const { newTarget, showUserInterface } = resolveTarget(null, { ghost: true });
 
     expect(newTarget).toEqual(header);
     expect(showUserInterface).toEqual(true);
@@ -126,7 +126,7 @@ describe("resolveTarget", () => {
     const article = document.createElement("article");
     rootElement.appendChild(article);
 
-    const { newTarget, showUserInterface } = resolveTarget(null, true);
+    const { newTarget, showUserInterface } = resolveTarget(null, { ghost: true });
 
     expect(newTarget).toEqual(article);
     expect(showUserInterface).toEqual(true);
@@ -138,7 +138,7 @@ describe("resolveTarget", () => {
     content.className = "content";
     rootElement.appendChild(content);
 
-    const { newTarget, showUserInterface } = resolveTarget(null, true);
+    const { newTarget, showUserInterface } = resolveTarget(null, { ghost: true });
 
     expect(newTarget).toEqual(content);
     expect(showUserInterface).toEqual(true);

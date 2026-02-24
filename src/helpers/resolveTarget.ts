@@ -1,6 +1,6 @@
 import throwError from "./throwError";
 
-const resolveTarget = (target, ghost) => {
+const resolveTarget = (target, { ghost = false } = {}) => {
   if (!target) {
     if (ghost) {
       return resolveGhostTarget();
