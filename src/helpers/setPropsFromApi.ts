@@ -4,13 +4,6 @@ import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 
 const setPropsFromApi = async (player) => {
-  // If the user has provided JSON directly, use it instead of fetching from the API.
-  if (player.json) {
-    setContentProp(player, player.json);
-    handleContent(player);
-    return;
-  }
-
   const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.summary, player.clientSideEnabled, player.previewToken, player.wordHighlightsEnabled);
   if (!player.playerApiUrl || !player.projectId) { return; }
 

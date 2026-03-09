@@ -1,6 +1,6 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onDestroy } from "svelte";
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import ExternalWidget from "./ExternalWidget.svelte";
@@ -26,7 +26,6 @@
   export let playlistId = undefined;
   export let sourceId = undefined;
   export let sourceUrl = undefined;
-  export let json = undefined;
   export let playlist = [];
   export let summary = false;
   export let clientSideEnabled = false;
@@ -160,7 +159,7 @@
   $: showVideoPoster = isAudio && videoMightBeShown && metadataLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
-  $: projectId, contentId, playlistId, sourceId, sourceUrl, json, playlist, previewToken, onEvent(identifiersEvent());
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, onEvent(identifiersEvent());
 
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, currentAllowedInWidget && resetHovered();
@@ -178,44 +177,15 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: isPlaying = playbackState === "playing";
-  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, currentTime, isPlaying, isAdvert, currentSegment?.marker);
-  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, currentTime, isPlaying, isAdvert, currentSegment?.marker);
-
-  // Handle click-to-seek from word highlights
-  const handleSeekEvent = (event) => {
-    const { time } = event.detail;
-    if (typeof time === "number" && !isNaN(time)) {
-      currentTime = time;
-      if (playbackState !== "playing") {
-        playbackState = "playing";
-      }
-    }
-  };
-
-  // Handle pause from clicking currently playing word
-  const handlePauseEvent = () => {
-    if (playbackState === "playing") {
-      playbackState = "paused";
-    }
-  };
-
-  onMount(() => {
-    document.addEventListener("beyondwords-seek", handleSeekEvent);
-    document.addEventListener("beyondwords-pause", handlePauseEvent);
-    return () => {
-      document.removeEventListener("beyondwords-seek", handleSeekEvent);
-      document.removeEventListener("beyondwords-pause", handlePauseEvent);
-    };
-  });
+  $: activeMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
+  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, currentTime, activeMarker);
+  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, currentTime, activeMarker);
 
   onDestroy(() => {
     segmentContainers.reset();
     segmentClickables.reset();
     segmentHighlights.reset("current");
     segmentHighlights.reset("hovered");
-    document.removeEventListener("beyondwords-seek", handleSeekEvent);
-    document.removeEventListener("beyondwords-pause", handlePauseEvent);
   });
 </script>
 
