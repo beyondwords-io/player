@@ -165,20 +165,8 @@ class SegmentHighlights {
   }
 
   // Darken a CSS color by a given factor (0–1, where 0.25 = 25% darker).
-  // Uses a temporary DOM element to resolve any CSS color value into rgb.
   static #darken(color, amount) {
-    const el = document.createElement("span");
-    el.style.color = color;
-    document.body.appendChild(el);
-    const computed = getComputedStyle(el).color;
-    el.remove();
-
-    const match = computed.match(/[\d.]+/g);
-    if (!match) return color;
-
-    const [r, g, b] = match.map(Number);
-    const factor = 1 - amount;
-    return `rgb(${Math.round(r * factor)}, ${Math.round(g * factor)}, ${Math.round(b * factor)})`;
+    return `color-mix(in hsl, ${color} ${(1 - amount) * 100}%, black)`;
   }
 
   static #roundedRectPath(x, y, width, height, r) {
