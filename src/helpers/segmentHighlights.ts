@@ -12,6 +12,10 @@ class SegmentHighlights {
   static #activeHighlights = new Map();
   static #savedWordState = new WeakMap();
 
+  static {
+    addEventListener("resize", () => SegmentHighlights.#handleResize());
+  }
+
   constructor() {
     this.ids = new SegmentIdGenerator();
   }
@@ -196,6 +200,37 @@ class SegmentHighlights {
       }
     }
     return -1;
+  }
+
+  static #handleResize() {
+    const animation = getWordHighlightAnimation();
+
+    for (const [element, highlightData] of SegmentHighlights.#activeHighlights) {
+      const state = SegmentHighlights.#elementState.get(element);
+      if (!state) continue;
+
+      const containerRect = element.getBoundingClientRect();
+      SegmentHighlights.#rebuildOverlay(state, highlightData, containerRect);
+
+      const wordIndex = highlightData.currentWordIndex;
+      if (wordIndex >= 0 && wordIndex < highlightData.wordRanges.length) {
+        const word = highlightData.wordRanges[wordIndex];
+        const wordRects = SegmentHighlights.#getRangeRects(
+          highlightData.charMap, word.start_index, word.end_index, containerRect
+        );
+
+        if (wordRects.length > 0) {
+          const r = wordRects.length === 1 ? wordRects[0] : {
+            x: Math.min(...wordRects.map(r => r.x)),
+            y: Math.min(...wordRects.map(r => r.y)),
+            width: Math.max(...wordRects.map(r => r.x + r.width)) - Math.min(...wordRects.map(r => r.x)),
+            height: Math.max(...wordRects.map(r => r.y + r.height)) - Math.min(...wordRects.map(r => r.y)),
+          };
+
+          animation.show(state.wordRect, r);
+        }
+      }
+    }
   }
 
   static #rebuildOverlay(state, highlightData, containerRect) {
