@@ -52,7 +52,7 @@ class SegmentHighlights {
 
     for (const element of this.#highlightElements(segment)) {
       const state = SegmentHighlights.#elementState.get(element);
-      if (!state?.wordRect) continue;
+      if (!state?.wordGroup) continue;
 
       const highlightData = SegmentHighlights.#activeHighlights.get(element);
       if (!highlightData) continue;
@@ -77,17 +77,10 @@ class SegmentHighlights {
           );
 
           if (wordRects.length > 0) {
-            const r = wordRects.length === 1 ? wordRects[0] : {
-              x: Math.min(...wordRects.map(r => r.x)),
-              y: Math.min(...wordRects.map(r => r.y)),
-              width: Math.max(...wordRects.map(r => r.x + r.width)) - Math.min(...wordRects.map(r => r.x)),
-              height: Math.max(...wordRects.map(r => r.y + r.height)) - Math.min(...wordRects.map(r => r.y)),
-            };
-
-            animation.show(state.wordRect, r);
+            animation.show(state.wordGroup, wordRects);
           }
         } else {
-          animation.hide(state.wordRect);
+          animation.hide(state.wordGroup);
         }
       }
     }
@@ -220,14 +213,7 @@ class SegmentHighlights {
         );
 
         if (wordRects.length > 0) {
-          const r = wordRects.length === 1 ? wordRects[0] : {
-            x: Math.min(...wordRects.map(r => r.x)),
-            y: Math.min(...wordRects.map(r => r.y)),
-            width: Math.max(...wordRects.map(r => r.x + r.width)) - Math.min(...wordRects.map(r => r.x)),
-            height: Math.max(...wordRects.map(r => r.y + r.height)) - Math.min(...wordRects.map(r => r.y)),
-          };
-
-          animation.show(state.wordRect, r);
+          animation.show(state.wordGroup, wordRects);
         }
       }
     }
@@ -312,12 +298,13 @@ class SegmentHighlights {
       }
       overlaySvg.appendChild(paragraphGroup);
 
-      const wordRect = document.createElementNS(SVG_NS, "rect");
-      wordRect.setAttribute("rx", String(CORNER_RADIUS));
-      wordRect.setAttribute("ry", String(CORNER_RADIUS));
-      wordRect.setAttribute("fill", wordColor);
-      animation.setup(wordRect);
-      overlaySvg.appendChild(wordRect);
+      const wordGroup = document.createElementNS(SVG_NS, "g");
+      wordGroup.style.opacity = "0";
+      wordGroup.style.transition = `opacity ${120}ms ease-out`;
+      wordGroup.setAttribute("data-rx", String(CORNER_RADIUS));
+      wordGroup.setAttribute("data-ry", String(CORNER_RADIUS));
+      wordGroup.setAttribute("data-fill", wordColor);
+      overlaySvg.appendChild(wordGroup);
 
       element.prepend(overlaySvg);
 
@@ -328,7 +315,7 @@ class SegmentHighlights {
         background,
         overlaySvg,
         paragraphGroup,
-        wordRect,
+        wordGroup,
         cachedWidth: containerRect.width,
         cachedHeight: containerRect.height,
       });
@@ -337,7 +324,7 @@ class SegmentHighlights {
       // (e.g. hover/unhover cycle).
       const savedWord = SegmentHighlights.#savedWordState.get(element);
       if (savedWord && savedWord.marker === segment.marker) {
-        animation.restore(wordRect, savedWord.styles);
+        animation.restore(wordGroup, savedWord.styles);
         highlightData.currentWordIndex = savedWord.currentWordIndex;
       }
       SegmentHighlights.#savedWordState.delete(element);
@@ -355,7 +342,7 @@ class SegmentHighlights {
           SegmentHighlights.#savedWordState.set(element, {
             marker: segment.marker,
             currentWordIndex: highlightData.currentWordIndex,
-            styles: animation.save(state.wordRect),
+            styles: animation.save(state.wordGroup),
           });
         } else {
           SegmentHighlights.#savedWordState.delete(element);
