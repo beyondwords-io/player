@@ -4,6 +4,8 @@ const sectionEnabled = (type, segment, sections) => {
   currentSections ||= "none";
   hoveredSections ||= currentSections;
 
+  if (segment?.startTime === null) return false;
+
   const typeSections = type === "current" ? currentSections : hoveredSections;
   return typeSections === "all" ||
     (typeSections === "body" && segment?.section === "body") ||
