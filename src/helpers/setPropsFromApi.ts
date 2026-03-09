@@ -99,6 +99,7 @@ const setProps = (player, data) => {
   set(player, "videoIconColor", videoColors.icon_color);
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
   set(player, "logoImagePosition", data.video_settings.logo_image_position);
+  set(player, "wordHighlightsEnabled", data.settings.word_highlights_enabled);
   set(player, "highlightSections", data.settings.segment_highlights_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "segmentWidgetSections", "none");

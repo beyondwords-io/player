@@ -32,7 +32,9 @@ class SegmentHighlights {
       if (current !== previous) {
         SegmentHighlights.#mediator.addInterest(current, this, this, segment, background);
       }
-      this.#updateWordHighlight(segment, currentTime, currentMarker);
+      if (this.wordHighlightsEnabled) {
+        this.#updateWordHighlight(segment, currentTime, currentMarker);
+      }
     }
     if (previous && previous !== current) {
       SegmentHighlights.#mediator.removeInterest(previous, this);
@@ -229,7 +231,7 @@ class SegmentHighlights {
     const animation = getWordHighlightAnimation();
 
     for (const element of self.#highlightElements(segment)) {
-      const hasWords = segment.words?.length > 0;
+      const hasWords = self.wordHighlightsEnabled && segment.words?.length > 0;
 
       if (!hasWords) {
         const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);

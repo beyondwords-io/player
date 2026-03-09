@@ -177,6 +177,7 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
+  $: segmentHighlights.wordHighlightsEnabled = wordHighlightsEnabled;
   $: activeMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
   $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, currentTime, activeMarker);
   $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, currentTime, activeMarker);
