@@ -11,7 +11,7 @@ const setPropsFromApi = async (player) => {
     return;
   }
 
-  const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.summary, player.clientSideEnabled, player.previewToken);
+  const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.summary, player.clientSideEnabled, player.previewToken, player.wordHighlightsEnabled);
   if (!player.playerApiUrl || !player.projectId) { return; }
 
   const identifiers = identifiersArray(player);

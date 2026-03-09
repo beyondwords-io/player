@@ -80,6 +80,7 @@
   export let hoveredSegment = undefined;
   export let loadedMedia = undefined;
   export let previewToken = undefined;
+  export let wordHighlightsEnabled = false;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
