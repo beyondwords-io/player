@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 
-const controlsOrder = ({ playerStyle, position, isMobile, isAdvert }) => {
+const controlsOrder = ({ playerStyle, isMobile }) => {
   if (playerStyle === "screen" || playerStyle === "large" && isMobile) {
     return "symmetrical";
   } else {

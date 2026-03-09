@@ -7,7 +7,7 @@ class PlayerApiClient {
     this.params = new URLSearchParams() ;
 
     // TODO: Find a way to pass this information to the backend while complying
-    // with CORS "simply request" requirements so that OPTIONS aren't sent.
+    // with CORS "simple request" requirements so that OPTIONS aren't sent.
     if (clientSideEnabled) {
       this.headers = {
         "X-Referer": window.location.href,
