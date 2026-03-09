@@ -43,4 +43,28 @@ describe("findSegmentIndex", () => {
     expect(findSegmentIndex([], 0, false)).toEqual(-1);
     expect(findSegmentIndex([], Infinity, false)).toEqual(-1);
   });
+
+  it("handles segments with null startTime", () => {
+    const segments = [
+      { startTime: null, duration: null, section: "title" },
+      { startTime: null, duration: null, section: "body" },
+    ];
+
+    // null > time is always false, so all segments are treated as "before" the current time
+    expect(findSegmentIndex(segments, 0, false)).toEqual(1);
+    expect(findSegmentIndex(segments, 5, false)).toEqual(1);
+  });
+
+  it("treats null startTime segments as not having a start boundary", () => {
+    const segments = [
+      { startTime: 0, duration: 1, section: "title" },
+      { startTime: null, duration: null, section: "body" },
+      { startTime: 2, duration: 1, section: "body" },
+    ];
+
+    // null > time is always false, so null segments never count as "next"
+    // sectionEnabled separately prevents highlighting/clicking for null segments
+    expect(findSegmentIndex(segments, 0.5, false)).toEqual(1);
+    expect(findSegmentIndex(segments, 2.5, false)).toEqual(2);
+  });
 });

@@ -167,8 +167,8 @@ const setContentProp = (player, data) => {
       xpath: segment.xpath,
       md5: segment.md5,
       section: segment.section,
-      startTime: segment.start_time != null ? segment.start_time / 1000 : null,
-      duration: segment.duration != null ? segment.duration / 1000 : null,
+      startTime: typeof segment.start_time === "number" ? segment.start_time / 1000 : null,
+      duration: typeof segment.duration === "number" ? segment.duration / 1000 : null,
       words: (segment.words || []).map((word) => ({
         text: word.text,
         startTime: word.start_time ? word.start_time / 1000 : 0,
