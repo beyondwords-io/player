@@ -80,6 +80,7 @@
   export let loadedMedia = undefined;
   export let previewToken = undefined;
   export let wordHighlightsEnabled = false;
+  export let wordHighlightColor = undefined;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
@@ -177,10 +178,10 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: segmentHighlights.wordHighlightsEnabled = wordHighlightsEnabled;
-  $: activeMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
-  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, currentTime, activeMarker);
-  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, currentTime, activeMarker);
+  $: segmentHighlights.wordHighlightsEnabled = wordHighlightsEnabled && !!wordHighlightColor;
+  $: segmentHighlights.activeMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
+  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, wordHighlightColor, currentTime);
+  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, wordHighlightColor, currentTime);
 
   onDestroy(() => {
     segmentContainers.reset();

@@ -20,7 +20,7 @@ class SegmentHighlights {
     this.ids = new SegmentIdGenerator();
   }
 
-  update(type, segment, sections, background, currentTime = 0, currentMarker = null) {
+  update(type, segment, sections, background, wordHighlightColor, currentTime = 0) {
     const enabled = sections.every(s => sectionEnabled(type, segment, s));
 
     const previous = this[`prev${type}`];
@@ -30,10 +30,10 @@ class SegmentHighlights {
 
     if (current) {
       if (current !== previous) {
-        SegmentHighlights.#mediator.addInterest(current, this, this, segment, background);
+        SegmentHighlights.#mediator.addInterest(current, this, this, segment, background, wordHighlightColor);
       }
       if (this.wordHighlightsEnabled) {
-        this.#updateWordHighlight(segment, currentTime, currentMarker);
+        this.#updateWordHighlight(segment, currentTime);
       }
     }
     if (previous && previous !== current) {
@@ -42,10 +42,10 @@ class SegmentHighlights {
   }
 
   reset(type) {
-    this.update(type, null, ["none"], null, 0, null);
+    this.update(type, null, ["none"], null, null, 0);
   }
 
-  #updateWordHighlight(segment, currentTime, currentMarker) {
+  #updateWordHighlight(segment, currentTime) {
     if (!segment?.segmentElement) return;
 
     const segmentStartTime = segment.startTime || 0;
@@ -65,7 +65,7 @@ class SegmentHighlights {
         SegmentHighlights.#rebuildOverlay(state, highlightData, containerRect);
       }
 
-      const currentWordIndex = segment.marker === currentMarker
+      const currentWordIndex = segment.marker === this.activeMarker
         ? SegmentHighlights.#findCurrentWordIndex(timeInSegmentMs, highlightData.wordRanges)
         : -1;
 
@@ -166,11 +166,6 @@ class SegmentHighlights {
     }));
   }
 
-  // Darken a CSS color by a given factor (0–1, where 0.25 = 25% darker).
-  static #darken(color, amount) {
-    return `color-mix(in hsl, ${color} ${(1 - amount) * 100}%, black)`;
-  }
-
   static #roundedRectPath(x, y, width, height, r) {
     return `M${x + r},${y} h${width - 2 * r} q${r},0 ${r},${r} v${height - 2 * r} q0,${r} -${r},${r} h-${width - 2 * r} q-${r},0 -${r},-${r} v-${height - 2 * r} q0,-${r} ${r},-${r} z`;
   }
@@ -227,7 +222,7 @@ class SegmentHighlights {
     }
   }
 
-  static #addHighlights(uniqueId, self, segment, background) {
+  static #addHighlights(uniqueId, self, segment, background, wordHighlightColor) {
     const animation = getWordHighlightAnimation();
 
     for (const element of self.#highlightElements(segment)) {
@@ -278,7 +273,6 @@ class SegmentHighlights {
       overlaySvg.setAttribute("height", String(containerRect.height));
 
       const paragraphGroup = document.createElementNS(SVG_NS, "g");
-      const wordColor = SegmentHighlights.#darken(background, 0.20);
 
       for (const rect of SegmentHighlights.#getTextRects(highlightData.charMap, containerRect)) {
         const path = document.createElementNS(SVG_NS, "path");
@@ -293,7 +287,7 @@ class SegmentHighlights {
       wordGroup.style.transition = `opacity ${120}ms ease-out`;
       wordGroup.setAttribute("data-rx", String(CORNER_RADIUS));
       wordGroup.setAttribute("data-ry", String(CORNER_RADIUS));
-      wordGroup.setAttribute("data-fill", wordColor);
+      wordGroup.setAttribute("data-fill", wordHighlightColor);
       overlaySvg.appendChild(wordGroup);
 
       element.prepend(overlaySvg);
