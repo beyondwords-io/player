@@ -25,20 +25,11 @@ class SegmentHighlights {
     const previous = this[`prev${type}`];
     const current = enabled ? this.#ids.fetchOrAdd(segment) : null;
 
-    const prevBg = this[`prevBg${type}`];
-    const prevWc = this[`prevWc${type}`];
-    const argsChanged = background !== prevBg || wordHighlightColor !== prevWc;
-
     this[`prev${type}`] = current;
-    this[`prevBg${type}`] = background;
-    this[`prevWc${type}`] = wordHighlightColor;
 
-    // Store by ID so the mediator receives only primitives (keeps #arraysEqual stable across hover/unhover).
-    if (current && segment) {
-      this.#segments[current] = segment;
-    }
+    if (current && segment) { this.#segments[current] = segment; }
 
-    if (current !== previous || (current && argsChanged)) {
+    if (current !== previous) {
       if (current) {
         SegmentHighlights.#mediator.addInterest(current, this, this, background, wordHighlightColor, wordHighlightsEnabled);
       }
@@ -47,14 +38,7 @@ class SegmentHighlights {
       }
     }
 
-    if (previous && previous !== current) {
-      const otherType = type === "current" ? "hovered" : "current";
-      if (this[`prev${otherType}`] !== previous) {
-        delete this.#segments[previous];
-      }
-    }
-
-    if (current && wordHighlightsEnabled) {
+    if (current && wordHighlightsEnabled && type === "current") {
       this.#updateWordHighlight(segment, currentTime, activeMarker);
     }
   }
@@ -139,6 +123,8 @@ class SegmentHighlights {
         SegmentHighlights.#removeMarkHighlights(element, uniqueId);
       }
     }
+
+    delete self.#segments[uniqueId];
   }
 
   static #removeMarkHighlights(element, uniqueId) {
@@ -149,7 +135,6 @@ class SegmentHighlights {
       }
       mark.remove();
     }
-    element.normalize();
   }
 
   #highlightElements(segment) {

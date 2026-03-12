@@ -1,4 +1,5 @@
 const WHITESPACE_RE = /[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g;
+const WHITESPACE_CHAR_RE = /[\u00A0\u2000-\u200A\u202F\u205F\u3000]/;
 const normalizeWhitespace = (text) => text.replace(WHITESPACE_RE, " ");
 
 const buildCharMap = (element) => {
@@ -11,7 +12,7 @@ const buildCharMap = (element) => {
     const text = node.nodeValue || "";
     for (let i = 0; i < text.length; i++) {
       charMap.push({ node, offset: i });
-      normalizedText += WHITESPACE_RE.test(text[i]) ? " " : text[i];
+      normalizedText += WHITESPACE_CHAR_RE.test(text[i]) ? " " : text[i];
     }
   }
 
@@ -91,7 +92,8 @@ const mergeLineRects = (clientRects, containerRect) => {
   for (let i = 1; i < rects.length; i++) {
     const r = rects[i];
     const line = lines[lines.length - 1];
-    const sameLine = Math.abs(r.top - line.top) < line.bottom - line.top;
+    const midY = (r.top + r.bottom) / 2;
+    const sameLine = midY >= line.top && midY <= line.bottom;
 
     if (sameLine) {
       line.left = Math.min(line.left, r.left);
