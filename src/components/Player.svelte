@@ -180,8 +180,8 @@
 
   $: wordHighlightsActive = wordHighlightsEnabled && !!wordHighlightColor;
   $: currentActiveMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
-  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, wordHighlightColor, currentTime, currentActiveMarker, wordHighlightsActive);
-  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, wordHighlightColor, currentTime, currentActiveMarker, wordHighlightsActive);
+  $: segmentHighlights.update("current", currentSegment, { sections: [highlightSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
+  $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
   onDestroy(() => {
     segmentContainers.reset();

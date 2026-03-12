@@ -9,9 +9,7 @@
 interface Rect { x: number; y: number; width: number; height: number }
 
 interface WordHighlightAnimation {
-  // Show the word group with the given rects (creates/removes child rects as needed)
   show(group: SVGGElement, rects: Rect[]): void;
-  // Hide the word group when no word is active
   hide(group: SVGGElement): void;
 }
 
@@ -23,7 +21,6 @@ const defaultAnimation: WordHighlightAnimation = {
   show(group, rects) {
     const children = group.children;
 
-    // Add or update rects
     for (let i = 0; i < rects.length; i++) {
       let rect = children[i] as SVGRectElement;
       if (!rect) {
