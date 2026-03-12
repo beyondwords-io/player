@@ -1,9 +1,26 @@
 import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
-  constructor({ playerApiUrl, projectId, summary, clientSideEnabled, previewToken, wordHighlightsEnabled }) {
+  constructor({
+    playerApiUrl,
+    projectId,
+    summary,
+    video,
+    clientSideEnabled,
+    previewToken,
+    wordHighlightsEnabled,
+  }: {
+    playerApiUrl: string;
+    projectId: string;
+    summary?: boolean;
+    video?: boolean;
+    clientSideEnabled?: boolean;
+    previewToken?: string;
+    wordHighlightsEnabled?: boolean;
+  }) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
     this.summary = summary;
+    this.video = video;
     this.params = new URLSearchParams() ;
 
     // TODO: Find a way to pass this information to the backend while complying
@@ -25,7 +42,7 @@ class PlayerApiClient {
   }
 
   byContentId(id) {
-    return this.#fetchJson(`by_content_id/${id}`);
+    return this.#fetchJson(`by_content_id/${id}`, this.#paramsWithVideo(this.#paramsWithSummary()));
   }
 
   byPlaylistId(id) {
@@ -33,11 +50,11 @@ class PlayerApiClient {
   }
 
   bySourceId(id) {
-    return this.#fetchJson(`by_source_id/${id}`);
+    return this.#fetchJson(`by_source_id/${id}`, this.#paramsWithVideo(this.#paramsWithSummary()));
   }
 
   bySourceUrl(url) {
-    return this.#fetchJson(`by_source_url/${encodeURIComponent(url)}`);
+    return this.#fetchJson(`by_source_url/${encodeURIComponent(url)}`, this.#paramsWithVideo(this.#paramsWithSummary()));
   }
 
   byIdentifiers(array) {
@@ -52,11 +69,25 @@ class PlayerApiClient {
     return params.size ? `?${params}` : "";
   }
 
-  #paramsWithSummary() {
+  #paramsWithSummary(params = this.params) {
     if (this.summary) {
-      return new URLSearchParams({ ...this.params, summary: true });
+      return new URLSearchParams([
+        ...Array.from(params.entries()),
+        ["summary", true],
+      ]);
     } else {
-      return this.params;
+      return params;
+    }
+  }
+
+  #paramsWithVideo(params = this.params) {
+    if (this.video) {
+      return new URLSearchParams([
+        ...Array.from(params.entries()),
+        ["media_format", "video"],
+      ]);
+    } else {
+      return params;
     }
   }
 }
