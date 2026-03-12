@@ -178,10 +178,10 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: segmentHighlights.wordHighlightsEnabled = wordHighlightsEnabled && !!wordHighlightColor;
-  $: segmentHighlights.activeMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
-  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, wordHighlightColor, currentTime);
-  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, wordHighlightColor, currentTime);
+  $: wordHighlightsActive = wordHighlightsEnabled && !!wordHighlightColor;
+  $: currentActiveMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
+  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor, wordHighlightColor, currentTime, currentActiveMarker, wordHighlightsActive);
+  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor, wordHighlightColor, currentTime, currentActiveMarker, wordHighlightsActive);
 
   onDestroy(() => {
     segmentContainers.reset();

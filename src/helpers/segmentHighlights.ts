@@ -6,49 +6,87 @@ import getWordHighlightAnimation from "./wordHighlightAnimations";
 const CORNER_RADIUS = 3;
 const SVG_NS = "http://www.w3.org/2000/svg";
 
+// Normalize unicode whitespace variants to regular spaces for text matching.
+// Covers non-breaking space, en/em/thin/hair spaces, narrow no-break space, etc.
+const WHITESPACE_RE = /[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g;
+const normalizeWhitespace = (text) => text.replace(WHITESPACE_RE, " ");
+
 class SegmentHighlights {
   static #mediator = new OwnershipMediator(this.#addHighlights, this.#removeHighlights);
   static #elementState = new WeakMap();
-  static #activeHighlights = new Map();
-  static #savedWordState = new WeakMap();
+  static #activeHighlights = new WeakMap();
+  static #activeElements = new Set();
+  static #resizeRafId = 0;
 
   static {
-    addEventListener("resize", () => SegmentHighlights.#handleResize());
+    addEventListener("resize", () => {
+      cancelAnimationFrame(SegmentHighlights.#resizeRafId);
+      SegmentHighlights.#resizeRafId = requestAnimationFrame(() => SegmentHighlights.#handleResize());
+    });
   }
+
+  #ids;
+  #segments = {};
 
   constructor() {
-    this.ids = new SegmentIdGenerator();
+    this.#ids = new SegmentIdGenerator();
   }
 
-  update(type, segment, sections, background, wordHighlightColor, currentTime = 0) {
+  update(type, segment, sections, background, wordHighlightColor, currentTime = 0, activeMarker = null, wordHighlightsEnabled = false) {
     const enabled = sections.every(s => sectionEnabled(type, segment, s));
 
     const previous = this[`prev${type}`];
-    const current = enabled ? this.ids.fetchOrAdd(segment) : null;
+    const current = enabled ? this.#ids.fetchOrAdd(segment) : null;
+
+    const prevBg = this[`prevBg${type}`];
+    const prevWc = this[`prevWc${type}`];
+    const argsChanged = background !== prevBg || wordHighlightColor !== prevWc;
 
     this[`prev${type}`] = current;
+    this[`prevBg${type}`] = background;
+    this[`prevWc${type}`] = wordHighlightColor;
 
-    if (current) {
-      if (current !== previous) {
-        SegmentHighlights.#mediator.addInterest(current, this, this, segment, background, wordHighlightColor);
+    // Store segment for callback access. The segment object reference may
+    // differ between "current" and "hovered" even for the same logical
+    // segment. Storing it here and passing only primitives to the mediator
+    // ensures #arraysEqual sees equal args, preventing spurious
+    // destroy/recreate cycles on hover/unhover.
+    if (current && segment) {
+      this.#segments[current] = segment;
+    }
+
+    // Interact with mediator when segment identity or visual args change.
+    if (current !== previous || (current && argsChanged)) {
+      if (current) {
+        SegmentHighlights.#mediator.addInterest(current, this, this, background, wordHighlightColor, wordHighlightsEnabled);
       }
-      if (this.wordHighlightsEnabled) {
-        this.#updateWordHighlight(segment, currentTime);
+      if (previous) {
+        SegmentHighlights.#mediator.removeInterest(previous, this);
       }
     }
+
+    // Clean up stored segment when no type references the resource.
     if (previous && previous !== current) {
-      SegmentHighlights.#mediator.removeInterest(previous, this);
+      const otherType = type === "current" ? "hovered" : "current";
+      if (this[`prev${otherType}`] !== previous) {
+        delete this.#segments[previous];
+      }
+    }
+
+    // Hot path: update word position without touching the mediator or DOM structure.
+    if (current && wordHighlightsEnabled) {
+      this.#updateWordHighlight(segment, currentTime, activeMarker);
     }
   }
 
   reset(type) {
-    this.update(type, null, ["none"], null, null, 0);
+    this.update(type, null, ["none"], null, null, 0, null, false);
   }
 
-  #updateWordHighlight(segment, currentTime) {
+  #updateWordHighlight(segment, currentTime, activeMarker) {
     if (!segment?.segmentElement) return;
 
-    const segmentStartTime = segment.startTime || 0;
+    const segmentStartTime = segment.startTime ?? 0;
     const timeInSegmentMs = (currentTime - segmentStartTime) * 1000;
     const animation = getWordHighlightAnimation();
 
@@ -59,31 +97,28 @@ class SegmentHighlights {
       const highlightData = SegmentHighlights.#activeHighlights.get(element);
       if (!highlightData) continue;
 
-      const containerRect = element.getBoundingClientRect();
-
-      if (Math.abs(containerRect.width - state.cachedWidth) > 1 || Math.abs(containerRect.height - state.cachedHeight) > 1) {
-        SegmentHighlights.#rebuildOverlay(state, highlightData, containerRect);
-      }
-
-      const currentWordIndex = segment.marker === this.activeMarker
+      const currentWordIndex = segment.marker === activeMarker
         ? SegmentHighlights.#findCurrentWordIndex(timeInSegmentMs, highlightData.wordRanges)
         : -1;
 
-      if (currentWordIndex !== highlightData.currentWordIndex) {
-        highlightData.currentWordIndex = currentWordIndex;
+      if (currentWordIndex === highlightData.currentWordIndex) continue;
+      highlightData.currentWordIndex = currentWordIndex;
 
-        if (currentWordIndex >= 0 && currentWordIndex < highlightData.wordRanges.length) {
-          const currentWord = highlightData.wordRanges[currentWordIndex];
-          const wordRects = SegmentHighlights.#getRangeRects(
-            highlightData.charMap, currentWord.start_index, currentWord.end_index, containerRect
-          );
+      if (currentWordIndex >= 0 && currentWordIndex < highlightData.wordRanges.length) {
+        // Only force layout when word actually changes — this is the expensive part.
+        const containerRect = element.getBoundingClientRect();
+        if (containerRect.width === 0 || containerRect.height === 0) continue;
 
-          if (wordRects.length > 0) {
-            animation.show(state.wordGroup, wordRects);
-          }
-        } else {
-          animation.hide(state.wordGroup);
+        const currentWord = highlightData.wordRanges[currentWordIndex];
+        const wordRects = SegmentHighlights.#getRangeRects(
+          highlightData.charMap, currentWord.startIndex, currentWord.endIndex, containerRect
+        );
+
+        if (wordRects.length > 0) {
+          animation.show(state.wordGroup, wordRects);
         }
+      } else {
+        animation.hide(state.wordGroup);
       }
     }
   }
@@ -92,32 +127,32 @@ class SegmentHighlights {
     const charMap = [];
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
     let node;
-    let fullText = "";
+    let normalizedText = "";
 
     while ((node = walker.nextNode())) {
       const text = node.nodeValue || "";
       for (let i = 0; i < text.length; i++) {
         charMap.push({ node, offset: i });
-        fullText += text[i];
+        normalizedText += WHITESPACE_RE.test(text[i]) ? " " : text[i];
       }
     }
 
-    const trimmedText = fullText.replace(/^\s+/, "");
-    const leadingWhitespace = fullText.length - trimmedText.length;
+    const trimmed = normalizedText.replace(/^\s+/, "");
+    const leadingWs = normalizedText.length - trimmed.length;
     const wordRanges = [];
-    let searchPos = leadingWhitespace;
+    let searchPos = leadingWs;
 
     for (const word of (words || [])) {
-      const foundPos = fullText.indexOf(word.text, searchPos);
+      const normalizedWord = normalizeWhitespace(word.text);
+      const foundPos = normalizedText.indexOf(normalizedWord, searchPos);
       if (foundPos !== -1) {
         wordRanges.push({
-          start_index: foundPos,
-          end_index: foundPos + word.text.length,
-          start_time: word.startTime * 1000,
+          startIndex: foundPos,
+          endIndex: foundPos + normalizedWord.length,
+          startTime: word.startTime * 1000,
           duration: word.duration * 1000,
-          text: word.text,
         });
-        searchPos = foundPos + word.text.length;
+        searchPos = foundPos + normalizedWord.length;
       }
     }
 
@@ -139,12 +174,14 @@ class SegmentHighlights {
       return [];
     }
 
-    return Array.from(range.getClientRects()).map(rect => ({
-      x: rect.left - containerRect.left,
-      y: rect.top - containerRect.top,
-      width: rect.width,
-      height: rect.height,
-    }));
+    return Array.from(range.getClientRects())
+      .filter(rect => rect.width > 0 && rect.height > 0)
+      .map(rect => ({
+        x: rect.left - containerRect.left,
+        y: rect.top - containerRect.top,
+        width: rect.width,
+        height: rect.height,
+      }));
   }
 
   static #getTextRects(charMap, containerRect) {
@@ -158,12 +195,14 @@ class SegmentHighlights {
       return [];
     }
 
-    return Array.from(range.getClientRects()).map(rect => ({
-      x: rect.left - containerRect.left,
-      y: rect.top - containerRect.top,
-      width: rect.width,
-      height: rect.height,
-    }));
+    return Array.from(range.getClientRects())
+      .filter(rect => rect.width > 0 && rect.height > 0)
+      .map(rect => ({
+        x: rect.left - containerRect.left,
+        y: rect.top - containerRect.top,
+        width: rect.width,
+        height: rect.height,
+      }));
   }
 
   static #roundedRectPath(x, y, width, height, r) {
@@ -173,7 +212,7 @@ class SegmentHighlights {
   static #findCurrentWordIndex(currentTimeMs, wordRanges) {
     for (let i = 0; i < wordRanges.length; i++) {
       const word = wordRanges[i];
-      if (currentTimeMs >= word.start_time && currentTimeMs < word.start_time + word.duration) {
+      if (currentTimeMs >= word.startTime && currentTimeMs < word.startTime + word.duration) {
         return i;
       }
     }
@@ -183,18 +222,23 @@ class SegmentHighlights {
   static #handleResize() {
     const animation = getWordHighlightAnimation();
 
-    for (const [element, highlightData] of SegmentHighlights.#activeHighlights) {
+    for (const element of SegmentHighlights.#activeElements) {
       const state = SegmentHighlights.#elementState.get(element);
       if (!state) continue;
 
+      const highlightData = SegmentHighlights.#activeHighlights.get(element);
+      if (!highlightData) continue;
+
       const containerRect = element.getBoundingClientRect();
+      if (containerRect.width === 0 || containerRect.height === 0) continue;
+
       SegmentHighlights.#rebuildOverlay(state, highlightData, containerRect);
 
       const wordIndex = highlightData.currentWordIndex;
       if (wordIndex >= 0 && wordIndex < highlightData.wordRanges.length) {
         const word = highlightData.wordRanges[wordIndex];
         const wordRects = SegmentHighlights.#getRangeRects(
-          highlightData.charMap, word.start_index, word.end_index, containerRect
+          highlightData.charMap, word.startIndex, word.endIndex, containerRect
         );
 
         if (wordRects.length > 0) {
@@ -222,11 +266,12 @@ class SegmentHighlights {
     }
   }
 
-  static #addHighlights(uniqueId, self, segment, background, wordHighlightColor) {
-    const animation = getWordHighlightAnimation();
+  static #addHighlights(uniqueId, self, background, wordHighlightColor, wordHighlightsEnabled) {
+    const segment = self.#segments[uniqueId];
+    if (!segment) return;
 
     for (const element of self.#highlightElements(segment)) {
-      const hasWords = self.wordHighlightsEnabled && segment.words?.length > 0;
+      const hasWords = wordHighlightsEnabled && segment.words?.length > 0;
 
       if (!hasWords) {
         const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
@@ -244,99 +289,96 @@ class SegmentHighlights {
         continue;
       }
 
+      const containerRect = element.getBoundingClientRect();
+      if (containerRect.width === 0 || containerRect.height === 0) continue;
+
       const originalStyles = {
         position: element.style.position,
         isolation: element.style.isolation,
       };
 
-      const highlightData = SegmentHighlights.#buildHighlightData(element, segment.words);
-      SegmentHighlights.#activeHighlights.set(element, highlightData);
+      try {
+        const highlightData = SegmentHighlights.#buildHighlightData(element, segment.words);
+        SegmentHighlights.#activeHighlights.set(element, highlightData);
+        SegmentHighlights.#activeElements.add(element);
 
-      const computed = getComputedStyle(element);
-      if (computed.position === "static") {
-        element.style.position = "relative";
+        const computed = getComputedStyle(element);
+        if (computed.position === "static") {
+          element.style.position = "relative";
+        }
+        element.style.isolation = "isolate";
+
+        const borderLeft = parseFloat(computed.borderLeftWidth) || 0;
+        const borderTop = parseFloat(computed.borderTopWidth) || 0;
+        const direction = computed.direction;
+
+        const overlaySvg = document.createElementNS(SVG_NS, "svg");
+        overlaySvg.style.position = "absolute";
+        overlaySvg.style.top = `${-borderTop}px`;
+        overlaySvg.style.left = `${-borderLeft}px`;
+        overlaySvg.style.zIndex = "-1";
+        overlaySvg.style.pointerEvents = "none";
+        overlaySvg.style.overflow = "visible";
+        overlaySvg.setAttribute("width", String(containerRect.width));
+        overlaySvg.setAttribute("height", String(containerRect.height));
+        if (direction === "rtl") {
+          overlaySvg.setAttribute("direction", "rtl");
+        }
+
+        const paragraphGroup = document.createElementNS(SVG_NS, "g");
+
+        for (const rect of SegmentHighlights.#getTextRects(highlightData.charMap, containerRect)) {
+          const path = document.createElementNS(SVG_NS, "path");
+          path.setAttribute("d", SegmentHighlights.#roundedRectPath(rect.x, rect.y, rect.width, rect.height, CORNER_RADIUS));
+          path.setAttribute("fill", background);
+          paragraphGroup.appendChild(path);
+        }
+        overlaySvg.appendChild(paragraphGroup);
+
+        const wordGroup = document.createElementNS(SVG_NS, "g");
+        wordGroup.style.opacity = "0";
+        wordGroup.style.transition = "opacity 120ms ease-out";
+        wordGroup.setAttribute("data-rx", String(CORNER_RADIUS));
+        wordGroup.setAttribute("data-ry", String(CORNER_RADIUS));
+        wordGroup.setAttribute("data-fill", wordHighlightColor);
+        overlaySvg.appendChild(wordGroup);
+
+        element.prepend(overlaySvg);
+
+        SegmentHighlights.#elementState.set(element, {
+          uniqueId,
+          originalStyles,
+          segment,
+          background,
+          overlaySvg,
+          paragraphGroup,
+          wordGroup,
+          cachedWidth: containerRect.width,
+          cachedHeight: containerRect.height,
+        });
+      } catch (e) {
+        // Restore styles if overlay creation fails partway through.
+        element.style.position = originalStyles.position;
+        element.style.isolation = originalStyles.isolation;
+        SegmentHighlights.#activeHighlights.delete(element);
+        SegmentHighlights.#activeElements.delete(element);
       }
-      element.style.isolation = "isolate";
-
-      const containerRect = element.getBoundingClientRect();
-      const borderLeft = parseFloat(computed.borderLeftWidth) || 0;
-      const borderTop = parseFloat(computed.borderTopWidth) || 0;
-
-      const overlaySvg = document.createElementNS(SVG_NS, "svg");
-      overlaySvg.style.position = "absolute";
-      overlaySvg.style.top = `${-borderTop}px`;
-      overlaySvg.style.left = `${-borderLeft}px`;
-      overlaySvg.style.zIndex = "-1";
-      overlaySvg.style.pointerEvents = "none";
-      overlaySvg.style.overflow = "visible";
-      overlaySvg.setAttribute("width", String(containerRect.width));
-      overlaySvg.setAttribute("height", String(containerRect.height));
-
-      const paragraphGroup = document.createElementNS(SVG_NS, "g");
-
-      for (const rect of SegmentHighlights.#getTextRects(highlightData.charMap, containerRect)) {
-        const path = document.createElementNS(SVG_NS, "path");
-        path.setAttribute("d", SegmentHighlights.#roundedRectPath(rect.x, rect.y, rect.width, rect.height, CORNER_RADIUS));
-        path.setAttribute("fill", background);
-        paragraphGroup.appendChild(path);
-      }
-      overlaySvg.appendChild(paragraphGroup);
-
-      const wordGroup = document.createElementNS(SVG_NS, "g");
-      wordGroup.style.opacity = "0";
-      wordGroup.style.transition = `opacity ${120}ms ease-out`;
-      wordGroup.setAttribute("data-rx", String(CORNER_RADIUS));
-      wordGroup.setAttribute("data-ry", String(CORNER_RADIUS));
-      wordGroup.setAttribute("data-fill", wordHighlightColor);
-      overlaySvg.appendChild(wordGroup);
-
-      element.prepend(overlaySvg);
-
-      SegmentHighlights.#elementState.set(element, {
-        uniqueId,
-        originalStyles,
-        segment,
-        background,
-        overlaySvg,
-        paragraphGroup,
-        wordGroup,
-        cachedWidth: containerRect.width,
-        cachedHeight: containerRect.height,
-      });
-
-      // Restore word highlight position saved before the overlay was destroyed
-      // (e.g. hover/unhover cycle).
-      const savedWord = SegmentHighlights.#savedWordState.get(element);
-      if (savedWord && savedWord.marker === segment.marker) {
-        animation.restore(wordGroup, savedWord.styles);
-        highlightData.currentWordIndex = savedWord.currentWordIndex;
-      }
-      SegmentHighlights.#savedWordState.delete(element);
     }
   }
 
-  static #removeHighlights(uniqueId, self, segment) {
-    const animation = getWordHighlightAnimation();
+  static #removeHighlights(uniqueId, self, background, wordHighlightColor, wordHighlightsEnabled) {
+    const segment = self.#segments[uniqueId];
+    if (!segment) return;
 
     for (const element of self.#highlightElements(segment)) {
       const state = SegmentHighlights.#elementState.get(element);
       if (state && state.uniqueId === uniqueId) {
-        const highlightData = SegmentHighlights.#activeHighlights.get(element);
-        if (highlightData && highlightData.currentWordIndex >= 0) {
-          SegmentHighlights.#savedWordState.set(element, {
-            marker: segment.marker,
-            currentWordIndex: highlightData.currentWordIndex,
-            styles: animation.save(state.wordGroup),
-          });
-        } else {
-          SegmentHighlights.#savedWordState.delete(element);
-        }
-
         state.overlaySvg?.remove();
         element.style.position = state.originalStyles.position;
         element.style.isolation = state.originalStyles.isolation;
         SegmentHighlights.#elementState.delete(element);
         SegmentHighlights.#activeHighlights.delete(element);
+        SegmentHighlights.#activeElements.delete(element);
       } else {
         const markElements = element.querySelectorAll(`mark.beyondwords-highlight.bwp.id-${uniqueId}`);
         for (const mark of markElements) {
