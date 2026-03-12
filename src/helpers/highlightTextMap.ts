@@ -1,6 +1,5 @@
-const WHITESPACE_RE = /[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g;
-const WHITESPACE_CHAR_RE = /[\u00A0\u2000-\u200A\u202F\u205F\u3000]/;
-const normalizeWhitespace = (text) => text.replace(WHITESPACE_RE, " ");
+const WHITESPACE_RE = /[\u00A0\u2000-\u200A\u202F\u205F\u3000]/;
+const normalizeWhitespace = (text) => text.split(WHITESPACE_RE).join(" ");
 
 const buildCharMap = (element) => {
   const charMap = [];
@@ -12,7 +11,7 @@ const buildCharMap = (element) => {
     const text = node.nodeValue || "";
     for (let i = 0; i < text.length; i++) {
       charMap.push({ node, offset: i });
-      normalizedText += WHITESPACE_CHAR_RE.test(text[i]) ? " " : text[i];
+      normalizedText += WHITESPACE_RE.test(text[i]) ? " " : text[i];
     }
   }
 
