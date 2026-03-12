@@ -68,6 +68,7 @@ class SegmentHighlights {
 
     const segmentStartTime = segment.startTime ?? 0;
     const timeInSegmentMs = (currentTime - segmentStartTime) * 1000;
+    const segmentDurationMs = (segment.duration ?? Infinity) * 1000;
     const animation = getWordHighlightAnimation();
 
     for (const element of this.#highlightElements(segment)) {
@@ -75,7 +76,7 @@ class SegmentHighlights {
       if (!state?.wordGroup) continue;
 
       const currentWordIndex = segment.marker === activeMarker
-        ? findCurrentWordIndex(timeInSegmentMs, state.wordRanges)
+        ? findCurrentWordIndex(timeInSegmentMs, state.wordRanges, segmentDurationMs)
         : -1;
 
       if (currentWordIndex === state.currentWordIndex) continue;
@@ -148,6 +149,7 @@ class SegmentHighlights {
       }
       mark.remove();
     }
+    element.normalize();
   }
 
   #highlightElements(segment) {

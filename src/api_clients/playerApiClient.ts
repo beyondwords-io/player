@@ -1,7 +1,7 @@
 import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
-  constructor(playerApiUrl, projectId, summary, clientSideEnabled, previewToken, wordHighlightsEnabled) {
+  constructor({ playerApiUrl, projectId, summary, clientSideEnabled, previewToken, wordHighlightsEnabled }) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
     this.summary = summary;
     this.params = new URLSearchParams() ;

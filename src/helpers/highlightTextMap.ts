@@ -41,12 +41,12 @@ const buildWordRanges = (normalizedText, words) => {
   return wordRanges;
 };
 
-const findCurrentWordIndex = (currentTimeMs, wordRanges) => {
+const findCurrentWordIndex = (currentTimeMs, wordRanges, segmentDurationMs = Infinity) => {
   for (let i = 0; i < wordRanges.length; i++) {
     const word = wordRanges[i];
     const endTime = word.duration > 0
       ? word.startTime + word.duration
-      : (i + 1 < wordRanges.length ? wordRanges[i + 1].startTime : Infinity);
+      : (i + 1 < wordRanges.length ? wordRanges[i + 1].startTime : segmentDurationMs);
 
     if (currentTimeMs >= word.startTime && currentTimeMs < endTime) {
       return i;

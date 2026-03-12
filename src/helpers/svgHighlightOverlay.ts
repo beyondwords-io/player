@@ -5,8 +5,6 @@ const CORNER_RADIUS = 3;
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 const elementState = new WeakMap();
-const activeElements = new Set();
-let resizeRafId = 0;
 
 const roundedRectPath = (x, y, width, height, r) => {
   return `M${x + r},${y} h${width - 2 * r} q${r},0 ${r},${r} v${height - 2 * r} q0,${r} -${r},${r} h-${width - 2 * r} q-${r},0 -${r},-${r} v-${height - 2 * r} q0,-${r} ${r},-${r} z`;
@@ -21,20 +19,23 @@ const buildParagraphPaths = (charMap, containerRect, background, group) => {
   }
 };
 
-const handleResizeThrottled = () => {
-  cancelAnimationFrame(resizeRafId);
-  resizeRafId = requestAnimationFrame(handleResize);
-};
-
-const handleResize = () => {
+const resizeObserver = typeof ResizeObserver !== "undefined" && new ResizeObserver((entries) => {
   const animation = getWordHighlightAnimation();
 
-  for (const element of activeElements) {
+  for (const entry of entries) {
+    const element = entry.target;
     const state = elementState.get(element);
-    if (!state) continue;
+    if (!state) {
+      if (resizeObserver) resizeObserver.unobserve(element);
+      continue;
+    }
 
     const containerRect = element.getBoundingClientRect();
     if (containerRect.width === 0 || containerRect.height === 0) continue;
+    if (containerRect.width === state.cachedWidth && containerRect.height === state.cachedHeight) continue;
+
+    state.cachedWidth = containerRect.width;
+    state.cachedHeight = containerRect.height;
 
     state.overlaySvg.setAttribute("width", String(containerRect.width));
     state.overlaySvg.setAttribute("height", String(containerRect.height));
@@ -51,16 +52,7 @@ const handleResize = () => {
       }
     }
   }
-};
-
-const updateResizeListener = () => {
-  if (activeElements.size > 0) {
-    addEventListener("resize", handleResizeThrottled);
-  } else {
-    removeEventListener("resize", handleResizeThrottled);
-    cancelAnimationFrame(resizeRafId);
-  }
-};
+});
 
 const create = (element, uniqueId, background, wordHighlightColor, words) => {
   const containerRect = element.getBoundingClientRect();
@@ -122,10 +114,11 @@ const create = (element, uniqueId, background, wordHighlightColor, words) => {
       charMap,
       wordRanges,
       currentWordIndex: -1,
+      cachedWidth: containerRect.width,
+      cachedHeight: containerRect.height,
     });
 
-    activeElements.add(element);
-    updateResizeListener();
+    if (resizeObserver) resizeObserver.observe(element);
     return true;
   } catch (e) {
     element.style.position = originalStyles.position;
@@ -138,13 +131,12 @@ const remove = (element, uniqueId) => {
   const state = elementState.get(element);
   if (!state || state.uniqueId !== uniqueId) return false;
 
+  if (resizeObserver) resizeObserver.unobserve(element);
   state.overlaySvg?.remove();
   element.style.position = state.originalStyles.position;
   element.style.isolation = state.originalStyles.isolation;
 
   elementState.delete(element);
-  activeElements.delete(element);
-  updateResizeListener();
   return true;
 };
 

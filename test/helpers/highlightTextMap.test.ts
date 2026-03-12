@@ -146,7 +146,7 @@ describe("findCurrentWordIndex", () => {
     expect(findCurrentWordIndex(500, zeroDuration)).toEqual(1);
   });
 
-  it("handles 0-duration last word by extending to infinity", () => {
+  it("handles 0-duration last word by extending to segment end", () => {
     const zeroDurationLast = [
       { startTime: 0, duration: 500 },
       { startTime: 500, duration: 0 },
@@ -154,6 +154,18 @@ describe("findCurrentWordIndex", () => {
 
     expect(findCurrentWordIndex(500, zeroDurationLast)).toEqual(1);
     expect(findCurrentWordIndex(99999, zeroDurationLast)).toEqual(1);
+  });
+
+  it("caps 0-duration last word at segmentDurationMs", () => {
+    const zeroDurationLast = [
+      { startTime: 0, duration: 500 },
+      { startTime: 500, duration: 0 },
+    ];
+
+    expect(findCurrentWordIndex(500, zeroDurationLast, 600)).toEqual(1);
+    expect(findCurrentWordIndex(599, zeroDurationLast, 600)).toEqual(1);
+    expect(findCurrentWordIndex(600, zeroDurationLast, 600)).toEqual(-1);
+    expect(findCurrentWordIndex(99999, zeroDurationLast, 600)).toEqual(-1);
   });
 
   it("handles all 0-duration words", () => {
@@ -168,6 +180,18 @@ describe("findCurrentWordIndex", () => {
     expect(findCurrentWordIndex(200, allZero)).toEqual(1);
     expect(findCurrentWordIndex(400, allZero)).toEqual(2);
     expect(findCurrentWordIndex(1000, allZero)).toEqual(2);
+  });
+
+  it("caps all 0-duration words at segmentDurationMs", () => {
+    const allZero = [
+      { startTime: 0, duration: 0 },
+      { startTime: 200, duration: 0 },
+      { startTime: 400, duration: 0 },
+    ];
+
+    expect(findCurrentWordIndex(400, allZero, 500)).toEqual(2);
+    expect(findCurrentWordIndex(499, allZero, 500)).toEqual(2);
+    expect(findCurrentWordIndex(500, allZero, 500)).toEqual(-1);
   });
 });
 

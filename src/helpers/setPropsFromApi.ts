@@ -4,7 +4,14 @@ import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 
 const setPropsFromApi = async (player) => {
-  const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.summary, player.clientSideEnabled, player.previewToken, player.wordHighlightsEnabled);
+  const client = new PlayerApiClient({
+    playerApiUrl: player.playerApiUrl,
+    projectId: player.projectId,
+    summary: player.summary,
+    clientSideEnabled: player.clientSideEnabled,
+    previewToken: player.previewToken,
+    wordHighlightsEnabled: player.wordHighlightsEnabled,
+  });
   if (!player.playerApiUrl || !player.projectId) { return; }
 
   const identifiers = identifiersArray(player);
@@ -100,7 +107,7 @@ const setProps = (player, data) => {
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
   set(player, "logoImagePosition", data.video_settings.logo_image_position);
   set(player, "wordHighlightsEnabled", data.settings.word_highlights_enabled);
-  set(player, "wordHighlightColor", data.settings.word_highlight_color);
+  set(player, "wordHighlightColor", themeColors.word_highlight_color);
   set(player, "highlightSections", data.settings.segment_highlights_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "segmentWidgetSections", "none");
@@ -173,8 +180,8 @@ const setContentProp = (player, data) => {
       duration: typeof segment.duration === "number" ? segment.duration / 1000 : null,
       words: (segment.words || []).map((word) => ({
         text: word.text,
-        startTime: word.start_time ? word.start_time / 1000 : 0,
-        duration: word.duration ? word.duration / 1000 : 0,
+        startTime: typeof word.start_time === "number" ? word.start_time / 1000 : 0,
+        duration: typeof word.duration === "number" ? word.duration / 1000 : 0,
       })),
     })),
   })));
