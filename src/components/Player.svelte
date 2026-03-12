@@ -377,6 +377,8 @@
       bind:backgroundColor
       bind:iconColor
       bind:highlightColor
+      bind:wordHighlightsEnabled
+      bind:wordHighlightColor
       bind:videoTextColor
       bind:videoIconColor
       bind:logoIconEnabled

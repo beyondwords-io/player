@@ -40,6 +40,8 @@
   export let videoTextColor;
   export let videoIconColor;
   export let logoIconEnabled;
+  export let wordHighlightsEnabled;
+  export let wordHighlightColor;
   export let highlightSections;
   export let clickableSections;
   export let segmentWidgetSections;
@@ -202,6 +204,19 @@
   <div class="control">
     highlightColor:
     <input tabindex={-1} type="text" bind:value={highlightColor}>
+  </div>
+
+  <div class="control">
+    wordHighlightsEnabled:
+    <select tabindex={-1} bind:value={wordHighlightsEnabled}>
+      <option>{false}</option>
+      <option>{true}</option>
+    </select>
+  </div>
+
+  <div class="control">
+    wordHighlightColor:
+    <input tabindex={-1} type="text" bind:value={wordHighlightColor}>
   </div>
 
   <div class="control">
