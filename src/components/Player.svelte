@@ -79,6 +79,8 @@
   export let hoveredSegment = undefined;
   export let loadedMedia = undefined;
   export let previewToken = undefined;
+  export let wordHighlightsEnabled = false;
+  export let wordHighlightColor = undefined;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
   export let analyticsCustomUrl = undefined;
@@ -176,8 +178,10 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: segmentHighlights.update("current", currentSegment, [highlightSections], highlightColor);
-  $: segmentHighlights.update("hovered", hoveredSegment, [highlightSections, clickableSections], highlightColor);
+  $: wordHighlightsActive = wordHighlightsEnabled && !!wordHighlightColor;
+  $: currentActiveMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
+  $: segmentHighlights.update("current", currentSegment, { sections: [highlightSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
+  $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
   onDestroy(() => {
     segmentContainers.reset();
@@ -373,6 +377,8 @@
       bind:backgroundColor
       bind:iconColor
       bind:highlightColor
+      bind:wordHighlightsEnabled
+      bind:wordHighlightColor
       bind:videoTextColor
       bind:videoIconColor
       bind:logoIconEnabled

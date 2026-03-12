@@ -4,7 +4,14 @@ import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 
 const setPropsFromApi = async (player) => {
-  const client = new PlayerApiClient(player.playerApiUrl, player.projectId, player.summary, player.clientSideEnabled, player.previewToken);
+  const client = new PlayerApiClient({
+    playerApiUrl: player.playerApiUrl,
+    projectId: player.projectId,
+    summary: player.summary,
+    clientSideEnabled: player.clientSideEnabled,
+    previewToken: player.previewToken,
+    wordHighlightsEnabled: player.wordHighlightsEnabled,
+  });
   if (!player.playerApiUrl || !player.projectId) { return; }
 
   const identifiers = identifiersArray(player);
@@ -99,6 +106,8 @@ const setProps = (player, data) => {
   set(player, "videoIconColor", videoColors.icon_color);
   set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
   set(player, "logoImagePosition", data.video_settings.logo_image_position);
+  set(player, "wordHighlightsEnabled", data.settings.word_highlights_enabled);
+  set(player, "wordHighlightColor", themeColors.word_highlight_color);
   set(player, "highlightSections", data.settings.segment_highlights_enabled ? "all" : "none");
   set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
   set(player, "segmentWidgetSections", "none");
@@ -128,7 +137,7 @@ const setContentProp = (player, data) => {
   set(player, "content", contentArray.map((item) => ({
     id: item.id,
     title: item.title,
-    imageUrl: data.playlist?.image_url || data.settings.image_url || item.image_url,
+    imageUrl: data.playlist?.image_url || data.settings?.image_url || item.image_url,
     sourceId: item.source_id,
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
@@ -167,8 +176,13 @@ const setContentProp = (player, data) => {
       xpath: segment.xpath,
       md5: segment.md5,
       section: segment.section,
-      startTime: segment.start_time ? segment.start_time / 1000 : 0,
-      duration: segment.duration ? segment.duration / 1000 : 0,
+      startTime: typeof segment.start_time === "number" ? segment.start_time / 1000 : null,
+      duration: typeof segment.duration === "number" ? segment.duration / 1000 : null,
+      words: (segment.words || []).map((word) => ({
+        text: word.text,
+        startTime: typeof word.start_time === "number" ? word.start_time / 1000 : 0,
+        duration: typeof word.duration === "number" ? word.duration / 1000 : 0,
+      })),
     })),
   })));
 };

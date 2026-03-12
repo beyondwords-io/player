@@ -1,7 +1,21 @@
 import fetchJson from "../helpers/fetchJson";
 
 class PlayerApiClient {
-  constructor(playerApiUrl, projectId, summary, clientSideEnabled, previewToken) {
+  constructor({
+    playerApiUrl,
+    projectId,
+    summary,
+    clientSideEnabled,
+    previewToken,
+    wordHighlightsEnabled,
+  }: {
+    playerApiUrl: string;
+    projectId: string;
+    summary?: boolean;
+    clientSideEnabled?: boolean;
+    previewToken?: string;
+    wordHighlightsEnabled?: boolean;
+  }) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
     this.summary = summary;
     this.params = new URLSearchParams() ;
@@ -17,6 +31,10 @@ class PlayerApiClient {
 
     if (previewToken) {
       this.params.set("preview_token", previewToken);
+    }
+
+    if (wordHighlightsEnabled) {
+      this.params.set("words", "true");
     }
   }
 
@@ -48,11 +66,14 @@ class PlayerApiClient {
     return params.size ? `?${params}` : "";
   }
 
-  #paramsWithSummary() {
+  #paramsWithSummary(params = this.params) {
     if (this.summary) {
-      return new URLSearchParams({ ...this.params, summary: true });
+      return new URLSearchParams([
+        ...Array.from(params.entries()),
+        ["summary", true],
+      ]);
     } else {
-      return this.params;
+      return params;
     }
   }
 }

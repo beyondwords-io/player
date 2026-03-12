@@ -1,6 +1,17 @@
 import sectionEnabled from "../../src/helpers/sectionEnabled";
 
 describe("sectionEnabled", () => {
+  it("returns false if the segment has null startTime", () => {
+    expect(sectionEnabled("current", { section: "body", startTime: null }, "all")).toEqual(false);
+    expect(sectionEnabled("hovered", { section: "body", startTime: null }, "all")).toEqual(false);
+    expect(sectionEnabled("current", { section: "title", startTime: null }, "all")).toEqual(false);
+  });
+
+  it("returns true for segments with valid startTime", () => {
+    expect(sectionEnabled("current", { section: "body", startTime: 0 }, "all")).toEqual(true);
+    expect(sectionEnabled("current", { section: "body", startTime: 5.5 }, "all")).toEqual(true);
+  });
+
   it("returns true if the segment's section is a member of the enabled sections", () => {
     expect(sectionEnabled("current", { section: "title" }, "all")).toEqual(true);
     expect(sectionEnabled("current", { section: "body" }, "all")).toEqual(true);
