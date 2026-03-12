@@ -23,10 +23,48 @@ describe("buildCharMap", () => {
 
   it("normalizes unicode whitespace to regular spaces", () => {
     const el = document.createElement("p");
-    el.textContent = "hello\u00A0world\u2009!";
+    // non-breaking space, thin space, em space, narrow no-break space, medium math space, ideographic space
+    el.textContent = "a\u00A0b\u2009c\u2003d\u202Fe\u205Ff\u3000g";
     const { normalizedText } = buildCharMap(el);
 
-    expect(normalizedText).toEqual("hello world !");
+    expect(normalizedText).toEqual("a b c d e f g");
+  });
+
+  it("normalizes all typographic spaces in the U+2000-U+200A range", () => {
+    const el = document.createElement("p");
+    const spaces = "\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A";
+    el.textContent = "x" + spaces + "y";
+    const { normalizedText } = buildCharMap(el);
+
+    expect(normalizedText).toEqual("x" + " ".repeat(11) + "y");
+  });
+
+  it("normalizes typographic characters to ASCII equivalents", () => {
+    const el = document.createElement("p");
+    el.textContent = "don\u2019t say \u201Chello\u201D \u2014 ok";
+    const { normalizedText } = buildCharMap(el);
+
+    expect(normalizedText).toEqual("don't say \"hello\" - ok");
+  });
+
+  it("normalizes the full set of API-aligned typographic characters", () => {
+    const el = document.createElement("p");
+    // backtick, modifier prime, smart quotes, prime
+    el.textContent = "\u0060\u02B9\u2018\u2019\u201A\u201B\u2032\u2035";
+    const { normalizedText } = buildCharMap(el);
+    expect(normalizedText).toEqual("''''''''");
+
+    const el2 = document.createElement("p");
+    // guillemets, modifier double prime, smart double quotes, double prime
+    el2.textContent = "\u00AB\u00BB\u02BA\u02EE\u201C\u201D\u201E\u201F\u2033\u2036";
+    const { normalizedText: nt2 } = buildCharMap(el2);
+    expect(nt2).toEqual("\"\"\"\"\"\"\"\"\"\"");
+
+    const el3 = document.createElement("p");
+    // hyphen, non-breaking hyphen, figure dash, en dash, em dash, horizontal bar
+    el3.textContent = "\u2010\u2011\u2012\u2013\u2014\u2015";
+    const { normalizedText: nt3 } = buildCharMap(el3);
+    expect(nt3).toEqual("------");
   });
 
   it("returns empty results for an empty element", () => {
@@ -84,6 +122,52 @@ describe("buildWordRanges", () => {
 
     expect(ranges).toHaveLength(1);
     expect(ranges[0]).toEqual({ startIndex: 0, endIndex: 12, startTime: 0, duration: 1000 });
+  });
+
+  it("matches smart apostrophe in DOM against straight apostrophe from API", () => {
+    // DOM has smart apostrophe (U+2019), API sends straight apostrophe (U+0027)
+    const domText = "don\u2019t stop";
+    const el = document.createElement("p");
+    el.textContent = domText;
+    const { normalizedText } = buildCharMap(el);
+
+    const ranges = buildWordRanges(normalizedText, [
+      { text: "don't", startTime: 0, duration: 0.5 },
+      { text: "stop", startTime: 0.5, duration: 0.5 },
+    ]);
+
+    expect(ranges).toHaveLength(2);
+    expect(ranges[0]).toEqual({ startIndex: 0, endIndex: 5, startTime: 0, duration: 500 });
+    expect(ranges[1]).toEqual({ startIndex: 6, endIndex: 10, startTime: 500, duration: 500 });
+  });
+
+  it("matches smart double quotes in DOM against straight quotes from API", () => {
+    const domText = "\u201CHello\u201D";
+    const el = document.createElement("p");
+    el.textContent = domText;
+    const { normalizedText } = buildCharMap(el);
+
+    const ranges = buildWordRanges(normalizedText, [
+      { text: "\"Hello\"", startTime: 0, duration: 1 },
+    ]);
+
+    expect(ranges).toHaveLength(1);
+    expect(ranges[0]).toEqual({ startIndex: 0, endIndex: 7, startTime: 0, duration: 1000 });
+  });
+
+  it("matches em dash in DOM against hyphen from API", () => {
+    const domText = "yes \u2014 no";
+    const el = document.createElement("p");
+    el.textContent = domText;
+    const { normalizedText } = buildCharMap(el);
+
+    const ranges = buildWordRanges(normalizedText, [
+      { text: "yes", startTime: 0, duration: 0.3 },
+      { text: "-", startTime: 0.3, duration: 0.2 },
+      { text: "no", startTime: 0.5, duration: 0.3 },
+    ]);
+
+    expect(ranges).toHaveLength(3);
   });
 
   it("matches words sequentially to handle repeated words", () => {
