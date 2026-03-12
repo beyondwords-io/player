@@ -5,7 +5,6 @@ class PlayerApiClient {
     playerApiUrl,
     projectId,
     summary,
-    video,
     clientSideEnabled,
     previewToken,
     wordHighlightsEnabled,
@@ -13,14 +12,12 @@ class PlayerApiClient {
     playerApiUrl: string;
     projectId: string;
     summary?: boolean;
-    video?: boolean;
     clientSideEnabled?: boolean;
     previewToken?: string;
     wordHighlightsEnabled?: boolean;
   }) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
     this.summary = summary;
-    this.video = video;
     this.params = new URLSearchParams() ;
 
     // TODO: Find a way to pass this information to the backend while complying
@@ -42,7 +39,7 @@ class PlayerApiClient {
   }
 
   byContentId(id) {
-    return this.#fetchJson(`by_content_id/${id}`, this.#paramsWithVideo(this.#paramsWithSummary()));
+    return this.#fetchJson(`by_content_id/${id}`);
   }
 
   byPlaylistId(id) {
@@ -50,11 +47,11 @@ class PlayerApiClient {
   }
 
   bySourceId(id) {
-    return this.#fetchJson(`by_source_id/${id}`, this.#paramsWithVideo(this.#paramsWithSummary()));
+    return this.#fetchJson(`by_source_id/${id}`);
   }
 
   bySourceUrl(url) {
-    return this.#fetchJson(`by_source_url/${encodeURIComponent(url)}`, this.#paramsWithVideo(this.#paramsWithSummary()));
+    return this.#fetchJson(`by_source_url/${encodeURIComponent(url)}`);
   }
 
   byIdentifiers(array) {
@@ -74,17 +71,6 @@ class PlayerApiClient {
       return new URLSearchParams([
         ...Array.from(params.entries()),
         ["summary", true],
-      ]);
-    } else {
-      return params;
-    }
-  }
-
-  #paramsWithVideo(params = this.params) {
-    if (this.video) {
-      return new URLSearchParams([
-        ...Array.from(params.entries()),
-        ["media_format", "video"],
       ]);
     } else {
       return params;
