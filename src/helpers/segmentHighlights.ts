@@ -195,14 +195,38 @@ class SegmentHighlights {
       return [];
     }
 
-    return Array.from(range.getClientRects())
-      .filter(rect => rect.width > 0 && rect.height > 0)
-      .map(rect => ({
-        x: rect.left - containerRect.left,
-        y: rect.top - containerRect.top,
-        width: rect.width,
-        height: rect.height,
-      }));
+    return SegmentHighlights.#mergeLineRects(range.getClientRects(), containerRect);
+  }
+
+  // getClientRects returns a separate rect for each inline element
+  // (e.g. <strong>, <a>) which overlap on the same line. Merge them
+  // into one rect per visual line to avoid double-opacity artifacts.
+  static #mergeLineRects(clientRects, containerRect) {
+    const rects = Array.from(clientRects).filter(r => r.width > 0 && r.height > 0);
+    if (rects.length === 0) return [];
+
+    const lines = [{ left: rects[0].left, top: rects[0].top, right: rects[0].right, bottom: rects[0].bottom }];
+
+    for (let i = 1; i < rects.length; i++) {
+      const r = rects[i];
+      const line = lines[lines.length - 1];
+      const sameLine = Math.abs(r.top - line.top) < line.bottom - line.top;
+
+      if (sameLine) {
+        line.left = Math.min(line.left, r.left);
+        line.right = Math.max(line.right, r.right);
+        line.bottom = Math.max(line.bottom, r.bottom);
+      } else {
+        lines.push({ left: r.left, top: r.top, right: r.right, bottom: r.bottom });
+      }
+    }
+
+    return lines.map(l => ({
+      x: l.left - containerRect.left,
+      y: l.top - containerRect.top,
+      width: l.right - l.left,
+      height: l.bottom - l.top,
+    }));
   }
 
   static #roundedRectPath(x, y, width, height, r) {
