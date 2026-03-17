@@ -5,6 +5,10 @@ class PlayerApiClient {
     playerApiUrl,
     projectId,
     summary,
+    video,
+    initialContentId,
+    initialSourceId,
+    initialSourceUrl,
     clientSideEnabled,
     previewToken,
     wordHighlightsEnabled,
@@ -12,12 +16,20 @@ class PlayerApiClient {
     playerApiUrl: string;
     projectId: string;
     summary?: boolean;
+    video?: boolean;
+    initialContentId?: string,
+    initialSourceId?: string,
+    initialSourceUrl?: string,
     clientSideEnabled?: boolean;
     previewToken?: string;
     wordHighlightsEnabled?: boolean;
   }) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
     this.summary = summary;
+    this.video = video;
+    this.initialContentId = initialContentId;
+    this.initialSourceId = initialSourceId;
+    this.initialSourceUrl = initialSourceUrl;
     this.params = new URLSearchParams() ;
 
     // TODO: Find a way to pass this information to the backend while complying
@@ -39,7 +51,7 @@ class PlayerApiClient {
   }
 
   byContentId(id) {
-    return this.#fetchJson(`by_content_id/${id}`);
+    return this.#fetchJson(`by_content_id/${id}`, this.#paramsWithContinuousPlayback());
   }
 
   byPlaylistId(id) {
@@ -47,11 +59,11 @@ class PlayerApiClient {
   }
 
   bySourceId(id) {
-    return this.#fetchJson(`by_source_id/${id}`);
+    return this.#fetchJson(`by_source_id/${id}`, this.#paramsWithContinuousPlayback());
   }
 
   bySourceUrl(url) {
-    return this.#fetchJson(`by_source_url/${encodeURIComponent(url)}`);
+    return this.#fetchJson(`by_source_url/${encodeURIComponent(url)}`, this.#paramsWithContinuousPlayback());
   }
 
   byIdentifiers(array) {
@@ -75,6 +87,17 @@ class PlayerApiClient {
     } else {
       return params;
     }
+  }
+
+  #paramsWithContinuousPlayback(params = this.params) {
+    return new URLSearchParams([
+      ...Array.from(params.entries()),
+      ...(this.video ? [["media_format", "video"]] : []),
+      ...(this.summary ? [["summary", true]] : []),
+      ...(this.initialContentId ? [["initial_content_id", this.initialContentId]] : []),
+      ...(this.initialSourceId ? [["initial_source_id", this.initialSourceId]] : []),
+      ...(this.initialSourceUrl ? [["initial_source_url", this.initialSourceUrl]] : []),
+    ]);
   }
 }
 

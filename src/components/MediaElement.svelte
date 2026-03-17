@@ -79,7 +79,11 @@
   $: !activeAdvert && tick().then(() => setTime(currentTime));
   $: currentTime = time;
 
-  $: contentItem = content[contentIndex];
+  let contentItem;
+  $: { 
+    const nextContentItem = content[contentIndex];
+    if (nextContentItem !== contentItem) contentItem = nextContentItem;
+  }
   $: segments = contentItem?.segments || [];
 
   $: contentIndex, introOrOutro, activeAdvert, loadCount += 1;

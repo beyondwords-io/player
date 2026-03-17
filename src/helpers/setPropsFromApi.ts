@@ -4,11 +4,46 @@ import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 import rewriteMediaUrl from "./rewriteMediaUrl";
 
+const appendContinuousPlaybackContentFromApi = async (player) => {
+  const client = new PlayerApiClient({
+    playerApiUrl: player.playerApiUrl,
+    projectId: player.projectId,
+    summary: player.summary,
+    video: player.video,
+    initialContentId: player.initialProps.contentId,
+    initialSourceId: player.initialProps.sourceId,
+    initialSourceUrl: player.initialProps.sourceUrl,
+    clientSideEnabled: player.clientSideEnabled,
+    previewToken: player.previewToken,
+    wordHighlightsEnabled: player.wordHighlightsEnabled,
+  });
+  if (!player.playerApiUrl || !player.projectId || !player.content) { return; }
+
+  const contentItem = player.content[player.content.length - 1];
+  if (!contentItem || !contentItem.continuousPlaybackContentId || player.content.some(({ id }) => id === contentItem.continuousPlaybackContentId)) { return; }
+
+  if (player.pendingContinuousPlaybackContentId) { return; }
+  player.pendingContinuousPlaybackContentId = contentItem.continuousPlaybackContentId;
+
+  const identifiers = [{ content_id: contentItem.continuousPlaybackContentId }];
+
+  const data = await fetchData(client, identifiers).catch(() => {});
+  delete player.pendingContinuousPlaybackContentId;
+
+  if (!data?.content) { return; }
+
+  appendContentProp(player, data);
+};
+
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
     projectId: player.projectId,
     summary: player.summary,
+    video: player.video,
+    initialContentId: player.initialProps.contentId,
+    initialSourceId: player.initialProps.sourceId,
+    initialSourceUrl: player.initialProps.sourceUrl,
     clientSideEnabled: player.clientSideEnabled,
     previewToken: player.previewToken,
     wordHighlightsEnabled: player.wordHighlightsEnabled,
@@ -132,12 +167,24 @@ const resetSomeProps = (player) => {
   set(player, "hoveredSegment", undefined);
 };
 
+const appendContentProp = (player, data) => {
+  set(player, "content", [
+    ...(player.content ?? []), 
+    ...mapContentProp(data)
+  ]);
+};
+
 const setContentProp = (player, data) => {
+  set(player, "content", mapContentProp(data));
+};
+
+const mapContentProp = (data) => {
   const contentArray = data?.content || [];
   const { mediaCustomUrl } = player;
 
-  set(player, "content", contentArray.map((item) => ({
+  return contentArray.map((item) => ({
     id: item.id,
+    continuousPlaybackContentId: data.continuous_playback_content_id,
     title: item.title,
     imageUrl: data.playlist?.image_url || data.settings?.image_url || item.image_url,
     sourceId: item.source_id,
@@ -186,7 +233,7 @@ const setContentProp = (player, data) => {
         duration: typeof word.duration === "number" ? word.duration / 1000 : 0,
       })),
     })),
-  })));
+  }));
 };
 
 const setAdvertsProp = (player, data) => {
@@ -272,4 +319,4 @@ const localOrRemoteUrl = (remoteUrl, base64, contentType) => {
 };
 
 export default setPropsFromApi;
-export { identifiersArray, fetchData };
+export { identifiersArray, fetchData, appendContinuousPlaybackContentFromApi };
