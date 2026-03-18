@@ -34,6 +34,9 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
   if (!data?.content) { return; }
 
   appendContentProp(player, data);
+
+  set(player, "playlistToggle", "hide");
+  set(player, "playlistStyle", "hide");
 };
 
 const setPropsFromApi = async (player) => {
