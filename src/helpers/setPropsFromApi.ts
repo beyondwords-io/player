@@ -17,7 +17,8 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
     previewToken: player.previewToken,
     wordHighlightsEnabled: player.wordHighlightsEnabled,
   });
-  if (!player.playerApiUrl || !player.projectId || !player.content) { return; }
+  if (!player.playerApiUrl || !player.projectId) { return; }
+  if (!player.content || player.content.length >= 99) { return; }
 
   const contentItem = player.content[player.content.length - 1];
   if (!contentItem || !contentItem.continuousPlaybackContentId || player.content.some(({ id }) => id === contentItem.continuousPlaybackContentId)) { return; }
