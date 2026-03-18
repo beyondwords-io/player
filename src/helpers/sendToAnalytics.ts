@@ -4,42 +4,51 @@ import { v4 as randomUuid } from "uuid";
 import { version } from "../../package.json";
 
 const sendToAnalytics = (player, playerEvent) => {
-  const eventType = analyticsEventType(player, playerEvent.type);
-  if (!eventType) { return; }
+  const eventTypes = analyticsEventTypes(player, playerEvent.type);
+  if (eventTypes.length === 0) { return; }
 
-  const analyticsEvent = eventFromProps(player, eventType);
-  validateAnalyticsEvent(analyticsEvent);
+  for (const eventType of eventTypes) {
+    const analyticsEvent = eventFromProps(player, eventType);
+    validateAnalyticsEvent(analyticsEvent);
 
-  if (player.analyticsUrl && player.analyticsConsent !== "none") {
-    const client = new AnalyticsClient(player.analyticsUrl);
-    client.sendToCustomAnalytics(analyticsEvent);
-  }
+    if (player.analyticsUrl && player.analyticsConsent !== "none") {
+      const client = new AnalyticsClient(player.analyticsUrl);
+      client.sendToCustomAnalytics(analyticsEvent);
+    }
 
-  if (player.analyticsCustomUrl && player.analyticsConsent !== "none") {
-    const client = new AnalyticsClient(player.analyticsCustomUrl);
-    client.sendToCustomAnalytics(analyticsEvent);
-  }
+    if (player.analyticsCustomUrl && player.analyticsConsent !== "none") {
+      const client = new AnalyticsClient(player.analyticsCustomUrl);
+      client.sendToCustomAnalytics(analyticsEvent);
+    }
 
-  if (player.analyticsTag) {
-    const client = new AnalyticsClient(player.analyticsTag);
-    client.sendToGoogleAnalytics(gaEventName(analyticsEvent), analyticsEvent);
+    if (player.analyticsTag) {
+      const client = new AnalyticsClient(player.analyticsTag);
+      client.sendToGoogleAnalytics(gaEventName(analyticsEvent), analyticsEvent);
+    }
   }
 };
 
-const analyticsEventType = (player, playerEventType) => {
-  // Emit a 'load' event once only, even if the media changes.
-  if (playerEventType === "ContentAvailable" && !player.listenSessionId) { return "load"; }
+const analyticsEventTypes = (player, playerEventType): ("load" | "play" | "play_progress" | "ad_link_click")[] => {
+  // Emit a 'load' event once media is available.
+  if (playerEventType === "ContentAvailable" && isNewLoad(player)) { return ["load"]; }
 
   // Emit a 'play' event after 'PlaybackPlaying' followed by 'CurrentTimeUpdated'.
   // Only emit for new listens, i.e. if the content/advert changed from what it was previously.
   if (playerEventType === "PlaybackPlaying" && isNewListen(player)) { player.isNewListen = true; }
-  if (playerEventType === "CurrentTimeUpdated" && player.isNewListen) { player.isNewListen = false; return "play"; }
+  if (playerEventType === "CurrentTimeUpdated" && player.isNewListen) {
+    player.isNewListen = false;
+    // Emit a 'load' event when the media changes after the playback has already started.
+    if (isNewLoad(player)) { return ["load", "play"]; }
+    return ["play"];
+  }
 
   // Emit a 'play_progress' event for each 10%, 20%, ..., 100% of playback reached.
-  if (playerEventType === "CurrentTimeUpdated" && isNextPercentage(player)) { return "play_progress"; }
+  if (playerEventType === "CurrentTimeUpdated" && isNextPercentage(player)) { return ["play_progress"]; }
 
   // Emit an 'ad_link_click' event when you press on an advert link/button/image/video.
-  if (playerEventType.startsWith("PressedAdvert")) { return "ad_link_click"; }
+  if (playerEventType.startsWith("PressedAdvert")) { return ["ad_link_click"]; }
+
+  return [];
 };
 
 const eventFromProps = (player, analyticsEventType) => {
@@ -101,6 +110,17 @@ const gaEventName = ({ event_type, listen_length_percent }) => {
   if (event_type === "play_progress" && percentage === 100) { return "Complete"; }
   if (event_type === "play_progress") { return `${percentage}% listened`; }
   if (event_type === "ad_link_click") { return "Advert Click"; }
+};
+
+const isNewLoad = (player) => {
+  player.loadedContentIds ||= new Set();
+
+  const contentItem = player.content[player.contentIndex];
+
+  if (contentItem && !player.loadedContentIds.has(contentItem.id)) {
+    player.loadedContentIds.add(contentItem.id);
+    return true;
+  }
 };
 
 const isNewListen = (player) => {
