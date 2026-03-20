@@ -82,11 +82,9 @@ const setProps = (player, data) => {
   const themeColors = data.settings[`${theme}_theme`];
   const videoColors = data.settings["video_theme"];
 
-  const mediaCustomUrl = player.mediaCustomUrl;
-
   resetSomeProps(player);
-  setContentProp(player, data, mediaCustomUrl);
-  setAdvertsProp(player, data, mediaCustomUrl);
+  setContentProp(player, data);
+  setAdvertsProp(player, data);
 
   const content = player.content[player.contentIndex];
 
@@ -95,7 +93,7 @@ const setProps = (player, data) => {
   set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
-  set(player, "introsOutros", rewriteIntrosOutrosUrls(data.settings.intros_outros, mediaCustomUrl));
+  set(player, "introsOutros", rewriteIntrosOutrosUrls(data.settings.intros_outros, player.mediaCustomUrl));
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
   set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);
   set(player, "widgetStyle", data.settings.widget_style);
@@ -134,8 +132,9 @@ const resetSomeProps = (player) => {
   set(player, "hoveredSegment", undefined);
 };
 
-const setContentProp = (player, data, mediaCustomUrl) => {
+const setContentProp = (player, data) => {
   const contentArray = data?.content || [];
+  const { mediaCustomUrl } = player;
 
   set(player, "content", contentArray.map((item) => ({
     id: item.id,
@@ -190,8 +189,9 @@ const setContentProp = (player, data, mediaCustomUrl) => {
   })));
 };
 
-const setAdvertsProp = (player, data, mediaCustomUrl) => {
+const setAdvertsProp = (player, data) => {
   const advertsArray = data?.ads || [];
+  const { mediaCustomUrl } = player;
 
   set(player, "adverts", advertsArray.map((item) => {
     const isVast = item.type === "vast";
