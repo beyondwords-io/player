@@ -230,7 +230,7 @@ const setAdvertsProp = (player, data) => {
 };
 
 const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {
-  if (!mediaCustomUrl || !introsOutros) { return introsOutros; }
+  if (!introsOutros || !mediaCustomUrl) { return introsOutros; }
 
   return introsOutros.map((item) => ({
     ...item,
