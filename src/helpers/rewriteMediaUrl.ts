@@ -2,10 +2,8 @@ const rewriteMediaUrl = (url, mediaCustomUrl) => {
   if (!mediaCustomUrl || !url || url.startsWith("blob:")) { return url; }
 
   try {
-    const parsed = new URL(url);
-    parsed.port = "";
-    parsed.host = mediaCustomUrl;
-    return parsed.toString();
+    const { pathname, search, hash } = new URL(url);
+    return (new URL(`${pathname}${search}${hash}`, mediaCustomUrl)).href;
   } catch {
     return url;
   }
