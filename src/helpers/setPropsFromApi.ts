@@ -147,13 +147,13 @@ const setContentProp = (player, data, mediaCustomUrl) => {
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
     audio: item.audio.map((audio) => ({
       id: audio.id,
-      url: rewriteMediaUrl(localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type), mediaCustomUrl),
+      url: localOrRemoteUrl(rewriteMediaUrl(audio.url, mediaCustomUrl), audio.base64_file, audio.content_type),
       contentType: audio.content_type,
       duration: audio.duration ? audio.duration / 1000 : 0,
     })),
     video: item.video.map((video) => ({
       id: video.id,
-      url: rewriteMediaUrl(localOrRemoteUrl(video.url, video.base64_file, video.content_type), mediaCustomUrl),
+      url: localOrRemoteUrl(rewriteMediaUrl(video.url, mediaCustomUrl), video.base64_file, video.content_type),
       contentType: video.content_type,
       duration: video.duration ? video.duration / 1000 : 0,
       videoSize: video.video_size,
@@ -161,13 +161,13 @@ const setContentProp = (player, data, mediaCustomUrl) => {
     summarization: {
       audio: (item.summarization?.audio || []).map((audio) => ({
         id: audio.id,
-        url: rewriteMediaUrl(localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type), mediaCustomUrl),
+        url: localOrRemoteUrl(rewriteMediaUrl(audio.url, mediaCustomUrl), audio.base64_file, audio.content_type),
         contentType: audio.content_type,
         duration: audio.duration ? audio.duration / 1000 : 0,
       })) ?? [],
       video: (item.summarization?.video || []).map((video) => ({
         id: video.id,
-        url: rewriteMediaUrl(localOrRemoteUrl(video.url, video.base64_file, video.content_type), mediaCustomUrl),
+        url: localOrRemoteUrl(rewriteMediaUrl(video.url, mediaCustomUrl), video.base64_file, video.content_type),
         contentType: video.content_type,
         duration: video.duration ? video.duration / 1000 : 0,
         videoSize: video.video_size,
@@ -214,13 +214,13 @@ const setAdvertsProp = (player, data, mediaCustomUrl) => {
       videoIconColor: videoColors?.icon_color,
       audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
         id: audio.id,
-        url: rewriteMediaUrl(localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type), mediaCustomUrl),
+        url: localOrRemoteUrl(rewriteMediaUrl(audio.url, mediaCustomUrl), audio.base64_file, audio.content_type),
         contentType: audio.content_type,
         duration: audio.duration ? audio.duration / 1000 : 0,
       })),
       video: isVast ? [] : (item.video || []).map((video) => ({
         id: video.id,
-        url: rewriteMediaUrl(localOrRemoteUrl(video.url, video.base64_file, video.content_type), mediaCustomUrl),
+        url: localOrRemoteUrl(rewriteMediaUrl(video.url, mediaCustomUrl), video.base64_file, video.content_type),
         contentType: video.content_type,
         duration: video.duration ? video.duration / 1000 : 0,
         videoSize: video.video_size,
