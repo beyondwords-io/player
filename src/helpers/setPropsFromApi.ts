@@ -2,6 +2,7 @@ import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
 import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
+import rewriteMediaUrl from "./rewriteMediaUrl";
 
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient({
@@ -81,9 +82,11 @@ const setProps = (player, data) => {
   const themeColors = data.settings[`${theme}_theme`];
   const videoColors = data.settings["video_theme"];
 
+  const mediaCustomUrl = player.mediaCustomUrl;
+
   resetSomeProps(player);
-  setContentProp(player, data);
-  setAdvertsProp(player, data);
+  setContentProp(player, data, mediaCustomUrl);
+  setAdvertsProp(player, data, mediaCustomUrl);
 
   const content = player.content[player.contentIndex];
 
@@ -92,7 +95,7 @@ const setProps = (player, data) => {
   set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
-  set(player, "introsOutros", data.settings.intros_outros);
+  set(player, "introsOutros", rewriteIntrosOutrosUrls(data.settings.intros_outros, mediaCustomUrl));
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
   set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);
   set(player, "widgetStyle", data.settings.widget_style);
@@ -131,7 +134,7 @@ const resetSomeProps = (player) => {
   set(player, "hoveredSegment", undefined);
 };
 
-const setContentProp = (player, data) => {
+const setContentProp = (player, data, mediaCustomUrl) => {
   const contentArray = data?.content || [];
 
   set(player, "content", contentArray.map((item) => ({
@@ -144,13 +147,13 @@ const setContentProp = (player, data) => {
     duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
     audio: item.audio.map((audio) => ({
       id: audio.id,
-      url: localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type),
+      url: rewriteMediaUrl(localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type), mediaCustomUrl),
       contentType: audio.content_type,
       duration: audio.duration ? audio.duration / 1000 : 0,
     })),
     video: item.video.map((video) => ({
       id: video.id,
-      url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
+      url: rewriteMediaUrl(localOrRemoteUrl(video.url, video.base64_file, video.content_type), mediaCustomUrl),
       contentType: video.content_type,
       duration: video.duration ? video.duration / 1000 : 0,
       videoSize: video.video_size,
@@ -158,13 +161,13 @@ const setContentProp = (player, data) => {
     summarization: {
       audio: (item.summarization?.audio || []).map((audio) => ({
         id: audio.id,
-        url: localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type),
+        url: rewriteMediaUrl(localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type), mediaCustomUrl),
         contentType: audio.content_type,
         duration: audio.duration ? audio.duration / 1000 : 0,
       })) ?? [],
       video: (item.summarization?.video || []).map((video) => ({
         id: video.id,
-        url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
+        url: rewriteMediaUrl(localOrRemoteUrl(video.url, video.base64_file, video.content_type), mediaCustomUrl),
         contentType: video.content_type,
         duration: video.duration ? video.duration / 1000 : 0,
         videoSize: video.video_size,
@@ -187,7 +190,7 @@ const setContentProp = (player, data) => {
   })));
 };
 
-const setAdvertsProp = (player, data) => {
+const setAdvertsProp = (player, data, mediaCustomUrl) => {
   const advertsArray = data?.ads || [];
 
   set(player, "adverts", advertsArray.map((item) => {
@@ -211,18 +214,28 @@ const setAdvertsProp = (player, data) => {
       videoIconColor: videoColors?.icon_color,
       audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
         id: audio.id,
-        url: localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type),
+        url: rewriteMediaUrl(localOrRemoteUrl(audio.url, audio.base64_file, audio.content_type), mediaCustomUrl),
         contentType: audio.content_type,
         duration: audio.duration ? audio.duration / 1000 : 0,
       })),
       video: isVast ? [] : (item.video || []).map((video) => ({
         id: video.id,
-        url: localOrRemoteUrl(video.url, video.base64_file, video.content_type),
+        url: rewriteMediaUrl(localOrRemoteUrl(video.url, video.base64_file, video.content_type), mediaCustomUrl),
         contentType: video.content_type,
         duration: video.duration ? video.duration / 1000 : 0,
         videoSize: video.video_size,
       })),
     };
+  }));
+};
+
+const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {
+  if (!mediaCustomUrl || !introsOutros) { return introsOutros; }
+
+  return introsOutros.map((item) => ({
+    ...item,
+    audio: (item.audio || []).map((audio) => ({ ...audio, url: rewriteMediaUrl(audio.url, mediaCustomUrl) })),
+    video: (item.video || []).map((video) => ({ ...video, url: rewriteMediaUrl(video.url, mediaCustomUrl) })),
   }));
 };
 

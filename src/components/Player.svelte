@@ -83,6 +83,7 @@
   export let wordHighlightColor = undefined;
   export let advertConsent = "personalized";
   export let analyticsConsent = "allowed";
+  export let mediaCustomUrl = undefined;
   export let analyticsCustomUrl = undefined;
   export let analyticsDeviceType = "auto";
   export let analyticsTag = undefined;
