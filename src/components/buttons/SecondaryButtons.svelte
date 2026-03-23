@@ -31,7 +31,7 @@
     display: none;
   }
 
-  .standard.mobile {
+  .standard.mobile:not(:has(:global(.playlist-button))) {
     display: none;
   }
 
