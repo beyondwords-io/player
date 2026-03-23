@@ -5,9 +5,10 @@
   export let fixedPosition;
   export let scale;
   export let controlsOrder;
+  export let hasPlaylistButton;
 </script>
 
-<div class="secondary-buttons {playerStyle} {controlsOrder}" class:mobile={isMobile} class:advert_={isAdvert} class:fixed={fixedPosition} style="--scale: {scale}">
+<div class="secondary-buttons {playerStyle} {controlsOrder}" class:mobile={isMobile} class:advert_={isAdvert} class:fixed={fixedPosition} class:has-playlist-button={hasPlaylistButton} style="--scale: {scale}">
   <slot></slot>
 </div>
 
@@ -31,7 +32,7 @@
     display: none;
   }
 
-  .standard.mobile:not(:has(:global(.playlist-button))) {
+  .standard.mobile:not(.has-playlist-button) {
     display: none;
   }
 
