@@ -19,14 +19,17 @@ const chooseSegmentElement = (segment) => {
 
   // If no elements were identified by the marker, return the first xpath match.
   const xpathElements = findAllByXpathAndMd5(segment.xpath, segment.md5);
-  if (markerElements.length === 0) { return xpathElements[0]; } // Might be undefined.
+  if (markerElements.length === 0 && xpathElements.length > 0) { return xpathElements[0]; }
 
   // If elements were identified by both identifiers, return the first common element.
   const intersection = markerElements.filter(e => xpathElements.includes(e));
   if (intersection.length !== 0) { return intersection[0]; }
 
   // If no elements are in common then return the first marker element.
-  return markerElements[0]; // Might be undefined.
+  if (markerElements.length > 0) { return markerElements[0]; }
+
+  // Fallback to matching on MD5 only.
+  return findFirstByMd5(segment.md5);
 };
 
 const findAllByMarker = (marker) => {
@@ -49,6 +52,22 @@ const findAllByXpathAndMd5 = (xpath, md5) => {
     } else {
       return elements;
     }
+  }
+};
+
+const findFirstByMd5 = (md5) => {
+  if (!md5) { return; }
+
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+  let node;
+
+  while ((node = walker.nextNode())) {
+    const text = node.textContent?.trim();
+    if (!text || textContentMd5(node) !== md5) { continue; }
+
+    // Skip if a direct child also matches. Prefer the deeper element.
+    const childMatch = [...node.children].some(c => textContentMd5(c) === md5);
+    if (!childMatch) { return node; }
   }
 };
 
