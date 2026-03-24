@@ -174,15 +174,15 @@ const resetSomeProps = (player) => {
 const appendContentProp = (player, data) => {
   set(player, "content", [
     ...(player.content ?? []), 
-    ...mapContentProp(data)
+    ...mapContentProp(player, data)
   ]);
 };
 
 const setContentProp = (player, data) => {
-  set(player, "content", mapContentProp(data));
+  set(player, "content", mapContentProp(player, data));
 };
 
-const mapContentProp = (data) => {
+const mapContentProp = (player, data) => {
   const contentArray = data?.content || [];
   const { mediaCustomUrl } = player;
 
