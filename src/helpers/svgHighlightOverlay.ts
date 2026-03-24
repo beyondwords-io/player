@@ -81,6 +81,7 @@ const create = (element, uniqueId, background, wordHighlightColor, words) => {
     overlaySvg.style.position = "absolute";
     overlaySvg.style.top = `${-borderTop}px`;
     overlaySvg.style.left = `${-borderLeft}px`;
+    overlaySvg.style.margin = "0";
     overlaySvg.style.zIndex = "-1";
     overlaySvg.style.pointerEvents = "none";
     overlaySvg.style.overflow = "visible";
