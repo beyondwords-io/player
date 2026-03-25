@@ -29,6 +29,7 @@
   export let playlist = [];
   export let summary = false;
   export let clientSideEnabled = false;
+  export let continuousPlaybackMode = "auto";
   export let showUserInterface = true;
   export let showBottomWidget = false;
   export let showCloseWidget = true;
