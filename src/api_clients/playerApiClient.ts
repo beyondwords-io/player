@@ -5,7 +5,7 @@ class PlayerApiClient {
     playerApiUrl,
     projectId,
     summary,
-    video,
+    mediaFormat,
     videoSize,
     initialContentId,
     initialSourceId,
@@ -17,7 +17,7 @@ class PlayerApiClient {
     playerApiUrl: string;
     projectId: string;
     summary?: boolean;
-    video?: boolean;
+    mediaFormat?: string;
     videoSize?: string;
     initialContentId?: string,
     initialSourceId?: string,
@@ -28,7 +28,7 @@ class PlayerApiClient {
   }) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
     this.summary = summary;
-    this.video = video;
+    this.mediaFormat = mediaFormat;
     this.videoSize = videoSize;
     this.initialContentId = initialContentId;
     this.initialSourceId = initialSourceId;
@@ -95,7 +95,7 @@ class PlayerApiClient {
   #paramsWithContinuousPlayback(params = this.params) {
     return new URLSearchParams([
       ...Array.from(params.entries()),
-      ...(this.video ? [["media_format", "video"]] : []),
+      ...(this.mediaFormat ? [["media_format", this.mediaFormat]] : []),
       ...(this.videoSize ? [["video_size", this.videoSize]] : []),
       ...(this.summary ? [["summary", true]] : []),
       ...(this.initialContentId ? [["initial_content_id", this.initialContentId]] : []),
