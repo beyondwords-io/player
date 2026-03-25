@@ -19,7 +19,7 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
     wordHighlightsEnabled: player.wordHighlightsEnabled,
   });
   if (!player.playerApiUrl || !player.projectId) { return; }
-  if (player.continuousPlaybackMode === "none" || !player.content || player.content.length >= 99) { return; }
+  if (player.continuousPlaybackMode === "none" || !player.content || player.content.length >= 99 || player.contentIndex !== player.content.length - 1) { return; }
 
   const contentItem = player.content[player.content.length - 1];
   if (!contentItem || !contentItem.continuousPlaybackContentId || player.content.some(({ id }) => id === contentItem.continuousPlaybackContentId)) { return; }

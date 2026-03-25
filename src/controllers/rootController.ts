@@ -168,10 +168,7 @@ class RootController {
 
     playingPlayers.forEach(p => p.playbackState = "paused");
     chooseMediaSession(this.PlayerClass);
-
-    if (this.player.contentIndex === this.player.content.length - 1) {
-      appendContinuousPlaybackContentFromApi(this.player);
-    }
+    appendContinuousPlaybackContentFromApi(this.player);
   }
 
   handlePlaybackPaused() {
