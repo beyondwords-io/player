@@ -4,7 +4,7 @@ import { v4 as randomUuid } from "uuid";
 import { EPSILON } from "../helpers/timeFragment";
 import waitUntil from "../helpers/waitUntil";
 import throwError from "../helpers/throwError";
-import setPropsFromApi from "../helpers/setPropsFromApi";
+import setPropsFromApi, { appendContinuousPlaybackContentFromApi } from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
 import diffObject from "../helpers/diffObject";
 import sectionEnabled from "../helpers/sectionEnabled";
@@ -168,6 +168,7 @@ class RootController {
 
     playingPlayers.forEach(p => p.playbackState = "paused");
     chooseMediaSession(this.PlayerClass);
+    appendContinuousPlaybackContentFromApi(this.player);
   }
 
   handlePlaybackPaused() {
