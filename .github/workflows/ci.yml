@@ -8,14 +8,14 @@ env:
 jobs:
   CI:
     runs-on: ubuntu-latest
-    container: mcr.microsoft.com/playwright:v1.40.0-jammy
+    container: mcr.microsoft.com/playwright:v1.58.2-noble
 
     steps:
     - uses: actions/checkout@v3
     - run: chmod -R a+rw test
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
-        node-version: 18.15.0
+        node-version: '22'
         registry-url: https://registry.npmjs.org/
         cache: "npm"
 
