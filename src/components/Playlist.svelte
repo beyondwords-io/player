@@ -61,7 +61,7 @@
 
 <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
   <div class="scrollable" tabindex="-1">
-    {#each content as item, i}
+    {#each content as item, i (i)}
       {@const duration = (summary ? item.summarization.duration : item.duration) || 0}
       {@const downloadAudio = (summary ? item.summarization.audio : item.audio) || []}
       {@const downloadVideo = (summary ? item.summarization.video : item.video) || []}

@@ -54,22 +54,12 @@ export default tseslint.config(
   },
   {
     rules: {
-      "indent": ["error", 2],
-      "linebreak-style": ["error", "unix"],
-      "quotes": ["error", "double"],
-      "semi": ["error", "always"],
-      "eqeqeq": ["error", "always"],
-      "@typescript-eslint/no-empty-function": [
-        "error", { "allow": ["arrowFunctions", "methods"] }
-      ],
       "@typescript-eslint/no-unused-expressions": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn", { "argsIgnorePattern": "_", "caughtErrors": "none" }
       ],
       "svelte/no-at-html-tags": "off",
-      "svelte/valid-compile": "off",
       "svelte/no-unused-svelte-ignore": "off",
-      "svelte/require-each-key": "off",
       "svelte/no-reactive-reassign": "off",
       "svelte/no-immutable-reactive-statements": "off",
       "svelte/infinite-reactive-loop": "off",

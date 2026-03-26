@@ -349,7 +349,7 @@
               on:ratechange={handleRateChange}>
 
           {#if hls !== "pending" && !window.disableMediaLoad}
-            {#each sources as { url, contentType, format }, i}
+            {#each sources as { url, contentType, format }, i (i)}
               <source src={`${url}${timeFragment(isFirstLoad, initialTime, format)}`} type={contentType} on:error={handleSourceError(i)}>
             {/each}
           {/if}

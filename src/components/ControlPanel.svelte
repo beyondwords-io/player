@@ -138,7 +138,7 @@
     advertIndex:
     <select tabindex={-1} bind:value={advertIndex}>
       <option value={-1}>-1 (none)</option>
-      {#each adverts as item, i}
+      {#each adverts as item, i (i)}
         <option value={i}>{i} ({item.placement})</option>
       {/each}
     </select>
@@ -293,7 +293,7 @@
     <div class="control">
       segmentWidgetPosition:
       <select tabindex={-1} bind:value={segmentWidgetPosition}>
-        {#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as hour}
+        {#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as hour (hour)}
           <option>{hour}-oclock</option>
         {/each}
       </select>
@@ -321,7 +321,7 @@
     <div class="control">
       contentIndex:
       <select tabindex={-1} bind:value={contentIndex}>
-        {#each content as item, i}
+        {#each content as item, i (i)}
           <option value={i}>{i} ({item.title})</option>
         {/each}
       </select>
@@ -331,7 +331,7 @@
       introsOutrosIndex:
       <select tabindex={-1} bind:value={introsOutrosIndex}>
         <option value={-1}>-1 (none)</option>
-        {#each introsOutros as item, i}
+        {#each introsOutros as item, i (i)}
           <option value={i}>{i}: {item.placement}</option>
         {/each}
       </select>
@@ -349,7 +349,7 @@
       persistentIndex:
       <select tabindex={-1} bind:value={persistentIndex}>
         <option value={-1}>-1 (none)</option>
-        {#each adverts as item, i}
+        {#each adverts as item, i (i)}
           <option value={i}>{i}: {item.placement}</option>
         {/each}
       </select>
