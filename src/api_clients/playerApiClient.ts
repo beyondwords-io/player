@@ -12,6 +12,7 @@ class PlayerApiClient {
     initialSourceUrl,
     clientSideEnabled,
     previewToken,
+    continuousPlaybackMode,
     wordHighlightsEnabled,
   }: {
     playerApiUrl: string;
@@ -24,6 +25,7 @@ class PlayerApiClient {
     initialSourceUrl?: string,
     clientSideEnabled?: boolean;
     previewToken?: string;
+    continuousPlaybackMode?: string;
     wordHighlightsEnabled?: boolean;
   }) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
@@ -33,6 +35,7 @@ class PlayerApiClient {
     this.initialContentId = initialContentId;
     this.initialSourceId = initialSourceId;
     this.initialSourceUrl = initialSourceUrl;
+    this.continuousPlaybackMode = continuousPlaybackMode;
     this.params = new URLSearchParams() ;
 
     // TODO: Find a way to pass this information to the backend while complying
@@ -93,6 +96,7 @@ class PlayerApiClient {
   }
 
   #paramsWithContinuousPlayback(params = this.params) {
+    if (this.continuousPlaybackMode === "none") return params;
     return new URLSearchParams([
       ...Array.from(params.entries()),
       ...(this.mediaFormat ? [["media_format", this.mediaFormat]] : []),

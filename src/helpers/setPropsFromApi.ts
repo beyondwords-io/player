@@ -16,6 +16,7 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
     initialSourceUrl: player.initialProps?.sourceUrl,
     clientSideEnabled: player.clientSideEnabled,
     previewToken: player.previewToken,
+    continuousPlaybackMode: player.continuousPlaybackMode,
     wordHighlightsEnabled: player.wordHighlightsEnabled,
   });
   if (!player.playerApiUrl || !player.projectId) { return; }
@@ -52,6 +53,7 @@ const setPropsFromApi = async (player) => {
     initialSourceUrl: player.initialProps?.sourceUrl,
     clientSideEnabled: player.clientSideEnabled,
     previewToken: player.previewToken,
+    continuousPlaybackMode: player.continuousPlaybackMode,
     wordHighlightsEnabled: player.wordHighlightsEnabled,
   });
   if (!player.playerApiUrl || !player.projectId) { return; }
