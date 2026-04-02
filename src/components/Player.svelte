@@ -252,6 +252,7 @@
     {playbackRate}
     {playbackRates}
     {activeAdvert}
+    activeIntroOutro={introOrOutro}
     {persistentAdvert}
     {companionAdvert}
     {analyticsId}
@@ -296,6 +297,7 @@
       {playbackRate}
       {playbackRates}
       {activeAdvert}
+      activeIntroOutro={introOrOutro}
       {persistentAdvert}
       {companionAdvert}
       {analyticsId}
@@ -328,6 +330,7 @@
       currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
       playbackState={showRealTimeInWidget ? playbackState : "paused"}
       {activeAdvert}
+      activeIntroOutro={introOrOutro}
       {persistentAdvert}
       {companionAdvert}
       {analyticsId}

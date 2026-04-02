@@ -48,6 +48,8 @@ class RootController {
 
     if (this.#ignoreDueToAdvert(event)) {
       event.status = "ignored-due-to-advert";
+    } else if (this.#ignoreDueToIntroOutro(event)) {
+      event.status = "ignored-due-to-intro-outro";
     } else if (this.#ignoreDueToScrubbing(event)) {
       event.status = "ignored-due-to-scrubbing";
     } else if (this.#ignoreDueToPrecedence(event)) {
@@ -334,6 +336,15 @@ class RootController {
       type.includes("ChangeRate") ||
       type.includes("PrevSegment") ||
       type.includes("NextSegment") ||
+      type.includes("SeekBack") ||
+      type.includes("SeekAhead") ||
+      type.includes("Progress") && !type.includes("Space") && !type.includes("Enter")
+    );
+  }
+
+  #ignoreDueToIntroOutro({ type }) {
+    return (this.#isIntro() || this.#isOutro()) && (
+      type.includes("ChangeRate") ||
       type.includes("SeekBack") ||
       type.includes("SeekAhead") ||
       type.includes("Progress") && !type.includes("Space") && !type.includes("Enter")

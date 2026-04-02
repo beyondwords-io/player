@@ -55,6 +55,7 @@
   export let playbackRate = 1;
   export let playbackRates = [];
   export let activeAdvert = undefined;
+  export let activeIntroOutro = undefined;
   export let persistentAdvert = undefined;
   export let companionAdvert = undefined;
   export let analyticsId = undefined;
@@ -87,6 +88,7 @@
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
+  $: isIntroOutro = activeIntroOutro && !isStopped;
   $: isPlaylist = content.length > 1;
   $: isMobile = belowBreakpoint({ playerStyle, width });
   $: isMinimalUi = isVideo && aspectRatio < 1 && !isFullScreen;
@@ -228,7 +230,7 @@
         <TimeIndicator {currentTime} {duration} {durationFormat} {playerStyle} {isMinimalUi} {isAdvert} {isMobile} {isStopped} {positionClasses} {collapsed} {largeImage} {showBeyondWords} color={activeTextColor} />
 
         {#if (isStandard && !isMobile && !isStopped) || (isLarge && !isMobile) || (isVideo && !isStopped)}
-          <ProgressBar {onEvent} {progress} {duration} fullWidth={isVideo} readonly={isAdvert} color={activeIconColor} />
+          <ProgressBar {onEvent} {progress} {duration} fullWidth={isVideo} readonly={isAdvert || isIntroOutro} color={activeIconColor} />
         {/if}
 
         {#if isAdvert && !forcedCollapsed}
