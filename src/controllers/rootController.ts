@@ -594,17 +594,18 @@ class RootController {
     this.player.playbackRate = 1;
   }
 
-  #restorePlayerState(deleteState = false) {
+  #restorePlayerState(mediaRestarted = false) {
     this.player.playbackRate = this.prevRate || 1;
 
     const trackChanged = this.player.contentIndex !== this.prevContent;
-    if (!trackChanged) { this.player.currentTime = this.prevTime; }
+    if (!trackChanged || mediaRestarted) { this.player.currentTime = this.prevTime; }
 
-    if (deleteState) {
+    if (mediaRestarted) {
       delete this.prevTime;
       delete this.prevRate;
-      delete this.prevContent;
     }
+
+    delete this.prevContent;
   }
 
   #currentSegmentChanged({ contentIndex, segmentIndex }) {
