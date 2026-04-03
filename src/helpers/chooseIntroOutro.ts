@@ -1,7 +1,7 @@
 import { updateErroredIntrosOutros, resultedInAPlaybackError } from "./erroredIntrosOutros";
 import { updatePlayedIntroOutroMedia, alreadyPlayedIntroOutroMedia } from "./playedIntroOutroMedia";
 
-const chooseIntroOutro = ({ introsOutros = [], introsOutrosIndex, advertIndex, content, contentIndex, outroAfterEachContent, currentTime, atTheStart, atTheEnd, errored }) => {
+const chooseIntroOutro = ({ introsOutros = [], introsOutrosIndex, advertIndex, content, contentIndex, outroPlaybackMode, currentTime, atTheStart, atTheEnd, errored }) => {
   const currentIntroOutro = introsOutros[introsOutrosIndex];
 
   x: if (currentIntroOutro) {
@@ -12,7 +12,7 @@ const chooseIntroOutro = ({ introsOutros = [], introsOutrosIndex, advertIndex, c
 
   if (advertIndex !== -1) { return -1; } // Wait until the advert has finished.
 
-  const placements = placementsThatCanPlay({ content, contentIndex, outroAfterEachContent, currentTime, atTheStart, atTheEnd });
+  const placements = placementsThatCanPlay({ content, contentIndex, outroPlaybackMode, currentTime, atTheStart, atTheEnd });
 
   let bestSoFar = -1;
   let bestPlayed = -Infinity;
@@ -36,7 +36,7 @@ const chooseIntroOutro = ({ introsOutros = [], introsOutrosIndex, advertIndex, c
   return bestSoFar;
 };
 
-const placementsThatCanPlay = ({ content, contentIndex, outroAfterEachContent, currentTime, atTheStart, atTheEnd }) => {
+const placementsThatCanPlay = ({ content, contentIndex, outroPlaybackMode, currentTime, atTheStart, atTheEnd }) => {
   const eligiblePlacements = new Set();
 
   const atTheStartOfAllContent = atTheStart && contentIndex === 0 && currentTime === 0;
@@ -44,7 +44,7 @@ const placementsThatCanPlay = ({ content, contentIndex, outroAfterEachContent, c
 
   if (atTheStartOfAllContent) { eligiblePlacements.add("pre-roll"); }
   if (atTheEndOfAllContent) { eligiblePlacements.add("post-roll"); }
-  if (outroAfterEachContent && atTheEnd) { eligiblePlacements.add("post-roll"); }
+  if (outroPlaybackMode === "after-each" && atTheEnd) { eligiblePlacements.add("post-roll"); }
 
   return eligiblePlacements;
 };

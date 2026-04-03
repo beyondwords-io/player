@@ -504,13 +504,13 @@ class RootController {
   }
 
   #chooseAndSetIntroOutro({ atTheStart, atTheEnd, errored } = {}) {
-    const { content, introsOutros, outroAfterEachContent, currentTime } = this.player;
+    const { content, introsOutros, outroPlaybackMode, currentTime } = this.player;
 
     const introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
     const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
     const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
 
-    this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, outroAfterEachContent, atTheStart, atTheEnd, errored }));
+    this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, outroPlaybackMode, atTheStart, atTheEnd, errored }));
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored, preloadingErrored } = {}) {
