@@ -18,7 +18,7 @@
   export let content;
   export let contentIndex;
   export let summary;
-  export let introOrOutro;
+  export let activeIntroOrOutro;
   export let activeAdvert;
   export let preloadAdvert;
   export let advertConsent;
@@ -86,14 +86,14 @@
   }
   $: segments = contentItem?.segments || [];
 
-  $: contentIndex, introOrOutro, activeAdvert, loadCount += 1;
+  $: contentIndex, activeIntroOrOutro, activeAdvert, loadCount += 1;
   $: isFirstLoad = loadCount === 1;
   $: startPosition = isFirstLoad && initialTime;
 
-  $: mediaObject = introOrOutro;
-  $: !introOrOutro && (mediaObject = activeAdvert);
-  $: !introOrOutro && !activeAdvert && !summary && (mediaObject = contentItem);
-  $: !introOrOutro && !activeAdvert && summary && (mediaObject = contentItem?.summarization);
+  $: mediaObject = activeIntroOrOutro;
+  $: !activeIntroOrOutro && (mediaObject = activeAdvert);
+  $: !activeIntroOrOutro && !activeAdvert && !summary && (mediaObject = contentItem);
+  $: !activeIntroOrOutro && !activeAdvert && summary && (mediaObject = contentItem?.summarization);
 
   $: sources = orderedMediaSources(mediaObject, preferVideo(), videoSizes);
 
@@ -128,7 +128,7 @@
   $: videoMightBeShown && loadedMedia?.format === "audio" && hasVideo() && atTheStart && (mediaObject = mediaObject);
   $: isMinimalUi = loadedMedia?.format === "video" && aspectRatio < 1 && !isFullScreen;
 
-  $: segmentIndex = introOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime, summary);
+  $: segmentIndex = activeIntroOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime, summary);
   $: segmentIndex, handleSegmentUpdate();
 
   $: videoBehindSlidingWidget && animate();

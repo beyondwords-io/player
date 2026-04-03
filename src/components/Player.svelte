@@ -123,7 +123,7 @@
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
   $: contentItem = content[contentIndex];
-  $: introOrOutro = introsOutros[introsOutrosIndex];
+  $: activeIntroOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
   $: preloadAdvert = adverts[preloadAdvertIndex];
   $: persistentAdvert = adverts[persistentIndex];
@@ -175,13 +175,13 @@
   $: widgetSegment = (hoveredAllowedInWidget && lastHovered) || (currentAllowedInWidget && currentSegment);
 
   $: widgetIsCurrent = widgetSegment?.marker === currentSegment?.marker;
-  $: showRealTimeInWidget = widgetIsCurrent || activeAdvert || introOrOutro;
+  $: showRealTimeInWidget = widgetIsCurrent || activeAdvert || activeIntroOrOutro;
 
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
   $: wordHighlightsActive = wordHighlightsEnabled && !!wordHighlightColor;
-  $: currentActiveMarker = isAdvert || introOrOutro ? null : currentSegment?.marker;
+  $: currentActiveMarker = isAdvert || activeIntroOrOutro ? null : currentSegment?.marker;
   $: segmentHighlights.update("current", currentSegment, { sections: [highlightSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
   $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
@@ -201,7 +201,7 @@
     {content}
     {contentIndex}
     {summary}
-    {introOrOutro}
+    {activeIntroOrOutro}
     {preloadAdvert}
     {activeAdvert}
     {advertConsent}
@@ -252,7 +252,7 @@
     {playbackRate}
     {playbackRates}
     {activeAdvert}
-    activeIntroOutro={introOrOutro}
+    {activeIntroOrOutro}
     {persistentAdvert}
     {companionAdvert}
     {analyticsId}
@@ -297,7 +297,7 @@
       {playbackRate}
       {playbackRates}
       {activeAdvert}
-      activeIntroOutro={introOrOutro}
+      {activeIntroOrOutro}
       {persistentAdvert}
       {companionAdvert}
       {analyticsId}
@@ -330,7 +330,7 @@
       currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
       playbackState={showRealTimeInWidget ? playbackState : "paused"}
       {activeAdvert}
-      activeIntroOutro={introOrOutro}
+      {activeIntroOrOutro}
       {persistentAdvert}
       {companionAdvert}
       {analyticsId}

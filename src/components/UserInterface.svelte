@@ -55,7 +55,7 @@
   export let playbackRate = 1;
   export let playbackRates = [];
   export let activeAdvert = undefined;
-  export let activeIntroOutro = undefined;
+  export let activeIntroOrOutro = undefined;
   export let persistentAdvert = undefined;
   export let companionAdvert = undefined;
   export let analyticsId = undefined;
@@ -88,7 +88,7 @@
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
   $: isAdvert = activeAdvert && !isStopped;
-  $: isIntroOutro = activeIntroOutro && !isStopped;
+  $: isIntroOutro = activeIntroOrOutro && !isStopped;
   $: isPlaylist = content.length > 1;
   $: isMobile = belowBreakpoint({ playerStyle, width });
   $: isMinimalUi = isVideo && aspectRatio < 1 && !isFullScreen;
