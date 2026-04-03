@@ -157,7 +157,7 @@
 
   $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
-  $: aspectRatio = isVideo ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
+  $: aspectRatio = isVideo && loadedMedia.videoSize ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
 
   $: showVideoPoster = isAudio && videoMightBeShown && metadataLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";

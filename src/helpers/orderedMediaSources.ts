@@ -21,7 +21,7 @@ const sortAndFilterBySize = (video, videoSizes) => {
 
   for (const string of videoSizes) {
     for (const item of video) {
-      if (!added.has(item) && matchesVideoSize(string, item.videoSize)) {
+      if (!added.has(item) && (!item.videoSize || matchesVideoSize(string, item.videoSize))) {
         added.add(item);
         result.push(item);
       }
