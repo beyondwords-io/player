@@ -56,7 +56,13 @@ const eventFromProps = (player, analyticsEventType) => {
   player.sessionCreatedAt ||= Date.now();
 
   const withoutStorage = ["without-local-storage", "none"].includes(player.analyticsConsent);
-  if (!withoutStorage) { localStorage.beyondwords ||= JSON.stringify(randomUuid()); }
+  if (!withoutStorage) {
+    try {
+      localStorage.beyondwords ||= JSON.stringify(randomUuid());
+    } catch {
+      // localStorage unavailable
+    }
+  }
 
   const activeAdvert = player.adverts[player.advertIndex];
   const contentItem = player.content[player.contentIndex];
@@ -76,7 +82,7 @@ const eventFromProps = (player, analyticsEventType) => {
     ad_id: activeAdvert?.id,
     media_id: player.loadedMedia?.id,
     media_format: player.loadedMedia?.format || defaultMediaFormat({ player, contentItem }),
-    local_storage_id: withoutStorage ? null : JSON.parse(localStorage.beyondwords),
+    local_storage_id: withoutStorage || !localStorage.beyondwords ? null : JSON.parse(localStorage.beyondwords),
     listen_session_id: player.listenSessionId,
     session_created_at: player.sessionCreatedAt,
     duration: duration,
