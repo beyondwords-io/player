@@ -85,6 +85,7 @@ const create = (element, uniqueId, background, wordHighlightColor, words) => {
     overlaySvg.style.zIndex = "-1";
     overlaySvg.style.pointerEvents = "none";
     overlaySvg.style.overflow = "visible";
+    overlaySvg.setAttribute("aria-hidden", "true");
     overlaySvg.setAttribute("width", String(containerRect.width));
     overlaySvg.setAttribute("height", String(containerRect.height));
     if (direction === "rtl") {
