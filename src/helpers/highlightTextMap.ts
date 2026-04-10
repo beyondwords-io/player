@@ -139,15 +139,20 @@ const mergeLineRects = (clientRects, containerRect) => {
 
   for (let i = 1; i < rects.length; i++) {
     const r = rects[i];
-    const line = lines[lines.length - 1];
     const midY = (r.top + r.bottom) / 2;
-    const sameLine = midY >= line.top && midY <= line.bottom;
+    let merged = false;
 
-    if (sameLine) {
-      line.left = Math.min(line.left, r.left);
-      line.right = Math.max(line.right, r.right);
-      line.bottom = Math.max(line.bottom, r.bottom);
-    } else {
+    for (const line of lines) {
+      if (midY >= line.top && midY <= line.bottom) {
+        line.left = Math.min(line.left, r.left);
+        line.right = Math.max(line.right, r.right);
+        line.bottom = Math.max(line.bottom, r.bottom);
+        merged = true;
+        break;
+      }
+    }
+
+    if (!merged) {
       lines.push({ left: r.left, top: r.top, right: r.right, bottom: r.bottom });
     }
   }

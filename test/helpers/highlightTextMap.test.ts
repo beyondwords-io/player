@@ -339,4 +339,18 @@ describe("mergeLineRects", () => {
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({ x: 0, y: 10, width: 100, height: 20 });
   });
+
+  it("merges out-of-order rects from inline elements wrapping across lines", () => {
+    const rects = [
+      { left: 0, top: 0, right: 200, bottom: 20, width: 200, height: 20 },
+      { left: 0, top: 25, right: 100, bottom: 45, width: 100, height: 20 },
+      { left: 200, top: 0, right: 300, bottom: 20, width: 100, height: 20 },
+      { left: 100, top: 25, right: 300, bottom: 45, width: 200, height: 20 },
+    ];
+
+    const result = mergeLineRects(rects, container);
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({ x: 0, y: 0, width: 300, height: 20 });
+    expect(result[1]).toEqual({ x: 0, y: 25, width: 300, height: 20 });
+  });
 });
