@@ -504,13 +504,13 @@ class RootController {
   }
 
   #chooseAndSetIntroOutro({ atTheStart, atTheEnd, errored } = {}) {
-    const { content, introsOutros, currentTime } = this.player;
+    const { content, introsOutros, outroPlaybackMode, currentTime } = this.player;
 
     const introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
     const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
     const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
 
-    this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored }));
+    this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, outroPlaybackMode, atTheStart, atTheEnd, errored }));
   }
 
   #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored, preloadingErrored } = {}) {
@@ -570,13 +570,11 @@ class RootController {
     const outroStarted = !wasOutro && isOutro;
     const outroFinished = wasOutro && !isOutro;
 
-    if (introStarted) { this.#overridePlayerState(); }
-    if (introStarted || outroStarted) { this.player.currentTime = 0; }
+    if (introStarted || outroStarted) { this.#overridePlayerState(); this.player.currentTime = 0; }
 
     this.player.introsOutrosIndex = index;
 
-    if (introFinished && !this.#isAdvert()) { this.#restorePlayerState(); }
-    if (outroFinished) { this.#setTrack(() => Infinity); }
+    if ((introFinished && !this.#isAdvert()) || outroFinished) { this.#restorePlayerState(); }
   }
 
   #setAdvert(index) {

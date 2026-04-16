@@ -137,6 +137,7 @@ const setProps = (player, data) => {
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
   set(player, "introsOutros", rewriteIntrosOutrosUrls(data.settings.intros_outros, player.mediaCustomUrl));
+  set(player, "outroPlaybackMode", data.settings.outro_playback_mode);
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
   set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);
   set(player, "widgetStyle", data.settings.widget_style);
