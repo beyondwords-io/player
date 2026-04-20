@@ -253,7 +253,7 @@
             {/if}
 
             {#if isVideo && showBeyondWords}
-              <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+              <BeyondWords {onEvent} {analyticsId} scale={logoScale} color={activeIconColor} visible={isScreen || isHovering || isPlaying} />
             {/if}
           </SecondaryButtons>
         {/if}
@@ -264,7 +264,7 @@
           {#if showClose}
             <CloseWidgetButton {onEvent} scale={closeScale} margin={closeMargin} color={activeIconColor} />
           {:else if showBeyondWords && !isVideo}
-            <BeyondWords {onEvent} {analyticsId} scale={logoScale} visible={isScreen || isHovering || isPlaying} />
+            <BeyondWords {onEvent} {analyticsId} scale={logoScale} color={activeIconColor} visible={isScreen || isHovering || isPlaying} />
           {/if}
         </div>
       {/if}
