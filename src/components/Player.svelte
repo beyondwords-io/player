@@ -164,7 +164,7 @@
   $: showVideoPoster = isAudio && videoMightBeShown && metadataLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
-  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, onEvent(identifiersEvent());
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, userType, onEvent(identifiersEvent());
 
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, currentAllowedInWidget && resetHovered();
