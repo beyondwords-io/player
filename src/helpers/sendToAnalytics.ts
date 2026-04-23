@@ -74,6 +74,7 @@ const eventFromProps = (player, analyticsEventType) => {
     event_type: analyticsEventType,
     device_type: deviceType(player),
     media_type: activeAdvert ? "ad" : "content",
+    user_type: typeof player.userType === "string" ? player.userType : null,
     media_variant: player.summary ? "summary" : "article",
     project_id: player.projectId,
     content_id: contentItem?.id,

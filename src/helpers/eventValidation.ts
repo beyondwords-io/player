@@ -40,6 +40,7 @@ export const validateAnalyticsEvent = (props) => {                              
   validateProperty(props, "event_type",            s => analyticsTypes.includes(s)); // Enum
   validateProperty(props, "device_type",           s => deviceTypes.includes(s));    // Enum
   validateProperty(props, "media_type",            s => mediaTypes.includes(s));     // Enum
+  validateProperty(props, "user_type",             s => !s || typeof s === "string"); // String
   validateProperty(props, "content_id",            s => !s || isValidUuid(s));       // String
   validateProperty(props, "project_id",            n => !n || n > 0);                // Int64
   validateProperty(props, "analytics_id",          n => !n || n > 0);                // Int64
