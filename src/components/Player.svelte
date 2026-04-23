@@ -91,6 +91,7 @@
   export let mediaCustomUrl = undefined;
   export let captureErrors = true;
   export let onError = () => {};
+  export let userType = undefined;
   export let transitions = [];
   export let controlPanel = undefined;
   export const addEventListener = (...args) => controller.addEventListener(...args);

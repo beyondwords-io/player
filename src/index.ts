@@ -36,6 +36,9 @@ class Player extends PlayerComponent {
 
     controller.player = this;
     Player.#instances.push(this);
+
+    const userType = this.userType;
+    Object.defineProperty(this, "userType", { get: () => userType, enumerable: true, configurable: true });
   }
 
   static styleLoaded() {
