@@ -18,6 +18,7 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
     previewToken: player.previewToken,
     continuousPlaybackMode: player.continuousPlaybackMode,
     wordHighlightsEnabled: player.wordHighlightsEnabled,
+    userType: player.userType,
   });
   if (!player.playerApiUrl || !player.projectId) { return; }
   if (player.continuousPlaybackMode === "none" || !player.content || player.content.length >= 99 || player.contentIndex !== player.content.length - 1) { return; }
@@ -55,6 +56,7 @@ const setPropsFromApi = async (player) => {
     previewToken: player.previewToken,
     continuousPlaybackMode: player.continuousPlaybackMode,
     wordHighlightsEnabled: player.wordHighlightsEnabled,
+    userType: player.userType,
   });
   if (!player.playerApiUrl || !player.projectId) { return; }
 
