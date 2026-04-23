@@ -130,13 +130,14 @@ const setProps = (player, data) => {
   setAdvertsProp(player, data);
 
   const content = player.content[player.contentIndex];
+  const contentIntrosOutros = player.content.map((item) => item.intros_outros ?? []).flat();
 
   set(player, "playerStyle", data.settings.player_style);
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
   set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
-  set(player, "introsOutros", rewriteIntrosOutrosUrls(data.settings.intros_outros, player.mediaCustomUrl));
+  set(player, "introsOutros", rewriteIntrosOutrosUrls(data.settings.intros_outros.concat(contentIntrosOutros), player.mediaCustomUrl));
   set(player, "outroPlaybackMode", data.settings.outro_playback_mode);
   set(player, "persistentAdImage", data.settings.persistent_ad_image);
   set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);

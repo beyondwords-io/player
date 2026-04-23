@@ -14,7 +14,10 @@ const chooseIntroOutro = ({ introsOutros = [], introsOutrosIndex, advertIndex, c
 
   const placements = placementsThatCanPlay({ content, contentIndex, outroPlaybackMode, currentTime, atTheStart, atTheEnd });
 
+  const currentContentId = content[contentIndex]?.id;
+
   let bestSoFar = -1;
+  let bestContentMatch = -Infinity;
   let bestPlayed = -Infinity;
   let bestRandom = -Infinity;
 
@@ -22,13 +25,18 @@ const chooseIntroOutro = ({ introsOutros = [], introsOutrosIndex, advertIndex, c
     if (resultedInAPlaybackError(introOutro)) { continue; }
     if (!placements.has(introOutro.placement)) { continue; }
 
+    const thisContentMatch = introOutro.contentId === undefined ? 1 : introOutro.contentId === currentContentId ? 2 : 0;
+    if (thisContentMatch === 0) { continue; }
+    if (thisContentMatch < bestContentMatch) { continue; }
+
     const thisPlayed = alreadyPlayedIntroOutroMedia(introOutro) ? 1 : 0;
-    if (thisPlayed < bestPlayed) { continue; }
+    if (thisContentMatch === bestContentMatch && thisPlayed < bestPlayed) { continue; }
 
     const thisRandom = Math.random();
-    if (thisPlayed === bestPlayed && thisRandom < bestRandom) { continue; }
+    if (thisContentMatch === bestContentMatch && thisPlayed === bestPlayed && thisRandom < bestRandom) { continue; }
 
     bestSoFar = thisIndex;
+    bestContentMatch = thisContentMatch;
     bestPlayed = thisPlayed;
     bestRandom = thisRandom;
   }
