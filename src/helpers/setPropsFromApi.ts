@@ -7,6 +7,7 @@ import rewriteMediaUrl from "./rewriteMediaUrl";
 const appendContinuousPlaybackContentFromApi = async (player) => {
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
+    accessTier: player.accessTier,
     projectId: player.projectId,
     summary: player.summary,
     mediaFormat: player.playerStyle === "video" ? "video" : undefined,
@@ -44,6 +45,7 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
+    accessTier: player.accessTier,
     projectId: player.projectId,
     summary: player.summary,
     mediaFormat: player.playerStyle === "video" ? "video" : undefined,
@@ -128,6 +130,7 @@ const setProps = (player, data) => {
   resetSomeProps(player);
   setContentProp(player, data);
   setAdvertsProp(player, data);
+  setAccessTierProp(player, data);
 
   const content = player.content[player.contentIndex];
 
@@ -283,6 +286,10 @@ const setAdvertsProp = (player, data) => {
       })),
     };
   }));
+};
+
+const setAccessTierProp = (player, data) => {
+  player.setAccessTierFromApi(data.settings.access_tier);
 };
 
 const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {
