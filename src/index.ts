@@ -36,6 +36,11 @@ class Player extends PlayerComponent {
 
     controller.player = this;
     Player.#instances.push(this);
+
+    Object.defineProperty(this, "accessTier", {
+      ...Object.getOwnPropertyDescriptor(this, "accessTier"),
+      set: (value) => this.setAccessTier(value),
+    });
   }
 
   static styleLoaded() {
