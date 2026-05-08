@@ -34,6 +34,7 @@
   export let duration;
   export let currentTime;
   export let playbackRate;
+  export let segmentLimit;
   export let prevPercentage;
   export let showUserInterface;
   export let videoBehindWidget;
@@ -146,6 +147,10 @@
       description: "The media began playing from its current playback time.",
       initiatedBy: "media",
     }));
+
+    if (!activeIntroOrOutro && !activeAdvert && segmentLimit === 0) {
+      handleSegmentLimitReached();
+    }
   };
 
   const handlePause = () => {
@@ -204,6 +209,14 @@
     }));
   };
 
+  const handleSegmentLimitReached = () => {
+    onEvent(newEvent({
+      type: "SegmentLimitReached",
+      description: "The media's segment limit was reached.",
+      initiatedBy: "media",
+    }));
+  };
+
   const handleTimeUpdate = () => {
     // Ensure the correct duration is sent to analytics for vast ads.
     if (vastUrl) { return; }
@@ -215,6 +228,10 @@
       description: "The media's current time was updated.",
       initiatedBy: "media",
     }));
+
+    if (!activeIntroOrOutro && !activeAdvert && typeof segmentLimit === "number" && segmentLimit > 0 && segmentIndex >= segmentLimit) {
+      handleSegmentLimitReached();
+    }
   };
 
   const handleSeeked = () => {
