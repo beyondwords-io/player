@@ -164,6 +164,7 @@ const setProps = (player, data) => {
   set(player, "analyticsTag", data.settings.analytics_tag);
   set(player, "analyticsUrl", data.settings.analytics_url);
   set(player, "analyticsId", data.settings.analytics_id);
+  set(player, "segmentLimit", data.settings.segment_limit);
   set(player, "contentLanguage", data.language);
 };
 

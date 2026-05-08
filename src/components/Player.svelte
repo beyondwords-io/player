@@ -89,6 +89,7 @@
   export let analyticsDeviceType = "auto";
   export let analyticsTag = undefined;
   export let mediaCustomUrl = undefined;
+  export let segmentLimit = undefined;
   export let captureErrors = true;
   export let onError = () => {};
   export let transitions = [];
@@ -206,6 +207,7 @@
     {videoSizes}
     {content}
     {contentIndex}
+    {segmentLimit}
     {summary}
     {activeIntroOrOutro}
     {preloadAdvert}
