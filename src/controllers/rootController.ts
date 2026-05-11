@@ -475,7 +475,7 @@ class RootController {
       this.#setTime(() => this.player.duration - 0.01);
 
     // Otherwise, set the time to the startTime of the segment.
-    } else if (this.#isContent() && tryIndex >= 0 && tryIndex < segments.length) {
+    } else if (this.#isContent() && tryIndex >= 0 && tryIndex < segments.length && (typeof this.player.segmentLimit !== 'number' || tryIndex < this.player.segmentLimit)) {
       this.#setTime(() => segments[tryIndex].startTime);
     }
   }
