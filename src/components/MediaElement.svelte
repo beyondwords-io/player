@@ -229,7 +229,7 @@
       initiatedBy: "media",
     }));
 
-    if (!activeIntroOrOutro && !activeAdvert && typeof segmentLimit === "number" && segmentLimit > 0 && segmentIndex >= segmentLimit) {
+    if (!activeIntroOrOutro && !activeAdvert && typeof segmentLimit === "number" && segmentIndex >= segmentLimit) {
       handleSegmentLimitReached();
     }
   };
