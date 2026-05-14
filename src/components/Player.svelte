@@ -126,8 +126,10 @@
 
   let accessTierRevision = 0;
   export let accessTier = undefined;
-  export const setAccessTier = (value) => { accessTier = value; accessTierRevision++; };
-  export const setAccessTierFromApi = (value) => { accessTier = value; };
+  export const setAccessTier = (value, emitIdentifiersEvent = true) => {
+    accessTier = value; 
+    if (emitIdentifiersEvent) accessTierRevision++;
+  };
 
   $: contentItem = content[contentIndex];
   $: activeIntroOrOutro = introsOutros[introsOutrosIndex];
