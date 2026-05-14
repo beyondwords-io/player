@@ -7,6 +7,7 @@ import rewriteMediaUrl from "./rewriteMediaUrl";
 const appendContinuousPlaybackContentFromApi = async (player) => {
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
+    accessTier: player.accessTier,
     projectId: player.projectId,
     summary: player.summary,
     mediaFormat: player.playerStyle === "video" ? "video" : undefined,
@@ -44,6 +45,7 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
 const setPropsFromApi = async (player) => {
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
+    accessTier: player.accessTier,
     projectId: player.projectId,
     summary: player.summary,
     mediaFormat: player.playerStyle === "video" ? "video" : undefined,
@@ -128,6 +130,7 @@ const setProps = (player, data) => {
   resetSomeProps(player);
   setContentProp(player, data);
   setAdvertsProp(player, data);
+  setAccessTierProp(player, data);
 
   const content = player.content[player.contentIndex];
 
@@ -161,6 +164,7 @@ const setProps = (player, data) => {
   set(player, "analyticsTag", data.settings.analytics_tag);
   set(player, "analyticsUrl", data.settings.analytics_url);
   set(player, "analyticsId", data.settings.analytics_id);
+  set(player, "segmentLimit", data.settings.segment_limit);
   set(player, "contentLanguage", data.language);
 };
 
@@ -283,6 +287,12 @@ const setAdvertsProp = (player, data) => {
       })),
     };
   }));
+};
+
+const setAccessTierProp = (player, data) => {
+  if (typeof player.accessTier === "undefined") { return; }
+
+  player.setAccessTier(data.settings.access_tier, false);
 };
 
 const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {

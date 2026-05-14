@@ -170,7 +170,8 @@ class RootController {
 
     playingPlayers.forEach(p => p.playbackState = "paused");
     chooseMediaSession(this.PlayerClass);
-    appendContinuousPlaybackContentFromApi(this.player);
+
+    if (typeof this.player.segmentLimit !== 'number') { appendContinuousPlaybackContentFromApi(this.player); }
   }
 
   handlePlaybackPaused() {
@@ -199,7 +200,7 @@ class RootController {
     if (mediaRestarted && this.prevTime) { this.#restorePlayerState(true); }
   }
 
-  handlePlaybackEnded() {
+  handlePlaybackEnded(event) {
     if (this.#isMidrollAdvert()) { this.midrollPlayed = true; }
     this.segmentPlayed = false;
 
@@ -214,7 +215,12 @@ class RootController {
 
     if (this.#isOutro() || this.#isAdvert()) { return; } // Don't skip track until post-roll has played.
 
-    this.#setTrack(i => i + 1);
+    if (event?.type === "SegmentLimitReached" || typeof this.player.segmentLimit === 'number') {
+      this.player.playbackState = "stopped";
+      this.#setTime(() => 0);
+    } else {
+      this.#setTrack(i => i + 1);
+    }
   }
 
   handlePlaybackNotAllowed({ description }) {
@@ -239,6 +245,10 @@ class RootController {
     }
 
     if (wasMidroll && !this.#isAdvert()) { this.midrollPlayed = true; }
+  }
+
+  handleSegmentLimitReached(event) {
+    this.handlePlaybackEnded(event);
   }
 
   handleCompanionAdvertChanged({ clickThroughUrl, imageUrl }) {
@@ -465,7 +475,7 @@ class RootController {
       this.#setTime(() => this.player.duration - 0.01);
 
     // Otherwise, set the time to the startTime of the segment.
-    } else if (this.#isContent() && tryIndex >= 0 && tryIndex < segments.length) {
+    } else if (this.#isContent() && tryIndex >= 0 && tryIndex < segments.length && (typeof this.player.segmentLimit !== 'number' || tryIndex < this.player.segmentLimit)) {
       this.#setTime(() => segments[tryIndex].startTime);
     }
   }

@@ -89,6 +89,7 @@
   export let analyticsDeviceType = "auto";
   export let analyticsTag = undefined;
   export let mediaCustomUrl = undefined;
+  export let segmentLimit = undefined;
   export let captureErrors = true;
   export let onError = () => {};
   export let transitions = [];
@@ -122,6 +123,13 @@
   export let segmentClickables = new SegmentClickables();
   export let segmentHighlights = new SegmentHighlights();
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
+
+  let accessTierRevision = 0;
+  export let accessTier = undefined;
+  export const setAccessTier = (value, emitIdentifiersEvent = true) => {
+    accessTier = value; 
+    if (emitIdentifiersEvent) accessTierRevision++;
+  };
 
   $: contentItem = content[contentIndex];
   $: activeIntroOrOutro = introsOutros[introsOutrosIndex];
@@ -163,7 +171,7 @@
   $: showVideoPoster = isAudio && videoMightBeShown && metadataLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
-  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, onEvent(identifiersEvent());
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, accessTierRevision, onEvent(identifiersEvent());
 
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, currentAllowedInWidget && resetHovered();
@@ -201,6 +209,7 @@
     {videoSizes}
     {content}
     {contentIndex}
+    {segmentLimit}
     {summary}
     {activeIntroOrOutro}
     {preloadAdvert}
