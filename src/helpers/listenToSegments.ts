@@ -36,7 +36,7 @@ const handleClick = (event) => {
   for (const { player, segment, contentIndex, segmentIndex, segmentElement, precedence } of chooseSegmentPerPlayer(event.target)) {
     if (!segment) { continue; }
 
-    player.onEvent(newEvent({
+    player.onEvent?.(newEvent({
       type: "PressedSegment",
       description: "The user pressed on a segment in the article.",
       initiatedBy: "user",
@@ -55,7 +55,7 @@ const handleMouseMove = (event) => {
     if (textIsSelected()) { continue; }
     if (!hoveredChanged(p, contentIndex, segmentIndex)) { continue; }
 
-    player.onEvent(newEvent({
+    player.onEvent?.(newEvent({
       type: "HoveredSegmentUpdated",
       description: "The user hovered over a different segment in the article.",
       initiatedBy: "user",
