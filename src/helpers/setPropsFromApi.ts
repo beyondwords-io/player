@@ -292,7 +292,7 @@ const setAdvertsProp = (player, data) => {
 const setAccessTierProp = (player, data) => {
   if (typeof player.accessTier === "undefined") { return; }
 
-  player.setAccessTierFromApi(data.settings.access_tier);
+  player.setAccessTier(data.settings.access_tier, false);
 };
 
 const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {
