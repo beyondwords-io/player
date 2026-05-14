@@ -105,7 +105,7 @@ const handleNoContent = (player) => {
   setContentProp(player);
   setAdvertsProp(player);
 
-  player.onEvent(newEvent({
+  player.onEvent?.(newEvent({
     type: "NoContentAvailable",
     description: "No published and processed content is available for the identifiers.",
     initiatedBy: "browser",
@@ -113,7 +113,7 @@ const handleNoContent = (player) => {
 };
 
 const handleContent = (player) => {
-  player.onEvent(newEvent({
+  player.onEvent?.(newEvent({
     type: "ContentAvailable",
     description: "Content was loaded into the player and is ready to be played.",
     initiatedBy: "browser",
