@@ -34,13 +34,15 @@ class Player extends PlayerComponent {
     const initialProps = { showUserInterface, ...props };
     super({ target: newTarget, props: { controller, ...initialProps, initialProps } });
 
+    Object.defineProperty(this, "accessTier", {
+      get: () => this.getAccessTier(),
+      set: (value) => this.setAccessTier(value),
+      enumerable: false,
+      configurable: true,
+    });
+
     controller.player = this;
     Player.#instances.push(this);
-
-    Object.defineProperty(this, "accessTier", {
-      ...Object.getOwnPropertyDescriptor(this, "accessTier"),
-      set: (value) => this.setAccessTier(value),
-    });
   }
 
   static styleLoaded() {

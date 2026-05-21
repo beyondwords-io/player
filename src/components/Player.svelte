@@ -126,6 +126,7 @@
 
   let accessTierRevision = 0;
   export let accessTier = undefined;
+  export const getAccessTier = () => accessTier;
   export const setAccessTier = (value, emitIdentifiersEvent = true) => {
     accessTier = value; 
     if (emitIdentifiersEvent) accessTierRevision++;
