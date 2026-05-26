@@ -35,8 +35,8 @@ class Player extends PlayerComponent {
     super({ target: newTarget, props: { controller, ...initialProps, initialProps } });
 
     Object.defineProperty(this, "accessTier", {
-      get: () => this.getAccessTier(),
-      set: (value) => this.setAccessTier(value),
+      get: () => this.getAccessTier?.(),
+      set: (value) => this.setAccessTier?.(value),
       enumerable: false,
       configurable: true,
     });
