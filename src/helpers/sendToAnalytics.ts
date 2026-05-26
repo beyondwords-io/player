@@ -75,6 +75,7 @@ const eventFromProps = (player, analyticsEventType) => {
     device_type: deviceType(player),
     media_type: activeAdvert ? "ad" : "content",
     media_variant: player.summary ? "summary" : "article",
+    access_tier: player.accessTier,
     project_id: player.projectId,
     content_id: contentItem?.id,
     source_id: contentItem?.sourceId,
@@ -119,12 +120,13 @@ const gaEventName = ({ event_type, listen_length_percent }) => {
 };
 
 const isNewLoad = (player) => {
-  player.loadedContentIds ||= new Set();
+  player.loadedContentHashes ||= new Set();
 
   const contentItem = player.content[player.contentIndex];
+  const contentHash = `${player.accessTier}:${contentItem?.id}`;
 
-  if (contentItem && !player.loadedContentIds.has(contentItem.id)) {
-    player.loadedContentIds.add(contentItem.id);
+  if (contentItem && !player.loadedContentHashes.has(contentHash)) {
+    player.loadedContentHashes.add(contentHash);
     return true;
   }
 };
