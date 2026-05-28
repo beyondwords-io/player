@@ -17,10 +17,11 @@ echo "Version from Azure Front Door: $azure_version"
 if [ "$jsdelivr_version" != "$package_version" ]; then
   echo -e "\nPurging jsDelivr..."
 
-  curl https://purge.jsdelivr.net//npm/@beyondwords/player@latest
-  curl https://purge.jsdelivr.net//npm/@beyondwords/player@latest/dist/umd.js
-  curl https://purge.jsdelivr.net//npm/@beyondwords/player@latest/dist/style.js
-  curl https://purge.jsdelivr.net//npm/@beyondwords/player@latest/dist/hls.light.min.js
+  curl -s https://purge.jsdelivr.net/npm/@beyondwords/player
+  curl -s https://purge.jsdelivr.net/npm/@beyondwords/player@latest
+  curl -s https://purge.jsdelivr.net/npm/@beyondwords/player@latest/dist/umd.js
+  curl -s https://purge.jsdelivr.net/npm/@beyondwords/player@latest/dist/style.js
+  curl -s https://purge.jsdelivr.net/npm/@beyondwords/player@latest/dist/hls.light.min.js
 
   echo -e "\nWaiting for jsDelivr to update..."
 
