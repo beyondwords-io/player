@@ -529,11 +529,12 @@ class RootController {
     let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
     const advertIndex = typeof this.nextAdvert !== "undefined" ? this.nextAdvert : this.player.advertIndex;
     const contentIndex = typeof this.prevContent !== "undefined" ? this.prevContent : this.player.contentIndex;
+    const videoMightBeShown = this.player.playerStyle === "video" || this.player.widgetStyle === "video";
 
     if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
-    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll, summary: this.player.summary }));
+    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll, videoMightBeShown, summary: this.player.summary }));
     if (!this.#isAdvert()) {
-      const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll, summary: this.player.summary });
+      const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll, videoMightBeShown, summary: this.player.summary });
       const preloadAdvert = this.player.adverts?.[preloadAdvertIndex];
       if (preloadAdvert?.vastUrl && ["mid-roll", "post-roll"].includes(preloadAdvert?.placement)) {
         this.player.preloadAdvertIndex = preloadAdvertIndex;
