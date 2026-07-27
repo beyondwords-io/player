@@ -17,6 +17,7 @@
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
+  import { setLocale } from "../helpers/translate";
 
   // Please document all settings and keep in-sync with the developer docs:
   // https://github.com/beyondwords-core/docs/blob/main/docs-and-guides/distribution/player/sdk/javascript/player-settings.mdx
@@ -37,6 +38,7 @@
   export let videoSizes = [];
   export let playerTitle = undefined;
   export let callToAction = undefined;
+  export let playerLanguage = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playlistToggle = "auto";
@@ -131,6 +133,8 @@
     accessTier = value; 
     if (emitIdentifiersEvent) accessTierRevision++;
   };
+
+  $: setLocale(playerLanguage);
 
   $: contentItem = content[contentIndex];
   $: activeIntroOrOutro = introsOutros[introsOutrosIndex];
@@ -243,62 +247,18 @@
 </ExternalWidget>
 
 {#if showStaticInterface}
-  <UserInterface
-    bind:this={userInterface}
-    {onEvent}
-    playerStyle={interfaceStyle}
-    {callToAction}
-    {skipButtonStyle}
-    {playlistStyle}
-    {playlistToggle}
-    {downloadFormats}
-    {durationFormat}
-    {playerTitle}
-    {content}
-    {contentIndex}
-    {summary}
-    {duration}
-    {currentTime}
-    {playbackState}
-    {playbackRate}
-    {playbackRates}
-    {activeAdvert}
-    {activeIntroOrOutro}
-    {persistentAdvert}
-    {companionAdvert}
-    {analyticsId}
-    {textColor}
-    {backgroundColor}
-    {iconColor}
-    {videoTextColor}
-    {videoBackgroundColor}
-    {videoIconColor}
-    {logoIconEnabled}
-    {logoImagePosition}
-    {maxImageSize}
-    {isFullScreen}
-    {aspectRatio}
-    {videoPosterImage}
-    videoIsBehind={videoBehindStatic} />
-{/if}
-
-{#if showWidgetInterface}
-  <ExternalWidget root={widgetTarget}>
+  {#key playerLanguage}
     <UserInterface
-      bind:this={widgetInterface}
+      bind:this={userInterface}
       {onEvent}
-      playerStyle={widgetStyle}
+      playerStyle={interfaceStyle}
       {callToAction}
       {skipButtonStyle}
-      playlistStyle="hide"
-      playlistToggle="hide"
+      {playlistStyle}
+      {playlistToggle}
       {downloadFormats}
       {durationFormat}
       {playerTitle}
-      fixedPosition={!widgetTarget && widgetPosition}
-      fixedWidth={widgetWidth}
-      fixedMargin={widgetMargin}
-      {showClose}
       {content}
       {contentIndex}
       {summary}
@@ -321,36 +281,86 @@
       {logoIconEnabled}
       {logoImagePosition}
       {maxImageSize}
+      {isFullScreen}
       {aspectRatio}
       {videoPosterImage}
-      videoIsBehind={videoBehindWidget} />
+      videoIsBehind={videoBehindStatic} />
+  {/key}
+{/if}
+
+{#if showWidgetInterface}
+  <ExternalWidget root={widgetTarget}>
+    {#key playerLanguage}
+      <UserInterface
+        bind:this={widgetInterface}
+        {onEvent}
+        playerStyle={widgetStyle}
+        {callToAction}
+        {skipButtonStyle}
+        playlistStyle="hide"
+        playlistToggle="hide"
+        {downloadFormats}
+        {durationFormat}
+        {playerTitle}
+        fixedPosition={!widgetTarget && widgetPosition}
+        fixedWidth={widgetWidth}
+        fixedMargin={widgetMargin}
+        {showClose}
+        {content}
+        {contentIndex}
+        {summary}
+        {duration}
+        {currentTime}
+        {playbackState}
+        {playbackRate}
+        {playbackRates}
+        {activeAdvert}
+        {activeIntroOrOutro}
+        {persistentAdvert}
+        {companionAdvert}
+        {analyticsId}
+        {textColor}
+        {backgroundColor}
+        {iconColor}
+        {videoTextColor}
+        {videoBackgroundColor}
+        {videoIconColor}
+        {logoIconEnabled}
+        {logoImagePosition}
+        {maxImageSize}
+        {aspectRatio}
+        {videoPosterImage}
+        videoIsBehind={videoBehindWidget} />
+    {/key}
   </ExternalWidget>
 {/if}
 
 {#each segmentWidgets as root (root)}
   <ExternalWidget {root}>
-    <UserInterface
-      onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
-      playerStyle="small"
-      fixedWidth={0}
-      logoIconEnabled={false}
-      {content}
-      {contentIndex}
-      {summary}
-      {duration}
-      currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
-      playbackState={showRealTimeInWidget ? playbackState : "paused"}
-      {activeAdvert}
-      {activeIntroOrOutro}
-      {persistentAdvert}
-      {companionAdvert}
-      {analyticsId}
-      {textColor}
-      {backgroundColor}
-      {iconColor}
-      {videoTextColor}
-      {videoBackgroundColor}
-      {videoIconColor} />
+    {#key playerLanguage}
+      <UserInterface
+        onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
+        playerStyle="small"
+        fixedWidth={0}
+        logoIconEnabled={false}
+        {content}
+        {contentIndex}
+        {summary}
+        {duration}
+        currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
+        playbackState={showRealTimeInWidget ? playbackState : "paused"}
+        {activeAdvert}
+        {activeIntroOrOutro}
+        {persistentAdvert}
+        {companionAdvert}
+        {analyticsId}
+        {textColor}
+        {backgroundColor}
+        {iconColor}
+        {videoTextColor}
+        {videoBackgroundColor}
+        {videoIconColor} />
+    {/key}
   </ExternalWidget>
 {/each}
 

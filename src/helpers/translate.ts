@@ -1,6 +1,7 @@
 import basename from "./basename";
 import validateTranslations from "./validateTranslations";
 import throwError from "./throwError";
+import supportedLanguages from "./supportedLanguages";
 
 const modules = import.meta.glob("../translations/*", { eager: true });
 const pairs = Object.entries(modules).map(([k, v]) => [basename(k), v.default]);
@@ -9,6 +10,17 @@ const locales = Object.fromEntries(pairs.filter(([k, _]) => k.includes("-")));
 const languages = Object.fromEntries(pairs.filter(([_, v]) => v.isDefaultForLanguage).map(([k, v]) => [k.split("-")[0], v]));
 
 validateTranslations(locales, languages);
+
+let override = null;
+
+export const setLocale = (locale) => {
+  if (locale && !supportedLanguages.includes(locale)) {
+    console.warn(`BeyondWords player: '${locale}' is not a supported language, falling back to browser preference.`);
+    override = null;
+    return;
+  }
+  override = locale || null;
+};
 
 const translate = (key, { locale } = {}) => {
   const translations = translationsForBrowserPreference(locale);
@@ -24,7 +36,7 @@ const translate = (key, { locale } = {}) => {
 };
 
 const translationsForBrowserPreference = (locale = null) => {
-  const localesToTry = [locale, ...navigator.languages, "en"].filter(s => s);
+  const localesToTry = [locale, override, ...navigator.languages, "en"].filter(s => s);
 
   for (const locale of localesToTry) {
     const language = locale.split("-")[0];
