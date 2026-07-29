@@ -488,11 +488,16 @@
   }
 
   .slash:focus-visible,
-  .send:focus-visible,
-  .input:focus-visible {
+  .send:focus-visible {
     outline-width: 2px;
     outline-style: solid;
     outline-offset: 2px;
+  }
+
+  /* Text inputs match :focus-visible even on pointer clicks, so the caret is
+     the focus affordance here - no ring. */
+  .input:focus-visible {
+    outline: none;
   }
 
   .input {

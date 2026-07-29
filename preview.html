@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeyondWords Player Preview</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #333;
+      }
+
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 48px 24px 120px;
+      }
+
+      main.with-panel {
+        margin-right: 340px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      p {
+        line-height: 1.6;
+        text-align: justify;
+      }
+
+      .hint {
+        font-size: 13px;
+        color: #888;
+      }
+
+      .control-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        padding: 16px;
+        height: calc(100% - 32px);
+        overflow-y: scroll;
+        box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+        background: #fff;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="control-panel"></div>
+
+    <main class="with-panel">
+      <h1>BeyondWords Player Preview</h1>
+
+      <p class="hint">
+        A clean page for testing the player against any project. Use the
+        Content section in the panel to fetch production content, or add query
+        params like ?projectId=…&amp;contentId=…&amp;playerStyle=default
+        directly to the URL. Add &amp;advanced=true to expand every setting.
+      </p>
+
+      <div id="player"></div>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+        minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+        aliquip ex ea commodo consequat.
+      </p>
+
+      <p>
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+        proident, sunt in culpa qui officia deserunt mollit anim id est
+        laborum. Sed ut perspiciatis unde omnis iste natus error sit
+        voluptatem accusantium doloremque laudantium.
+      </p>
+
+      <p>
+        Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et
+        quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam
+        voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
+        consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+      </p>
+
+      <p>
+        Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
+        consectetur, adipisci velit, sed quia non numquam eius modi tempora
+        incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut
+        enim ad minima veniam, quis nostrum exercitationem ullam corporis
+        suscipit laboriosam.
+      </p>
+
+      <p>
+        Nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure
+        reprehenderit qui in ea voluptate velit esse quam nihil molestiae
+        consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla
+        pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus
+        qui blanditiis praesentium voluptatum deleniti atque corrupti.
+      </p>
+    </main>
+
+    <script>
+      function initPreviewPlayer() {
+        const params = new URLSearchParams(location.search);
+        const get = (key) => params.get(key) || undefined;
+
+        const props = get("projectId") ? {
+          projectId: get("projectId"),
+          contentId: get("contentId"),
+          playlistId: get("playlistId"),
+          sourceId: get("sourceId"),
+          sourceUrl: get("sourceUrl"),
+        } : {
+          // Default test content: has audio + video variants and a summary.
+          projectId: 53690,
+          contentId: "8cdfb06b-68da-4adb-ba51-a91b917c6085",
+        };
+
+        props.playerApiUrl = get("playerApiUrl");
+        props.playerStyle = get("playerStyle");
+        props.widgetStyle = get("widgetStyle");
+        props.embedMode = get("embedMode");
+        props.theme = get("theme");
+
+        for (const key of Object.keys(props)) {
+          if (props[key] === undefined) { delete props[key]; }
+        }
+
+        new BeyondWords.Player({
+          target: "#player",
+          ...props,
+          controlPanel: ".control-panel",
+        });
+      }
+    </script>
+
+    <script id="player-script" async defer type="module" onload='initPreviewPlayer()'></script>
+
+    <script>
+      const script = document.querySelector("#player-script");
+      const isLocal = location.hostname === "localhost" || location.hostname.includes("ngrok-free");
+
+      script.src = isLocal ? "src/index.ts" : "https://proxy.beyondwords.io/npm/@beyondwords/player@0.4.6/dist/umd.js";
+    </script>
+  </body>
+</html>

@@ -45,6 +45,7 @@ const resetPlayerProps = async (page) => {
   await page.evaluate(async () => {
     BeyondWords.Player.destroyAll();
     new BeyondWords.Player({ target: ".beyondwords-player" });
+    await document.fonts.ready;
     await new Promise(resolve => setTimeout(resolve, 1000));
   });
 };
