@@ -44,6 +44,8 @@
   export let playbackRate = 1;
   export let playbackRates = [];
   export let skipButtonStyle = "auto";
+  export let playlistStyle = "auto-5-4";
+  export let playlistToggle = "auto";
   export let downloadFormats = [];
   export let playerTitle = undefined;
   export let callToAction = undefined;
@@ -89,6 +91,7 @@
   let element;
   let width = 600;
   let queueOpen = false;
+  let appliedPlaylistStyle;
   let chatOpen = false;
   let infoOpen = false;
   let openMenu = null;
@@ -133,12 +136,20 @@
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
 
+  // The queue is an inline affordance - the widget stays the bar plus x.
+  $: queueAvailable = isPlaylist && !isWidget && playlistStyle.split("-")[0] !== "hide";
+  $: showQueueToggle = queueAvailable && playlistToggle !== "hide";
+  $: if (queueAvailable && playlistStyle !== appliedPlaylistStyle) {
+    appliedPlaylistStyle = playlistStyle;
+    queueOpen = playlistStyle.split("-")[0] === "show";
+  }
+
   // Width folds: speed and the time pair compress first, then the skips.
   // The container width drives this, not the viewport.
-  $: compact = width < 375;
+  $: compact = width < (isWidget ? 500 : 375);
   $: foldSpeed = compact;
   $: remainingOnly = compact;
-  $: foldSkips = width < 360;
+  $: foldSkips = width < (isWidget ? 460 : 360);
 
   $: advertHref = ensureProtocol(activeAdvert?.clickThroughUrl || "") || undefined;
   $: advertText = advertHref ? chooseAdvertText(advertHref) : "";
@@ -542,7 +553,7 @@
       </button>
     {/if}
 
-    {#if isPlaylist}
+    {#if showQueueToggle}
       <button
         type="button"
         class="icon-button"
@@ -621,7 +632,7 @@
     </div>
   {/if}
 
-  {#if queueOpen && isPlaylist}
+  {#if queueOpen && queueAvailable}
     <div class="hairline" style="background: {tokens.divider}"></div>
     <QueuePanel {content} {contentIndex} {summary} {tokens} {onEvent} />
   {/if}
@@ -1005,10 +1016,11 @@
 
   .progress-grow {
     flex: 1;
-    min-width: 0;
+    min-width: 56px;
   }
 
   .time {
+    flex-shrink: 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 11px;
     font-variant-numeric: tabular-nums;

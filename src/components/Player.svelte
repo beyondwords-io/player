@@ -287,6 +287,8 @@
     {playbackRate}
     {playbackRates}
     {skipButtonStyle}
+    {playlistStyle}
+    {playlistToggle}
     {downloadFormats}
     {playerTitle}
     {callToAction}
