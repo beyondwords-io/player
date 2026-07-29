@@ -1,0 +1,19 @@
+
+Running 5 tests using 5 workers
+........................................../player/test/screenshots/default-playing-audio-agent-dark-desktop-chrome.png is re-generated, writing actual.
+........./player/test/screenshots/default-playing-audio-agent-widget-center-mobile-ios.png is re-generated, writing actual.
+../player/test/screenshots/default-playing-audio-agent-widget-center-desktop-safari.png is re-generated, writing actual.
+./player/test/screenshots/default-stopped-audio-agent-playlist-desktop-chrome.png is re-generated, writing actual.
+..·/player/test/screenshots/default-playing-audio-agent-widget-center-desktop-firefox.png is re-generated, writing actual.
+..·.·/player/test/screenshots/default-playing-audio-agent-widget-center-mobile-android.png is re-generated, writing actual.
+./player/test/screenshots/default-playing-audio-agent-playlist-desktop-chrome.png is re-generated, writing actual.
+..·/player/test/screenshots/default-stopped-audio-agent-disclosure-desktop-chrome.png is re-generated, writing actual.
+./player/test/screenshots/default-playing-audio-agent-widget-center-desktop-chrome.png is re-generated, writing actual.
+./player/test/screenshots/default-stopped-audio-agent-locked-desktop-chrome.png is re-generated, writing actual.
+.·
+  5 passed (9.5s)
+npm notice 
+npm notice New major version of npm available! 10.1.0 -> 12.0.1
+npm notice Changelog: <https://github.com/npm/cli/releases/tag/v12.0.1>
+npm notice Run `npm install -g npm@12.0.1` to update!
+npm notice 

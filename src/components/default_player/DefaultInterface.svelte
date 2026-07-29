@@ -631,21 +631,6 @@
   {/if}
   {/if}
 
-  {#if isWidget && showCaption && !agentOnly}
-    <div class="hairline" style="background: {tokens.divider}"></div>
-    <div class="caption inside">
-      <span class="caption-left">
-        {#if disclosureText && disclosureLink}
-          <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{disclosureText}</a>
-        {:else if disclosureText}
-          <span class="caption-text" style="color: {tokens.muted}">{disclosureText}</span>
-        {/if}
-      </span>
-      {#if logoIconEnabled}
-        <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" aria-label={translate("visitBeyondWords")}>Powered by BeyondWords</a>
-      {/if}
-    </div>
-  {/if}
 </div>
 
 {#if !isWidget && showCaption && !agentOnly}
@@ -672,7 +657,7 @@
   }
 
   .default-player :global(*) {
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: "InterVariable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
 
   .surface {
@@ -723,10 +708,6 @@
 
   .caption.outside {
     padding: 6px 8px 0;
-  }
-
-  .caption.inside {
-    padding: 6px 12px 8px;
   }
 
   .caption-left {

@@ -60,11 +60,11 @@
   export let infoText;
   export let disclosureText;
 
-  let showAdvancedSettings = false;
-
   // The Load content section reloads the page with query params so the player
   // boots cleanly with the entered identifiers (production API by default).
   const initialParams = new URLSearchParams(window.location.search);
+
+  let showAdvancedSettings = initialParams.get("advanced") === "true";
   let loadProjectId = initialParams.get("projectId") || "";
   let loadContentId = initialParams.get("contentId") || "";
   let loadPlaylistId = initialParams.get("playlistId") || "";
@@ -87,6 +87,8 @@
     for (const [key, value] of Object.entries(values)) {
       if (`${value ?? ""}`.trim() !== "") { params.set(key, `${value}`.trim()); }
     }
+
+    if (showAdvancedSettings) { params.set("advanced", "true"); }
 
     window.location.search = params.toString();
   };
