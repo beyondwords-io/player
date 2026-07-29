@@ -1,20 +1,26 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
   import { onMount } from "svelte";
+  import { slide } from "svelte/transition";
+  import { cubicOut } from "svelte/easing";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
   import deriveTokens from "../../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
+  import MockAgentClient from "../../helpers/agentClient";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
   import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
   import Queue from "../svg_icons/default_player/Queue.svelte";
   import DotsThree from "../svg_icons/default_player/DotsThree.svelte";
+  import CaretDown from "../svg_icons/default_player/CaretDown.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
   import SkipButton from "./SkipButton.svelte";
   import SpeedButton from "./SpeedButton.svelte";
   import Menu from "./Menu.svelte";
   import QueuePanel from "./QueuePanel.svelte";
+  import ChatPanel from "./ChatPanel.svelte";
+  import Orb from "./Orb.svelte";
 
   export let onEvent = () => {};
   export let embedMode = "audio";
@@ -65,9 +71,16 @@
   let element;
   let width = 600;
   let queueOpen = false;
+  let chatOpen = false;
   let openMenu = null;
   let menuLeft = 8;
   let selectedLanguage;
+
+  const agentClient = new MockAgentClient();
+
+  const reduceMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  $: unfoldMs = reduceMotion || (typeof window !== "undefined" && window.disableAnimation) ? 0 : 240;
+  $: collapseMs = reduceMotion || (typeof window !== "undefined" && window.disableAnimation) ? 0 : 180;
 
   $: overrides = explicitOverrides({
     textColor, backgroundColor, iconColor, highlightColor, wordHighlightColor,
@@ -102,6 +115,9 @@
   $: versionLabel = summary ? "Summary" : totalMins;
 
   $: showOverflow = !isStopped && (hasVersions || hasLanguages || foldSpeed);
+
+  $: showChat = embedMode !== "audio" && agentAccess !== "off";
+  $: chatLabelVisible = width >= 340;
 
   $: playPauseLabel = isPlaying ? translate("pauseAudio") : translate("playAudio");
 
@@ -183,7 +199,15 @@
     }
   };
 
-  const toggleQueue = () => queueOpen = !queueOpen;
+  const toggleQueue = () => {
+    queueOpen = !queueOpen;
+    if (queueOpen) { chatOpen = false; }
+  };
+
+  const toggleChat = () => {
+    chatOpen = !chatOpen;
+    if (chatOpen) { queueOpen = false; openMenu = null; }
+  };
 
   onMount(() => {
     const observer = new ResizeObserver(() => width = element?.clientWidth || width);
@@ -287,11 +311,45 @@
         <Queue size={22} color={tokens.icon} />
       </button>
     {/if}
+
+    {#if showChat}
+      <div class="chat-divider" style="background: {tokens.divider}"></div>
+
+      <button
+        type="button"
+        class="chat-button"
+        class:orb-only={!chatLabelVisible}
+        style="--hover-bg: {tokens.hover}; background: {chatOpen ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        aria-label={isPlaylist ? "Chat about this playlist" : "Chat about this article"}
+        aria-expanded={chatOpen}
+        on:click={toggleChat}
+        on:mouseup={blurElement}
+      >
+        <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
+        {#if chatLabelVisible}
+          <span class="chat-label" style="color: {tokens.text}">Chat</span>
+          <span class="chat-caret" class:flipped={chatOpen}>
+            <CaretDown size={14} color={tokens.muted} />
+          </span>
+        {/if}
+      </button>
+    {/if}
   </div>
 
   {#if queueOpen && isPlaylist}
     <div class="hairline" style="background: {tokens.divider}"></div>
     <QueuePanel {content} {contentIndex} {summary} {tokens} {onEvent} />
+  {/if}
+
+  {#if chatOpen && showChat}
+    <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
+      <div class="hairline" style="background: {tokens.divider}"></div>
+      <ChatPanel
+        {tokens}
+        {agentClient}
+        {agentPlaceholder}
+        {shortcuts} />
+    </div>
   {/if}
 
   {#if openMenu}
@@ -381,6 +439,71 @@
   @media (hover: hover) and (pointer: fine) {
     .icon-button:hover {
       background: var(--hover-bg);
+    }
+  }
+
+  .chat-divider {
+    width: 1px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+
+  .chat-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    padding: 8px 10px;
+    margin: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 150ms ease-out;
+  }
+
+  .chat-button.orb-only {
+    padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .chat-button:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .chat-button:hover {
+      background: var(--hover-bg);
+    }
+  }
+
+  .chat-label {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .chat-caret {
+    display: flex;
+    transition: transform 160ms ease-out;
+  }
+
+  .chat-caret.flipped {
+    transform: rotate(180deg);
+  }
+
+  .chat-unfold {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chat-caret,
+    .chat-button {
+      transition: none;
     }
   }
 
