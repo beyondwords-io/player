@@ -43,6 +43,7 @@
   };
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div class="queue" bind:this={panel} on:keydown={handleKeydown} role="list">
   {#each content as item, i (i)}
     <button
