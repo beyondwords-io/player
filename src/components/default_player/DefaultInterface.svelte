@@ -7,6 +7,9 @@
   import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
   import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
+  import ProgressTrack from "./ProgressTrack.svelte";
+  import SkipButton from "./SkipButton.svelte";
+  import SpeedButton from "./SpeedButton.svelte";
 
   export let onEvent = () => {};
   export let embedMode = "audio";
@@ -65,7 +68,10 @@
   $: contentItem = content[contentIndex] || {};
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
+  $: isPlaylist = content.length > 1;
   $: progress = duration > 0 ? Math.min(1, currentTime / duration) : 0;
+
+  $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
 
   $: stoppedTitle = callToAction || "Listen to this article";
   $: playingTitle = contentItem.title || playerTitle || stoppedTitle;
@@ -123,24 +129,60 @@
     {/if}
   </button>
 
-  <div class="title-col">
+  <div class="title-col" class:playing={!isStopped}>
     {#if isStopped}
       <span class="title" style="color: {tokens.text}">{stoppedTitle}</span>
       <span class="meta">
-        <span style="color: {tokens.muted}">{totalMins} min</span>
+        <span class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}">{totalMins} min</span>
         <span class="separator" style="color: {tokens.muted}">·</span>
-        <span style="color: {tokens.muted}">{languageName}</span>
+        <span class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}">{languageName}</span>
       </span>
     {:else}
       <div class="title-row">
         <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
         <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
       </div>
-      <div class="progress" style="background: {tokens.track}">
-        <div class="fill" style="width: {progress * 100}%; background: {tokens.text}"></div>
-      </div>
+      <ProgressTrack
+        {progress}
+        {duration}
+        trackColor={tokens.track}
+        fillColor={tokens.text}
+        focusColor={tokens.text}
+        {onEvent} />
     {/if}
   </div>
+
+  {#if !isStopped}
+    <SkipButton
+      direction="prev"
+      style={skipStyle}
+      color={tokens.icon}
+      hoverBackground={tokens.hover}
+      pressedBackground={tokens.pressed}
+      focusColor={tokens.text}
+      radius={tokens.radius.control}
+      {onEvent} />
+
+    <SkipButton
+      direction="next"
+      style={skipStyle}
+      color={tokens.icon}
+      hoverBackground={tokens.hover}
+      pressedBackground={tokens.pressed}
+      focusColor={tokens.text}
+      radius={tokens.radius.control}
+      {onEvent} />
+
+    <SpeedButton
+      rates={playbackRates}
+      rate={playbackRate}
+      color={tokens.text}
+      hoverBackground={tokens.hover}
+      pressedBackground={tokens.pressed}
+      focusColor={tokens.text}
+      radius={tokens.radius.control}
+      {onEvent} />
+  {/if}
 </div>
 
 <style>
@@ -195,6 +237,15 @@
     min-width: 0;
   }
 
+  .title-col.playing {
+    gap: 7px;
+  }
+
+  .meta .trigger {
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+  }
+
   .title {
     font-size: 14px;
     font-weight: 500;
@@ -239,21 +290,5 @@
 
   .separator {
     opacity: 0.5;
-  }
-
-  .progress {
-    position: relative;
-    height: 3px;
-    margin-top: 4px;
-    border-radius: 9999px;
-    overflow: hidden;
-  }
-
-  .fill {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    border-radius: 9999px;
   }
 </style>
