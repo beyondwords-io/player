@@ -425,7 +425,9 @@
           {agentVoice}
           {agentAccess}
           {agentLimit}
-          {shortcuts} />
+          {shortcuts}
+        {isPlaying}
+        {onEvent} />
       </div>
     {/if}
   {:else if agentOnly}
@@ -442,6 +444,8 @@
       {agentAccess}
       {agentLimit}
       {shortcuts}
+      {isPlaying}
+      {onEvent}
       showSlashButton={false}
       emptyStateChips={true} />
   {:else}
@@ -674,7 +678,9 @@
         {agentVoice}
         {agentAccess}
         {agentLimit}
-        {shortcuts} />
+        {shortcuts}
+        {isPlaying}
+        {onEvent} />
     </div>
   {/if}
 
