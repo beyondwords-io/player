@@ -8,6 +8,7 @@
   import translate from "../../helpers/translate";
   import deriveTokens from "../../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
+  import { clampContrast, luminance, parseColor } from "../../helpers/default_theme/colorMath";
   import MockAgentClient from "../../helpers/agentClient";
   import chooseAdvertText from "../../helpers/chooseAdvertText";
   import ensureProtocol from "../../helpers/ensureProtocol";
@@ -96,6 +97,7 @@
   let docked = false;
   let offline = false;
   let hasFinished = false;
+  let pageBackground = "#ffffff";
 
   const agentClient = new MockAgentClient();
 
@@ -120,7 +122,7 @@
     ...adOverrides,
   };
 
-  $: tokens = deriveTokens({ theme, radius, overrides });
+  $: tokens = deriveTokens({ theme, radius, overrides, pageDark });
   $: displayBackground = overrides.backgroundColor || tokens.background;
 
   $: contentItem = content[contentIndex] || {};
@@ -173,6 +175,10 @@
     isFixed ? tokens.widgetShadow : tokens.barRing;
 
   $: showCaption = !!disclosureText || logoIconEnabled;
+  $: pageDark = luminance(pageBackground) < 0.35;
+  // The caption row sits on the page, not the surface, so its colours clamp
+  // against the page background.
+  $: captionColor = clampContrast(tokens.muted, pageBackground, 4.5);
   $: attributionHref = typeof window === "undefined" ? "https://beyondwords.io" :
     `https://beyondwords.io/?utm_source=${encodeURIComponent(window.location.origin)}&utm_medium=player&utm_campaign=${analyticsId || ""}`;
 
@@ -315,6 +321,10 @@
     const updateDocked = () => docked = mobileQuery.matches;
     updateDocked();
     mobileQuery.addEventListener("change", updateDocked);
+
+    const bodyStyle = getComputedStyle(document.body);
+    const parsed = parseColor(bodyStyle.backgroundColor);
+    if (parsed && parsed.a > 0) { pageBackground = bodyStyle.backgroundColor; }
 
     offline = typeof navigator !== "undefined" && navigator.onLine === false;
     const handleOffline = () => offline = true;
@@ -642,13 +652,13 @@
   <div class="caption outside">
     <span class="caption-left">
       {#if disclosureText && disclosureLink}
-        <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{disclosureText}</a>
+        <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}">{disclosureText}</a>
       {:else if disclosureText}
-        <span class="caption-text" style="color: {tokens.muted}">{disclosureText}</span>
+        <span class="caption-text" style="color: {captionColor}">{disclosureText}</span>
       {/if}
     </span>
     {#if logoIconEnabled}
-      <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" aria-label={translate("visitBeyondWords")}>Powered by BeyondWords</a>
+      <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}" aria-label={translate("visitBeyondWords")}>Powered by BeyondWords</a>
     {/if}
   </div>
 {/if}
