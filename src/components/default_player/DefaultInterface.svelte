@@ -101,6 +101,7 @@
   let docked = false;
   let offline = false;
   let hasFinished = false;
+  let lastAdvert;
   let pageBackground = "#ffffff";
 
   const agentClient = new MockAgentClient();
@@ -154,7 +155,17 @@
 
   $: advertHref = ensureProtocol(activeAdvert?.clickThroughUrl || "") || undefined;
   $: advertText = advertHref ? chooseAdvertText(advertHref) : "";
-  $: persistentHref = ensureProtocol(persistentAdvert?.clickThroughUrl || "") || undefined;
+
+  // The mark and link persist beside the transport once the ad has finished,
+  // so the ad that just played is remembered here. The legacy persistentIndex
+  // only tracks adverts when persistentAdImage is set, which is off by
+  // default, so it can't carry this on its own.
+  $: if (isAdvert) { lastAdvert = activeAdvert; }
+  $: if (isStopped) { lastAdvert = undefined; }
+  $: contentIndex, lastAdvert = undefined;
+
+  $: finishedAdvert = lastAdvert || persistentAdvert;
+  $: persistentHref = ensureProtocol(finishedAdvert?.clickThroughUrl || "") || undefined;
   $: persistentText = persistentHref ? chooseAdvertText(persistentHref) : "";
   $: showPersistentChip = !isAdvert && !isStopped && !!persistentHref && !!persistentText;
   $: buffering = isPlaying && !metadataLoaded;
@@ -602,7 +613,7 @@
       <button
         type="button"
         class="icon-button"
-        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; background: {openMenu === "overflow" ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        style="--bg: {openMenu === "overflow" ? tokens.pressed : "transparent"}; --hover-bg: {openMenu === "overflow" ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
         aria-label="Options"
         aria-expanded={openMenu === "overflow"}
         on:click={openMenuAt("overflow")}
@@ -616,7 +627,7 @@
       <button
         type="button"
         class="icon-button"
-        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; background: {queueOpen ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        style="--bg: {queueOpen ? tokens.pressed : "transparent"}; --hover-bg: {queueOpen ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
         aria-label={translate("togglePlaylist")}
         aria-expanded={queueOpen}
         on:click={toggleQueue}
@@ -643,7 +654,7 @@
       <button
         type="button"
         class="icon-button"
-        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; background: {infoOpen ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        style="--bg: {infoOpen ? tokens.pressed : "transparent"}; --hover-bg: {infoOpen ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
         aria-label="About this audio"
         aria-expanded={infoOpen}
         on:click={toggleInfo}
@@ -660,7 +671,7 @@
         type="button"
         class="chat-button"
         class:orb-only={!chatLabelVisible}
-        style="--hover-bg: {tokens.hover}; background: {chatOpen ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        style="--bg: {chatOpen ? tokens.pressed : "transparent"}; --hover-bg: {chatOpen ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
         aria-label={chatDisabled ? "Subscribe to chat" : isPlaylist ? "Chat about this playlist" : "Chat about this article"}
         aria-expanded={chatOpen}
         title={chatDisabled ? "Subscribe to chat to our journalism" : undefined}
@@ -744,13 +755,13 @@
   <div class="caption outside">
     <span class="caption-left">
       {#if disclosureText && disclosureLink}
-        <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}">{disclosureText}</a>
+        <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}; --hover-color: {tokens.text}">{disclosureText}</a>
       {:else if disclosureText}
         <span class="caption-text" style="color: {captionColor}">{disclosureText}</span>
       {/if}
     </span>
     {#if logoIconEnabled}
-      <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}" aria-label={translate("visitBeyondWords")}>Powered by BeyondWords</a>
+      <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}; --hover-color: {tokens.text}" aria-label={translate("visitBeyondWords")}>Powered by BeyondWords</a>
     {/if}
   </div>
 {/if}
@@ -839,6 +850,13 @@
     cursor: pointer;
   }
 
+  @media (hover: hover) and (pointer: fine) {
+    .caption-link:hover {
+      color: var(--hover-color);
+      border-bottom-color: var(--hover-color);
+    }
+  }
+
   .caption-link:focus-visible {
     outline-width: 2px;
     outline-style: solid;
@@ -907,11 +925,11 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    background: var(--bg, transparent);
     width: 28px;
     height: 28px;
     padding: 2px;
     margin: 0;
-    background: none;
     border: none;
     cursor: pointer;
   }
@@ -928,6 +946,10 @@
     }
   }
 
+  .icon-button:active {
+    background: var(--pressed-bg);
+  }
+
   .chat-divider {
     width: 1px;
     height: 28px;
@@ -941,7 +963,7 @@
     flex-shrink: 0;
     padding: 8px 10px;
     margin: 0;
-    background: none;
+    background: var(--bg, transparent);
     border: none;
     cursor: pointer;
     transition: background 150ms ease-out;
@@ -964,6 +986,10 @@
     .chat-button:hover {
       background: var(--hover-bg);
     }
+  }
+
+  .chat-button:active {
+    background: var(--pressed-bg);
   }
 
   .chat-label {
