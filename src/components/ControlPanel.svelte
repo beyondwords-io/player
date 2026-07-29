@@ -50,6 +50,15 @@
   export let analyticsConsent;
   export let analyticsCustomUrl;
   export let analyticsTag;
+  export let embedMode;
+  export let theme;
+  export let radius;
+  export let agentColor;
+  export let agentAvatar;
+  export let agentAccess;
+  export let agentLimit;
+  export let infoText;
+  export let disclosureText;
 
   let showAdvancedSettings = false;
 </script>
@@ -68,6 +77,7 @@
   <div class="control">
     playerStyle:
     <select tabindex={-1} bind:value={playerStyle}>
+      <option>default</option>
       <option>small</option>
       <option>standard</option>
       <option>large</option>
@@ -147,11 +157,70 @@
   <div class="control">
     widgetStyle:
     <select tabindex={-1} bind:value={widgetStyle}>
+      <option>default</option>
       <option>small</option>
       <option>standard</option>
       <option>large</option>
       <option>video</option>
     </select>
+  </div>
+
+  <div class="control">
+    embedMode:
+    <select tabindex={-1} bind:value={embedMode}>
+      <option>audio</option>
+      <option>audio-agent</option>
+      <option>agent</option>
+    </select>
+  </div>
+
+  <div class="control">
+    theme:
+    <select tabindex={-1} bind:value={theme}>
+      <option>light</option>
+      <option>dark</option>
+      <option>custom</option>
+    </select>
+  </div>
+
+  <div class="control">
+    radius:
+    <input tabindex={-1} type="number" min="0" max="16" bind:value={radius}>
+  </div>
+
+  <div class="control">
+    agentColor:
+    <input tabindex={-1} type="text" placeholder="#943bfc,#e23ad0" bind:value={agentColor}>
+  </div>
+
+  <div class="control">
+    agentAvatar:
+    <input tabindex={-1} type="text" placeholder="image URL" bind:value={agentAvatar}>
+  </div>
+
+  <div class="control">
+    agentAccess:
+    <select tabindex={-1} bind:value={agentAccess}>
+      <option>full</option>
+      <option>limited</option>
+      <option>disabled</option>
+      <option>off</option>
+    </select>
+  </div>
+
+  <div class="control">
+    agentLimit:
+    <input tabindex={-1} type="text" placeholder="3 or 5:00" bind:value={agentLimit}>
+  </div>
+
+  <div class="control">
+    infoText:
+    <input tabindex={-1} type="text" bind:value={infoText}>
+  </div>
+
+  <div class="control">
+    disclosureText:
+    <input tabindex={-1} type="text" bind:value={disclosureText}>
   </div>
 
   <div class="control">
