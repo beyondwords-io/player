@@ -272,7 +272,7 @@
     {radius}
     {content}
     {contentIndex}
-    {summary}
+    bind:summary
     {duration}
     {currentTime}
     {playbackState}
@@ -361,7 +361,7 @@
       {showClose}
       {content}
       {contentIndex}
-      {summary}
+      bind:summary
       {duration}
       {currentTime}
       {playbackState}
