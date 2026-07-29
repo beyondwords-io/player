@@ -3,6 +3,7 @@
   import { onDestroy } from "svelte";
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
+  import DefaultInterface from "./default_player/DefaultInterface.svelte";
   import ExternalWidget from "./ExternalWidget.svelte";
   import ControlPanel from "./ControlPanel.svelte";
   import MediaSession from "./MediaSession.svelte";
@@ -94,6 +95,26 @@
   export let onError = () => {};
   export let transitions = [];
   export let controlPanel = undefined;
+
+  // Settings for the "default" player style only (script-tag configured for
+  // now; not yet served by the /player API).
+  export let embedMode = "audio";
+  export let theme = "light";
+  export let radius = 8;
+  export let agentColor = undefined;
+  export let agentAvatar = undefined;
+  export let accentColor = undefined;
+  export let accentTextColor = undefined;
+  export let agentAccess = "full";
+  export let agentLimit = undefined;
+  export let agentVoice = true;
+  export let agentPlaceholder = undefined;
+  export let agentName = undefined;
+  export let shortcuts = [];
+  export let infoText = undefined;
+  export let disclosureText = undefined;
+  export let disclosureLink = undefined;
+  export let languages = [];
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
@@ -145,7 +166,7 @@
   $: hasDaxAdverts = adverts.some(ad => isDigitalAdExchange(ad.vastUrl));
   $: setDaxListenerId = hasDaxAdverts && advertConsent === "personalized";
 
-  $: interfaceStyle = isFullScreen ? "video" : playerStyle;
+  $: interfaceStyle = isFullScreen && playerStyle !== "default" ? "video" : playerStyle;
   $: showWidget = showBottomWidget || widgetTarget;
 
   $: isScreen = interfaceStyle === "screen";
@@ -242,7 +263,51 @@
     {widgetTarget} />
 </ExternalWidget>
 
-{#if showStaticInterface}
+{#if showStaticInterface && interfaceStyle === "default"}
+  <DefaultInterface
+    bind:this={userInterface}
+    {onEvent}
+    {embedMode}
+    {theme}
+    {radius}
+    {content}
+    {contentIndex}
+    {summary}
+    {duration}
+    {currentTime}
+    {playbackState}
+    {playbackRate}
+    {playbackRates}
+    {skipButtonStyle}
+    {downloadFormats}
+    {playerTitle}
+    {callToAction}
+    {contentLanguage}
+    {languages}
+    {textColor}
+    {backgroundColor}
+    {iconColor}
+    {highlightColor}
+    {wordHighlightColor}
+    {videoTextColor}
+    {videoIconColor}
+    {agentColor}
+    {agentAvatar}
+    {accentColor}
+    {accentTextColor}
+    {agentAccess}
+    {agentLimit}
+    {agentVoice}
+    {agentPlaceholder}
+    {agentName}
+    {shortcuts}
+    {infoText}
+    {disclosureText}
+    {disclosureLink}
+    {logoIconEnabled}
+    {activeAdvert}
+    {activeIntroOrOutro} />
+{:else if showStaticInterface}
   <UserInterface
     bind:this={userInterface}
     {onEvent}
@@ -282,7 +347,57 @@
     videoIsBehind={videoBehindStatic} />
 {/if}
 
-{#if showWidgetInterface}
+{#if showWidgetInterface && widgetStyle === "default"}
+  <ExternalWidget root={widgetTarget}>
+    <DefaultInterface
+      bind:this={widgetInterface}
+      {onEvent}
+      {embedMode}
+      {theme}
+      {radius}
+      fixedPosition={!widgetTarget && widgetPosition}
+      fixedWidth={widgetWidth}
+      fixedMargin={widgetMargin}
+      {showClose}
+      {content}
+      {contentIndex}
+      {summary}
+      {duration}
+      {currentTime}
+      {playbackState}
+      {playbackRate}
+      {playbackRates}
+      {skipButtonStyle}
+      {downloadFormats}
+      {playerTitle}
+      {callToAction}
+      {contentLanguage}
+      {languages}
+      {textColor}
+      {backgroundColor}
+      {iconColor}
+      {highlightColor}
+      {wordHighlightColor}
+      {videoTextColor}
+      {videoIconColor}
+      {agentColor}
+      {agentAvatar}
+      {accentColor}
+      {accentTextColor}
+      {agentAccess}
+      {agentLimit}
+      {agentVoice}
+      {agentPlaceholder}
+      {agentName}
+      {shortcuts}
+      {infoText}
+      {disclosureText}
+      {disclosureLink}
+      {logoIconEnabled}
+      {activeAdvert}
+      {activeIntroOrOutro} />
+  </ExternalWidget>
+{:else if showWidgetInterface}
   <ExternalWidget root={widgetTarget}>
     <UserInterface
       bind:this={widgetInterface}
@@ -407,7 +522,16 @@
       bind:advertConsent
       bind:analyticsConsent
       bind:analyticsCustomUrl
-      bind:analyticsTag />
+      bind:analyticsTag
+      bind:embedMode
+      bind:theme
+      bind:radius
+      bind:agentColor
+      bind:agentAvatar
+      bind:agentAccess
+      bind:agentLimit
+      bind:infoText
+      bind:disclosureText />
   </ExternalWidget>
 {/if}
 
