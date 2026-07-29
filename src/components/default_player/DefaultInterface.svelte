@@ -49,6 +49,7 @@
   export let playlistToggle = "auto";
   export let downloadFormats = [];
   export let playerTitle = undefined;
+  export let titleEnabled = true;
   export let callToAction = undefined;
   export let contentLanguage = "en";
   export let languages = [];
@@ -146,15 +147,14 @@
     queueOpen = playlistStyle.split("-")[0] === "show";
   }
 
-  // Width folds: the optional controls go into the overflow menu first, then
-  // speed and the time pair compress, then the skips. The container width
-  // drives this, not the viewport - and every optional control present raises
-  // the thresholds, since the design's numbers assume the default set.
-  // Thresholds come from the controls' own widths: a 28px control plus its
-  // 12px gap is 40, the play button and title floor take 40 + 76, and Chat
-  // with its divider takes ~115. Each optional control present pushes the
-  // ladder out by one control's worth.
-  $: extraControls = (isPlaylist ? 1 : 0) + (hasDownload ? 1 : 0) + (hasInfo ? 1 : 0);
+  // Width folds, driven by the container: the optional controls go into the
+  // overflow menu first, then speed and the time pair compress, then the
+  // skips. Thresholds come from the controls' own widths - a 28px control plus
+  // its 12px gap is 40 - so each optional control present pushes the ladder
+  // out by one control's worth, and the centred track, sitting beside the time
+  // rather than under it, needs about two controls' worth more.
+  $: centredTrack = !isStopped && !isAdvert && !offline && !playingTitle;
+  $: extraControls = (isPlaylist ? 1 : 0) + (hasDownload ? 1 : 0) + (hasInfo ? 1 : 0) + (centredTrack ? 2 : 0);
   $: foldsBelow = (base) => width < base + extraControls * 40;
 
   $: compact = foldsBelow(isWidget ? 500 : 435);
@@ -184,10 +184,11 @@
 
   $: stoppedTitle = hasFinished ? "Listen again" : callToAction || translate("listenToThisArticle");
 
-  // As with the legacy standard style, no title shows in the bar during
-  // playback - the progress track and timer take the row. The video overlay
-  // and queue rows still name the content.
-  $: playingTitle = playerTitle || "";
+  // No title shows in the bar during playback unless the publisher opted in
+  // through the title setting - a project name isn't worth the row. When the
+  // row does carry something (that title, or an advertiser's link) the track
+  // moves beneath it; otherwise the track takes the row itself.
+  $: playingTitle = titleEnabled ? playerTitle || "" : "";
   $: videoTitle = contentItem.title || playerTitle || stoppedTitle;
 
   $: totalMins = translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(duration / 60)));
@@ -580,11 +581,9 @@
           fillOpacity={0.4}
           focusColor={tokens.text}
           {onEvent} />
-      {:else}
+      {:else if playingTitle}
         <div class="title-row">
-          {#if playingTitle}
-            <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
-          {/if}
+          <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
           {#if remainingOnly}
             <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
           {:else}
@@ -600,6 +599,26 @@
           fillColor={tokens.text}
           focusColor={tokens.text}
           {onEvent} />
+      {:else}
+        <div class="progress-row">
+          <div class="progress-grow">
+            <ProgressTrack
+              {progress}
+              {duration}
+              {buffering}
+              thickness={6}
+              radius={tokens.radius.track}
+              trackColor={tokens.track}
+              fillColor={tokens.text}
+              focusColor={tokens.text}
+              {onEvent} />
+          </div>
+          {#if remainingOnly}
+            <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
+          {:else}
+            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
+          {/if}
+        </div>
       {/if}
     </div>
 
@@ -1109,6 +1128,18 @@
     align-items: baseline;
     gap: 10px;
     min-width: 0;
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .progress-grow {
+    flex: 1;
+    min-width: 40px;
   }
 
 
