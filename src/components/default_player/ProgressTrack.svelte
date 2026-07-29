@@ -12,6 +12,8 @@
   export let readonly = false;
   export let buffering = false;
   export let fillOpacity = 1;
+  export let thickness = 3;
+  export let radius = "9999px";
   export let onEvent = () => {};
 
   let track;
@@ -70,7 +72,7 @@
   class="progress-track"
   class:readonly
   class:buffering
-  style="background: {trackColor}; outline-color: {focusColor}"
+  style="background: {trackColor}; outline-color: {focusColor}; height: {thickness}px; border-radius: {radius}"
   on:mousedown={handlePointerDown}
   on:touchstart={handlePointerDown}
   on:keydown={readonly ? undefined : handleKeyDown(onEvent, "Bar", handleLeftOrRight)}
@@ -83,14 +85,13 @@
   aria-valuemax={Math.floor(duration)}
   aria-readonly={readonly || undefined}
 >
-  <div class="fill" style="width: {Math.max(0, Math.min(progress, 1)) * 100}%; background: {fillColor}; opacity: {fillOpacity}"></div>
+  <div class="fill" style="width: {Math.max(0, Math.min(progress, 1)) * 100}%; background: {fillColor}; opacity: {fillOpacity}; border-radius: {radius}"></div>
 </div>
 
 <style>
   .progress-track {
     position: relative;
     height: 3px;
-    border-radius: 9999px;
     cursor: pointer;
   }
 
@@ -111,7 +112,6 @@
     top: 0;
     bottom: 0;
     left: 0;
-    border-radius: 9999px;
     pointer-events: none;
   }
 

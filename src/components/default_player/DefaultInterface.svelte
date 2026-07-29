@@ -152,8 +152,8 @@
 
   $: stoppedTitle = hasFinished ? "Listen again" : callToAction || translate("listenToThisArticle");
 
-  // As with the legacy standard style, the content title stays out of the bar
-  // during playback unless the publisher sets playerTitle. The video overlay
+  // As with the legacy standard style, no title shows in the bar during
+  // playback - the progress track and timer take the row. The video overlay
   // and queue rows still name the content.
   $: playingTitle = playerTitle || "";
   $: videoTitle = contentItem.title || playerTitle || stoppedTitle;
@@ -197,9 +197,20 @@
   $: playPauseLabel = isPlaying ? translate("pauseAudio") : translate("playAudio");
 
   $: versionItems = [
-    { value: "full", label: "Full", secondary: formatMins(contentItem.duration), selected: !summary },
-    { value: "summary", label: "Summary", secondary: formatMins(contentItem.summarization?.duration), selected: summary },
+    { value: "full", label: "Full", secondary: formatMins(mediaDuration(contentItem)), selected: !summary },
+    { value: "summary", label: "Summary", secondary: formatMins(mediaDuration(contentItem.summarization)), selected: summary },
   ];
+
+  // The API doesn't yet serialize a top-level duration on summarization (and
+  // sometimes content), so fall back to the first media variant's duration,
+  // which is in milliseconds. See S-8883.
+  const mediaDuration = (object) => {
+    if (!object) { return 0; }
+    if (object.duration) { return object.duration; }
+
+    const media = object.audio?.[0] || object.video?.[0];
+    return media?.duration ? media.duration / 1000 : 0;
+  };
 
   $: languageItems = languages.map((code) => ({
     value: code,
@@ -454,6 +465,7 @@
           {progress}
           {duration}
           readonly={true}
+          radius={tokens.radius.track}
           trackColor={tokens.track}
           fillColor={tokens.text}
           focusColor={tokens.text}
@@ -471,32 +483,32 @@
           {progress}
           {duration}
           readonly={true}
+          radius={tokens.radius.track}
           trackColor={tokens.track}
           fillColor={tokens.text}
           fillOpacity={0.4}
           focusColor={tokens.text}
           {onEvent} />
       {:else}
-        <div class="title-row">
-          {#if playingTitle}
-            <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
-          {:else}
-            <span class="title-spacer"></span>
-          {/if}
+        <div class="progress-row">
+          <div class="progress-grow">
+            <ProgressTrack
+              {progress}
+              {duration}
+              {buffering}
+              thickness={6}
+              radius={tokens.radius.track}
+          trackColor={tokens.track}
+              fillColor={tokens.text}
+              focusColor={tokens.text}
+              {onEvent} />
+          </div>
           {#if remainingOnly}
             <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
           {:else}
             <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
           {/if}
         </div>
-        <ProgressTrack
-          {progress}
-          {duration}
-          {buffering}
-          trackColor={tokens.track}
-          fillColor={tokens.text}
-          focusColor={tokens.text}
-          {onEvent} />
       {/if}
     </div>
 
@@ -982,6 +994,18 @@
 
   .title-spacer {
     flex: 1;
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .progress-grow {
+    flex: 1;
+    min-width: 0;
   }
 
   .time {

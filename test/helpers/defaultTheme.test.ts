@@ -46,11 +46,11 @@ describe("parseAgentColor", () => {
 
 describe("scaleRadius", () => {
   it("scales the family from one knob", () => {
-    expect(scaleRadius(8)).toEqual({ bar: "8px", control: "6px", bubble: "10px" });
+    expect(scaleRadius(8)).toEqual({ bar: "8px", control: "6px", bubble: "10px", track: "4px" });
   });
 
   it("applies floors at the small end and clamps the range", () => {
-    expect(scaleRadius(0)).toEqual({ bar: "0px", control: "3px", bubble: "4px" });
+    expect(scaleRadius(0)).toEqual({ bar: "0px", control: "3px", bubble: "4px", track: "0px" });
     expect(scaleRadius(99).bar).toEqual("16px");
     expect(scaleRadius("nonsense").bar).toEqual("8px");
   });
