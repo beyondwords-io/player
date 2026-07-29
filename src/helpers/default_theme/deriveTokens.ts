@@ -102,8 +102,8 @@ const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = 
     hover: toAlphaString(text, 0.05),
     pressed: toAlphaString(text, 0.1),
     underline: toAlphaString(text, 0.45),
-    muted: mix(text, background, 0.45),
-    placeholder: mix(text, background, 0.45),
+    muted: clampContrast(mix(text, background, 0.45), background, TEXT_CONTRAST_FLOOR),
+    placeholder: clampContrast(mix(text, background, 0.45), background, TEXT_CONTRAST_FLOOR),
     skeleton: toAlphaString(text, isDark ? 0.09 : 0.08),
 
     orb: agent.css,
