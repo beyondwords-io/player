@@ -21,6 +21,7 @@
   import QueuePanel from "./QueuePanel.svelte";
   import ChatPanel from "./ChatPanel.svelte";
   import Orb from "./Orb.svelte";
+  import VideoFrame from "./VideoFrame.svelte";
   import Visibility from "../helpers/Visibility.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
   import Info from "../svg_icons/default_player/Info.svelte";
@@ -76,6 +77,8 @@
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
+  export let videoIsBehind = false;
+  export let aspectRatio = 16 / 9;
 
   let element;
   let width = 600;
@@ -254,6 +257,15 @@
   const toggleChat = () => {
     chatOpen = !chatOpen;
     if (chatOpen) { queueOpen = false; openMenu = null; }
+
+    // Chat over video pauses playback so the panel never fights the frame.
+    if (chatOpen && videoIsBehind && isPlaying) {
+      onEvent(newEvent({
+        type: "PressedPause",
+        description: "The pause button was pressed.",
+        initiatedBy: "user",
+      }));
+    }
   };
 
   onMount(() => {
@@ -286,7 +298,32 @@
   out:fade|global={{ duration: isFixed && !reduceMotion ? 150 : 0 }}
 >
 <div class="surface" style="background: {displayBackground}; border-radius: {surfaceRadius}; box-shadow: {surfaceShadow};">
-  {#if agentOnly}
+  {#if videoIsBehind && !agentOnly}
+    <VideoFrame
+      {tokens}
+      {aspectRatio}
+      {playbackState}
+      {duration}
+      {currentTime}
+      title={playingTitle}
+      {showChat}
+      {chatOpen}
+      onToggleChat={toggleChat}
+      {onEvent} />
+
+    {#if chatOpen && showChat && !chatDisabled}
+      <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
+        <ChatPanel
+          {tokens}
+          {agentClient}
+          {agentPlaceholder}
+          {agentVoice}
+          {agentAccess}
+          {agentLimit}
+          {shortcuts} />
+      </div>
+    {/if}
+  {:else if agentOnly}
     <div class="agent-header">
       <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
       <span class="agent-prompt" style="color: {tokens.text}">{agentPrompt}</span>
