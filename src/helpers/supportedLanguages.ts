@@ -1,7 +1,4 @@
-// Allowlist of BeyondWords voice-generation languages (ElevenLabs v3, 74 languages)
-// plus locale variants that the player ships translations for.
-// Codes outside this list are not accepted by playerLanguage, even if a
-// translation file exists (e.g. "eo", "haw").
+// Locales accepted by playerLanguage
 const supportedLanguages = [
   "af",
   "ar",
