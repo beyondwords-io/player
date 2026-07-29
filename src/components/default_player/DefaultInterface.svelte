@@ -151,7 +151,12 @@
   $: if (isPlaying && duration > 0 && currentTime / duration < 0.5) { hasFinished = false; }
 
   $: stoppedTitle = hasFinished ? "Listen again" : callToAction || translate("listenToThisArticle");
-  $: playingTitle = contentItem.title || playerTitle || stoppedTitle;
+
+  // As with the legacy standard style, the content title stays out of the bar
+  // during playback unless the publisher sets playerTitle. The video overlay
+  // and queue rows still name the content.
+  $: playingTitle = playerTitle || "";
+  $: videoTitle = contentItem.title || playerTitle || stoppedTitle;
 
   $: totalMins = translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(duration / 60)));
   $: hasVersions = !!contentItem.summarization;
@@ -364,7 +369,7 @@
       {playbackState}
       {duration}
       {currentTime}
-      title={playingTitle}
+      title={videoTitle}
       {showChat}
       {chatOpen}
       onToggleChat={toggleChat}
@@ -456,6 +461,7 @@
       {:else if offline}
         <div class="title-row">
           <span class="title playing" style="color: {tokens.text}; opacity: 0.4">{playingTitle}</span>
+          {#if !playingTitle}<span class="title-spacer"></span>{/if}
           <span class="offline-note" style="color: {tokens.muted}">
             <WifiSlash size={12} color={tokens.muted} />
             Offline — will resume
@@ -472,7 +478,11 @@
           {onEvent} />
       {:else}
         <div class="title-row">
-          <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
+          {#if playingTitle}
+            <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
+          {:else}
+            <span class="title-spacer"></span>
+          {/if}
           {#if remainingOnly}
             <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
           {:else}
@@ -968,6 +978,10 @@
     align-items: baseline;
     gap: 10px;
     min-width: 0;
+  }
+
+  .title-spacer {
+    flex: 1;
   }
 
   .time {
