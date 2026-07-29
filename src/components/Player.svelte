@@ -268,6 +268,7 @@
     bind:this={userInterface}
     {onEvent}
     {embedMode}
+    {analyticsId}
     {theme}
     {radius}
     {content}
@@ -353,8 +354,10 @@
       bind:this={widgetInterface}
       {onEvent}
       {embedMode}
+    {analyticsId}
       {theme}
       {radius}
+      isWidget={true}
       fixedPosition={!widgetTarget && widgetPosition}
       fixedWidth={widgetWidth}
       fixedMargin={widgetMargin}

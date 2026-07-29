@@ -1,7 +1,7 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
   import { onMount } from "svelte";
-  import { slide } from "svelte/transition";
+  import { slide, fly, fade } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
@@ -21,7 +21,10 @@
   import QueuePanel from "./QueuePanel.svelte";
   import ChatPanel from "./ChatPanel.svelte";
   import Orb from "./Orb.svelte";
+  import Visibility from "../helpers/Visibility.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
+  import Info from "../svg_icons/default_player/Info.svelte";
+  import Close from "../svg_icons/default_player/Close.svelte";
 
   export let onEvent = () => {};
   export let embedMode = "audio";
@@ -68,14 +71,21 @@
   export let fixedWidth = "auto";
   export let fixedMargin = "16px";
   export let showClose = false;
+  export let isWidget = false;
+  export let analyticsId = undefined;
+  export let isVisible = undefined;
+  export let relativeY = undefined;
+  export let absoluteY = undefined;
 
   let element;
   let width = 600;
   let queueOpen = false;
   let chatOpen = false;
+  let infoOpen = false;
   let openMenu = null;
   let menuLeft = 8;
   let selectedLanguage;
+  let docked = false;
 
   const agentClient = new MockAgentClient();
 
@@ -115,7 +125,24 @@
   $: languageName = languageNameFor(selectedLanguage || contentLanguage);
   $: versionLabel = summary ? "Summary" : totalMins;
 
-  $: showOverflow = !isStopped && (hasVersions || hasLanguages || foldSpeed);
+  $: hasInfo = !!infoText;
+  $: foldInfo = width < 400;
+  $: showOverflow = (!isStopped && (hasVersions || hasLanguages || foldSpeed)) || (hasInfo && foldInfo);
+
+  $: isFixed = isWidget && !!fixedPosition;
+  $: fixedSide = fixedPosition === "auto" || fixedPosition === true ? "center" : fixedPosition;
+  $: widthStyle = !isFixed ? "" :
+    docked ? "100%" :
+    fixedWidth === "auto" || fixedWidth === 0 || fixedWidth === "0" ? `min(440px, calc(100vw - 2 * ${fixedMargin || "16px"}))` :
+    fixedWidth;
+
+  $: surfaceRadius = docked && isFixed ? "12px 12px 0 0" : tokens.radius.bar;
+  $: surfaceShadow = docked && isFixed ? "0 -2px 8px rgba(0, 0, 0, 0.12)" :
+    isFixed ? tokens.widgetShadow : tokens.barRing;
+
+  $: showCaption = !!disclosureText || logoIconEnabled;
+  $: attributionHref = typeof window === "undefined" ? "https://beyondwords.io" :
+    `https://beyondwords.io/?utm_source=${encodeURIComponent(window.location.origin)}&utm_medium=player&utm_campaign=${analyticsId || ""}`;
 
   $: showChat = embedMode !== "audio" && agentAccess !== "off";
   $: chatDisabled = agentAccess === "disabled";
@@ -142,9 +169,10 @@
     openMenu === "version" ? [{ label: "Version", items: versionItems }] :
     openMenu === "language" ? [{ label: "Language", items: languageItems }] :
     openMenu === "overflow" ? [
-      ...(hasVersions ? [{ label: "Version", items: versionItems }] : []),
-      ...(hasLanguages ? [{ label: "Language", items: languageItems }] : []),
-      ...(foldSpeed ? [{ label: "Speed", items: speedItems }] : []),
+      ...(hasVersions && !isStopped ? [{ label: "Version", items: versionItems }] : []),
+      ...(hasLanguages && !isStopped ? [{ label: "Language", items: languageItems }] : []),
+      ...(foldSpeed && !isStopped ? [{ label: "Speed", items: speedItems }] : []),
+      ...(hasInfo && foldInfo ? [{ label: "About", items: [{ value: "info", label: "About this audio", selected: infoOpen }] }] : []),
     ] : [];
 
   const languageNameFor = (code) => {
@@ -198,9 +226,24 @@
         description: "The change playback rate button was pressed.",
         initiatedBy: "user",
       }));
+    } else if (item.value === "info") {
+      toggleInfo();
     } else {
       selectedLanguage = item.value;
     }
+  };
+
+  const toggleInfo = () => {
+    infoOpen = !infoOpen;
+    if (infoOpen) { chatOpen = false; queueOpen = false; }
+  };
+
+  const handleCloseWidget = () => {
+    onEvent(newEvent({
+      type: "PressedCloseWidget",
+      description: "The close widget button was pressed.",
+      initiatedBy: "user",
+    }));
   };
 
   const toggleQueue = () => {
@@ -216,7 +259,16 @@
   onMount(() => {
     const observer = new ResizeObserver(() => width = element?.clientWidth || width);
     if (element) { observer.observe(element); }
-    return () => observer.disconnect();
+
+    const mobileQuery = matchMedia("(max-width: 640px)");
+    const updateDocked = () => docked = mobileQuery.matches;
+    updateDocked();
+    mobileQuery.addEventListener("change", updateDocked);
+
+    return () => {
+      observer.disconnect();
+      mobileQuery.removeEventListener("change", updateDocked);
+    };
   });
 </script>
 
@@ -224,8 +276,16 @@
   bind:this={element}
   class="default-player"
   class:dark={tokens.isDark}
-  style="background: {displayBackground}; border-radius: {tokens.radius.bar}; box-shadow: {tokens.barRing};"
+  class:fixed={isFixed}
+  class:docked={docked && isFixed}
+  class:fixed-left={isFixed && fixedSide === "left"}
+  class:fixed-center={isFixed && fixedSide === "center"}
+  class:fixed-right={isFixed && fixedSide === "right"}
+  style="--fixed-margin: {fixedMargin || "16px"}; width: {widthStyle};"
+  in:fly|global={{ y: isFixed ? 12 : 0, duration: isFixed ? (reduceMotion ? 0 : 200) : 0, easing: cubicOut }}
+  out:fade|global={{ duration: isFixed && !reduceMotion ? 150 : 0 }}
 >
+<div class="surface" style="background: {displayBackground}; border-radius: {surfaceRadius}; box-shadow: {surfaceShadow};">
   {#if agentOnly}
     <div class="agent-header">
       <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
@@ -244,20 +304,22 @@
       emptyStateChips={true} />
   {:else}
   <div class="bar" class:compact>
-    <button
-      type="button"
-      class="play-pause"
-      style="color: {tokens.icon}; outline-color: {tokens.text}"
-      aria-label={playPauseLabel}
-      on:click={handlePlayPause}
-      on:mouseup={blurElement}
-    >
-      {#if isPlaying}
-        <PauseCircle size={40} color={tokens.icon} />
-      {:else}
-        <PlayCircle size={40} color={tokens.icon} />
-      {/if}
-    </button>
+    <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
+      <button
+        type="button"
+        class="play-pause"
+        style="color: {tokens.icon}; outline-color: {tokens.text}"
+        aria-label={playPauseLabel}
+        on:click={handlePlayPause}
+        on:mouseup={blurElement}
+      >
+        {#if isPlaying}
+          <PauseCircle size={40} color={tokens.icon} />
+        {:else}
+          <PlayCircle size={40} color={tokens.icon} />
+        {/if}
+      </button>
+    </Visibility>
 
     <div class="title-col" class:playing={!isStopped}>
       {#if isStopped}
@@ -333,6 +395,20 @@
       </button>
     {/if}
 
+    {#if hasInfo && !foldInfo}
+      <button
+        type="button"
+        class="icon-button"
+        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; background: {infoOpen ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        aria-label="About this audio"
+        aria-expanded={infoOpen}
+        on:click={toggleInfo}
+        on:mouseup={blurElement}
+      >
+        <Info size={20} color={tokens.icon} />
+      </button>
+    {/if}
+
     {#if showChat}
       <div class="chat-divider" style="background: {tokens.divider}"></div>
 
@@ -360,7 +436,29 @@
         {/if}
       </button>
     {/if}
+
+    {#if isWidget && showClose}
+      <button
+        type="button"
+        class="icon-button"
+        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        aria-label={translate("closeWidget")}
+        on:click={handleCloseWidget}
+        on:mouseup={blurElement}
+      >
+        <Close size={14} color={tokens.muted} />
+      </button>
+    {/if}
   </div>
+
+  {#if infoOpen && hasInfo}
+    <div class="chat-unfold" transition:slide|local={{ duration: infoOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
+      <div class="hairline" style="background: {tokens.divider}"></div>
+      <div class="info-box">
+        <span class="info-copy" style="color: {tokens.text}">{infoText}</span>
+      </div>
+    </div>
+  {/if}
 
   {#if queueOpen && isPlaylist}
     <div class="hairline" style="background: {tokens.divider}"></div>
@@ -393,6 +491,38 @@
     <Menu groups={menuGroups} left={menuLeft} {tokens} onSelect={handleMenuSelect} onClose={() => openMenu = null} />
   {/if}
   {/if}
+
+  {#if isWidget && showCaption && !agentOnly}
+    <div class="hairline" style="background: {tokens.divider}"></div>
+    <div class="caption inside">
+      <span class="caption-left">
+        {#if disclosureText && disclosureLink}
+          <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{disclosureText}</a>
+        {:else if disclosureText}
+          <span class="caption-text" style="color: {tokens.muted}">{disclosureText}</span>
+        {/if}
+      </span>
+      {#if logoIconEnabled}
+        <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" aria-label={translate("visitBeyondWords")}>Powered by BeyondWords</a>
+      {/if}
+    </div>
+  {/if}
+</div>
+
+{#if !isWidget && showCaption && !agentOnly}
+  <div class="caption outside">
+    <span class="caption-left">
+      {#if disclosureText && disclosureLink}
+        <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{disclosureText}</a>
+      {:else if disclosureText}
+        <span class="caption-text" style="color: {tokens.muted}">{disclosureText}</span>
+      {/if}
+    </span>
+    {#if logoIconEnabled}
+      <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" aria-label={translate("visitBeyondWords")}>Powered by BeyondWords</a>
+    {/if}
+  </div>
+{/if}
 </div>
 
 <style>
@@ -404,6 +534,98 @@
 
   .default-player :global(*) {
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .surface {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .default-player.fixed {
+    position: fixed;
+    bottom: var(--fixed-margin);
+    z-index: 999999;
+  }
+
+  .default-player.fixed-left {
+    left: var(--fixed-margin);
+  }
+
+  .default-player.fixed-center {
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .default-player.fixed-right {
+    right: var(--fixed-margin);
+  }
+
+  .default-player.docked {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+  }
+
+  .default-player.docked .surface {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .caption {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .caption.outside {
+    padding: 6px 8px 0;
+  }
+
+  .caption.inside {
+    padding: 6px 12px 8px;
+  }
+
+  .caption-left {
+    display: flex;
+    min-width: 0;
+  }
+
+  .caption-text,
+  .caption-link {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .caption-link {
+    text-decoration: none;
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+    cursor: pointer;
+  }
+
+  .caption-link:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  .info-box {
+    padding: 12px 16px;
+  }
+
+  .info-copy {
+    font-size: 13px;
+    line-height: 1.5;
   }
 
   .bar {
