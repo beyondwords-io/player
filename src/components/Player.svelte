@@ -101,6 +101,7 @@
   // now; not yet served by the /player API).
   export let video = false;
   export let embedMode = "audio";
+  export let widgetEmbedMode = undefined;
   export let theme = "light";
   export let radius = 8;
   export let agentColor = undefined;
@@ -182,18 +183,26 @@
   $: maxImageSize = isScreen ? 120 : isLarge ? 80 : 0;
 
   $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
-  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(widgetStyle) && content.length > 0;
+  // The widget is the same bar recomposed, so the default style always carries
+  // into it. "none" and the closed-by-user sentinel still switch it off.
+  $: widgetIsOff = widgetStyle === "none" || widgetStyle === "closed-by-user";
+  $: effectiveWidgetStyle = playerStyle === "default" && !widgetIsOff ? "default" : widgetStyle;
+
+  // The widget's agent surfaces can be configured separately; unset inherits.
+  $: effectiveWidgetEmbedMode = widgetEmbedMode || embedMode;
+
+  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(effectiveWidgetStyle) && content.length > 0;
 
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
 
-  $: videoBehindWidget = showWidget && widgetStyle === "video" && !isFullScreen;
+  $: videoBehindWidget = showWidget && effectiveWidgetStyle === "video" && !isFullScreen;
   $: videoBehindStatic = (interfaceStyle === "video" || (interfaceStyle === "default" && isVideo)) && !videoBehindWidget;
 
-  $: showClose = showCloseWidget && widgetStyle !== "small" && !isAdvert;
+  $: showClose = showCloseWidget && effectiveWidgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
-  $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video" || (playerStyle === "default" && video === true);
+  $: videoMightBeShown = playerStyle === "video" || effectiveWidgetStyle === "video" || (playerStyle === "default" && video === true);
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
   $: aspectRatio = isVideo && loadedMedia.videoSize ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
 
@@ -363,12 +372,12 @@
   <DefaultSkeleton showChatBlock={embedMode !== "audio"} />
 {/if}
 
-{#if showWidgetInterface && widgetStyle === "default"}
+{#if showWidgetInterface && effectiveWidgetStyle === "default"}
   <ExternalWidget root={widgetTarget}>
     <DefaultInterface
       bind:this={widgetInterface}
       {onEvent}
-      {embedMode}
+      embedMode={effectiveWidgetEmbedMode}
     {analyticsId}
       {theme}
       {radius}
@@ -422,7 +431,7 @@
     <UserInterface
       bind:this={widgetInterface}
       {onEvent}
-      playerStyle={widgetStyle}
+      playerStyle={effectiveWidgetStyle}
       {callToAction}
       {skipButtonStyle}
       playlistStyle="hide"
@@ -520,6 +529,7 @@
       bind:playbackState
       bind:playbackRate
       bind:widgetStyle
+      bind:widgetEmbedMode
       bind:widgetPosition
       bind:widgetWidth
       bind:widgetMargin

@@ -1,5 +1,6 @@
 <script>
   import { tick, onDestroy } from "svelte";
+  import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
   import Orb from "./Orb.svelte";
   import ArrowUp from "../svg_icons/default_player/ArrowUp.svelte";
@@ -15,6 +16,8 @@
   export let agentAccess = "full";
   export let agentLimit = undefined;
   export let shortcuts = [];
+  export let isPlaying = false;
+  export let onEvent = () => {};
   export let showSlashButton = true;
   export let emptyStateChips = false;
   export let onMessageSent = () => {};
@@ -32,6 +35,7 @@
   let partialTranscript = "";
   let minuteTimer = null;
   let secondsLeft = null;
+  let pausedForVoice = false;
 
   $: placeholder = agentPlaceholder || "Ask about this article, or anything we've covered…";
 
@@ -87,7 +91,7 @@
         thread = thread;
         streaming = false;
         streamHandle = null;
-        if (voiceMode === "talking") { voiceMode = null; }
+        if (voiceMode === "talking") { leaveVoiceMode(); }
         announced = last.text;
         scrollToEnd();
       },
@@ -96,8 +100,33 @@
 
   const stop = () => streamHandle?.stop();
 
+  // Article audio resumes once the exchange is over, as it does after ducking.
+  const leaveVoiceMode = () => {
+    voiceMode = null;
+    if (!pausedForVoice) { return; }
+
+    pausedForVoice = false;
+
+    onEvent(newEvent({
+      type: "PressedPlay",
+      description: "The play button was pressed.",
+      initiatedBy: "user",
+    }));
+  };
+
   const startListening = () => {
     if (budgetSpent) { return; }
+
+    // The mic would otherwise pick up the article audio.
+    if (isPlaying) {
+      pausedForVoice = true;
+
+      onEvent(newEvent({
+        type: "PressedPause",
+        description: "The pause button was pressed.",
+        initiatedBy: "user",
+      }));
+    }
 
     voiceMode = "listening";
     partialTranscript = "";
@@ -119,9 +148,14 @@
     const transcript = listenHandle?.transcript() || partialTranscript;
     listenHandle?.stop();
     listenHandle = null;
-    voiceMode = null;
 
-    if (shouldSend && transcript) { send(transcript, { fromVoice: true }); }
+    // Sending keeps us in voice mode for the spoken reply.
+    if (shouldSend && transcript) {
+      voiceMode = null;
+      send(transcript, { fromVoice: true });
+    } else {
+      leaveVoiceMode();
+    }
   };
 
   const switchToTyping = () => {
@@ -131,7 +165,7 @@
     const transcript = listenHandle?.transcript() || partialTranscript;
     listenHandle?.stop();
     listenHandle = null;
-    voiceMode = null;
+    leaveVoiceMode();
     input = transcript;
     tick().then(() => inputElement?.focus());
   };
