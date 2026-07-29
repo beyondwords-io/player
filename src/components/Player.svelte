@@ -4,6 +4,7 @@
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import DefaultInterface from "./default_player/DefaultInterface.svelte";
+  import DefaultSkeleton from "./default_player/Skeleton.svelte";
   import ExternalWidget from "./ExternalWidget.svelte";
   import ControlPanel from "./ControlPanel.svelte";
   import MediaSession from "./MediaSession.svelte";
@@ -310,7 +311,9 @@
     videoIsBehind={videoBehindStatic}
     {aspectRatio}
     {activeAdvert}
-    {activeIntroOrOutro} />
+    {activeIntroOrOutro}
+    {persistentAdvert}
+    {metadataLoaded} />
 {:else if showStaticInterface}
   <UserInterface
     bind:this={userInterface}
@@ -349,6 +352,8 @@
     {aspectRatio}
     {videoPosterImage}
     videoIsBehind={videoBehindStatic} />
+{:else if showUserInterface && interfaceStyle === "default" && content.length === 0 && projectId !== undefined}
+  <DefaultSkeleton showChatBlock={embedMode !== "audio"} />
 {/if}
 
 {#if showWidgetInterface && widgetStyle === "default"}
@@ -401,7 +406,9 @@
       {disclosureLink}
       {logoIconEnabled}
       {activeAdvert}
-      {activeIntroOrOutro} />
+      {activeIntroOrOutro}
+    {persistentAdvert}
+    {metadataLoaded} />
   </ExternalWidget>
 {:else if showWidgetInterface}
   <ExternalWidget root={widgetTarget}>

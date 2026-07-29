@@ -9,6 +9,9 @@
   import deriveTokens from "../../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
   import MockAgentClient from "../../helpers/agentClient";
+  import chooseAdvertText from "../../helpers/chooseAdvertText";
+  import ensureProtocol from "../../helpers/ensureProtocol";
+  import WifiSlash from "../svg_icons/default_player/WifiSlash.svelte";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
   import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
   import Queue from "../svg_icons/default_player/Queue.svelte";
@@ -68,6 +71,8 @@
   export let logoIconEnabled = true;
   export let activeAdvert = undefined;
   export let activeIntroOrOutro = undefined;
+  export let persistentAdvert = undefined;
+  export let metadataLoaded = false;
   export let fixedPosition = undefined;
   export let fixedWidth = "auto";
   export let fixedMargin = "16px";
@@ -89,6 +94,8 @@
   let menuLeft = 8;
   let selectedLanguage;
   let docked = false;
+  let offline = false;
+  let hasFinished = false;
 
   const agentClient = new MockAgentClient();
 
@@ -96,10 +103,22 @@
   $: unfoldMs = reduceMotion || (typeof window !== "undefined" && window.disableAnimation) ? 0 : 240;
   $: collapseMs = reduceMotion || (typeof window !== "undefined" && window.disableAnimation) ? 0 : 180;
 
-  $: overrides = explicitOverrides({
-    textColor, backgroundColor, iconColor, highlightColor, wordHighlightColor,
-    videoTextColor, videoIconColor, agentColor, agentAvatar, accentColor, accentTextColor,
-  });
+  $: isAdvert = !!activeAdvert && playbackState !== "stopped";
+
+  // Ad creatives can override the slot's colours for their duration, as today.
+  $: adOverrides = isAdvert ? explicitOverrides({
+    textColor: activeAdvert.textColor,
+    backgroundColor: activeAdvert.backgroundColor,
+    iconColor: activeAdvert.iconColor,
+  }) : {};
+
+  $: overrides = {
+    ...explicitOverrides({
+      textColor, backgroundColor, iconColor, highlightColor, wordHighlightColor,
+      videoTextColor, videoIconColor, agentColor, agentAvatar, accentColor, accentTextColor,
+    }),
+    ...adOverrides,
+  };
 
   $: tokens = deriveTokens({ theme, radius, overrides });
   $: displayBackground = overrides.backgroundColor || tokens.background;
@@ -119,7 +138,17 @@
   $: remainingOnly = compact;
   $: foldSkips = width < 360;
 
-  $: stoppedTitle = callToAction || translate("listenToThisArticle");
+  $: advertHref = ensureProtocol(activeAdvert?.clickThroughUrl || "") || undefined;
+  $: advertText = advertHref ? chooseAdvertText(advertHref) : "";
+  $: persistentHref = ensureProtocol(persistentAdvert?.clickThroughUrl || "") || undefined;
+  $: persistentText = persistentHref ? chooseAdvertText(persistentHref) : "";
+  $: showPersistentChip = !isAdvert && !isStopped && !!persistentHref && !!persistentText;
+  $: buffering = isPlaying && !metadataLoaded;
+
+  $: if (isPlaying && duration > 0 && currentTime / duration > 0.98) { hasFinished = true; }
+  $: if (isPlaying && duration > 0 && currentTime / duration < 0.5) { hasFinished = false; }
+
+  $: stoppedTitle = hasFinished ? "Listen again" : callToAction || translate("listenToThisArticle");
   $: playingTitle = contentItem.title || playerTitle || stoppedTitle;
 
   $: totalMins = translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(duration / 60)));
@@ -147,7 +176,8 @@
   $: attributionHref = typeof window === "undefined" ? "https://beyondwords.io" :
     `https://beyondwords.io/?utm_source=${encodeURIComponent(window.location.origin)}&utm_medium=player&utm_campaign=${analyticsId || ""}`;
 
-  $: showChat = embedMode !== "audio" && agentAccess !== "off";
+  $: showChat = embedMode !== "audio" && agentAccess !== "off" && !isAdvert;
+  $: isAdvert && (chatOpen = false);
   $: chatDisabled = agentAccess === "disabled";
   $: chatLabelVisible = width >= 340;
   $: agentOnly = embedMode === "agent";
@@ -268,6 +298,15 @@
     }
   };
 
+  const handleRootKeydown = (event) => {
+    if (event.key !== "Escape") { return; }
+    if (chatOpen || infoOpen || queueOpen) {
+      chatOpen = false;
+      infoOpen = false;
+      queueOpen = false;
+    }
+  };
+
   onMount(() => {
     const observer = new ResizeObserver(() => width = element?.clientWidth || width);
     if (element) { observer.observe(element); }
@@ -277,9 +316,17 @@
     updateDocked();
     mobileQuery.addEventListener("change", updateDocked);
 
+    offline = typeof navigator !== "undefined" && navigator.onLine === false;
+    const handleOffline = () => offline = true;
+    const handleOnline = () => offline = false;
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
     return () => {
       observer.disconnect();
       mobileQuery.removeEventListener("change", updateDocked);
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
     };
   });
 </script>
@@ -296,6 +343,8 @@
   style="--fixed-margin: {fixedMargin || "16px"}; width: {widthStyle};"
   in:fly|global={{ y: isFixed ? 12 : 0, duration: isFixed ? (reduceMotion ? 0 : 200) : 0, easing: cubicOut }}
   out:fade|global={{ duration: isFixed && !reduceMotion ? 150 : 0 }}
+  on:keydown={handleRootKeydown}
+  role="none"
 >
 <div class="surface" style="background: {displayBackground}; border-radius: {surfaceRadius}; box-shadow: {surfaceShadow};">
   {#if videoIsBehind && !agentOnly}
@@ -376,6 +425,41 @@
             <span class="plain" style="color: {tokens.muted}">{languageName}</span>
           {/if}
         </span>
+      {:else if isAdvert}
+        <div class="title-row">
+          {#if advertHref && advertText}
+            <a class="advert-link" href={advertHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.text}; outline-color: {tokens.text}">{advertText}</a>
+          {:else}
+            <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
+          {/if}
+          <span class="time" style="color: {tokens.text}">{formatTime(Math.max(0, duration - currentTime))} left</span>
+          <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}">AD</span>
+        </div>
+        <ProgressTrack
+          {progress}
+          {duration}
+          readonly={true}
+          trackColor={tokens.track}
+          fillColor={tokens.text}
+          focusColor={tokens.text}
+          {onEvent} />
+      {:else if offline}
+        <div class="title-row">
+          <span class="title playing" style="color: {tokens.text}; opacity: 0.4">{playingTitle}</span>
+          <span class="offline-note" style="color: {tokens.muted}">
+            <WifiSlash size={12} color={tokens.muted} />
+            Offline — will resume
+          </span>
+        </div>
+        <ProgressTrack
+          {progress}
+          {duration}
+          readonly={true}
+          trackColor={tokens.track}
+          fillColor={tokens.text}
+          fillOpacity={0.4}
+          focusColor={tokens.text}
+          {onEvent} />
       {:else}
         <div class="title-row">
           <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
@@ -388,6 +472,7 @@
         <ProgressTrack
           {progress}
           {duration}
+          {buffering}
           trackColor={tokens.track}
           fillColor={tokens.text}
           focusColor={tokens.text}
@@ -395,12 +480,19 @@
       {/if}
     </div>
 
-    {#if !isStopped && !foldSkips}
+    {#if showPersistentChip}
+      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.muted}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
+        {persistentText}
+        <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}">AD</span>
+      </a>
+    {/if}
+
+    {#if !isStopped && !foldSkips && !isAdvert}
       <SkipButton direction="prev" style={skipStyle} color={tokens.icon} hoverBackground={tokens.hover} pressedBackground={tokens.pressed} focusColor={tokens.text} radius={tokens.radius.control} {onEvent} />
       <SkipButton direction="next" style={skipStyle} color={tokens.icon} hoverBackground={tokens.hover} pressedBackground={tokens.pressed} focusColor={tokens.text} radius={tokens.radius.control} {onEvent} />
     {/if}
 
-    {#if !isStopped && !foldSpeed}
+    {#if !isStopped && !foldSpeed && !isAdvert}
       <SpeedButton rates={playbackRates} rate={playbackRate} color={tokens.text} hoverBackground={tokens.hover} pressedBackground={tokens.pressed} focusColor={tokens.text} radius={tokens.radius.control} {onEvent} />
     {/if}
 
@@ -933,5 +1025,74 @@
 
   .separator {
     opacity: 0.5;
+  }
+
+  .advert-link {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  .advert-link:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  .ad-badge {
+    flex-shrink: 0;
+    padding: 2px 5px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  .persistent-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    padding: 4px 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .persistent-chip:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .persistent-chip:hover {
+      background: var(--hover-bg);
+    }
+  }
+
+  .offline-note {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
   }
 </style>
