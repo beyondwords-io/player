@@ -108,7 +108,6 @@
   }
 
   .index {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 11px;
   }
 
@@ -141,7 +140,6 @@
   }
 
   .duration {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 11px;
     font-variant-numeric: tabular-nums;
   }

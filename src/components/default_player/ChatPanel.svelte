@@ -388,7 +388,6 @@
     border-width: 1px;
     border-style: solid;
     border-radius: 9999px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     text-decoration: none;
@@ -418,7 +417,6 @@
 
   .eyebrow {
     padding: 6px 10px 4px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -453,7 +451,6 @@
   .shortcut-row .command {
     width: 76px;
     flex-shrink: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 11px;
   }
 
@@ -482,7 +479,6 @@
     border-width: 1px;
     border-style: solid;
     border-radius: 6px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 13px;
     cursor: pointer;
   }
@@ -582,7 +578,6 @@
 
   .counter {
     flex-shrink: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     white-space: nowrap;
   }
@@ -603,7 +598,6 @@
 
   .talking-label {
     flex: 1;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -621,7 +615,6 @@
 
   .subscribe {
     flex-shrink: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 11px;
     font-weight: 500;
     text-decoration: none;

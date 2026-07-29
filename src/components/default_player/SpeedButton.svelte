@@ -93,7 +93,6 @@
   }
 
   .speed-button span {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 11px;
     font-weight: 500;
     cursor: pointer;
