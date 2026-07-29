@@ -87,7 +87,7 @@
       theme,
       video: video === true ? "true" : "",
       videoSize: videoSizes?.[0] || "",
-      widgetEmbedMode: widgetEmbedMode || "",
+      widgetEmbedMode: widgetEmbedMode === "auto" ? "" : widgetEmbedMode || "",
     };
 
     for (const [key, value] of Object.entries(values)) {
@@ -347,7 +347,7 @@
   <div class="control">
     widgetEmbedMode:
     <select tabindex={-1} bind:value={widgetEmbedMode}>
-      <option value={undefined}>inherit</option>
+      <option>auto</option>
       <option>audio</option>
       <option>audio-agent</option>
       <option>agent</option>

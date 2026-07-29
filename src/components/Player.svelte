@@ -101,7 +101,7 @@
   // now; not yet served by the /player API).
   export let video = false;
   export let embedMode = "audio";
-  export let widgetEmbedMode = undefined;
+  export let widgetEmbedMode = "auto";
   export let theme = "light";
   export let radius = 8;
   export let agentColor = undefined;
@@ -188,8 +188,8 @@
   $: widgetIsOff = widgetStyle === "none" || widgetStyle === "closed-by-user";
   $: effectiveWidgetStyle = playerStyle === "default" && !widgetIsOff ? "default" : widgetStyle;
 
-  // The widget's agent surfaces can be configured separately; unset inherits.
-  $: effectiveWidgetEmbedMode = widgetEmbedMode || embedMode;
+  // The widget's agent surfaces can be configured separately; auto inherits.
+  $: effectiveWidgetEmbedMode = !widgetEmbedMode || widgetEmbedMode === "auto" ? embedMode : widgetEmbedMode;
 
   $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(effectiveWidgetStyle) && content.length > 0;
 

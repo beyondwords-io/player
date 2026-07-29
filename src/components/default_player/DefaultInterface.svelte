@@ -29,6 +29,7 @@
   import Visibility from "../helpers/Visibility.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
   import Info from "../svg_icons/default_player/Info.svelte";
+  import Download from "../svg_icons/default_player/Download.svelte";
   import Close from "../svg_icons/default_player/Close.svelte";
 
   export let onEvent = () => {};
@@ -175,9 +176,15 @@
   $: languageName = languageNameFor(selectedLanguage || contentLanguage);
   $: versionLabel = summary ? "Summary" : totalMins;
 
+  $: downloadAudio = (summary ? contentItem.summarization?.audio : contentItem.audio) || [];
+  $: downloadVideo = (summary ? contentItem.summarization?.video : contentItem.video) || [];
+  $: [downloadAudioIndex, downloadVideoIndex] = mediaToDownload(downloadFormats, downloadAudio, downloadVideo);
+  $: hasDownload = downloadAudioIndex !== -1 || downloadVideoIndex !== -1;
+  $: foldDownload = width < 400;
+
   $: hasInfo = !!infoText;
   $: foldInfo = width < 400;
-  $: showOverflow = (!isStopped && (hasVersions || hasLanguages || foldSpeed)) || (hasInfo && foldInfo);
+  $: showOverflow = (!isStopped && (hasVersions || hasLanguages || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload);
 
   $: isFixed = isWidget && !!fixedPosition;
   $: fixedSide = fixedPosition === "auto" || fixedPosition === true ? "center" : fixedPosition;
@@ -239,6 +246,7 @@
       ...(hasLanguages && !isStopped ? [{ label: "Language", items: languageItems }] : []),
       ...(foldSpeed && !isStopped ? [{ label: "Speed", items: speedItems }] : []),
       ...(hasInfo && foldInfo ? [{ label: "About", items: [{ value: "info", label: "About this audio", selected: infoOpen }] }] : []),
+      ...(hasDownload && foldDownload ? [{ label: "Download", items: [{ value: "download", label: translate("downloadAudio"), selected: false }] }] : []),
     ] : [];
 
   const languageNameFor = (code) => {
@@ -294,9 +302,37 @@
       }));
     } else if (item.value === "info") {
       toggleInfo();
+    } else if (item.value === "download") {
+      handleDownload();
     } else {
       selectedLanguage = item.value;
     }
+  };
+
+  const mediaToDownload = (formats, audio, video) => {
+    for (const format of formats || []) {
+      for (const [i, item] of (audio || []).entries()) {
+        if (item.url?.endsWith(`.${format}`)) { return [i, -1]; }
+      }
+
+      for (const [i, item] of (video || []).entries()) {
+        if (item.url?.endsWith(`.${format}`)) { return [-1, i]; }
+      }
+    }
+
+    return [-1, -1];
+  };
+
+  const handleDownload = () => {
+    onEvent(newEvent({
+      type: "PressedDownload",
+      description: "The download button was pressed.",
+      initiatedBy: "user",
+      contentIndex,
+      audioIndex: downloadAudioIndex,
+      videoIndex: downloadVideoIndex,
+      summary,
+    }));
   };
 
   const toggleInfo = () => {
@@ -587,6 +623,19 @@
         on:mouseup={blurElement}
       >
         <Queue size={22} color={tokens.icon} />
+      </button>
+    {/if}
+
+    {#if hasDownload && !foldDownload}
+      <button
+        type="button"
+        class="icon-button"
+        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        aria-label={translate("downloadAudio")}
+        on:click={handleDownload}
+        on:mouseup={blurElement}
+      >
+        <Download size={22} color={tokens.icon} />
       </button>
     {/if}
 
