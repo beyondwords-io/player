@@ -61,6 +61,37 @@
   export let disclosureText;
 
   let showAdvancedSettings = false;
+
+  // The Load content section reloads the page with query params so the player
+  // boots cleanly with the entered identifiers (production API by default).
+  const initialParams = new URLSearchParams(window.location.search);
+  let loadProjectId = initialParams.get("projectId") || "";
+  let loadContentId = initialParams.get("contentId") || "";
+  let loadPlaylistId = initialParams.get("playlistId") || "";
+  let loadSourceUrl = initialParams.get("sourceUrl") || "";
+
+  const loadContent = () => {
+    const params = new URLSearchParams();
+
+    const values = {
+      projectId: loadProjectId,
+      contentId: loadContentId,
+      playlistId: loadPlaylistId,
+      sourceUrl: loadSourceUrl,
+      playerStyle,
+      widgetStyle,
+      embedMode,
+      theme,
+    };
+
+    for (const [key, value] of Object.entries(values)) {
+      if (`${value ?? ""}`.trim() !== "") { params.set(key, `${value}`.trim()); }
+    }
+
+    window.location.search = params.toString();
+  };
+
+  const resetToDemo = () => window.location.search = "";
 </script>
 
 <div class="control-panel">
@@ -70,6 +101,35 @@
     <a tabindex={-1} target="_blank" class="docs" href="https://github.com/beyondwords-io/player/blob/main/doc/player-settings.md">
       view docs
     </a>
+  </div>
+
+  <br/>
+
+  <strong>Load content:</strong>
+
+  <div class="control">
+    projectId:
+    <input tabindex={-1} type="text" placeholder="production project id" bind:value={loadProjectId}>
+  </div>
+
+  <div class="control">
+    contentId:
+    <input tabindex={-1} type="text" placeholder="optional" bind:value={loadContentId}>
+  </div>
+
+  <div class="control">
+    playlistId:
+    <input tabindex={-1} type="text" placeholder="optional" bind:value={loadPlaylistId}>
+  </div>
+
+  <div class="control">
+    sourceUrl:
+    <input tabindex={-1} type="text" placeholder="optional" bind:value={loadSourceUrl}>
+  </div>
+
+  <div class="control">
+    <button tabindex={-1} type="button" on:click={loadContent}>Load player</button>
+    <button tabindex={-1} type="button" on:click={resetToDemo}>Reset to demo</button>
   </div>
 
   <br/>

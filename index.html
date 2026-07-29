@@ -12,16 +12,50 @@
       BeyondWords Player
     </h1>
 
-    <script id="player-script" async defer type="module" onload='new BeyondWords.Player({
-      target: this,
-      projectId: 26027,
-      playlistId: 86791,
-      playlistStyle: "hide",
-      skipButtonStyle: "segments",
-      segmentWidgetPosition: "9-oclock",
-      controlPanel: ".control-panel",
-      clickableSections: "all",
-    })'></script>
+    <script>
+      // Test any project by adding query params to this page's URL, e.g.
+      // ?projectId=12345&contentId=aa1bd6c4-... — also supports playlistId,
+      // sourceId, sourceUrl, playerApiUrl, playerStyle, widgetStyle, embedMode
+      // and theme. Without params the page loads the demo project. The
+      // control panel's "Load content" section builds these URLs for you.
+      function initDemoPlayer(target) {
+        const params = new URLSearchParams(location.search);
+        const get = (key) => params.get(key) || undefined;
+
+        const props = get("projectId") ? {
+          projectId: get("projectId"),
+          contentId: get("contentId"),
+          playlistId: get("playlistId"),
+          sourceId: get("sourceId"),
+          sourceUrl: get("sourceUrl"),
+        } : {
+          projectId: 26027,
+          playlistId: 86791,
+        };
+
+        props.playerApiUrl = get("playerApiUrl");
+        props.playerStyle = get("playerStyle");
+        props.widgetStyle = get("widgetStyle");
+        props.embedMode = get("embedMode");
+        props.theme = get("theme");
+
+        for (const key of Object.keys(props)) {
+          if (props[key] === undefined) { delete props[key]; }
+        }
+
+        new BeyondWords.Player({
+          target,
+          ...props,
+          playlistStyle: "hide",
+          skipButtonStyle: "segments",
+          segmentWidgetPosition: "9-oclock",
+          controlPanel: ".control-panel",
+          clickableSections: "all",
+        });
+      }
+    </script>
+
+    <script id="player-script" async defer type="module" onload='initDemoPlayer(this)'></script>
 
     <script>
       const script = document.querySelector("#player-script");
