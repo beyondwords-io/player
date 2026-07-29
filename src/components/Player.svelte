@@ -208,42 +208,44 @@
 </script>
 
 <ExternalWidget prepend root={videoRoot}>
-  <MediaElement
-    bind:this={mediaElement}
-    {onEvent}
-    {videoSizes}
-    {content}
-    {contentIndex}
-    {segmentLimit}
-    {summary}
-    {activeIntroOrOutro}
-    {preloadAdvert}
-    {activeAdvert}
-    {advertConsent}
-    {maxImageSize}
-    {projectId}
-    {playlistId}
-    contentId={contentItem?.id}
-    {contentLanguage}
-    {platform}
-    {vendorIdentifier}
-    {bundleIdentifier}
-    bind:playbackState
-    bind:duration
-    bind:currentTime
-    bind:playbackRate
-    bind:prevPercentage
-    bind:metadataLoaded
-    {showUserInterface}
-    {videoBehindWidget}
-    {videoBehindStatic}
-    {videoMightBeShown}
-    {aspectRatio}
-    {isFullScreen}
-    {widgetPosition}
-    {widgetWidth}
-    {widgetMargin}
-    {widgetTarget} />
+  {#key playerLanguage}
+    <MediaElement
+      bind:this={mediaElement}
+      {onEvent}
+      {videoSizes}
+      {content}
+      {contentIndex}
+      {segmentLimit}
+      {summary}
+      {activeIntroOrOutro}
+      {preloadAdvert}
+      {activeAdvert}
+      {advertConsent}
+      {maxImageSize}
+      {projectId}
+      {playlistId}
+      contentId={contentItem?.id}
+      {contentLanguage}
+      {platform}
+      {vendorIdentifier}
+      {bundleIdentifier}
+      bind:playbackState
+      bind:duration
+      bind:currentTime
+      bind:playbackRate
+      bind:prevPercentage
+      bind:metadataLoaded
+      {showUserInterface}
+      {videoBehindWidget}
+      {videoBehindStatic}
+      {videoMightBeShown}
+      {aspectRatio}
+      {isFullScreen}
+      {widgetPosition}
+      {widgetWidth}
+      {widgetMargin}
+      {widgetTarget} />
+  {/key}
 </ExternalWidget>
 
 {#if showStaticInterface}
