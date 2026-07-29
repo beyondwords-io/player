@@ -1,6 +1,6 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
   import DefaultInterface from "./default_player/DefaultInterface.svelte";
@@ -155,6 +155,11 @@
     accessTier = value; 
     if (emitIdentifiersEvent) accessTierRevision++;
   };
+
+  // Hides the default-style boot skeleton once the API reports no content.
+  let noContentAvailable = false;
+  onMount(() => addEventListener("NoContentAvailable", () => noContentAvailable = true));
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, noContentAvailable = false;
 
   $: setLocale(playerLanguage);
 
@@ -362,7 +367,7 @@
       {videoPosterImage}
       videoIsBehind={videoBehindStatic} />
   {/key}
-{:else if showUserInterface && interfaceStyle === "default" && content.length === 0 && projectId !== undefined}
+{:else if showUserInterface && interfaceStyle === "default" && content.length === 0 && projectId !== undefined && !noContentAvailable}
   <DefaultSkeleton showChatBlock={embedMode !== "audio"} />
 {/if}
 
