@@ -53,6 +53,7 @@ const scaleRadius = (radius) => {
     bar: `${base}px`,
     control: `${Math.max(3, Math.round(base * 0.75))}px`,
     bubble: `${Math.max(4, Math.round(base * 1.25))}px`,
+    track: `${Math.round(base * 0.5)}px`,
   };
 };
 

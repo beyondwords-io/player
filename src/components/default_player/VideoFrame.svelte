@@ -59,7 +59,7 @@
   };
 </script>
 
-<div class="video-frame" style="--aspect-ratio: {aspectRatio}; border-radius: {tokens.radius.bar}">
+<div class="video-frame" style="--aspect-ratio: {aspectRatio}; border-radius: {chatOpen ? `${tokens.radius.bar} ${tokens.radius.bar} 0 0` : tokens.radius.bar}">
   <Hoverable bind:isHovering idleDelay={1500}>
     <div class="frame-box">
       <div class="gradient" class:visible={controlsVisible} class:vertical></div>
@@ -67,7 +67,7 @@
       <div class="controls" class:visible={controlsVisible} class:vertical>
         {#if vertical}
           <span class="v-title" style="color: {tokens.videoText}">{title}</span>
-          <ProgressTrack {progress} {duration} trackColor={whiteTrack} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
+          <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={whiteTrack} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
           <div class="v-row">
             <button type="button" class="overlay-button" aria-label={isPlaying ? translate("pauseAudio") : translate("playAudio")} on:click={handlePlayPause} on:mouseup={blurElement}>
               {#if isPlaying}<PauseCircle size={32} color={tokens.videoIcon} />{:else}<PlayCircle size={32} color={tokens.videoIcon} />{/if}
@@ -89,7 +89,7 @@
               <span class="title" style="color: {tokens.videoText}">{title}</span>
               <span class="time" style="color: {tokens.videoText}">{formatTime(currentTime)} / {formatTime(duration)}</span>
             </div>
-            <ProgressTrack {progress} {duration} trackColor={whiteTrack} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
+            <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={whiteTrack} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
           </div>
 
           <button type="button" class="overlay-button" aria-label={translate("maximizeVideo")} on:click={handleMaximize} on:mouseup={blurElement}>
