@@ -74,16 +74,18 @@
       </p>
 
       <p class="hint">
-        This page has no article markers, so in-article highlighting and
-        click-to-play-a-paragraph settings (highlightColor, wordHighlight*,
-        highlightSections, clickableSections, segmentWidget*) do nothing here —
-        use index.html for those. Settings that belong to a surface only apply
-        while it is on screen: skips, speed and playerTitle need playback, the
-        queue needs playlist content, widget* needs the docked widget, and
-        video* needs video: true.
+        Add &amp;article=true to rebuild the real article text from the
+        content's segments, which makes in-article highlighting, word
+        highlighting and click-a-paragraph-to-play testable here. Without it
+        the lorem ipsum below has no markers, so those settings do nothing.
+        Settings that belong to a surface only apply while it is on screen:
+        skips, speed and playerTitle need playback, the queue needs playlist
+        content, widget* needs the docked widget, and video* needs video: true.
       </p>
 
       <div id="player"></div>
+
+      <div id="body-text">
 
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
@@ -162,6 +164,7 @@
       <p>
         Quisque id diam vel quam elementum pulvinar etiam non quam. Nunc scelerisque viverra mauris in aliquam sem fringilla ut morbi. Sit amet dictum sit amet justo donec enim diam vulputate. Aliquam sem et tortor consequat id porta nibh venenatis cras sed.
       </p>
+      </div>
     </main>
 
     <script>
@@ -194,11 +197,43 @@
           if (props[key] === undefined) { delete props[key]; }
         }
 
-        new BeyondWords.Player({
+        const articleMode = get("article") === "true";
+
+        // Word-level data only arrives when the player asks for it.
+        if (articleMode) { props.wordHighlightsEnabled = true; }
+
+        const player = new BeyondWords.Player({
           target: "#player",
           ...props,
           controlPanel: ".control-panel",
         });
+
+        if (articleMode) {
+          player.addEventListener("ContentAvailable", () => buildArticle(player));
+        }
+      }
+
+      // Segments carry markers, sections and word-level text (with
+      // words=true), which is everything needed to rebuild the article the
+      // audio was generated from - so highlighting has something to mark up.
+      function buildArticle(player) {
+        const item = player.content?.[player.contentIndex];
+        const segments = (item?.segments || []).filter((s) => s.words?.length);
+        if (segments.length === 0) { return; }
+
+        const container = document.querySelector("#body-text");
+        container.innerHTML = "";
+
+        for (const segment of segments) {
+          if (segment.section === "summary") { continue; }
+
+          const text = segment.words.map((word) => word.text).join(" ");
+          const element = document.createElement(segment.section === "title" ? "h2" : "p");
+
+          element.dataset.beyondwordsMarker = segment.marker;
+          element.textContent = text;
+          container.appendChild(element);
+        }
       }
     </script>
 
