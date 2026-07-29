@@ -50,6 +50,7 @@
   export let analyticsConsent;
   export let analyticsCustomUrl;
   export let analyticsTag;
+  export let video;
   export let embedMode;
   export let theme;
   export let radius;
@@ -82,6 +83,7 @@
       widgetStyle,
       embedMode,
       theme,
+      video: video === true ? "true" : "",
     };
 
     for (const [key, value] of Object.entries(values)) {
@@ -145,6 +147,14 @@
       <option>standard</option>
       <option>large</option>
       <option>video</option>
+    </select>
+  </div>
+
+  <div class="control">
+    video:
+    <select tabindex={-1} bind:value={video}>
+      <option>{false}</option>
+      <option>{true}</option>
     </select>
   </div>
 
