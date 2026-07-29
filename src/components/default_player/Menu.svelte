@@ -82,7 +82,6 @@
 
   .eyebrow {
     padding: 6px 10px 4px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.08em;

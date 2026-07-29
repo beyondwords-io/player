@@ -750,7 +750,6 @@
 
   .caption-text,
   .caption-link {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -927,7 +926,6 @@
   }
 
   .pitch-link {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 11px;
     font-weight: 500;
     text-decoration: none;
@@ -1021,7 +1019,6 @@
 
   .time {
     flex-shrink: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 11px;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -1036,7 +1033,6 @@
   .meta .trigger,
   .meta .plain,
   .meta .separator {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -1094,7 +1090,6 @@
     border-width: 1px;
     border-style: solid;
     border-radius: 4px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 9px;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -1106,7 +1101,6 @@
     gap: 6px;
     flex-shrink: 0;
     padding: 4px 6px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     text-decoration: none;
@@ -1130,7 +1124,6 @@
     align-items: center;
     gap: 5px;
     flex-shrink: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
