@@ -181,12 +181,13 @@
   $: controlPanel = findByQuery(controlPanel, "control panel");
 
   $: videoBehindWidget = showWidget && widgetStyle === "video" && !isFullScreen;
-  $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
+  $: videoBehindStatic = (interfaceStyle === "video" || (interfaceStyle === "default" && isVideo)) && !videoBehindWidget;
 
   $: showClose = showCloseWidget && widgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
-  $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
+  $: hasVideoContent = content.some(item => (item.video || []).length > 0);
+  $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video" || (playerStyle === "default" && hasVideoContent);
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
   $: aspectRatio = isVideo && loadedMedia.videoSize ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
 
@@ -306,6 +307,8 @@
     {disclosureText}
     {disclosureLink}
     {logoIconEnabled}
+    videoIsBehind={videoBehindStatic}
+    {aspectRatio}
     {activeAdvert}
     {activeIntroOrOutro} />
 {:else if showStaticInterface}
