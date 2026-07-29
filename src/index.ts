@@ -29,7 +29,11 @@ class Player extends PlayerComponent {
     renameProp("xdv3rts", "adverts", props);
     renameProp("xdv3rtIndex", "advertIndex", props);
     renameProp("loadContentAs", "summary", props, value => value?.[0] === "summary");
-    renameProp("video", "playerStyle", props, bool => bool ? "video" : props.playerStyle);
+    // For the default style, video stays a boolean prop rather than aliasing
+    // to the legacy video playerStyle.
+    if (props.playerStyle !== "default") {
+      renameProp("video", "playerStyle", props, bool => bool ? "video" : props.playerStyle);
+    }
 
     const initialProps = { showUserInterface, ...props };
     super({ target: newTarget, props: { controller, ...initialProps, initialProps } });

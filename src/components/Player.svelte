@@ -99,6 +99,7 @@
 
   // Settings for the "default" player style only (script-tag configured for
   // now; not yet served by the /player API).
+  export let video = false;
   export let embedMode = "audio";
   export let theme = "light";
   export let radius = 8;
@@ -192,8 +193,7 @@
   $: showClose = showCloseWidget && widgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
-  $: hasVideoContent = content.some(item => (item.video || []).length > 0);
-  $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video" || (playerStyle === "default" && hasVideoContent);
+  $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video" || (playerStyle === "default" && video === true);
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
   $: aspectRatio = isVideo && loadedMedia.videoSize ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
 
@@ -541,6 +541,7 @@
       bind:analyticsConsent
       bind:analyticsCustomUrl
       bind:analyticsTag
+      bind:video
       bind:embedMode
       bind:theme
       bind:radius
