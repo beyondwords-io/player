@@ -29,7 +29,7 @@ const base = {
   currentTime: 10,
   contentIndex: 0,
   content: singleItem,
-  playerTitle: "A reasonable player title",
+  playerTitle: null,
   disclosureText: null,
   logoIconEnabled: true,
 };
@@ -48,6 +48,7 @@ const list = [
   { ...base, disclosureText: "This article is read by an AI voice." },
   { ...base, playbackState: "playing", widgetStyle: "default", widgetPosition: "center" },
   { ...base, agentAccess: "disabled" },
+  { ...base, playbackState: "playing", playerTitle: "A reasonable player title" },
 ];
 
 const defaultPlayerPermutations = async (callback) => {
@@ -67,6 +68,7 @@ const defaultScreenshotName = (params) => (
     params.widgetPosition && `widget-${params.widgetPosition}`,
     params.disclosureText && "disclosure",
     params.agentAccess === "disabled" && "locked",
+    params.playerTitle && "titled",
   ].filter(s => s).join("-")
 );
 
