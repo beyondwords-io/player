@@ -1,5 +1,6 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
+  import { onMount } from "svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
@@ -7,9 +8,13 @@
   import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
   import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
+  import Queue from "../svg_icons/default_player/Queue.svelte";
+  import DotsThree from "../svg_icons/default_player/DotsThree.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
   import SkipButton from "./SkipButton.svelte";
   import SpeedButton from "./SpeedButton.svelte";
+  import Menu from "./Menu.svelte";
+  import QueuePanel from "./QueuePanel.svelte";
 
   export let onEvent = () => {};
   export let embedMode = "audio";
@@ -57,6 +62,13 @@
   export let fixedMargin = "16px";
   export let showClose = false;
 
+  let element;
+  let width = 600;
+  let queueOpen = false;
+  let openMenu = null;
+  let menuLeft = 8;
+  let selectedLanguage;
+
   $: overrides = explicitOverrides({
     textColor, backgroundColor, iconColor, highlightColor, wordHighlightColor,
     videoTextColor, videoIconColor, agentColor, agentAvatar, accentColor, accentTextColor,
@@ -73,13 +85,47 @@
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
 
-  $: stoppedTitle = callToAction || "Listen to this article";
+  // Width folds: speed and the time pair compress first, then the skips.
+  // The container width drives this, not the viewport.
+  $: compact = width < 375;
+  $: foldSpeed = compact;
+  $: remainingOnly = compact;
+  $: foldSkips = width < 360;
+
+  $: stoppedTitle = callToAction || translate("listenToThisArticle");
   $: playingTitle = contentItem.title || playerTitle || stoppedTitle;
 
-  $: totalMins = Math.max(1, Math.round(duration / 60));
-  $: languageName = languageNameFor(contentLanguage);
+  $: totalMins = translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(duration / 60)));
+  $: hasVersions = !!contentItem.summarization;
+  $: hasLanguages = languages.length > 1;
+  $: languageName = languageNameFor(selectedLanguage || contentLanguage);
+  $: versionLabel = summary ? "Summary" : totalMins;
+
+  $: showOverflow = !isStopped && (hasVersions || hasLanguages || foldSpeed);
 
   $: playPauseLabel = isPlaying ? translate("pauseAudio") : translate("playAudio");
+
+  $: versionItems = [
+    { value: "full", label: "Full", secondary: formatMins(contentItem.duration), selected: !summary },
+    { value: "summary", label: "Summary", secondary: formatMins(contentItem.summarization?.duration), selected: summary },
+  ];
+
+  $: languageItems = languages.map((code) => ({
+    value: code,
+    label: languageNameFor(code),
+    selected: code === (selectedLanguage || String(contentLanguage).split(/[-_]/)[0]),
+  }));
+
+  $: speedItems = [{ value: "speed", label: "Speed", secondary: `${playbackRate}×`, selected: false, keepOpen: true }];
+
+  $: menuGroups =
+    openMenu === "version" ? [{ label: "Version", items: versionItems }] :
+    openMenu === "language" ? [{ label: "Language", items: languageItems }] :
+    openMenu === "overflow" ? [
+      ...(hasVersions ? [{ label: "Version", items: versionItems }] : []),
+      ...(hasLanguages ? [{ label: "Language", items: languageItems }] : []),
+      ...(foldSpeed ? [{ label: "Speed", items: speedItems }] : []),
+    ] : [];
 
   const languageNameFor = (code) => {
     const base = String(code || "en").split(/[-_]/)[0].toLowerCase();
@@ -88,6 +134,11 @@
     } catch {
       return base;
     }
+  };
+
+  const formatMins = (seconds) => {
+    if (!seconds) { return undefined; }
+    return translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(seconds / 60)));
   };
 
   const formatTime = (seconds) => {
@@ -107,96 +158,175 @@
       initiatedBy: "user",
     }));
   };
+
+  const openMenuAt = (name) => (event) => {
+    if (openMenu === name) { openMenu = null; return; }
+
+    const anchor = event.currentTarget.getBoundingClientRect();
+    const root = element.getBoundingClientRect();
+
+    menuLeft = Math.max(8, Math.min(anchor.left - root.left, root.width - 228));
+    openMenu = name;
+  };
+
+  const handleMenuSelect = (item) => {
+    if (item.value === "full" || item.value === "summary") {
+      summary = item.value === "summary";
+    } else if (item.value === "speed") {
+      onEvent(newEvent({
+        type: "PressedChangeRate",
+        description: "The change playback rate button was pressed.",
+        initiatedBy: "user",
+      }));
+    } else {
+      selectedLanguage = item.value;
+    }
+  };
+
+  const toggleQueue = () => queueOpen = !queueOpen;
+
+  onMount(() => {
+    const observer = new ResizeObserver(() => width = element?.clientWidth || width);
+    if (element) { observer.observe(element); }
+    return () => observer.disconnect();
+  });
 </script>
 
 <div
+  bind:this={element}
   class="default-player"
   class:dark={tokens.isDark}
   style="background: {displayBackground}; border-radius: {tokens.radius.bar}; box-shadow: {tokens.barRing};"
 >
-  <button
-    type="button"
-    class="play-pause"
-    style="color: {tokens.icon}; outline-color: {tokens.text}"
-    aria-label={playPauseLabel}
-    on:click={handlePlayPause}
-    on:mouseup={blurElement}
-  >
-    {#if isPlaying}
-      <PauseCircle size={40} color={tokens.icon} />
-    {:else}
-      <PlayCircle size={40} color={tokens.icon} />
-    {/if}
-  </button>
+  <div class="bar" class:compact>
+    <button
+      type="button"
+      class="play-pause"
+      style="color: {tokens.icon}; outline-color: {tokens.text}"
+      aria-label={playPauseLabel}
+      on:click={handlePlayPause}
+      on:mouseup={blurElement}
+    >
+      {#if isPlaying}
+        <PauseCircle size={40} color={tokens.icon} />
+      {:else}
+        <PlayCircle size={40} color={tokens.icon} />
+      {/if}
+    </button>
 
-  <div class="title-col" class:playing={!isStopped}>
-    {#if isStopped}
-      <span class="title" style="color: {tokens.text}">{stoppedTitle}</span>
-      <span class="meta">
-        <span class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}">{totalMins} min</span>
-        <span class="separator" style="color: {tokens.muted}">·</span>
-        <span class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}">{languageName}</span>
-      </span>
-    {:else}
-      <div class="title-row">
-        <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
-        <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
-      </div>
-      <ProgressTrack
-        {progress}
-        {duration}
-        trackColor={tokens.track}
-        fillColor={tokens.text}
-        focusColor={tokens.text}
-        {onEvent} />
+    <div class="title-col" class:playing={!isStopped}>
+      {#if isStopped}
+        <span class="title" style="color: {tokens.text}">{stoppedTitle}</span>
+        <span class="meta">
+          {#if hasVersions}
+            <button type="button" class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" on:click={openMenuAt("version")} aria-expanded={openMenu === "version"}>{versionLabel}</button>
+          {:else}
+            <span class="plain" style="color: {tokens.muted}">{versionLabel}</span>
+          {/if}
+
+          <span class="separator" style="color: {tokens.muted}">·</span>
+
+          {#if hasLanguages}
+            <button type="button" class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" on:click={openMenuAt("language")} aria-expanded={openMenu === "language"}>{languageName}</button>
+          {:else}
+            <span class="plain" style="color: {tokens.muted}">{languageName}</span>
+          {/if}
+        </span>
+      {:else}
+        <div class="title-row">
+          <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
+          {#if remainingOnly}
+            <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
+          {:else}
+            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
+          {/if}
+        </div>
+        <ProgressTrack
+          {progress}
+          {duration}
+          trackColor={tokens.track}
+          fillColor={tokens.text}
+          focusColor={tokens.text}
+          {onEvent} />
+      {/if}
+    </div>
+
+    {#if !isStopped && !foldSkips}
+      <SkipButton direction="prev" style={skipStyle} color={tokens.icon} hoverBackground={tokens.hover} pressedBackground={tokens.pressed} focusColor={tokens.text} radius={tokens.radius.control} {onEvent} />
+      <SkipButton direction="next" style={skipStyle} color={tokens.icon} hoverBackground={tokens.hover} pressedBackground={tokens.pressed} focusColor={tokens.text} radius={tokens.radius.control} {onEvent} />
+    {/if}
+
+    {#if !isStopped && !foldSpeed}
+      <SpeedButton rates={playbackRates} rate={playbackRate} color={tokens.text} hoverBackground={tokens.hover} pressedBackground={tokens.pressed} focusColor={tokens.text} radius={tokens.radius.control} {onEvent} />
+    {/if}
+
+    {#if showOverflow}
+      <button
+        type="button"
+        class="icon-button"
+        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; background: {openMenu === "overflow" ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        aria-label="Options"
+        aria-expanded={openMenu === "overflow"}
+        on:click={openMenuAt("overflow")}
+        on:mouseup={blurElement}
+      >
+        <DotsThree size={18} color={tokens.icon} />
+      </button>
+    {/if}
+
+    {#if isPlaylist}
+      <button
+        type="button"
+        class="icon-button"
+        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; background: {queueOpen ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
+        aria-label={translate("togglePlaylist")}
+        aria-expanded={queueOpen}
+        on:click={toggleQueue}
+        on:mouseup={blurElement}
+      >
+        <Queue size={22} color={tokens.icon} />
+      </button>
     {/if}
   </div>
 
-  {#if !isStopped}
-    <SkipButton
-      direction="prev"
-      style={skipStyle}
-      color={tokens.icon}
-      hoverBackground={tokens.hover}
-      pressedBackground={tokens.pressed}
-      focusColor={tokens.text}
-      radius={tokens.radius.control}
-      {onEvent} />
+  {#if queueOpen && isPlaylist}
+    <div class="hairline" style="background: {tokens.divider}"></div>
+    <QueuePanel {content} {contentIndex} {summary} {tokens} {onEvent} />
+  {/if}
 
-    <SkipButton
-      direction="next"
-      style={skipStyle}
-      color={tokens.icon}
-      hoverBackground={tokens.hover}
-      pressedBackground={tokens.pressed}
-      focusColor={tokens.text}
-      radius={tokens.radius.control}
-      {onEvent} />
-
-    <SpeedButton
-      rates={playbackRates}
-      rate={playbackRate}
-      color={tokens.text}
-      hoverBackground={tokens.hover}
-      pressedBackground={tokens.pressed}
-      focusColor={tokens.text}
-      radius={tokens.radius.control}
-      {onEvent} />
+  {#if openMenu}
+    <Menu groups={menuGroups} left={menuLeft} {tokens} onSelect={handleMenuSelect} onClose={() => openMenu = null} />
   {/if}
 </div>
 
 <style>
   .default-player {
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: 12px;
-    height: 56px;
-    padding: 0 8px;
-    box-sizing: border-box;
+    flex-direction: column;
   }
 
   .default-player :global(*) {
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    flex-shrink: 0;
+    padding: 0 8px;
+    box-sizing: border-box;
+  }
+
+  .bar.compact {
+    gap: 8px;
+  }
+
+  .hairline {
+    height: 1px;
+    flex-shrink: 0;
   }
 
   .play-pause {
@@ -228,6 +358,32 @@
     transform: scale(0.96);
   }
 
+  .icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    padding: 2px;
+    margin: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .icon-button:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .icon-button:hover {
+      background: var(--hover-bg);
+    }
+  }
+
   .title-col {
     display: flex;
     flex-direction: column;
@@ -239,11 +395,6 @@
 
   .title-col.playing {
     gap: 7px;
-  }
-
-  .meta .trigger {
-    border-bottom-width: 1px;
-    border-bottom-style: dotted;
   }
 
   .title {
@@ -278,14 +429,39 @@
 
   .meta {
     display: flex;
+    align-items: baseline;
     gap: 4px;
   }
 
-  .meta span {
+  .meta .trigger,
+  .meta .plain,
+  .meta .separator {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
+  }
+
+  .meta .trigger {
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+    cursor: pointer;
+  }
+
+  .meta .trigger:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .meta .trigger:hover {
+      border-bottom-style: solid;
+    }
   }
 
   .separator {
