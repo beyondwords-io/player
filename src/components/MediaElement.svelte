@@ -413,7 +413,7 @@
   }
 
   .media-element:not(.headless) {
-    border-radius: 8px;
+    border-radius: var(--beyondwords-media-radius, 8px);
   }
 
   .inner {
@@ -428,6 +428,12 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+
+  /* A composited video isn't reliably clipped by an ancestor's radius, so it
+     carries the same corners itself. */
+  .media-element:not(.headless) .inner video {
+    border-radius: var(--beyondwords-media-radius, 8px);
   }
 
   .behind-static {
