@@ -49,7 +49,7 @@
         type="button"
         role="menuitem"
         class="item"
-        style="--hover-bg: {tokens.hover}; background: {item.selected ? tokens.hover : "none"}; outline-color: {tokens.text}"
+        style="--bg: {item.selected ? tokens.hover : "transparent"}; --hover-bg: {tokens.pressed}; outline-color: {tokens.text}"
         on:click={() => { onSelect(item); if (!item.keepOpen) { onClose(); } }}
       >
         <span class="label" style="color: {tokens.text}">
@@ -97,7 +97,7 @@
     margin: 0;
     border: none;
     border-radius: 4px;
-    background: none;
+    background: var(--bg, transparent);
     cursor: pointer;
     text-align: left;
   }

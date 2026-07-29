@@ -50,7 +50,7 @@
       type="button"
       class="row"
       role="listitem"
-      style="--hover-bg: {hoverRow}; background: {i === contentIndex ? activeRow : "none"}; outline-color: {tokens.text}"
+      style="--bg: {i === contentIndex ? activeRow : "transparent"}; --hover-bg: {i === contentIndex ? activeRow : hoverRow}; outline-color: {tokens.text}"
       on:click={handleClick(i)}
       on:mouseup={blurElement}
     >
@@ -88,7 +88,7 @@
     margin: 0;
     border: none;
     border-radius: 6px;
-    background: none;
+    background: var(--bg, transparent);
     cursor: pointer;
     text-align: left;
   }

@@ -197,7 +197,7 @@
         <button
           type="button"
           class="chip"
-          style="background: {tokens.bubbleBackground}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}"
+          style="--bg: {tokens.bubbleBackground}; --hover-bg: {tokens.pressed}; color: {tokens.text}; outline-color: {tokens.text}"
           on:click={() => send(question)}
           on:mouseup={blurElement}
         >{question}</button>
@@ -227,7 +227,7 @@
                       href={citation.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style="color: {tokens.citation}; background: {tokens.bubbleBackground}; border-color: {tokens.citationBorder}; outline-color: {tokens.text}"
+                      style="--bg: {tokens.bubbleBackground}; --hover-bg: {tokens.hover}; --border: {tokens.citationBorder}; --hover-border: {tokens.citation}; color: {tokens.citation}; outline-color: {tokens.text}"
                     >
                       {citation.title}
                       <ArrowUpRight size={11} color={tokens.citation} />
@@ -276,7 +276,7 @@
       {#if minutesBudget}
         <span class="counter" style="color: {tokens.muted}">{formattedSecondsLeft} left</span>
       {/if}
-      <button type="button" class="quiet" style="outline-color: {tokens.text}" aria-label="Switch to typing" on:click={switchToTyping} on:mouseup={blurElement}>
+      <button type="button" class="quiet" style="outline-color: {tokens.text}; --hover-bg: {tokens.hover}" aria-label="Switch to typing" on:click={switchToTyping} on:mouseup={blurElement}>
         <Keyboard size={18} color={tokens.muted} />
       </button>
       <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Stop listening" on:click={() => stopListening()} on:mouseup={blurElement}>
@@ -296,7 +296,7 @@
         <button
           type="button"
           class="slash"
-          style="border-color: {tokens.divider}; background: {tokens.bubbleBackground}; color: {tokens.muted}; outline-color: {tokens.text}"
+          style="border-color: {tokens.divider}; --bg: {shortcutsOpen ? tokens.pressed : tokens.bubbleBackground}; --hover-bg: {tokens.pressed}; color: {tokens.muted}; outline-color: {tokens.text}"
           aria-label="Shortcuts"
           aria-expanded={shortcutsOpen}
           on:click={() => shortcutsOpen = !shortcutsOpen}
@@ -319,7 +319,7 @@
       {/if}
 
       {#if agentVoice}
-        <button type="button" class="quiet" style="outline-color: {tokens.text}" aria-label="Speak" on:click={startListening} on:mouseup={blurElement}>
+        <button type="button" class="quiet" style="outline-color: {tokens.text}; --hover-bg: {tokens.hover}" aria-label="Speak" on:click={startListening} on:mouseup={blurElement}>
           <Microphone size={18} color={tokens.muted} />
         </button>
       {/if}
@@ -421,11 +421,20 @@
     padding: 3px 9px;
     border-width: 1px;
     border-style: solid;
+    border-color: var(--border);
     border-radius: 9999px;
+    background: var(--bg, transparent);
     font-size: 10px;
     font-weight: 500;
     text-decoration: none;
     cursor: pointer;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .citation:hover {
+      background: var(--hover-bg);
+      border-color: var(--hover-border);
+    }
   }
 
   .citation:focus-visible {
@@ -517,6 +526,13 @@
     cursor: pointer;
   }
 
+  @media (hover: hover) and (pointer: fine) {
+    .slash:hover,
+    .quiet:hover {
+      background: var(--hover-bg, transparent);
+    }
+  }
+
   .slash:focus-visible,
   .send:focus-visible {
     outline-width: 2px;
@@ -549,12 +565,19 @@
     justify-content: center;
     width: 28px;
     height: 28px;
+    transition: opacity 150ms ease-out;
     flex-shrink: 0;
     padding: 0;
     margin: 0;
     border: none;
     border-radius: 9999px;
     cursor: pointer;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .send:hover {
+      opacity: 0.85;
+    }
   }
 
   .stop-square {
@@ -576,6 +599,7 @@
     margin: 0;
     border: none;
     border-radius: 9999px;
+    background: var(--bg, transparent);
     font-size: 12px;
     cursor: pointer;
   }
@@ -597,10 +621,11 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    padding: 2px;
+    padding: 4px;
     margin: 0;
-    background: none;
+    background: transparent;
     border: none;
+    border-radius: 6px;
     cursor: pointer;
   }
 
