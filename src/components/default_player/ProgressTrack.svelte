@@ -12,7 +12,6 @@
   export let readonly = false;
   export let buffering = false;
   export let fillOpacity = 1;
-  export let thickness = 3;
   export let radius = "9999px";
   export let onEvent = () => {};
 
@@ -72,7 +71,7 @@
   class="progress-track"
   class:readonly
   class:buffering
-  style="background: {trackColor}; outline-color: {focusColor}; height: {thickness}px; border-radius: {radius}"
+  style="background: {trackColor}; outline-color: {focusColor}; border-radius: {radius}"
   on:mousedown={handlePointerDown}
   on:touchstart={handlePointerDown}
   on:keydown={readonly ? undefined : handleKeyDown(onEvent, "Bar", handleLeftOrRight)}

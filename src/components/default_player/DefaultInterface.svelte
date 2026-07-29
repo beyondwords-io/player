@@ -146,12 +146,21 @@
     queueOpen = playlistStyle.split("-")[0] === "show";
   }
 
-  // Width folds: speed and the time pair compress first, then the skips.
-  // The container width drives this, not the viewport.
-  $: compact = width < (isWidget ? 500 : 375);
+  // Width folds: the optional controls go into the overflow menu first, then
+  // speed and the time pair compress, then the skips. The container width
+  // drives this, not the viewport - and every optional control present raises
+  // the thresholds, since the design's numbers assume the default set.
+  // Thresholds come from the controls' own widths: a 28px control plus its
+  // 12px gap is 40, the play button and title floor take 40 + 76, and Chat
+  // with its divider takes ~115. Each optional control present pushes the
+  // ladder out by one control's worth.
+  $: extraControls = (isPlaylist ? 1 : 0) + (hasDownload ? 1 : 0) + (hasInfo ? 1 : 0);
+  $: foldsBelow = (base) => width < base + extraControls * 40;
+
+  $: compact = foldsBelow(isWidget ? 500 : 435);
   $: foldSpeed = compact;
   $: remainingOnly = compact;
-  $: foldSkips = width < (isWidget ? 460 : 360);
+  $: foldSkips = foldsBelow(isWidget ? 460 : 395);
 
   $: advertHref = ensureProtocol(activeAdvert?.clickThroughUrl || "") || undefined;
   $: advertText = advertHref ? chooseAdvertText(advertHref) : "";
@@ -167,7 +176,7 @@
   $: finishedAdvert = lastAdvert || persistentAdvert;
   $: persistentHref = ensureProtocol(finishedAdvert?.clickThroughUrl || "") || undefined;
   $: persistentText = persistentHref ? chooseAdvertText(persistentHref) : "";
-  $: showPersistentChip = !isAdvert && !isStopped && !!persistentHref && !!persistentText;
+  $: showPersistentChip = !isAdvert && !isStopped && !!persistentHref && !!persistentText && !compact;
   $: buffering = isPlaying && !metadataLoaded;
 
   $: if (isPlaying && duration > 0 && currentTime / duration > 0.98) { hasFinished = true; }
@@ -191,10 +200,10 @@
   $: downloadVideo = (summary ? contentItem.summarization?.video : contentItem.video) || [];
   $: [downloadAudioIndex, downloadVideoIndex] = mediaToDownload(downloadFormats, downloadAudio, downloadVideo);
   $: hasDownload = downloadAudioIndex !== -1 || downloadVideoIndex !== -1;
-  $: foldDownload = width < 400;
+  $: foldDownload = foldsBelow(470);
 
   $: hasInfo = !!infoText;
-  $: foldInfo = width < 400;
+  $: foldInfo = foldsBelow(470);
   $: showOverflow = (!isStopped && (hasVersions || hasLanguages || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload);
 
   $: isFixed = isWidget && !!fixedPosition;
@@ -553,8 +562,9 @@
           {onEvent} />
       {:else if offline}
         <div class="title-row">
-          <span class="title playing" style="color: {tokens.text}; opacity: 0.4">{playingTitle}</span>
-          {#if !playingTitle}<span class="title-spacer"></span>{/if}
+          {#if playingTitle}
+            <span class="title playing" style="color: {tokens.text}; opacity: 0.4">{playingTitle}</span>
+          {/if}
           <span class="offline-note" style="color: {tokens.muted}">
             <WifiSlash size={12} color={tokens.muted} />
             Offline — will resume
@@ -571,25 +581,25 @@
           focusColor={tokens.text}
           {onEvent} />
       {:else}
-        <div class="progress-row">
-          <div class="progress-grow">
-            <ProgressTrack
-              {progress}
-              {duration}
-              {buffering}
-              thickness={6}
-              radius={tokens.radius.track}
-          trackColor={tokens.track}
-              fillColor={tokens.text}
-              focusColor={tokens.text}
-              {onEvent} />
-          </div>
+        <div class="title-row">
+          {#if playingTitle}
+            <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
+          {/if}
           {#if remainingOnly}
             <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
           {:else}
             <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
           {/if}
         </div>
+        <ProgressTrack
+          {progress}
+          {duration}
+          {buffering}
+          radius={tokens.radius.track}
+          trackColor={tokens.track}
+          fillColor={tokens.text}
+          focusColor={tokens.text}
+          {onEvent} />
       {/if}
     </div>
 
@@ -1071,7 +1081,7 @@
     justify-content: center;
     gap: 3px;
     flex: 1;
-    min-width: 0;
+    min-width: 76px;
   }
 
   .title-col.playing {
@@ -1101,21 +1111,6 @@
     min-width: 0;
   }
 
-  .title-spacer {
-    flex: 1;
-  }
-
-  .progress-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  .progress-grow {
-    flex: 1;
-    min-width: 56px;
-  }
 
   .time {
     flex-shrink: 0;
@@ -1199,7 +1194,11 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 40%;
+    white-space: nowrap;
+    overflow: hidden;
     padding: 4px 6px;
     font-size: 10px;
     font-weight: 500;
