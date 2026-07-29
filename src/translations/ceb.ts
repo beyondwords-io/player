@@ -1,6 +1,6 @@
 export default {
   isDefaultForLanguage: true,
-  listenToThisArticle: "Lalela lesi sihloko",
+  listenToThisArticle: "Paminawa kini nga artikulo",
   minutesSingularOrPlural: "{n} min",
   videoInWidget: "Video is playing in widget",
 
