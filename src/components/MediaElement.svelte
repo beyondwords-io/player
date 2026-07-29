@@ -56,6 +56,7 @@
   let loadCount = 0;
   let initialTime = currentTime;
   let loadedMedia;
+  let appliedPreferVideo = videoMightBeShown;
   let timeUpdateTimeout;
 
   const setTime = (t) => time = t;
@@ -127,6 +128,14 @@
 
   // TODO: is it possible to also set the currentTime when changing to video for continuity?
   $: videoMightBeShown && loadedMedia?.format === "audio" && hasVideo() && atTheStart && (mediaObject = mediaObject);
+
+  // The sources above resolve through preferVideo() so they don't recompute on
+  // every prop change, which means flipping the preference (e.g. the `video`
+  // setting) needs an explicit nudge to re-resolve them - in both directions.
+  $: if (videoMightBeShown !== appliedPreferVideo) {
+    appliedPreferVideo = videoMightBeShown;
+    mediaObject = mediaObject;
+  }
   $: isMinimalUi = loadedMedia?.format === "video" && aspectRatio < 1 && !isFullScreen;
 
   $: segmentIndex = activeIntroOrOutro || activeAdvert || atTheStart ? -1 : findSegmentIndex(segments, currentTime, summary);
