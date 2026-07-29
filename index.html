@@ -13,6 +13,9 @@
     </h1>
 
     <script>
+      // Boots the new "default" player style; add ?playerStyle=standard (or
+      // small, large, video) to compare against the legacy styles.
+      //
       // Test any project by adding query params to this page's URL, e.g.
       // ?projectId=12345&contentId=aa1bd6c4-... — also supports playlistId,
       // sourceId, sourceUrl, playerApiUrl, playerStyle, widgetStyle, embedMode
@@ -36,7 +39,7 @@
         props.playerApiUrl = get("playerApiUrl");
         props.video = get("video") === "true" ? true : undefined;
         props.videoSizes = get("videoSize") ? [get("videoSize")] : undefined;
-        props.playerStyle = get("playerStyle");
+        props.playerStyle = get("playerStyle") || "default";
         props.widgetStyle = get("widgetStyle");
         props.embedMode = get("embedMode");
         props.widgetEmbedMode = get("widgetEmbedMode");
@@ -49,11 +52,7 @@
         new BeyondWords.Player({
           target,
           ...props,
-          playlistStyle: "hide",
-          skipButtonStyle: "segments",
-          segmentWidgetPosition: "9-oclock",
           controlPanel: ".control-panel",
-          clickableSections: "all",
         });
       }
     </script>

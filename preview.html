@@ -187,7 +187,7 @@
         props.playerApiUrl = get("playerApiUrl");
         props.video = get("video") === "true" ? true : undefined;
         props.videoSizes = get("videoSize") ? [get("videoSize")] : undefined;
-        props.playerStyle = get("playerStyle");
+        props.playerStyle = get("playerStyle") || "default";
         props.widgetStyle = get("widgetStyle");
         props.embedMode = get("embedMode");
         props.widgetEmbedMode = get("widgetEmbedMode");

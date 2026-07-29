@@ -141,26 +141,79 @@
 
   // The queue is an inline affordance - the widget stays the bar plus x.
   $: queueAvailable = isPlaylist && !isWidget && playlistStyle.split("-")[0] !== "hide";
-  $: showQueueToggle = queueAvailable && playlistToggle !== "hide";
+  $: showQueueToggle = layout.queue;
   $: if (queueAvailable && playlistStyle !== appliedPlaylistStyle) {
     appliedPlaylistStyle = playlistStyle;
     queueOpen = playlistStyle.split("-")[0] === "show";
   }
 
-  // Width folds, driven by the container: the optional controls go into the
-  // overflow menu first, then speed and the time pair compress, then the
-  // skips. Thresholds come from the controls' own widths - a 28px control plus
-  // its 12px gap is 40 - so each optional control present pushes the ladder
-  // out by one control's worth, and the centred track, sitting beside the time
-  // rather than under it, needs about two controls' worth more.
-  $: centredTrack = !isStopped && !isAdvert && !offline && !playingTitle;
-  $: extraControls = (isPlaylist ? 1 : 0) + (hasDownload ? 1 : 0) + (hasInfo ? 1 : 0) + (centredTrack ? 2 : 0);
-  $: foldsBelow = (base) => width < base + extraControls * 40;
+  // Width folds, driven by the container. Rather than guess thresholds, the
+  // widths the controls actually occupy are added up and the row gives things
+  // away in the design's order until what is left fits: the finished ad's
+  // link, then the optional controls, then speed with the time compressing to
+  // remaining-only, then the skips, then the queue. Play, the title/progress
+  // column and Chat never fold, though Chat drops to its orb last of all.
+  const GAP = 12;
+  const PLAY_W = 40;
+  const CONTROL_W = 32;
+  const SPEED_W = 30;
+  const CHIP_W = 108;
+  const CHAT_LABEL_W = 102;
+  const CHAT_ORB_W = 44;
+  const STACKED_COL_W = 76;
+  const CENTRED_COL_W = 112;
 
-  $: compact = foldsBelow(isWidget ? 500 : 435);
-  $: foldSpeed = compact;
-  $: remainingOnly = compact;
-  $: foldSkips = foldsBelow(isWidget ? 460 : 395);
+  $: centredTrack = !isStopped && !isAdvert && !offline && !playingTitle;
+
+  $: widthNeededFor = (plan) => GAP + 16 + PLAY_W
+    + GAP + (centredTrack ? CENTRED_COL_W : STACKED_COL_W)
+    + (plan.chip ? GAP + CHIP_W : 0)
+    + (plan.skips ? 2 * (GAP + CONTROL_W) : 0)
+    + (plan.speed ? GAP + SPEED_W : 0)
+    + (plan.overflow ? GAP + CONTROL_W : 0)
+    + (plan.queue ? GAP + CONTROL_W : 0)
+    + (plan.download ? GAP + CONTROL_W : 0)
+    + (plan.info ? GAP + CONTROL_W : 0)
+    + (showChat ? GAP + 1 + GAP + (plan.chatLabel ? CHAT_LABEL_W : CHAT_ORB_W) : 0)
+    + (isWidget && showClose ? GAP + CONTROL_W : 0);
+
+  $: layout = (() => {
+    const plan = {
+      chip: canShowAdvertChip,
+      skips: !isStopped && !isAdvert,
+      speed: !isStopped && !isAdvert,
+      overflow: !isStopped && (hasVersions || hasLanguages),
+      queue: queueAvailable && playlistToggle !== "hide",
+      download: hasDownload,
+      info: hasInfo,
+      chatLabel: true,
+    };
+
+    const giveAway = [
+      () => { plan.chip = false; },
+      () => { plan.download = false; plan.info = false; plan.overflow = plan.overflow || hasDownload || hasInfo; },
+      () => { plan.speed = false; plan.overflow = plan.overflow || !isStopped; },
+      () => { plan.skips = false; plan.overflow = plan.overflow || !isStopped; },
+      () => { plan.queue = false; plan.overflow = plan.overflow || (queueAvailable && playlistToggle !== "hide"); },
+      () => { plan.chatLabel = false; },
+    ];
+
+    for (const step of giveAway) {
+      if (widthNeededFor(plan) <= width) { break; }
+      step();
+    }
+
+    return plan;
+  })();
+
+  $: showPersistentChipInRow = layout.chip;
+  $: foldSkips = !layout.skips;
+  $: foldSpeed = !layout.speed;
+  $: remainingOnly = !layout.speed && !isStopped;
+  $: foldDownload = hasDownload && !layout.download;
+  $: foldInfo = hasInfo && !layout.info;
+  $: foldQueue = !layout.queue;
+  $: chatLabelVisible = layout.chatLabel;
 
   $: advertHref = ensureProtocol(activeAdvert?.clickThroughUrl || "") || undefined;
   $: advertText = advertHref ? chooseAdvertText(advertHref) : "";
@@ -176,7 +229,8 @@
   $: finishedAdvert = lastAdvert || persistentAdvert;
   $: persistentHref = ensureProtocol(finishedAdvert?.clickThroughUrl || "") || undefined;
   $: persistentText = persistentHref ? chooseAdvertText(persistentHref) : "";
-  $: showPersistentChip = !isAdvert && !isStopped && !!persistentHref && !!persistentText && !compact;
+  $: canShowAdvertChip = !isAdvert && !isStopped && !!persistentHref && !!persistentText;
+  $: showPersistentChip = canShowAdvertChip && showPersistentChipInRow;
   $: buffering = isPlaying && !metadataLoaded;
 
   $: if (isPlaying && duration > 0 && currentTime / duration > 0.98) { hasFinished = true; }
@@ -201,11 +255,9 @@
   $: downloadVideo = (summary ? contentItem.summarization?.video : contentItem.video) || [];
   $: [downloadAudioIndex, downloadVideoIndex] = mediaToDownload(downloadFormats, downloadAudio, downloadVideo);
   $: hasDownload = downloadAudioIndex !== -1 || downloadVideoIndex !== -1;
-  $: foldDownload = foldsBelow(470);
 
   $: hasInfo = !!infoText;
-  $: foldInfo = foldsBelow(470);
-  $: showOverflow = (!isStopped && (hasVersions || hasLanguages || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload);
+  $: showOverflow = (!isStopped && (hasVersions || hasLanguages || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload) || (queueAvailable && foldQueue && playlistToggle !== "hide");
 
   $: isFixed = isWidget && !!fixedPosition;
   $: fixedSide = fixedPosition === "auto" || fixedPosition === true ? "center" : fixedPosition;
@@ -229,7 +281,6 @@
   $: showChat = embedMode !== "audio" && agentAccess !== "off" && !isAdvert;
   $: isAdvert && (chatOpen = false);
   $: chatDisabled = agentAccess === "disabled";
-  $: chatLabelVisible = width >= 340;
   $: agentOnly = embedMode === "agent";
   $: agentPrompt = agentName ? `Ask ${agentName}` : "Ask about this article, or anything we've covered";
 
@@ -268,6 +319,7 @@
       ...(foldSpeed && !isStopped ? [{ label: "Speed", items: speedItems }] : []),
       ...(hasInfo && foldInfo ? [{ label: "About", items: [{ value: "info", label: "About this audio", selected: infoOpen }] }] : []),
       ...(hasDownload && foldDownload ? [{ label: "Download", items: [{ value: "download", label: translate("downloadAudio"), selected: false }] }] : []),
+      ...(queueAvailable && foldQueue && playlistToggle !== "hide" ? [{ label: "Queue", items: [{ value: "queue", label: translate("togglePlaylist"), selected: queueOpen }] }] : []),
     ] : [];
 
   const languageNameFor = (code) => {
@@ -325,6 +377,8 @@
       toggleInfo();
     } else if (item.value === "download") {
       handleDownload();
+    } else if (item.value === "queue") {
+      toggleQueue();
     } else {
       selectedLanguage = item.value;
     }
@@ -506,7 +560,7 @@
       showSlashButton={false}
       emptyStateChips={true} />
   {:else}
-  <div class="bar" class:compact>
+  <div class="bar" class:compact={foldSkips}>
     <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
       <button
         type="button"
@@ -1100,7 +1154,7 @@
     justify-content: center;
     gap: 3px;
     flex: 1;
-    min-width: 76px;
+    min-width: 100px;
   }
 
   .title-col.playing {
