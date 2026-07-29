@@ -1,15 +1,22 @@
 <script>
-  import { tick } from "svelte";
+  import { tick, onDestroy } from "svelte";
   import blurElement from "../../helpers/blurElement";
   import Orb from "./Orb.svelte";
   import ArrowUp from "../svg_icons/default_player/ArrowUp.svelte";
   import ArrowUpRight from "../svg_icons/default_player/ArrowUpRight.svelte";
+  import Microphone from "../svg_icons/default_player/Microphone.svelte";
+  import Keyboard from "../svg_icons/default_player/Keyboard.svelte";
+  import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
 
   export let tokens;
   export let agentClient;
   export let agentPlaceholder = undefined;
+  export let agentVoice = true;
+  export let agentAccess = "full";
+  export let agentLimit = undefined;
   export let shortcuts = [];
   export let showSlashButton = true;
+  export let emptyStateChips = false;
   export let onMessageSent = () => {};
 
   let thread = [];
@@ -20,8 +27,29 @@
   let streamHandle = null;
   let shortcutsOpen = false;
   let announced = "";
+  let voiceMode = null; // null | "listening" | "talking"
+  let listenHandle = null;
+  let partialTranscript = "";
+  let minuteTimer = null;
+  let secondsLeft = null;
 
   $: placeholder = agentPlaceholder || "Ask about this article, or anything we've covered…";
+
+  // Limited access: a question budget ("3") or a voice-minutes budget ("5:00").
+  $: minutesBudget = typeof agentLimit === "string" && agentLimit.includes(":");
+  $: questionBudget = agentAccess === "limited" && !minutesBudget && parseInt(agentLimit, 10) > 0
+    ? parseInt(agentLimit, 10)
+    : null;
+  $: questionsUsed = thread.filter((message) => message.role === "reader").length;
+  $: questionsLeft = questionBudget === null ? null : Math.max(0, questionBudget - questionsUsed);
+  $: if (agentAccess === "limited" && minutesBudget && secondsLeft === null) {
+    const [mins, secs] = agentLimit.split(":").map((n) => parseInt(n, 10) || 0);
+    secondsLeft = mins * 60 + secs;
+  }
+  $: budgetSpent = agentAccess === "limited" && (questionsLeft === 0 || (minutesBudget && secondsLeft === 0));
+  $: showCounter = questionBudget !== null && questionsUsed >= 1 && !budgetSpent;
+
+  $: formattedSecondsLeft = `${Math.floor((secondsLeft || 0) / 60)}:${`${(secondsLeft || 0) % 60}`.padStart(2, "0")}`;
 
   $: shortcutRows = shortcuts.map((question) => ({
     command: `/${String(question).replace(/[^a-zA-Z ]/g, "").trim().split(" ")[0].toLowerCase() || "ask"}`,
@@ -33,14 +61,15 @@
     if (threadElement) { threadElement.scrollTop = threadElement.scrollHeight; }
   };
 
-  const send = (question) => {
+  const send = (question, { fromVoice = false } = {}) => {
     const text = (question || input).trim();
-    if (!text || streaming) { return; }
+    if (!text || streaming || budgetSpent) { return; }
 
     input = "";
     shortcutsOpen = false;
     thread = [...thread, { role: "reader", text }, { role: "agent", text: "", citations: [], streaming: true }];
     streaming = true;
+    voiceMode = fromVoice ? "talking" : null;
     onMessageSent(text);
     scrollToEnd();
 
@@ -58,6 +87,7 @@
         thread = thread;
         streaming = false;
         streamHandle = null;
+        if (voiceMode === "talking") { voiceMode = null; }
         announced = last.text;
         scrollToEnd();
       },
@@ -65,6 +95,46 @@
   };
 
   const stop = () => streamHandle?.stop();
+
+  const startListening = () => {
+    if (budgetSpent) { return; }
+
+    voiceMode = "listening";
+    partialTranscript = "";
+    listenHandle = agentClient.listen({ onPartial: (text) => partialTranscript = text });
+
+    // Voice budgets count down only while the mic is live.
+    if (minutesBudget && secondsLeft > 0) {
+      minuteTimer = setInterval(() => {
+        secondsLeft = Math.max(0, secondsLeft - 1);
+        if (secondsLeft === 0) { stopListening({ send: false }); }
+      }, 1000);
+    }
+  };
+
+  const stopListening = ({ send: shouldSend = true } = {}) => {
+    clearInterval(minuteTimer);
+    minuteTimer = null;
+
+    const transcript = listenHandle?.transcript() || partialTranscript;
+    listenHandle?.stop();
+    listenHandle = null;
+    voiceMode = null;
+
+    if (shouldSend && transcript) { send(transcript, { fromVoice: true }); }
+  };
+
+  const switchToTyping = () => {
+    clearInterval(minuteTimer);
+    minuteTimer = null;
+
+    const transcript = listenHandle?.transcript() || partialTranscript;
+    listenHandle?.stop();
+    listenHandle = null;
+    voiceMode = null;
+    input = transcript;
+    tick().then(() => inputElement?.focus());
+  };
 
   const handleKeydown = (event) => {
     if (event.key === "Enter") {
@@ -78,9 +148,29 @@
       shortcutsOpen = false;
     }
   };
+
+  onDestroy(() => {
+    clearInterval(minuteTimer);
+    listenHandle?.stop();
+    streamHandle?.stop();
+  });
 </script>
 
 <div class="chat-panel">
+  {#if emptyStateChips && thread.length === 0 && shortcuts.length > 0}
+    <div class="empty-chips">
+      {#each shortcuts as question (question)}
+        <button
+          type="button"
+          class="chip"
+          style="background: {tokens.bubbleBackground}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}"
+          on:click={() => send(question)}
+          on:mouseup={blurElement}
+        >{question}</button>
+      {/each}
+    </div>
+  {/if}
+
   {#if thread.length > 0}
     <div class="thread" bind:this={threadElement}>
       {#each thread as message, i (i)}
@@ -132,41 +222,85 @@
     </div>
   {/if}
 
-  <div class="composer" style="border-top-color: {tokens.divider}">
-    {#if showSlashButton && shortcutRows.length > 0}
-      <button
-        type="button"
-        class="slash"
-        style="border-color: {tokens.divider}; background: {tokens.bubbleBackground}; color: {tokens.muted}; outline-color: {tokens.text}"
-        aria-label="Shortcuts"
-        aria-expanded={shortcutsOpen}
-        on:click={() => shortcutsOpen = !shortcutsOpen}
-        on:mouseup={blurElement}
-      >/</button>
-    {/if}
-
-    <input
-      bind:this={inputElement}
-      bind:value={input}
-      class="input"
-      style="color: {tokens.text}; --placeholder-color: {tokens.placeholder}; outline-color: {tokens.text}"
-      placeholder={placeholder}
-      aria-label={placeholder}
-      on:keydown={handleKeydown}
-    />
-
-    <slot name="composer-extras" />
-
-    {#if streaming}
+  {#if budgetSpent}
+    <div class="composer spent" style="border-top-color: {tokens.divider}">
+      <LockSimple size={15} color={tokens.muted} />
+      <span class="spent-copy" style="color: {tokens.muted}">
+        {#if minutesBudget}
+          You've used your free conversation time.
+        {:else}
+          You've used your {questionBudget} free questions.
+        {/if}
+      </span>
+      <a class="subscribe" href="#subscribe" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">Subscribe to keep talking</a>
+    </div>
+  {:else if voiceMode === "listening"}
+    <div class="composer listening" style="border-top-color: {tokens.divider}">
+      <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
+      <span class="listening-label" style="color: {tokens.text}">Listening…</span>
+      <span class="partial" style="color: {tokens.muted}">{partialTranscript}</span>
+      {#if minutesBudget}
+        <span class="counter" style="color: {tokens.muted}">{formattedSecondsLeft} left</span>
+      {/if}
+      <button type="button" class="quiet" style="outline-color: {tokens.text}" aria-label="Switch to typing" on:click={switchToTyping} on:mouseup={blurElement}>
+        <Keyboard size={18} color={tokens.muted} />
+      </button>
+      <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Stop listening" on:click={() => stopListening()} on:mouseup={blurElement}>
+        <span class="stop-square" style="background: {tokens.sendIcon}"></span>
+      </button>
+    </div>
+  {:else if voiceMode === "talking"}
+    <div class="composer talking" style="border-top-color: {tokens.divider}">
+      <span class="talking-label" style="color: {tokens.muted}">Talking</span>
       <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Stop" on:click={stop} on:mouseup={blurElement}>
         <span class="stop-square" style="background: {tokens.sendIcon}"></span>
       </button>
-    {:else}
-      <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Send" on:click={() => send()} on:mouseup={blurElement}>
-        <ArrowUp size={14} color={tokens.sendIcon} />
-      </button>
-    {/if}
-  </div>
+    </div>
+  {:else}
+    <div class="composer" style="border-top-color: {tokens.divider}">
+      {#if showSlashButton && shortcutRows.length > 0}
+        <button
+          type="button"
+          class="slash"
+          style="border-color: {tokens.divider}; background: {tokens.bubbleBackground}; color: {tokens.muted}; outline-color: {tokens.text}"
+          aria-label="Shortcuts"
+          aria-expanded={shortcutsOpen}
+          on:click={() => shortcutsOpen = !shortcutsOpen}
+          on:mouseup={blurElement}
+        >/</button>
+      {/if}
+
+      <input
+        bind:this={inputElement}
+        bind:value={input}
+        class="input"
+        style="color: {tokens.text}; --placeholder-color: {tokens.placeholder}; outline-color: {tokens.text}"
+        placeholder={placeholder}
+        aria-label={placeholder}
+        on:keydown={handleKeydown}
+      />
+
+      {#if showCounter}
+        <span class="counter" style="color: {tokens.muted}">{questionsLeft} of {questionBudget} left</span>
+      {/if}
+
+      {#if agentVoice}
+        <button type="button" class="quiet" style="outline-color: {tokens.text}" aria-label="Speak" on:click={startListening} on:mouseup={blurElement}>
+          <Microphone size={18} color={tokens.muted} />
+        </button>
+      {/if}
+
+      {#if streaming}
+        <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Stop" on:click={stop} on:mouseup={blurElement}>
+          <span class="stop-square" style="background: {tokens.sendIcon}"></span>
+        </button>
+      {:else}
+        <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Send" on:click={() => send()} on:mouseup={blurElement}>
+          <ArrowUp size={14} color={tokens.sendIcon} />
+        </button>
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -393,5 +527,107 @@
     width: 9px;
     height: 9px;
     border-radius: 1px;
+  }
+
+  .empty-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .chip {
+    padding: 6px 13px;
+    margin: 0;
+    border: none;
+    border-radius: 9999px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .chip:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .chip:hover {
+      background: var(--hover-bg);
+    }
+  }
+
+  .quiet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 2px;
+    margin: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .quiet:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  .counter {
+    flex-shrink: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .listening-label {
+    flex-shrink: 0;
+    font-size: 13px;
+  }
+
+  .partial {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .talking-label {
+    flex: 1;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .composer.spent {
+    align-items: center;
+  }
+
+  .spent-copy {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+  }
+
+  .subscribe {
+    flex-shrink: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+    cursor: pointer;
+  }
+
+  .subscribe:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
   }
 </style>

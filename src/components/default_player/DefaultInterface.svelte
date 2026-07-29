@@ -21,6 +21,7 @@
   import QueuePanel from "./QueuePanel.svelte";
   import ChatPanel from "./ChatPanel.svelte";
   import Orb from "./Orb.svelte";
+  import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
 
   export let onEvent = () => {};
   export let embedMode = "audio";
@@ -117,7 +118,10 @@
   $: showOverflow = !isStopped && (hasVersions || hasLanguages || foldSpeed);
 
   $: showChat = embedMode !== "audio" && agentAccess !== "off";
+  $: chatDisabled = agentAccess === "disabled";
   $: chatLabelVisible = width >= 340;
+  $: agentOnly = embedMode === "agent";
+  $: agentPrompt = agentName ? `Ask ${agentName}` : "Ask about this article, or anything we've covered";
 
   $: playPauseLabel = isPlaying ? translate("pauseAudio") : translate("playAudio");
 
@@ -222,6 +226,23 @@
   class:dark={tokens.isDark}
   style="background: {displayBackground}; border-radius: {tokens.radius.bar}; box-shadow: {tokens.barRing};"
 >
+  {#if agentOnly}
+    <div class="agent-header">
+      <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
+      <span class="agent-prompt" style="color: {tokens.text}">{agentPrompt}</span>
+    </div>
+    <div class="hairline" style="background: {tokens.divider}"></div>
+    <ChatPanel
+      {tokens}
+      {agentClient}
+      {agentPlaceholder}
+      {agentVoice}
+      {agentAccess}
+      {agentLimit}
+      {shortcuts}
+      showSlashButton={false}
+      emptyStateChips={true} />
+  {:else}
   <div class="bar" class:compact>
     <button
       type="button"
@@ -320,17 +341,22 @@
         class="chat-button"
         class:orb-only={!chatLabelVisible}
         style="--hover-bg: {tokens.hover}; background: {chatOpen ? tokens.pressed : "none"}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label={isPlaylist ? "Chat about this playlist" : "Chat about this article"}
+        aria-label={chatDisabled ? "Subscribe to chat" : isPlaylist ? "Chat about this playlist" : "Chat about this article"}
         aria-expanded={chatOpen}
+        title={chatDisabled ? "Subscribe to chat to our journalism" : undefined}
         on:click={toggleChat}
         on:mouseup={blurElement}
       >
-        <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
+        <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={chatDisabled} />
         {#if chatLabelVisible}
-          <span class="chat-label" style="color: {tokens.text}">Chat</span>
-          <span class="chat-caret" class:flipped={chatOpen}>
-            <CaretDown size={14} color={tokens.muted} />
-          </span>
+          <span class="chat-label" style="color: {chatDisabled ? tokens.muted : tokens.text}">Chat</span>
+          {#if chatDisabled}
+            <LockSimple size={13} color={tokens.muted} />
+          {:else}
+            <span class="chat-caret" class:flipped={chatOpen}>
+              <CaretDown size={14} color={tokens.muted} />
+            </span>
+          {/if}
         {/if}
       </button>
     {/if}
@@ -341,19 +367,31 @@
     <QueuePanel {content} {contentIndex} {summary} {tokens} {onEvent} />
   {/if}
 
-  {#if chatOpen && showChat}
+  {#if chatOpen && showChat && chatDisabled}
+    <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
+      <div class="hairline" style="background: {tokens.divider}"></div>
+      <div class="locked-pitch">
+        <span class="pitch-copy" style="color: {tokens.text}">Ask questions about our journalism, get context, go deeper.</span>
+        <a class="pitch-link" href="#subscribe" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">Subscribe to chat</a>
+      </div>
+    </div>
+  {:else if chatOpen && showChat}
     <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
       <div class="hairline" style="background: {tokens.divider}"></div>
       <ChatPanel
         {tokens}
         {agentClient}
         {agentPlaceholder}
+        {agentVoice}
+        {agentAccess}
+        {agentLimit}
         {shortcuts} />
     </div>
   {/if}
 
   {#if openMenu}
     <Menu groups={menuGroups} left={menuLeft} {tokens} onSelect={handleMenuSelect} onClose={() => openMenu = null} />
+  {/if}
   {/if}
 </div>
 
@@ -498,6 +536,53 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+  }
+
+  .locked-pitch {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+  }
+
+  .pitch-copy {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .pitch-link {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+    cursor: pointer;
+  }
+
+  .pitch-link:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  .agent-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 56px;
+    flex-shrink: 0;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  .agent-prompt {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   @media (prefers-reduced-motion: reduce) {
