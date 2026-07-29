@@ -2,13 +2,19 @@ import { parseColor, toAlphaString, luminance, contrastRatio, mix, clampContrast
 
 // The 11-colour contract for the "default" player style. Presets fill every
 // property; theme "custom" starts from light and overrides per property.
+//
+// Highlighting keeps the lime the player has always used - it reads as a
+// marker pen rather than brand chrome. The wash is the same in both modes; the
+// word mark eases off on dark because lime is a light hue, so a strong mark
+// would push light body text below AA (40% holds 5.4:1 on #141414, 80% on a
+// white page still leaves 15:1).
 const PRESETS = {
   light: {
     backgroundColor: "#f5f5f5",
     textColor: "#212121",
     iconColor: "#212121",
-    highlightColor: "rgba(148, 59, 252, 0.07)",
-    wordHighlightColor: "rgba(148, 59, 252, 0.28)",
+    highlightColor: "rgba(164, 255, 0, 0.2)",
+    wordHighlightColor: "rgba(164, 255, 0, 0.8)",
     videoTextColor: "#ffffff",
     videoIconColor: "#ffffff",
     agentColor: "#943bfc,#e23ad0",
@@ -20,8 +26,8 @@ const PRESETS = {
     backgroundColor: "#212121",
     textColor: "#fafafa",
     iconColor: "#fafafa",
-    highlightColor: "rgba(148, 59, 252, 0.22)",
-    wordHighlightColor: "rgba(148, 59, 252, 0.48)",
+    highlightColor: "rgba(164, 255, 0, 0.2)",
+    wordHighlightColor: "rgba(164, 255, 0, 0.4)",
     videoTextColor: "#ffffff",
     videoIconColor: "#ffffff",
     agentColor: "#943bfc,#e23ad0",

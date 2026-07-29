@@ -67,6 +67,23 @@ describe("deriveTokens", () => {
     expect(tokens.bubbleBackground).toEqual("#ffffff");
   });
 
+  it("highlights with lime, easing the word mark off on dark so text stays legible", () => {
+    const light = deriveTokens();
+    const dark = deriveTokens({ theme: "dark" });
+
+    expect(light.highlight).toEqual("rgba(164, 255, 0, 0.2)");
+    expect(light.wordHighlight).toEqual("rgba(164, 255, 0, 0.8)");
+    expect(dark.highlight).toEqual("rgba(164, 255, 0, 0.2)");
+    expect(dark.wordHighlight).toEqual("rgba(164, 255, 0, 0.4)");
+  });
+
+  it("lets a publisher's own highlight colours win", () => {
+    const tokens = deriveTokens({ overrides: { highlightColor: "#A4FF0044", wordHighlightColor: "#0053a8" } });
+
+    expect(tokens.highlight).toEqual("#A4FF0044");
+    expect(tokens.wordHighlight).toEqual("#0053a8");
+  });
+
   it("flips neutral tints on the dark preset", () => {
     const tokens = deriveTokens({ theme: "dark" });
 

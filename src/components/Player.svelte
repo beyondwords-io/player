@@ -19,6 +19,8 @@
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
+  import deriveTokens from "../helpers/default_theme/deriveTokens";
+  import explicitOverrides from "../helpers/default_theme/explicitOverrides";
 
   // Please document all settings and keep in-sync with the developer docs:
   // https://github.com/beyondwords-core/docs/blob/main/docs-and-guides/distribution/player/sdk/javascript/player-settings.mdx
@@ -227,10 +229,19 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: wordHighlightsActive = wordHighlightsEnabled && !!wordHighlightColor;
+  // In-article highlighting is part of the default style's colour contract, so
+  // an unconfigured project gets the theme's lime rather than the legacy props.
+  $: defaultTokens = playerStyle === "default"
+    ? deriveTokens({ theme, overrides: explicitOverrides({ highlightColor, wordHighlightColor }) })
+    : undefined;
+
+  $: activeHighlightColor = defaultTokens?.highlight || highlightColor;
+  $: activeWordHighlightColor = defaultTokens?.wordHighlight || wordHighlightColor;
+
+  $: wordHighlightsActive = wordHighlightsEnabled && !!activeWordHighlightColor;
   $: currentActiveMarker = isAdvert || activeIntroOrOutro ? null : currentSegment?.marker;
-  $: segmentHighlights.update("current", currentSegment, { sections: [highlightSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
-  $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
+  $: segmentHighlights.update("current", currentSegment, { sections: [highlightSections], background: activeHighlightColor, wordHighlightColor: activeWordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
+  $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: activeHighlightColor, wordHighlightColor: activeWordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
   onDestroy(() => {
     segmentContainers.reset();
