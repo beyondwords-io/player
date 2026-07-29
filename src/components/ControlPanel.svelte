@@ -105,7 +105,7 @@
 
   <br/>
 
-  <strong>Load content:</strong>
+  <strong>Content:</strong>
 
   <div class="control">
     projectId:
@@ -128,11 +128,12 @@
   </div>
 
   <div class="control">
-    <button tabindex={-1} type="button" on:click={loadContent}>Load player</button>
+    <button tabindex={-1} type="button" on:click={loadContent}>Fetch content</button>
     <button tabindex={-1} type="button" on:click={resetToDemo}>Reset to demo</button>
   </div>
 
   <br/>
+  <strong>Style:</strong>
 
   <div class="control">
     playerStyle:
@@ -144,6 +145,38 @@
       <option>video</option>
     </select>
   </div>
+
+  <div class="control">
+    theme:
+    <select tabindex={-1} bind:value={theme}>
+      <option>light</option>
+      <option>dark</option>
+      <option>custom</option>
+    </select>
+  </div>
+
+  <div class="control">
+    radius:
+    <input tabindex={-1} type="number" min="0" max="16" bind:value={radius}>
+  </div>
+
+  <div class="control">
+    textColor:
+    <input tabindex={-1} type="text" bind:value={textColor}>
+  </div>
+
+  <div class="control">
+    backgroundColor:
+    <input tabindex={-1} type="text" bind:value={backgroundColor}>
+  </div>
+
+  <div class="control">
+    iconColor:
+    <input tabindex={-1} type="text" bind:value={iconColor}>
+  </div>
+
+  <br/>
+  <strong>Playback:</strong>
 
   <div class="control">
     playbackState:
@@ -185,6 +218,56 @@
   </div>
 
   <div class="control">
+    advertIndex:
+    <select tabindex={-1} bind:value={advertIndex}>
+      <option value={-1}>-1 (none)</option>
+      {#each adverts as item, i (i)}
+        <option value={i}>{i} ({item.placement})</option>
+      {/each}
+    </select>
+  </div>
+
+  <br/>
+  <strong>Agent:</strong>
+
+  <div class="control">
+    embedMode:
+    <select tabindex={-1} bind:value={embedMode}>
+      <option>audio</option>
+      <option>audio-agent</option>
+      <option>agent</option>
+    </select>
+  </div>
+
+  <div class="control">
+    agentAccess:
+    <select tabindex={-1} bind:value={agentAccess}>
+      <option>full</option>
+      <option>limited</option>
+      <option>disabled</option>
+      <option>off</option>
+    </select>
+  </div>
+
+  <div class="control">
+    agentLimit:
+    <input tabindex={-1} type="text" placeholder="3 or 5:00" bind:value={agentLimit}>
+  </div>
+
+  <div class="control">
+    agentColor:
+    <input tabindex={-1} type="text" placeholder="#943bfc,#e23ad0" bind:value={agentColor}>
+  </div>
+
+  <div class="control">
+    agentAvatar:
+    <input tabindex={-1} type="text" placeholder="image URL" bind:value={agentAvatar}>
+  </div>
+
+  <br/>
+  <strong>Playlist:</strong>
+
+  <div class="control">
     playlistStyle:
     <select tabindex={-1} bind:value={playlistStyle}>
       <option>auto</option>
@@ -204,15 +287,8 @@
     </select>
   </div>
 
-  <div class="control">
-    advertIndex:
-    <select tabindex={-1} bind:value={advertIndex}>
-      <option value={-1}>-1 (none)</option>
-      {#each adverts as item, i (i)}
-        <option value={i}>{i} ({item.placement})</option>
-      {/each}
-    </select>
-  </div>
+  <br/>
+  <strong>Widget:</strong>
 
   <div class="control">
     widgetStyle:
@@ -223,64 +299,6 @@
       <option>large</option>
       <option>video</option>
     </select>
-  </div>
-
-  <div class="control">
-    embedMode:
-    <select tabindex={-1} bind:value={embedMode}>
-      <option>audio</option>
-      <option>audio-agent</option>
-      <option>agent</option>
-    </select>
-  </div>
-
-  <div class="control">
-    theme:
-    <select tabindex={-1} bind:value={theme}>
-      <option>light</option>
-      <option>dark</option>
-      <option>custom</option>
-    </select>
-  </div>
-
-  <div class="control">
-    radius:
-    <input tabindex={-1} type="number" min="0" max="16" bind:value={radius}>
-  </div>
-
-  <div class="control">
-    agentColor:
-    <input tabindex={-1} type="text" placeholder="#943bfc,#e23ad0" bind:value={agentColor}>
-  </div>
-
-  <div class="control">
-    agentAvatar:
-    <input tabindex={-1} type="text" placeholder="image URL" bind:value={agentAvatar}>
-  </div>
-
-  <div class="control">
-    agentAccess:
-    <select tabindex={-1} bind:value={agentAccess}>
-      <option>full</option>
-      <option>limited</option>
-      <option>disabled</option>
-      <option>off</option>
-    </select>
-  </div>
-
-  <div class="control">
-    agentLimit:
-    <input tabindex={-1} type="text" placeholder="3 or 5:00" bind:value={agentLimit}>
-  </div>
-
-  <div class="control">
-    infoText:
-    <input tabindex={-1} type="text" bind:value={infoText}>
-  </div>
-
-  <div class="control">
-    disclosureText:
-    <input tabindex={-1} type="text" bind:value={disclosureText}>
   </div>
 
   <div class="control">
@@ -315,20 +333,8 @@
     </select>
   </div>
 
-  <div class="control">
-    textColor:
-    <input tabindex={-1} type="text" bind:value={textColor}>
-  </div>
-
-  <div class="control">
-    backgroundColor:
-    <input tabindex={-1} type="text" bind:value={backgroundColor}>
-  </div>
-
-  <div class="control">
-    iconColor:
-    <input tabindex={-1} type="text" bind:value={iconColor}>
-  </div>
+  <br/>
+  <strong>Highlighting:</strong>
 
   <div class="control">
     highlightColor:
@@ -370,35 +376,23 @@
     </select>
   </div>
 
+  <br/>
+  <strong>Attribution:</strong>
+
+  <div class="control">
+    infoText:
+    <input tabindex={-1} type="text" bind:value={infoText}>
+  </div>
+
+  <div class="control">
+    disclosureText:
+    <input tabindex={-1} type="text" bind:value={disclosureText}>
+  </div>
+
   {#if showAdvancedSettings}
     <br/>
     <strong>Advanced settings:</strong>
     <br/><br/>
-
-    <div class="control">
-      projectId:
-      <input tabindex={-1} type="text" bind:value={projectId}>
-    </div>
-
-    <div class="control">
-      contentId:
-      <input tabindex={-1} type="text" bind:value={contentId}>
-    </div>
-
-    <div class="control">
-      playlistId:
-      <input tabindex={-1} type="text" bind:value={playlistId}>
-    </div>
-
-    <div class="control">
-      sourceId:
-      <input tabindex={-1} type="text" bind:value={sourceId}>
-    </div>
-
-    <div class="control">
-      sourceUrl:
-      <input tabindex={-1} type="text" bind:value={sourceUrl}>
-    </div>
 
     <div class="control">
       showUserInterface:
