@@ -136,6 +136,7 @@ const setProps = (player, data) => {
 
   set(player, "playerStyle", data.settings.player_style);
   set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
+  set(player, "titleEnabled", data.settings.title_enabled);
   set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
   set(player, "skipButtonStyle", data.settings.skip_button_style);
   set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);

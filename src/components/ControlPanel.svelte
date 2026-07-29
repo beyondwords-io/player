@@ -11,6 +11,7 @@
   export let showUserInterface;
   export let playerStyle;
   export let playerTitle;
+  export let titleEnabled;
   export let callToAction;
   export let skipButtonStyle;
   export let playlistStyle;
@@ -241,6 +242,14 @@
   <div class="control">
     playerTitle:
     <input tabindex={-1} type="text" bind:value={playerTitle}>
+  </div>
+
+  <div class="control">
+    titleEnabled:
+    <select tabindex={-1} bind:value={titleEnabled}>
+      <option>{false}</option>
+      <option>{true}</option>
+    </select>
   </div>
 
   <div class="control">

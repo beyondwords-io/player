@@ -41,6 +41,7 @@
   export let playerStyle = "standard";
   export let videoSizes = [];
   export let playerTitle = undefined;
+  export let titleEnabled = true;
   export let callToAction = undefined;
   export let playerLanguage = undefined;
   export let skipButtonStyle = "auto";
@@ -318,6 +319,7 @@
       {playlistToggle}
       {downloadFormats}
       {playerTitle}
+      {titleEnabled}
       {callToAction}
       {contentLanguage}
       {languages}
@@ -419,6 +421,7 @@
         {skipButtonStyle}
         {downloadFormats}
         {playerTitle}
+        {titleEnabled}
         {callToAction}
         {contentLanguage}
         {languages}
@@ -538,6 +541,7 @@
       bind:showUserInterface
       bind:playerStyle
       bind:playerTitle
+      bind:titleEnabled
       bind:callToAction
       bind:skipButtonStyle
       bind:playlistStyle
