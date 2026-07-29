@@ -51,6 +51,7 @@
   export let analyticsCustomUrl;
   export let analyticsTag;
   export let video;
+  export let videoSizes;
   export let embedMode;
   export let theme;
   export let radius;
@@ -84,6 +85,7 @@
       embedMode,
       theme,
       video: video === true ? "true" : "",
+      videoSize: videoSizes?.[0] || "",
     };
 
     for (const [key, value] of Object.entries(values)) {
@@ -96,6 +98,19 @@
   };
 
   const resetToDemo = () => window.location.search = "";
+
+  // Offer whichever video sizes the loaded content actually has.
+  $: availableVideoSizes = [...new Set(
+    (content || [])
+      .flatMap((item) => [...(item.video || []), ...(item.summarization?.video || [])])
+      .map((media) => media.videoSize?.name)
+      .filter((name) => name)
+  )];
+
+  const chooseVideoSize = (event) => {
+    const value = event.currentTarget.value;
+    videoSizes = value ? [value] : [];
+  };
 </script>
 
 <div class="control-panel">
@@ -156,6 +171,20 @@
       <option>{false}</option>
       <option>{true}</option>
     </select>
+  </div>
+
+  <div class="control">
+    videoSizes:
+    <!-- Re-rendered when the sizes arrive with the content so the current
+         selection is applied to the freshly added options. -->
+    {#key availableVideoSizes.join()}
+      <select tabindex={-1} value={videoSizes?.[0] || ""} on:change={chooseVideoSize}>
+        <option value="">auto (first match)</option>
+        {#each availableVideoSizes as size (size)}
+          <option value={size}>{size}</option>
+        {/each}
+      </select>
+    {/key}
   </div>
 
   <div class="control">

@@ -544,6 +544,7 @@
       bind:analyticsCustomUrl
       bind:analyticsTag
       bind:video
+      bind:videoSizes
       bind:embedMode
       bind:theme
       bind:radius
