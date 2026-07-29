@@ -331,6 +331,21 @@
     }
   };
 
+  // The <video> element lives in MediaElement, behind this component, so its
+  // corners are matched through a custom property on the shared host element.
+  $: mediaRadius = chatOpen && showChat
+    ? `${tokens.radius.bar} ${tokens.radius.bar} 0 0`
+    : tokens.radius.bar;
+
+  $: host = element?.closest(".beyondwords-player, .beyondwords-widget");
+  $: if (host) {
+    if (videoIsBehind) {
+      host.style.setProperty("--beyondwords-media-radius", mediaRadius);
+    } else {
+      host.style.removeProperty("--beyondwords-media-radius");
+    }
+  }
+
   const handleRootKeydown = (event) => {
     if (event.key !== "Escape") { return; }
     if (chatOpen || infoOpen || queueOpen) {
@@ -383,7 +398,7 @@
   on:keydown={handleRootKeydown}
   role="none"
 >
-<div class="surface" style="background: {displayBackground}; border-radius: {surfaceRadius}; box-shadow: {surfaceShadow};">
+<div class="surface" style="background: {videoIsBehind ? "transparent" : displayBackground}; border-radius: {surfaceRadius}; box-shadow: {videoIsBehind ? "none" : surfaceShadow};">
   {#if videoIsBehind && !agentOnly}
     <VideoFrame
       {tokens}
@@ -398,7 +413,11 @@
       {onEvent} />
 
     {#if chatOpen && showChat && !chatDisabled}
-      <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
+      <div
+        class="chat-unfold"
+        style="background: {displayBackground}; border-radius: 0 0 {tokens.radius.bar} {tokens.radius.bar}"
+        transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}
+      >
         <ChatPanel
           {tokens}
           {agentClient}

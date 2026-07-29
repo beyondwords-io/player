@@ -50,6 +50,19 @@
     }));
   };
 
+  // Pressing the frame itself toggles playback, as the legacy video style
+  // does. Presses that land on the controls are theirs to handle.
+  const handleFrameMouseDown = (event) => {
+    if (event.button !== 0) { return; }
+    if (!event.target.classList.contains("frame-box")) { return; }
+
+    onEvent(newEvent({
+      type: "PressedVideoBackground",
+      description: "The video background was pressed.",
+      initiatedBy: "user",
+    }));
+  };
+
   const handleMaximize = () => {
     onEvent(newEvent({
       type: "PressedMaximize",
@@ -61,7 +74,8 @@
 
 <div class="video-frame" style="--aspect-ratio: {aspectRatio}; border-radius: {chatOpen ? `${tokens.radius.bar} ${tokens.radius.bar} 0 0` : tokens.radius.bar}">
   <Hoverable bind:isHovering idleDelay={1500}>
-    <div class="frame-box">
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="frame-box" role="none" on:mousedown={handleFrameMouseDown}>
       <div class="gradient" class:visible={controlsVisible} class:vertical></div>
 
       <div class="controls" class:visible={controlsVisible} class:vertical>
@@ -113,10 +127,11 @@
 </div>
 
 <style>
+  /* Transparent: the <video> element sits behind this box (MediaElement
+     positions it absolutely over the same rect) and paints the black. This
+     box only provides the aspect ratio, the gradient, and the controls. */
   .video-frame {
     position: relative;
-    overflow: hidden;
-    background: #000;
   }
 
   .frame-box {
@@ -142,6 +157,8 @@
     opacity: 1;
   }
 
+  /* The row itself lets presses through so the whole frame toggles playback;
+     only the actual controls capture them. */
   .controls {
     position: absolute;
     left: 0;
@@ -154,6 +171,13 @@
     box-sizing: border-box;
     opacity: 0;
     transition: opacity 200ms ease-out;
+    pointer-events: none;
+  }
+
+  .controls.visible .overlay-button,
+  .controls.visible .overlay-chat,
+  .controls.visible :global(.progress-track) {
+    pointer-events: auto;
   }
 
   .controls.visible {
