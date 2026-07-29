@@ -9,6 +9,9 @@
   export let trackColor = "rgba(0, 0, 0, 0.1)";
   export let fillColor = "#212121";
   export let focusColor = "#212121";
+  export let readonly = false;
+  export let buffering = false;
+  export let fillOpacity = 1;
   export let onEvent = () => {};
 
   let track;
@@ -23,6 +26,7 @@
 
   // Click-to-seek is the pointer model for the default style - no drag handle.
   const handlePointerDown = (event) => {
+    if (readonly) { return; }
     const clientX = event.clientX || event.touches?.[0]?.clientX || 0;
     const { x, width } = track.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (clientX - x) / width));
@@ -60,14 +64,16 @@
 </script>
 
 <div
-  tabindex="0"
+  tabindex={readonly ? -1 : 0}
   role="slider"
   bind:this={track}
   class="progress-track"
+  class:readonly
+  class:buffering
   style="background: {trackColor}; outline-color: {focusColor}"
   on:mousedown={handlePointerDown}
   on:touchstart={handlePointerDown}
-  on:keydown={handleKeyDown(onEvent, "Bar", handleLeftOrRight)}
+  on:keydown={readonly ? undefined : handleKeyDown(onEvent, "Bar", handleLeftOrRight)}
   on:mouseup={blurElement}
   on:focus={handleFocus}
   aria-label={translate("playbackTime")}
@@ -75,8 +81,9 @@
   aria-valuenow={Math.floor(seconds)}
   aria-valuemin={0}
   aria-valuemax={Math.floor(duration)}
+  aria-readonly={readonly || undefined}
 >
-  <div class="fill" style="width: {Math.max(0, Math.min(progress, 1)) * 100}%; background: {fillColor}"></div>
+  <div class="fill" style="width: {Math.max(0, Math.min(progress, 1)) * 100}%; background: {fillColor}; opacity: {fillOpacity}"></div>
 </div>
 
 <style>
@@ -106,5 +113,24 @@
     left: 0;
     border-radius: 9999px;
     pointer-events: none;
+  }
+
+  .progress-track.readonly {
+    cursor: default;
+  }
+
+  .progress-track.buffering {
+    animation: shimmer 1.2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .progress-track.buffering {
+      animation: none;
+    }
   }
 </style>
