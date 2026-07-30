@@ -132,6 +132,23 @@ describe("deriveTokens", () => {
     const tokens = deriveTokens({ overrides: { backgroundColor: "nonsense", textColor: undefined } });
 
     expect(tokens.background).toEqual("#f5f5f5");
+    expect(tokens.backgroundBase).toEqual("#f5f5f5");
     expect(tokens.text).toEqual("#212121");
+  });
+
+  it("paints a gradient background while measuring its first colour stop", () => {
+    const gradient = "linear-gradient(90deg, #212121, #444444)";
+    const tokens = deriveTokens({ overrides: { backgroundColor: gradient } });
+
+    expect(tokens.background).toEqual(gradient);
+    expect(tokens.backgroundBase).toEqual("#212121");
+    expect(tokens.isDark).toEqual(true); // derivations flip for the dark stop
+    expect(contrastRatio(tokens.text, tokens.backgroundBase)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("keeps rgba and named colour stops measurable", () => {
+    expect(deriveTokens({ overrides: { backgroundColor: "radial-gradient(rgba(20, 20, 20, 1), #fff)" } }).backgroundBase)
+      .toEqual("rgba(20, 20, 20, 1)");
+    expect(deriveTokens({ overrides: { backgroundColor: "linear-gradient(white, #eee)" } }).isDark).toEqual(false);
   });
 });

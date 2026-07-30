@@ -105,6 +105,8 @@
   export let video = false;
   export let embedMode = "audio";
   export let widgetEmbedMode = "auto";
+  export let accessCtaText = undefined;
+  export let accessCtaUrl = undefined;
   export let theme = "light";
   export let radius = 8;
   export let agentColor = undefined;
@@ -189,7 +191,10 @@
   // The widget is the same bar recomposed, so the default style always carries
   // into it. "none" and the closed-by-user sentinel still switch it off.
   $: widgetIsOff = widgetStyle === "none" || widgetStyle === "closed-by-user";
-  $: effectiveWidgetStyle = playerStyle === "default" && !widgetIsOff ? "default" : widgetStyle;
+  $: inheritedWidgetStyle = !widgetStyle || widgetStyle === "auto" ? playerStyle : widgetStyle;
+  $: effectiveWidgetStyle = widgetIsOff ? widgetStyle
+    : playerStyle === "default" ? "default"
+    : inheritedWidgetStyle;
 
   // The widget's agent surfaces can be configured separately; auto inherits.
   $: effectiveWidgetEmbedMode = !widgetEmbedMode || widgetEmbedMode === "auto" ? embedMode : widgetEmbedMode;
@@ -199,13 +204,16 @@
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
 
-  $: videoBehindWidget = showWidget && effectiveWidgetStyle === "video" && !isFullScreen;
+  $: widgetShowsVideo = effectiveWidgetStyle === "video"
+    || (effectiveWidgetStyle === "default" && video === true && hasVideoContent);
+  $: videoBehindWidget = showWidget && widgetShowsVideo && !isFullScreen;
   $: videoBehindStatic = (interfaceStyle === "video" || (interfaceStyle === "default" && isVideo)) && !videoBehindWidget;
 
   $: showClose = showCloseWidget && effectiveWidgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
-  $: videoMightBeShown = playerStyle === "video" || effectiveWidgetStyle === "video" || (playerStyle === "default" && video === true);
+  $: hasVideoContent = content.some(item => (item.video || []).length > 0);
+  $: videoMightBeShown = playerStyle === "video" || effectiveWidgetStyle === "video" || ((playerStyle === "default" || effectiveWidgetStyle === "default") && video === true);
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
   $: aspectRatio = isVideo && loadedMedia.videoSize ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
 
@@ -342,7 +350,11 @@
     {activeAdvert}
     {activeIntroOrOutro}
     {persistentAdvert}
-    {metadataLoaded} />
+    {metadataLoaded}
+    {segmentLimit}
+    accessTier={accessTier}
+    {accessCtaText}
+    {accessCtaUrl} />
 {:else if showStaticInterface}
   <UserInterface
     bind:this={userInterface}
@@ -382,7 +394,7 @@
     {videoPosterImage}
     videoIsBehind={videoBehindStatic} />
 {:else if showUserInterface && interfaceStyle === "default" && content.length === 0 && projectId !== undefined && !noContentAvailable}
-  <DefaultSkeleton showChatBlock={embedMode !== "audio"} />
+  <DefaultSkeleton showChatBlock={embedMode !== "audio"} {theme} {radius} {backgroundColor} {textColor} />
 {/if}
 
 {#if showWidgetInterface && effectiveWidgetStyle === "default"}
@@ -395,6 +407,8 @@
       {theme}
       {radius}
       isWidget={true}
+      videoIsBehind={videoBehindWidget}
+      {aspectRatio}
       fixedPosition={!widgetTarget && widgetPosition}
       fixedWidth={widgetWidth}
       fixedMargin={widgetMargin}
@@ -438,7 +452,11 @@
       {activeAdvert}
       {activeIntroOrOutro}
     {persistentAdvert}
-    {metadataLoaded} />
+    {metadataLoaded}
+    {segmentLimit}
+    accessTier={accessTier}
+    {accessCtaText}
+    {accessCtaUrl} />
   </ExternalWidget>
 {:else if showWidgetInterface}
   <ExternalWidget root={widgetTarget}>
@@ -545,6 +563,15 @@
       bind:playbackRate
       bind:widgetStyle
       bind:widgetEmbedMode
+      bind:accessCtaText
+      bind:accessCtaUrl
+      bind:segmentLimit
+      bind:downloadFormats
+      bind:shortcuts
+      bind:agentVoice
+      bind:agentName
+      bind:agentPlaceholder
+      bind:accentColor
       bind:widgetPosition
       bind:widgetWidth
       bind:widgetMargin

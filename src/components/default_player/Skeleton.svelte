@@ -1,16 +1,26 @@
 <script>
-  // Boot skeleton: same geometry as the loaded bar, no spinner.
+  import deriveTokens from "../../helpers/default_theme/deriveTokens";
+  import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
+
+  // Boot skeleton: same geometry as the loaded bar, no spinner. It takes the
+  // theme so a dark or custom player doesn't flash a light bar before load.
   export let showChatBlock = true;
+  export let theme = "light";
+  export let radius = 8;
+  export let backgroundColor = undefined;
+  export let textColor = undefined;
+
+  $: tokens = deriveTokens({ theme, radius, overrides: explicitOverrides({ backgroundColor, textColor }) });
 </script>
 
-<div class="skeleton-bar">
-  <span class="circle"></span>
+<div class="skeleton-bar" style="background: {tokens.background}; border-radius: {tokens.radius.bar}">
+  <span class="circle" style="background: {tokens.skeleton}"></span>
   <span class="lines">
-    <span class="line title"></span>
-    <span class="line sub"></span>
+    <span class="line title" style="background: {tokens.skeleton}"></span>
+    <span class="line sub" style="background: {tokens.skeleton}"></span>
   </span>
   {#if showChatBlock}
-    <span class="chat-block"></span>
+    <span class="chat-block" style="background: {tokens.skeleton}; border-radius: {tokens.radius.control}"></span>
   {/if}
 </div>
 
@@ -22,8 +32,6 @@
     height: 56px;
     padding: 0 8px;
     box-sizing: border-box;
-    background: #f5f5f5;
-    border-radius: 8px;
     animation: pulse 1.8s ease-in-out infinite;
   }
 
@@ -32,7 +40,6 @@
     height: 40px;
     flex-shrink: 0;
     border-radius: 9999px;
-    background: rgba(0, 0, 0, 0.08);
   }
 
   .lines {
@@ -46,7 +53,6 @@
   .line {
     display: block;
     border-radius: 6px;
-    background: rgba(0, 0, 0, 0.08);
   }
 
   .line.title {
@@ -60,15 +66,12 @@
     max-width: 40%;
     height: 8px;
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.06);
   }
 
   .chat-block {
     width: 88px;
     height: 28px;
     flex-shrink: 0;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.06);
   }
 
   @keyframes pulse {

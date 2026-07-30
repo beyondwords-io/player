@@ -303,8 +303,12 @@ class RootController {
   }
 
   handlePressedCloseWidget() {
+    // Closing a docked video dismisses only the visual - the audio keeps
+    // playing and the video returns to the inline position.
+    const closingVideoOnly = this.player.playerStyle === "default" && this.player.video === true;
+
     for (const player of this.PlayerClass.instances()) {
-      player.playbackState = "paused";
+      if (!closingVideoOnly) { player.playbackState = "paused"; }
       player.widgetStyle = "closed-by-user";
     }
   }

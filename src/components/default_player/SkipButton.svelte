@@ -86,6 +86,7 @@
 
 <style>
   .skip-button {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -97,6 +98,13 @@
     background: none;
     border: none;
     cursor: pointer;
+  }
+
+  /* Keeps the 44px touch floor without changing the visual size. */
+  .skip-button::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
   }
 
   .skip-button:focus-visible {

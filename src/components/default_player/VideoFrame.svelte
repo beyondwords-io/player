@@ -7,6 +7,7 @@
   import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
   import CornersOut from "../svg_icons/default_player/CornersOut.svelte";
   import CaretDown from "../svg_icons/default_player/CaretDown.svelte";
+  import Close from "../svg_icons/default_player/Close.svelte";
   import Orb from "./Orb.svelte";
   import ProgressTrack from "./ProgressTrack.svelte";
 
@@ -22,6 +23,9 @@
   export let showChat = false;
   export let chatOpen = false;
   export let onToggleChat = () => {};
+  export let isWidget = false;
+  export let showClose = false;
+  export let onClose = () => {};
   export let onEvent = () => {};
 
   let isHovering = false;
@@ -29,7 +33,9 @@
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
   $: vertical = aspectRatio < 1;
-  $: controlsVisible = isHovering || !isPlaying || chatOpen;
+  // Docked, the video rests as just itself; the overlay returns on hover.
+  $: resting = isWidget && isPlaying && !isHovering && !chatOpen;
+  $: controlsVisible = !resting && (isHovering || !isPlaying || chatOpen);
   $: progress = duration > 0 ? Math.min(1, currentTime / duration) : 0;
 
   $: whiteTrack = "rgba(255, 255, 255, 0.3)";
@@ -77,6 +83,18 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="frame-box" role="none" on:mousedown={handleFrameMouseDown}>
       <div class="gradient" class:visible={controlsVisible} class:vertical></div>
+
+      {#if isWidget}
+        <div class="resting-progress" class:visible={resting}>
+          <div class="resting-fill" style="width: {progress * 100}%; background: {tokens.videoText}"></div>
+        </div>
+
+        {#if showClose}
+          <button type="button" class="video-close" aria-label={translate("closeWidget")} on:click={onClose} on:mouseup={blurElement}>
+            <Close size={11} color="#ffffff" />
+          </button>
+        {/if}
+      {/if}
 
       <div class="controls" class:visible={controlsVisible} class:vertical>
         {#if vertical}
@@ -155,6 +173,59 @@
 
   .gradient.visible {
     opacity: 1;
+  }
+
+  .resting-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+  }
+
+  .resting-progress.visible {
+    opacity: 1;
+  }
+
+  .resting-fill {
+    height: 100%;
+  }
+
+  .video-close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.55);
+    cursor: pointer;
+  }
+
+  .video-close:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .video-close:hover {
+      background: rgba(0, 0, 0, 0.75);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .resting-progress {
+      transition: none;
+    }
   }
 
   /* The row itself lets presses through so the whole frame toggles playback;

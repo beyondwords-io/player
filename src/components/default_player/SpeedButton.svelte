@@ -65,6 +65,7 @@
 
 <style>
   .speed-button {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,6 +75,13 @@
     background: none;
     border: none;
     cursor: pointer;
+  }
+
+  /* Keeps the 44px touch floor without changing the visual size. */
+  .speed-button::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
   }
 
   .speed-button:focus-visible {

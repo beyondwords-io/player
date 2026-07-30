@@ -87,6 +87,10 @@
   export let isVisible = undefined;
   export let relativeY = undefined;
   export let absoluteY = undefined;
+  export let segmentLimit = undefined;
+  export let accessTier = undefined;
+  export let accessCtaText = undefined;
+  export let accessCtaUrl = undefined;
   export let videoIsBehind = false;
   export let aspectRatio = 16 / 9;
 
@@ -129,7 +133,10 @@
   };
 
   $: tokens = deriveTokens({ theme, radius, overrides, pageDark });
-  $: displayBackground = overrides.backgroundColor || tokens.background;
+
+  // Painted from the validated token, so an unparseable publisher colour can
+  // never leave the surface transparent while the tokens assume a preset.
+  $: displayBackground = tokens.background;
 
   $: contentItem = content[contentIndex] || {};
   $: isPlaying = playbackState === "playing";
@@ -138,6 +145,21 @@
   $: progress = duration > 0 ? Math.min(1, currentTime / duration) : 0;
 
   $: skipStyle = skipButtonStyle === "auto" ? (isPlaylist ? "tracks" : "segments") : skipButtonStyle;
+
+  // Content access comes from the tier's segment limit: 0 locks the article to
+  // its title, a number previews that many segments, anything else is full
+  // access. The boundary is where playback will stop - the start of the first
+  // segment past the limit.
+  $: segments = (summary ? contentItem.summarization?.segments : contentItem.segments) || contentItem.segments || [];
+  $: isTitleOnly = segmentLimit === 0;
+  $: isPreview = typeof segmentLimit === "number" && segmentLimit > 0;
+  $: previewEndsAt = isPreview ? (segments[segmentLimit]?.startTime ?? 0) : 0;
+  $: previewRatio = isPreview && duration > 0 ? Math.min(1, previewEndsAt / duration) : 0;
+  $: previewEnded = isPreview && previewEndsAt > 0 && currentTime >= previewEndsAt - 0.25;
+
+  $: ctaText = accessCtaText || (isTitleOnly ? "Subscribe to listen" : "Subscribe to hear the full article");
+  $: showTierCta = isTitleOnly || (isPreview && previewEnded && isStopped);
+  $: tierCtaLabel = isTitleOnly ? stoppedTitle : "Preview ended";
 
   // The queue is an inline affordance - the widget stays the bar plus x.
   $: queueAvailable = isPlaylist && !isWidget && playlistStyle.split("-")[0] !== "hide";
@@ -162,11 +184,12 @@
   const CHAT_ORB_W = 44;
   const STACKED_COL_W = 76;
   const CENTRED_COL_W = 112;
+  const PREVIEW_EXTRA_W = 52;
 
   $: centredTrack = !isStopped && !isAdvert && !offline && !playingTitle;
 
   $: widthNeededFor = (plan) => GAP + 16 + PLAY_W
-    + GAP + (centredTrack ? CENTRED_COL_W : STACKED_COL_W)
+    + GAP + (centredTrack ? CENTRED_COL_W : STACKED_COL_W) + (isPreview ? PREVIEW_EXTRA_W : 0)
     + (plan.chip ? GAP + CHIP_W : 0)
     + (plan.skips ? 2 * (GAP + CONTROL_W) : 0)
     + (plan.speed ? GAP + SPEED_W : 0)
@@ -345,6 +368,14 @@
 
   const handlePlayPause = (event) => {
     event.preventDefault();
+
+    // Never a dead control: with the article locked to its title, play is the
+    // upgrade action.
+    if (isTitleOnly) {
+      if (accessCtaUrl) { window.open(accessCtaUrl, "_blank", "noopener"); }
+      return;
+    }
+
     const name = isPlaying ? "Pause" : "Play";
 
     onEvent(newEvent({
@@ -459,11 +490,11 @@
 
   const handleRootKeydown = (event) => {
     if (event.key !== "Escape") { return; }
-    if (chatOpen || infoOpen || queueOpen) {
-      chatOpen = false;
-      infoOpen = false;
-      queueOpen = false;
-    }
+
+    chatOpen = false;
+    infoOpen = false;
+    queueOpen = false;
+    openMenu = null;
   };
 
   onMount(() => {
@@ -521,6 +552,9 @@
       {showChat}
       {chatOpen}
       onToggleChat={toggleChat}
+      {isWidget}
+      showClose={isWidget && showClose}
+      onClose={handleCloseWidget}
       {onEvent} />
 
     {#if chatOpen && showChat && !chatDisabled}
@@ -566,7 +600,7 @@
         type="button"
         class="play-pause"
         style="color: {tokens.icon}; outline-color: {tokens.text}"
-        aria-label={playPauseLabel}
+        aria-label={isTitleOnly ? ctaText : playPauseLabel}
         on:click={handlePlayPause}
         on:mouseup={blurElement}
       >
@@ -579,7 +613,16 @@
     </Visibility>
 
     <div class="title-col" class:playing={!isStopped}>
-      {#if isStopped}
+      {#if isStopped && showTierCta}
+        <span class="title" style="color: {tokens.text}">{tierCtaLabel}</span>
+        <span class="meta">
+          {#if accessCtaUrl}
+            <a class="tier-cta" href={accessCtaUrl} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{ctaText}</a>
+          {:else}
+            <span class="plain" style="color: {tokens.muted}">{ctaText}</span>
+          {/if}
+        </span>
+      {:else if isStopped}
         <span class="title" style="color: {tokens.text}">{stoppedTitle}</span>
         <span class="meta">
           {#if hasVersions}
@@ -603,8 +646,8 @@
           {:else}
             <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
           {/if}
-          <span class="time" style="color: {tokens.text}">{formatTime(Math.max(0, duration - currentTime))} left</span>
-          <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}">AD</span>
+          <span class="time" style="color: {tokens.text}" role="status" aria-live="polite">{formatTime(Math.max(0, duration - currentTime))} left</span>
+          <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}" role="img" aria-label="Advertisement">AD</span>
         </div>
         <ProgressTrack
           {progress}
@@ -638,7 +681,11 @@
       {:else if playingTitle}
         <div class="title-row">
           <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
-          {#if remainingOnly}
+          {#if isPreview && !remainingOnly}
+            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(previewEndsAt)} preview</span>
+          {:else if isPreview}
+            <span class="time" style="color: {tokens.text}">-{formatTime(Math.max(0, previewEndsAt - currentTime))}</span>
+          {:else if remainingOnly}
             <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
           {:else}
             <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
@@ -648,6 +695,8 @@
           {progress}
           {duration}
           {buffering}
+          boundaryRatio={previewRatio}
+          boundaryColor={tokens.muted}
           radius={tokens.radius.track}
           trackColor={tokens.track}
           fillColor={tokens.text}
@@ -661,13 +710,19 @@
               {duration}
               {buffering}
               thickness={6}
+              boundaryRatio={previewRatio}
+              boundaryColor={tokens.muted}
               radius={tokens.radius.track}
               trackColor={tokens.track}
               fillColor={tokens.text}
               focusColor={tokens.text}
               {onEvent} />
           </div>
-          {#if remainingOnly}
+          {#if isPreview && !remainingOnly}
+            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(previewEndsAt)} preview</span>
+          {:else if isPreview}
+            <span class="time" style="color: {tokens.text}">-{formatTime(Math.max(0, previewEndsAt - currentTime))}</span>
+          {:else if remainingOnly}
             <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
           {:else}
             <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
@@ -900,6 +955,13 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 
+  /* The widget sits at the bottom of the viewport, so its attachments open
+     upward: column-reverse puts the bar at the bottom and stacks the queue,
+     info box and conversation above it, dividers included. */
+  .default-player.fixed .surface {
+    flex-direction: column-reverse;
+  }
+
   .caption {
     display: flex;
     align-items: baseline;
@@ -1015,6 +1077,13 @@
     margin: 0;
     border: none;
     cursor: pointer;
+  }
+
+  /* Keeps the 44px touch floor without changing the visual size. */
+  .icon-button::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
   }
 
   .icon-button:focus-visible {
@@ -1143,8 +1212,14 @@
 
   @media (prefers-reduced-motion: reduce) {
     .chat-caret,
-    .chat-button {
+    .chat-button,
+    .play-pause {
       transition: none;
+    }
+
+    .play-pause:hover,
+    .play-pause:active {
+      transform: none;
     }
   }
 
@@ -1216,6 +1291,22 @@
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
+  }
+
+  .meta .tier-cta {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+    cursor: pointer;
+  }
+
+  .meta .tier-cta:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
   }
 
   .meta .trigger {
