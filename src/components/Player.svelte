@@ -115,7 +115,7 @@
   export let agentAvatar = undefined;
   export let accentColor = undefined;
   export let accentTextColor = undefined;
-  export let agentAccess = "full";
+  export let agentAccess = "enabled";
   export let agentLimit = undefined;
   export let agentVoice = true;
   export let agentPlaceholder = undefined;
@@ -125,6 +125,7 @@
   export let disclosureText = undefined;
   export let disclosureLink = undefined;
   export let languages = [];
+  export let versions = [];
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
@@ -331,6 +332,7 @@
       {callToAction}
       {contentLanguage}
       {languages}
+      {versions}
       {textColor}
       {backgroundColor}
       {iconColor}
@@ -439,6 +441,7 @@
         {callToAction}
         {contentLanguage}
         {languages}
+        {versions}
         {textColor}
         {backgroundColor}
         {iconColor}
@@ -560,6 +563,11 @@
       bind:playerStyle
       bind:playerTitle
       bind:titleEnabled
+      bind:versions
+      bind:languages
+      bind:continuousPlaybackMode
+      bind:accentTextColor
+      bind:disclosureLink
       bind:callToAction
       bind:skipButtonStyle
       bind:playlistStyle

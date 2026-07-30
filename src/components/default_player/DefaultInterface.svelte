@@ -53,6 +53,7 @@
   export let callToAction = undefined;
   export let contentLanguage = "en";
   export let languages = [];
+  export let versions = [];
   export let textColor = undefined;
   export let backgroundColor = undefined;
   export let iconColor = undefined;
@@ -269,7 +270,11 @@
   $: videoTitle = contentItem.title || playerTitle || stoppedTitle;
 
   $: totalMins = translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(duration / 60)));
-  $: hasVersions = !!contentItem.summarization;
+  // versions restricts what the Version group offers; unset means every
+  // variant the content actually has.
+  $: offeredVersions = versions.length ? versions : ["full", "summary"];
+  $: hasSummaryVariant = !!contentItem.summarization && offeredVersions.includes("summary");
+  $: hasVersions = hasSummaryVariant && offeredVersions.includes("full");
   $: hasLanguages = languages.length > 1;
   $: languageName = languageNameFor(selectedLanguage || contentLanguage);
   $: versionLabel = summary ? "Summary" : totalMins;
@@ -303,15 +308,17 @@
 
   $: showChat = embedMode !== "audio" && agentAccess !== "off" && !isAdvert;
   $: isAdvert && (chatOpen = false);
-  $: chatDisabled = agentAccess === "disabled";
+  // The access-tiers API will send enabled | limited | locked | off; the
+  // earlier full/disabled spellings stay accepted so nothing breaks.
+  $: chatDisabled = agentAccess === "locked" || agentAccess === "disabled";
   $: agentOnly = embedMode === "agent";
   $: agentPrompt = agentName ? `Ask ${agentName}` : "Ask about this article, or anything we've covered";
 
   $: playPauseLabel = isPlaying ? translate("pauseAudio") : translate("playAudio");
 
   $: versionItems = [
-    { value: "full", label: "Full", secondary: formatMins(mediaDuration(contentItem)), selected: !summary },
-    { value: "summary", label: "Summary", secondary: formatMins(mediaDuration(contentItem.summarization)), selected: summary },
+    ...(offeredVersions.includes("full") ? [{ value: "full", label: "Full", secondary: formatMins(mediaDuration(contentItem)), selected: !summary }] : []),
+    ...(hasSummaryVariant ? [{ value: "summary", label: "Summary", secondary: formatMins(mediaDuration(contentItem.summarization)), selected: summary }] : []),
   ];
 
   // The API doesn't yet serialize a top-level duration on summarization (and
