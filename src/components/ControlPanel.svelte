@@ -12,6 +12,11 @@
   export let playerStyle;
   export let playerTitle;
   export let titleEnabled;
+  export let versions;
+  export let languages;
+  export let continuousPlaybackMode;
+  export let accentTextColor;
+  export let disclosureLink;
   export let callToAction;
   export let skipButtonStyle;
   export let playlistStyle;
@@ -228,6 +233,11 @@
     <input tabindex={-1} type="text" bind:value={iconColor}>
   </div>
 
+  <div class="control">
+    accentTextColor:
+    <input tabindex={-1} type="text" placeholder="derived" bind:value={accentTextColor}>
+  </div>
+
   <br/>
   <strong>Playback:</strong>
 
@@ -281,6 +291,33 @@
       <option value="mp3">mp3</option>
       <option value="mp4">mp4</option>
       <option value="mp3,mp4">mp3,mp4</option>
+    </select>
+  </div>
+
+  <div class="control">
+    versions:
+    <select tabindex={-1} value={versions.join(",")} on:change={(e) => versions = e.target.value ? e.target.value.split(",") : []}>
+      <option value="">all available</option>
+      <option value="full">full only</option>
+      <option value="summary">summary only</option>
+      <option value="full,summary">full,summary</option>
+    </select>
+  </div>
+
+  <div class="control">
+    languages:
+    <select tabindex={-1} value={languages.join(",")} on:change={(e) => languages = e.target.value ? e.target.value.split(",") : []}>
+      <option value="">source only</option>
+      <option value="en,fr">en,fr</option>
+      <option value="en,fr,de">en,fr,de</option>
+    </select>
+  </div>
+
+  <div class="control">
+    continuousPlaybackMode:
+    <select tabindex={-1} bind:value={continuousPlaybackMode}>
+      <option>auto</option>
+      <option>none</option>
     </select>
   </div>
 
@@ -341,9 +378,9 @@
   <div class="control">
     agentAccess:
     <select tabindex={-1} bind:value={agentAccess}>
-      <option>full</option>
+      <option>enabled</option>
       <option>limited</option>
-      <option>disabled</option>
+      <option>locked</option>
       <option>off</option>
     </select>
   </div>
@@ -528,6 +565,11 @@
   <div class="control">
     disclosureText:
     <input tabindex={-1} type="text" bind:value={disclosureText}>
+  </div>
+
+  <div class="control">
+    disclosureLink:
+    <input tabindex={-1} type="text" placeholder="https://…/ai-policy" bind:value={disclosureLink}>
   </div>
 
   {#if showAdvancedSettings}
