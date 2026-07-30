@@ -1,4 +1,4 @@
-import { parseColor, toAlphaString, luminance, contrastRatio, mix, clampContrast } from "./colorMath";
+import { parseColor, toAlphaString, luminance, contrastRatio, mix, clampContrast, isGradient, firstColorStop } from "./colorMath";
 
 // The 11-colour contract for the "default" player style. Presets fill every
 // property; theme "custom" starts from light and overrides per property.
@@ -76,26 +76,36 @@ const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = 
 
   const input = { ...preset, ...defined };
 
-  const background = parseColor(input.backgroundColor) ? input.backgroundColor : preset.backgroundColor;
-  const isDark = luminance(background) < 0.35;
+  // backgroundColor may legally be a gradient, which is paintable but not
+  // measurable, so the surface paints `background` while every derived value
+  // and contrast check works from `backgroundBase` - the gradient's first
+  // colour stop, or the preset when the value is unusable either way.
+  const paintable = parseColor(input.backgroundColor) || isGradient(input.backgroundColor);
+  const background = paintable ? input.backgroundColor : preset.backgroundColor;
 
-  const text = clampContrast(input.textColor, background, TEXT_CONTRAST_FLOOR);
-  const icon = clampContrast(input.iconColor, background, ICON_CONTRAST_FLOOR);
+  const measurable = parseColor(background) ? background : firstColorStop(background);
+  const backgroundBase = measurable && parseColor(measurable) ? measurable : preset.backgroundColor;
+
+  const isDark = luminance(backgroundBase) < 0.35;
+
+  const text = clampContrast(input.textColor, backgroundBase, TEXT_CONTRAST_FLOOR);
+  const icon = clampContrast(input.iconColor, backgroundBase, ICON_CONTRAST_FLOOR);
 
   const agent = parseAgentColor(input.agentColor);
   const hasAvatar = !!input.agentAvatar;
-  const orbNearBackground = contrastRatio(agent.from, background) < ORB_NEAR_BACKGROUND_RATIO;
+  const orbNearBackground = contrastRatio(agent.from, backgroundBase) < ORB_NEAR_BACKGROUND_RATIO;
 
-  const bubbleBackground = input.accentColor || (isDark ? mix(background, "#ffffff", 0.1) : "#ffffff");
+  const bubbleBackground = input.accentColor || (isDark ? mix(backgroundBase, "#ffffff", 0.1) : "#ffffff");
   const bubbleText = clampContrast(input.accentTextColor || text, bubbleBackground, TEXT_CONTRAST_FLOOR);
 
   const agentTint = hasAvatar ? text : agent.from;
   const citation = clampContrast(agentTint, bubbleBackground, TEXT_CONTRAST_FLOOR);
-  const link = clampContrast(agentTint, background, TEXT_CONTRAST_FLOOR);
+  const link = clampContrast(agentTint, backgroundBase, TEXT_CONTRAST_FLOOR);
 
   return {
     isDark,
     background,
+    backgroundBase,
     text,
     icon,
     highlight: input.highlightColor,
@@ -109,8 +119,8 @@ const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = 
     hover: toAlphaString(text, 0.05),
     pressed: toAlphaString(text, 0.1),
     underline: toAlphaString(text, 0.45),
-    muted: clampContrast(mix(text, background, 0.45), background, TEXT_CONTRAST_FLOOR),
-    placeholder: clampContrast(mix(text, background, 0.45), background, TEXT_CONTRAST_FLOOR),
+    muted: clampContrast(mix(text, backgroundBase, 0.45), backgroundBase, TEXT_CONTRAST_FLOOR),
+    placeholder: clampContrast(mix(text, backgroundBase, 0.45), backgroundBase, TEXT_CONTRAST_FLOOR),
     skeleton: toAlphaString(text, isDark ? 0.09 : 0.08),
 
     orb: agent.css,
@@ -122,7 +132,7 @@ const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = 
     bubbleBackground,
     bubbleText,
     sendBackground: input.accentColor || text,
-    sendIcon: input.accentTextColor || background,
+    sendIcon: input.accentTextColor || backgroundBase,
     citation,
     citationBorder: mix(citation, bubbleBackground, 0.65),
     link,

@@ -63,6 +63,15 @@
   export let agentLimit;
   export let infoText;
   export let disclosureText;
+  export let accessCtaText;
+  export let accessCtaUrl;
+  export let segmentLimit;
+  export let downloadFormats;
+  export let shortcuts;
+  export let agentVoice;
+  export let agentName;
+  export let agentPlaceholder;
+  export let accentColor;
 
   // The Load content section reloads the page with query params so the player
   // boots cleanly with the entered identifiers (production API by default).
@@ -258,6 +267,44 @@
   </div>
 
   <div class="control">
+    titleEnabled:
+    <select tabindex={-1} bind:value={titleEnabled}>
+      <option>{false}</option>
+      <option>{true}</option>
+    </select>
+  </div>
+
+  <div class="control">
+    downloadFormats:
+    <select tabindex={-1} value={downloadFormats.join(",")} on:change={(e) => downloadFormats = e.target.value ? e.target.value.split(",") : []}>
+      <option value="">none</option>
+      <option value="mp3">mp3</option>
+      <option value="mp4">mp4</option>
+      <option value="mp3,mp4">mp3,mp4</option>
+    </select>
+  </div>
+
+  <div class="control">
+    segmentLimit:
+    <select tabindex={-1} value={segmentLimit === undefined ? "" : `${segmentLimit}`} on:change={(e) => segmentLimit = e.target.value === "" ? undefined : parseInt(e.target.value, 10)}>
+      <option value="">full access</option>
+      <option value="0">0 (title only)</option>
+      <option value="2">2 (preview)</option>
+      <option value="5">5 (preview)</option>
+    </select>
+  </div>
+
+  <div class="control">
+    accessCtaText:
+    <input tabindex={-1} type="text" bind:value={accessCtaText}>
+  </div>
+
+  <div class="control">
+    accessCtaUrl:
+    <input tabindex={-1} type="text" placeholder="https://…/subscribe" bind:value={accessCtaUrl}>
+  </div>
+
+  <div class="control">
     skipButtonStyle:
     <select tabindex={-1} bind:value={skipButtonStyle}>
       <option>auto</option>
@@ -307,6 +354,37 @@
   </div>
 
   <div class="control">
+    agentVoice:
+    <select tabindex={-1} bind:value={agentVoice}>
+      <option>{false}</option>
+      <option>{true}</option>
+    </select>
+  </div>
+
+  <div class="control">
+    agentName:
+    <input tabindex={-1} type="text" placeholder="The Daily Example" bind:value={agentName}>
+  </div>
+
+  <div class="control">
+    agentPlaceholder:
+    <input tabindex={-1} type="text" bind:value={agentPlaceholder}>
+  </div>
+
+  <div class="control">
+    shortcuts:
+    <select tabindex={-1} value={shortcuts.length ? "set" : ""} on:change={(e) => shortcuts = e.target.value ? ["What are today's headlines?", "Catch me up on this story", "What's new in my topics?"] : []}>
+      <option value="">none</option>
+      <option value="set">3 examples</option>
+    </select>
+  </div>
+
+  <div class="control">
+    accentColor:
+    <input tabindex={-1} type="text" bind:value={accentColor}>
+  </div>
+
+  <div class="control">
     agentColor:
     <input tabindex={-1} type="text" placeholder="#943bfc,#e23ad0" bind:value={agentColor}>
   </div>
@@ -345,6 +423,7 @@
   <div class="control">
     widgetStyle:
     <select tabindex={-1} bind:value={widgetStyle}>
+      <option>auto</option>
       <option>default</option>
       <option>small</option>
       <option>standard</option>

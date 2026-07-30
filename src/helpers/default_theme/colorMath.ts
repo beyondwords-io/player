@@ -97,4 +97,20 @@ const clampContrast = (fg, bg, floor) => {
   return target;
 };
 
-export { parseColor, toHex, toAlphaString, luminance, contrastRatio, mix, clampContrast };
+const GRADIENT = /^\s*(repeating-)?(linear|radial|conic)-gradient\(/i;
+
+const isGradient = (value) => typeof value === "string" && GRADIENT.test(value);
+
+// The first colour stop stands in for a gradient when something needs a single
+// measurable colour (luminance, contrast clamping).
+const firstColorStop = (value) => {
+  if (typeof value !== "string") { return null; }
+
+  const match = value.match(/#[0-9a-f]{3,8}\b|rgba?\([^)]*\)/i);
+  if (match) { return match[0]; }
+
+  const named = value.match(/\b(white|black)\b/i);
+  return named ? named[0].toLowerCase() : null;
+};
+
+export { parseColor, toHex, toAlphaString, luminance, contrastRatio, mix, clampContrast, isGradient, firstColorStop };
