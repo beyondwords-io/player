@@ -17,11 +17,17 @@
   $: sections = countBy(segments, (segment) => segment.section || "body");
   $: wordCount = segments.reduce((total, segment) => total + (segment.words?.length || 0), 0);
 
-  // A rebuilt article is only clickable where a marker matches a segment.
-  $: markers = typeof document === "undefined" ? [] : [...document.querySelectorAll("[data-beyondwords-marker]")];
+  // The article is only highlightable and clickable where a marker in the page
+  // matches a segment. Re-queried on each refresh, since the page's own markup
+  // is not something Svelte can react to.
+  $: markers = markersInPage(snapshot);
   $: matchedMarkers = markers.filter((element) => (
     segments.some((segment) => segment.marker === element.dataset.beyondwordsMarker)
   )).length;
+
+  const markersInPage = () => (
+    typeof document === "undefined" ? [] : [...document.querySelectorAll("[data-beyondwords-marker]")]
+  );
 
   const describeMedia = (name, audio, video) => {
     const sizes = (video || []).map((media) => media.videoSize?.name).filter((size) => size);
