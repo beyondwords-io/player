@@ -310,11 +310,13 @@
   $: attributionHref = typeof window === "undefined" ? "https://beyondwords.io" :
     `https://beyondwords.io/?utm_source=${encodeURIComponent(window.location.origin)}&utm_medium=player&utm_campaign=${analyticsId || ""}`;
 
-  $: showChat = embedMode !== "audio" && agentAccess !== "off" && !isAdvert;
+  // full | limited | locked | off, with the earlier enabled/disabled spellings
+  // normalised here so the rest of the subtree only sees the four names.
+  $: access = agentAccess === "enabled" ? "full" : agentAccess === "disabled" ? "locked" : agentAccess;
+
+  $: showChat = embedMode !== "audio" && access !== "off" && !isAdvert;
   $: isAdvert && (chatOpen = false);
-  // The access-tiers API will send enabled | limited | locked | off; the
-  // earlier full/disabled spellings stay accepted so nothing breaks.
-  $: chatDisabled = agentAccess === "locked" || agentAccess === "disabled";
+  $: chatDisabled = access === "locked";
   $: agentOnly = embedMode === "agent";
   $: agentPrompt = agentName ? `Ask ${agentName}` : "Ask about this article, or anything we've covered";
 
@@ -579,7 +581,7 @@
           {agentClient}
           {agentPlaceholder}
           {agentVoice}
-          {agentAccess}
+          agentAccess={access}
           {agentLimit}
           {shortcuts}
         {isPlaying}
@@ -597,7 +599,7 @@
       {agentClient}
       {agentPlaceholder}
       {agentVoice}
-      {agentAccess}
+      agentAccess={access}
       {agentLimit}
       {shortcuts}
       {isPlaying}
@@ -885,7 +887,7 @@
         {agentClient}
         {agentPlaceholder}
         {agentVoice}
-        {agentAccess}
+        agentAccess={access}
         {agentLimit}
         {shortcuts}
         {isPlaying}

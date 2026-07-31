@@ -47,7 +47,7 @@ const list = [
   { ...base, content: playlistItems, playbackState: "playing" },
   { ...base, disclosureText: "This article is read by an AI voice." },
   { ...base, playbackState: "playing", widgetStyle: "default", widgetPosition: "center" },
-  { ...base, agentAccess: "disabled" },
+  { ...base, agentAccess: "locked" },
 ];
 
 const defaultPlayerPermutations = async (callback) => {
@@ -66,7 +66,7 @@ const defaultScreenshotName = (params) => (
     params.content.length > 1 && "playlist",
     params.widgetPosition && `widget-${params.widgetPosition}`,
     params.disclosureText && "disclosure",
-    params.agentAccess === "disabled" && "locked",
+    params.agentAccess === "locked" && "locked",
   ].filter(s => s).join("-")
 );
 
