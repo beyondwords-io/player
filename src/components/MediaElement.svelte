@@ -11,6 +11,7 @@
   import blurElement from "../helpers/blurElement";
   import isIosSafari from "../helpers/isIosSafari";
   import findSegmentIndex from "../helpers/findSegmentIndex";
+  import { withinSegmentLimit } from "../helpers/contentVariants";
   import findLoadedMedia from "../helpers/findLoadedMedia";
   import chooseSegmentElement from "../helpers/chooseSegmentElement";
 
@@ -157,7 +158,7 @@
       initiatedBy: "media",
     }));
 
-    if (!activeIntroOrOutro && !activeAdvert && segmentLimit === 0) {
+    if (!activeIntroOrOutro && !activeAdvert && !withinSegmentLimit(segments, 0, summary, segmentLimit)) {
       handleSegmentLimitReached();
     }
   };
@@ -238,7 +239,7 @@
       initiatedBy: "media",
     }));
 
-    if (!activeIntroOrOutro && !activeAdvert && typeof segmentLimit === "number" && segmentIndex >= segmentLimit) {
+    if (!activeIntroOrOutro && !activeAdvert && !withinSegmentLimit(segments, segmentIndex, summary, segmentLimit)) {
       handleSegmentLimitReached();
     }
   };

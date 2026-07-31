@@ -6,6 +6,7 @@ import waitUntil from "../helpers/waitUntil";
 import throwError from "../helpers/throwError";
 import setPropsFromApi, { appendContinuousPlaybackContentFromApi } from "../helpers/setPropsFromApi";
 import findSegmentIndex from "../helpers/findSegmentIndex";
+import { withinSegmentLimit } from "../helpers/contentVariants";
 import diffObject from "../helpers/diffObject";
 import sectionEnabled from "../helpers/sectionEnabled";
 import downloadFile from "../helpers/downloadFile";
@@ -479,7 +480,7 @@ class RootController {
       this.#setTime(() => this.player.duration - 0.01);
 
     // Otherwise, set the time to the startTime of the segment.
-    } else if (this.#isContent() && tryIndex >= 0 && tryIndex < segments.length && (typeof this.player.segmentLimit !== 'number' || tryIndex < this.player.segmentLimit)) {
+    } else if (this.#isContent() && tryIndex >= 0 && tryIndex < segments.length && withinSegmentLimit(segments, tryIndex, this.player.summary, this.player.segmentLimit)) {
       this.#setTime(() => segments[tryIndex].startTime);
     }
   }

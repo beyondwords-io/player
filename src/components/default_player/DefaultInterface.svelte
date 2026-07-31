@@ -16,6 +16,7 @@
   import MockAgentClient from "../../helpers/agentClient";
   import chooseAdvertText from "../../helpers/chooseAdvertText";
   import ensureProtocol from "../../helpers/ensureProtocol";
+  import { contentVariantHasSection } from "../../helpers/contentVariants";
   import WifiSlash from "../svg_icons/default_player/WifiSlash.svelte";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
   import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
@@ -159,9 +160,12 @@
   // its title, a number previews that many segments, anything else is full
   // access. The boundary is where playback will stop - the start of the first
   // segment past the limit.
-  $: segments = (summary ? contentItem.summarization?.segments : contentItem.segments) || contentItem.segments || [];
-  $: isTitleOnly = segmentLimit === 0;
-  $: isPreview = typeof segmentLimit === "number" && segmentLimit > 0;
+  // One list holds both variants, so read the article's own segments: the limit
+  // is counted in those, and it does not truncate a summary (see
+  // withinSegmentLimit in contentVariants).
+  $: segments = (contentItem.segments || []).filter(({ section }) => contentVariantHasSection(false, section));
+  $: isTitleOnly = segmentLimit === 0 && !summary;
+  $: isPreview = typeof segmentLimit === "number" && segmentLimit > 0 && !summary;
   $: previewEndsAt = isPreview ? (segments[segmentLimit]?.startTime ?? 0) : 0;
   $: previewRatio = isPreview && duration > 0 ? Math.min(1, previewEndsAt / duration) : 0;
   $: previewEnded = isPreview && previewEndsAt > 0 && currentTime >= previewEndsAt - 0.25;
@@ -285,7 +289,9 @@
   $: hasVersions = hasSummaryVariant && offeredVersions.includes("full");
   $: hasLanguages = languages.length > 1;
   $: languageName = languageNameFor(selectedLanguage || contentLanguage);
-  $: versionLabel = summary ? "Summary" : totalMins;
+  // Name the version when the reader can switch, since the menu carries the
+  // durations; otherwise say how long the one they are getting is.
+  $: versionLabel = summary && hasVersions ? "Summary" : totalMins;
 
   $: downloadAudio = (summary ? contentItem.summarization?.audio : contentItem.audio) || [];
   $: downloadVideo = (summary ? contentItem.summarization?.video : contentItem.video) || [];
