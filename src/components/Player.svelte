@@ -179,6 +179,11 @@
 
   $: setLocale(playerLanguage);
 
+  // Offering one version is a statement about what this embed plays, not just
+  // about what the version menu shows, so select it. Declared before the
+  // identifiers statement below so the first request already asks for it.
+  $: if (versions.length === 1) { summary = versions[0] === "summary"; }
+
   $: contentItem = content[contentIndex];
   $: activeIntroOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
