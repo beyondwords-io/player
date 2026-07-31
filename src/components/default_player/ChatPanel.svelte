@@ -53,15 +53,24 @@
     const [mins, secs] = agentLimit.split(":").map((n) => parseInt(n, 10) || 0);
     secondsLeft = mins * 60 + secs;
   }
+  $: locked = agentAccess === "locked";
+  $: lockedAsked = locked && thread.length > 0;
   $: budgetSpent = agentAccess === "limited" && (questionsLeft === 0 || (minutesBudget && secondsLeft === 0));
   $: showCounter = questionBudget !== null && questionsUsed >= 1 && !budgetSpent;
 
   $: formattedSecondsLeft = `${Math.floor((secondsLeft || 0) / 60)}:${`${(secondsLeft || 0) % 60}`.padStart(2, "0")}`;
 
-  $: shortcutRows = shortcuts.map((question) => ({
-    command: `/${String(question).replace(/[^a-zA-Z ]/g, "").trim().split(" ")[0].toLowerCase() || "ask"}`,
-    question,
-  }));
+  // Pressing / lists the publisher's questions and typing narrows them. There
+  // are no commands to invent, and nothing to collide.
+  $: shortcutQuery = input.startsWith("/") ? input.slice(1).trim().toLowerCase() : "";
+  $: shortcutRows = shortcuts.filter((question) => (
+    !shortcutQuery || String(question).toLowerCase().includes(shortcutQuery)
+  ));
+
+  // Keep the list up while the reader is still typing a search, and drop it as
+  // soon as it can no longer match anything.
+  $: if (shortcutsOpen && input !== "" && !input.startsWith("/")) { shortcutsOpen = false; }
+  $: if (shortcutsOpen && shortcutRows.length === 0) { shortcutsOpen = false; }
 
   const scrollToEnd = async () => {
     await tick();
@@ -74,6 +83,15 @@
 
     input = "";
     shortcutsOpen = false;
+
+    // Locked: the question is worth asking for, so keep it on screen and answer
+    // with the publisher's offer rather than pretending to think.
+    if (locked) {
+      thread = [...thread, { role: "reader", text }, { role: "locked" }];
+      scrollToEnd();
+      return;
+    }
+
     thread = [...thread, { role: "reader", text }, { role: "agent", text: "", citations: [], streaming: true }];
     streaming = true;
     voiceMode = fromVoice ? "talking" : null;
@@ -176,10 +194,15 @@
   const handleKeydown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      send();
+
+      // With the list up, Enter takes the question the reader narrowed down to.
+      if (shortcutsOpen && shortcutRows.length > 0) { send(shortcutRows[0]); } else { send(); }
     } else if (event.key === "/" && input === "") {
+      // Put the slash in the field ourselves: the binding updates after this
+      // handler, and the guard below would read the field as still empty.
       event.preventDefault();
-      shortcutsOpen = shortcutRows.length > 0;
+      input = "/";
+      shortcutsOpen = shortcuts.length > 0;
     } else if (event.key === "Escape" && shortcutsOpen) {
       event.stopPropagation();
       shortcutsOpen = false;
@@ -214,6 +237,20 @@
         {#if message.role === "reader"}
           <div class="reader-row">
             <span class="bubble" style="background: {tokens.bubbleBackground}; color: {tokens.bubbleText}; border-radius: {tokens.radius.bubble}">{message.text}</span>
+          </div>
+        {:else if message.role === "locked"}
+          <div class="agent-row">
+            <Orb size={20} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={true} />
+            <div class="answer-col">
+              <span class="locked-answer">
+                <LockSimple size={15} color={tokens.muted} />
+                {#if ctaText && ctaUrl}
+                  <a class="subscribe" href={ctaUrl} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{ctaText}</a>
+                {:else if ctaText}
+                  <span style="color: {tokens.text}">{ctaText}</span>
+                {/if}
+              </span>
+            </div>
           </div>
         {:else}
           <div class="agent-row">
@@ -250,20 +287,21 @@
   {#if shortcutsOpen && shortcutRows.length > 0}
     <div class="shortcuts" style="background: {tokens.bubbleBackground}; border-radius: {tokens.radius.bar}; box-shadow: {tokens.widgetShadow}">
       <span class="eyebrow" style="color: {tokens.muted}">Shortcuts</span>
-      {#each shortcutRows as row (row.question)}
-        <button type="button" class="shortcut-row" style="--hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => send(row.question)}>
-          <span class="command" style="color: {tokens.link}">{row.command}</span>
-          <span class="question" style="color: {tokens.text}">{row.question}</span>
+      {#each shortcutRows as question (question)}
+        <button type="button" class="shortcut-row" style="--hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => send(question)}>
+          <span class="question" style="color: {tokens.text}">{question}</span>
         </button>
       {/each}
     </div>
   {/if}
 
-  {#if budgetSpent}
+  {#if budgetSpent || lockedAsked}
     <div class="composer spent" style="border-top-color: {tokens.divider}">
       <LockSimple size={15} color={tokens.muted} />
       <span class="spent-copy" style="color: {tokens.muted}">
-        {#if minutesBudget}
+        {#if lockedAsked}
+          <!-- The CTA above the composer already says it; no need to repeat. -->
+        {:else if minutesBudget}
           You've used your free conversation time.
         {:else}
           You've used your {questionBudget} free questions.
@@ -299,7 +337,7 @@
     </div>
   {:else}
     <div class="composer" style="border-top-color: {tokens.divider}">
-      {#if showSlashButton && shortcutRows.length > 0}
+      {#if showSlashButton && shortcuts.length > 0}
         <button
           type="button"
           class="slash"
@@ -498,11 +536,6 @@
     }
   }
 
-  .shortcut-row .command {
-    width: 76px;
-    flex-shrink: 0;
-    font-size: 11px;
-  }
 
   .shortcut-row .question {
     font-size: 13px;
@@ -677,6 +710,12 @@
     flex: 1;
     min-width: 0;
     font-size: 12px;
+  }
+
+  .locked-answer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .subscribe {
