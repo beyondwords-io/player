@@ -201,13 +201,12 @@
   const CHAT_ORB_W = 44;
   const STACKED_COL_W = 76;
   const CENTRED_COL_W = 112;
-  const PREVIEW_EXTRA_W = 52;
   const TIER_LOCK_W = 32; // 16px glyph plus the 8px either side the design gives it
 
   $: centredTrack = !isStopped && !isAdvert && !offline && !playingTitle;
 
   $: widthNeededFor = (plan) => GAP + 16 + PLAY_W
-    + GAP + (centredTrack ? CENTRED_COL_W : STACKED_COL_W) + (isPreview ? PREVIEW_EXTRA_W : 0)
+    + GAP + (centredTrack ? CENTRED_COL_W : STACKED_COL_W)
     + (plan.chip ? GAP + CHIP_W : 0)
     + (plan.skips ? 2 * (GAP + CONTROL_W) : 0)
     + (plan.speed ? GAP + SPEED_W : 0)
