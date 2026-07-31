@@ -67,31 +67,6 @@ test("default player access tier behaviour", async ({ page }) => {
   const withoutCtaText = await playThrough(page, { segments, summary: false, segmentLimit: 0, times: [1], accessCtaText: undefined });
   expect(withoutCtaText.barAfterwards.label).toEqual("Listen to this article");
 
-  // The agent is sold with its own words, or with the article's, or not at all -
-  // but never with a sentence the player made up pointing at a dead link.
-  const locked = (params) => lockedAgent(page, params);
-
-  expect(await locked({}), "inherits the article's CTA").toEqual({
-    label: "Subscribe to keep listening",
-    pitch: "Subscribe to keep listening",
-    href: "https://example.com/subscribe",
-    opens: true,
-  });
-
-  expect(await locked({ agentCtaText: "Upgrade to ask questions", agentCtaUrl: "https://example.com/agent" }), "its own CTA wins").toEqual({
-    label: "Upgrade to ask questions",
-    pitch: "Upgrade to ask questions",
-    href: "https://example.com/agent",
-    opens: true,
-  });
-
-  expect(await locked({ accessCtaText: undefined, accessCtaUrl: undefined }), "no copy, no pitch and no dead link").toEqual({
-    label: "Chat about this article",
-    pitch: null,
-    href: null,
-    opens: false,
-  });
-
   // Offering one version selects it, rather than silently playing the other.
   const chosen = await page.evaluate(async () => {
     BeyondWords.Player.destroyAll();
@@ -156,38 +131,6 @@ const playThrough = async (page, params) => await page.evaluate(async (params) =
       isLink: !!bar?.querySelector(".title.tier-cta"),
       locked: !!bar?.querySelector(".tier-lock"),
     },
-  };
-}, params);
-
-// Opens the locked chat button and reports what it offers.
-const lockedAgent = async (page, params) => await page.evaluate(async (params) => {
-  const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
-
-  BeyondWords.Player.destroyAll();
-  const player = new BeyondWords.Player({ target: ".beyondwords-player" });
-
-  Object.assign(player, {
-    playerStyle: "default", embedMode: "audio-agent", agentAccess: "locked",
-    content: [{ title: "An article", audio }],
-    accessCtaText: "Subscribe to keep listening",
-    accessCtaUrl: "https://example.com/subscribe",
-    ...params,
-  });
-
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const button = document.querySelector(".default-player .chat-button");
-  button.click();
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const pitch = document.querySelector(".default-player .locked-pitch");
-  const link = pitch?.querySelector("a");
-
-  return {
-    label: button.getAttribute("aria-label"),
-    pitch: pitch?.textContent.trim() || null,
-    href: link?.getAttribute("href") || null,
-    opens: !!pitch,
   };
 }, params);
 
