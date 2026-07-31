@@ -231,12 +231,15 @@
       chatLabel: true,
     };
 
+    // Given away in this order until the bar fits. The controls go first
+    // because the overflow menu still holds them; the advertiser chip has
+    // nowhere else to go, and it is a paid placement, so it outlives them.
     const giveAway = [
-      () => { plan.chip = false; },
       () => { plan.download = false; plan.info = false; plan.overflow = plan.overflow || hasDownload || hasInfo; },
       () => { plan.speed = false; plan.overflow = plan.overflow || !isStopped; },
       () => { plan.skips = false; plan.overflow = plan.overflow || !isStopped; },
       () => { plan.queue = false; plan.overflow = plan.overflow || (queueAvailable && playlistToggle !== "hide"); },
+      () => { plan.chip = false; },
       () => { plan.chatLabel = false; },
     ];
 
