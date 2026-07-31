@@ -7,14 +7,25 @@
   export let groups = []; // [{ label, items: [{ value, label, secondary, selected, keepOpen }] }]
   export let left = 0;
   export let tokens;
+  export let trigger = undefined;
   export let onSelect = () => {};
   export let onClose = () => {};
 
   let menu;
+  let placeAbove = false;
 
   onMount(() => {
+    // Docked at the bottom of the window, there is no room below the bar: the
+    // items would be laid out past the bottom of the viewport, where they
+    // cannot be clicked at all.
+    placeAbove = menu.getBoundingClientRect().bottom > window.innerHeight - 8;
+
     const handlePointerDown = (event) => {
-      if (menu && !menu.contains(event.target)) { onClose(); }
+      // A press on the trigger is the trigger's own to handle: it toggles the
+      // menu shut. Closing it here as well would let the click that follows
+      // re-open it, so the menu could never be dismissed from its trigger.
+      const outside = !menu.contains(event.target) && !trigger?.contains(event.target);
+      if (outside) { onClose(); }
     };
 
     const handleKeyDown = (event) => {
@@ -38,6 +49,7 @@
 <div
   bind:this={menu}
   class="menu"
+  class:above={placeAbove}
   role="menu"
   style="left: {left}px; background: {tokens.bubbleBackground}; border: 1px solid {tokens.divider}; border-radius: {tokens.radius.control}; box-shadow: {tokens.widgetShadow}"
 >
@@ -72,12 +84,19 @@
     position: absolute;
     top: calc(100% + 6px);
     z-index: 10;
+    /* Nothing in the bar should be able to take a press meant for the menu. */
+    pointer-events: auto;
     display: flex;
     flex-direction: column;
     min-width: 150px;
     max-width: 220px;
     padding: 6px;
     box-sizing: border-box;
+  }
+
+  .menu.above {
+    top: auto;
+    bottom: calc(100% + 6px);
   }
 
   .eyebrow {
