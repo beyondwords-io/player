@@ -1,6 +1,10 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
+  // Loads dist/style.js, which injects the player CSS and un-hides the target.
+  // Without this a built default-style embed is invisible (see UserInterface).
+  import("../../helpers/loadTheStyles.ts");
   import { onMount } from "svelte";
+  import ResizeObserver from "resize-observer-polyfill";
   import { slide, fly, fade } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
   import newEvent from "../../helpers/newEvent";
