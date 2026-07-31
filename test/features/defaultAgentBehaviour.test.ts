@@ -112,6 +112,31 @@ test("default player agent behaviour", async ({ page }) => {
   await page.waitForTimeout(200);
 
   expect(await page.locator(".default-player .shortcuts").count()).toEqual(0);
+
+  // The answer is revealed as it arrives, not animated from a string the panel
+  // already has: dots while the agent composes, then the text behind a caret.
+  // Kept last, since it is the one case that needs animation left on.
+  await page.evaluate(() => { window.disableAnimation = false; });
+  await openPanel(page, { embedMode: "agent", agentAccess: "full", shortcuts });
+  await page.locator(".default-player .empty-chips button").first().click();
+
+  await page.waitForSelector(".default-player .typing", { timeout: 2000 });
+  expect(await answerLength(page), "nothing is written while it composes").toEqual(0);
+
+  await page.waitForSelector(".default-player .cursor", { timeout: 3000 });
+  const midway = await answerLength(page);
+
+  await page.waitForFunction(() => !document.querySelector(".default-player .cursor"), null, { timeout: 15000 });
+  const finished = await answerLength(page);
+
+  expect(midway, "the first deltas are on screen before the last").toBeGreaterThan(0);
+  expect(finished, "and it keeps filling in").toBeGreaterThan(midway);
+  expect(await page.locator(".default-player .typing").count(), "the dots give way to the answer").toEqual(0);
+});
+
+const answerLength = async (page) => await page.evaluate(() => {
+  const answer = [...document.querySelectorAll(".default-player .thread > div")].at(-1);
+  return (answer?.querySelector(".answer-col")?.textContent || "").trim().length;
 });
 
 // Mounts the player and opens the chat panel, whichever surface holds it.

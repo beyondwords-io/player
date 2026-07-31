@@ -92,22 +92,34 @@
       return;
     }
 
-    thread = [...thread, { role: "reader", text }, { role: "agent", text: "", citations: [], streaming: true }];
+    thread = [...thread, { role: "reader", text }, { role: "agent", text: "", citations: [], streaming: true, typing: true }];
     streaming = true;
     voiceMode = fromVoice ? "talking" : null;
     onMessageSent(text);
     scrollToEnd();
 
     streamHandle = agentClient.send(text, {
-      onClause: (clause) => {
+      // The agent platform sends the answer as deltas, so the panel reveals it
+      // as it arrives rather than animating a string it already has.
+      onTyping: () => {
         const last = thread[thread.length - 1];
-        last.text += clause;
+        last.typing = true;
+        thread = thread;
+      },
+
+      onPart: ({ type, text: delta }) => {
+        const last = thread[thread.length - 1];
+
+        if (type === "start") { last.typing = false; }
+        if (type === "delta") { last.typing = false; last.text += delta; }
+
         thread = thread;
         scrollToEnd();
       },
       onDone: (citations) => {
         const last = thread[thread.length - 1];
         last.streaming = false;
+        last.typing = false;
         last.citations = citations || [];
         thread = thread;
         streaming = false;
@@ -257,7 +269,16 @@
             <Orb size={20} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} generating={message.streaming} />
             <div class="answer-col">
               <span class="answer" style="color: {tokens.text}">
-                {message.text}{#if message.streaming}<span class="cursor" style="background: {tokens.sendBackground}"></span>{/if}
+                {#if message.typing}
+                  <!-- Decorative: the finished answer is what gets announced. -->
+                  <span class="typing" aria-hidden="true">
+                    <span style="background: {tokens.muted}"></span>
+                    <span style="background: {tokens.muted}"></span>
+                    <span style="background: {tokens.muted}"></span>
+                  </span>
+                {:else}
+                  {message.text}{#if message.streaming}<span class="cursor" style="background: {tokens.sendBackground}"></span>{/if}
+                {/if}
               </span>
               {#if message.citations.length > 0}
                 <span class="citations">
@@ -432,6 +453,34 @@
     line-height: 1.5;
   }
 
+  /* Fills the gap between the question being sent and the first delta. */
+  .typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 20px;
+  }
+
+  .typing span {
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    animation: typing 1.2s ease-in-out infinite;
+  }
+
+  .typing span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .typing span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes typing {
+    0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-2px); }
+  }
+
   .cursor {
     display: inline-block;
     width: 7px;
@@ -448,8 +497,13 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .cursor {
+    .cursor,
+    .typing span {
       animation: none;
+    }
+
+    .typing span {
+      opacity: 0.55;
     }
   }
 

@@ -1,8 +1,21 @@
 // Agent client interface for the default player's Chat/Talk surfaces.
 //
 // The real backend integration does not exist yet, so the player ships with a
-// deterministic mock that streams scripted answers clause-by-clause. Answers
-// cycle in order, so screenshots and local testing are reproducible.
+// deterministic mock. Answers cycle in order, so screenshots and local testing
+// are reproducible.
+//
+// The callback names deliberately mirror the ElevenLabs Agents SDK, so wiring
+// the real agent is a swap rather than a rewrite of the panel:
+//
+//   onTyping  <- onAgentTyping             the agent has started composing
+//   onPart    <- onAgentChatResponsePart   { type: "start" | "delta" | "stop" }
+//   onDone    <- onMessage / agent_response_complete, plus citations
+//
+// Two more of theirs matter when this is wired, and the panel is built to take
+// them: onAgentResponseCorrection replaces text that has already been revealed,
+// and onAudioAlignment carries per-character timings (chars, char_start_times_ms)
+// so a voice answer can reveal its text in step with the speech rather than at
+// an invented typing speed.
 
 const SCRIPTED_ANSWERS = [
   {
@@ -43,10 +56,15 @@ class MockAgentClient {
     this.answerIndex = 0;
   }
 
-  // Streams an answer clause-by-clause. Returns a handle with stop().
-  send(_question, { onClause = (_s) => {}, onDone = (_citations) => {} } = {}) {
+  // Streams an answer as deltas, the way the agent platform does. Returns a
+  // handle with stop().
+  send(_question, { onTyping = () => {}, onPart = (_part) => {}, onDone = (_citations) => {} } = {}) {
     const answer = SCRIPTED_ANSWERS[this.answerIndex % SCRIPTED_ANSWERS.length];
     this.answerIndex += 1;
+
+    // Deltas arrive token-sized, so split on word boundaries rather than
+    // clauses: three big jumps does not read as an answer being written.
+    const deltas = answer.clauses.join("").match(/\S+\s*/g) || [];
 
     const instant = typeof window !== "undefined" && (window as { disableAnimation?: boolean }).disableAnimation;
     let stopped = false;
@@ -55,20 +73,27 @@ class MockAgentClient {
     const deliver = (i) => {
       if (stopped) { return; }
 
-      if (i >= answer.clauses.length) {
+      if (i >= deltas.length) {
+        onPart({ type: "stop", text: "" });
         onDone(answer.citations);
         return;
       }
 
-      onClause(answer.clauses[i]);
-      timer = setTimeout(() => deliver(i + 1), instant ? 0 : 350);
+      if (i === 0) { onPart({ type: "start", text: "" }); }
+      onPart({ type: "delta", text: deltas[i] });
+
+      timer = setTimeout(() => deliver(i + 1), instant ? 0 : 45);
     };
 
     if (instant) {
-      answer.clauses.forEach((clause) => onClause(clause));
+      onPart({ type: "start", text: "" });
+      deltas.forEach((text) => onPart({ type: "delta", text }));
+      onPart({ type: "stop", text: "" });
       onDone(answer.citations);
     } else {
-      timer = setTimeout(() => deliver(0), 450);
+      // The gap before the first delta is what the typing indicator fills.
+      onTyping();
+      timer = setTimeout(() => deliver(0), 550);
     }
 
     return {
