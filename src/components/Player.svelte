@@ -107,6 +107,11 @@
   export let widgetEmbedMode = "auto";
   export let accessCtaText = undefined;
   export let accessCtaUrl = undefined;
+
+  // The agent can be sold separately, so it has its own pair. Unset, they
+  // inherit the ones above.
+  export let agentCtaText = undefined;
+  export let agentCtaUrl = undefined;
   export let theme = "light";
   export let radius = 8;
   export let agentColor = undefined;
@@ -374,7 +379,9 @@
     {segmentLimitReached}
     accessTier={accessTier}
     {accessCtaText}
-    {accessCtaUrl} />
+    {accessCtaUrl}
+    {agentCtaText}
+    {agentCtaUrl} />
 {:else if showStaticInterface}
   <UserInterface
     bind:this={userInterface}
@@ -477,7 +484,9 @@
     {segmentLimitReached}
     accessTier={accessTier}
     {accessCtaText}
-    {accessCtaUrl} />
+    {accessCtaUrl}
+    {agentCtaText}
+    {agentCtaUrl} />
   </ExternalWidget>
 {:else if showWidgetInterface}
   <ExternalWidget root={widgetTarget}>

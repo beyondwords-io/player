@@ -97,6 +97,8 @@
   export let accessTier = undefined;
   export let accessCtaText = undefined;
   export let accessCtaUrl = undefined;
+  export let agentCtaText = undefined;
+  export let agentCtaUrl = undefined;
   export let videoIsBehind = false;
   export let aspectRatio = 16 / 9;
 
@@ -170,6 +172,11 @@
 
   $: showTierCta = isTitleOnly || (isPreview && previewEnded && isStopped);
   $: tierCtaText = accessCtaText || stoppedTitle;
+
+  // The agent's own CTA, inheriting the content one when the publisher sells
+  // both together. Nothing here is invented: with no copy there is no pitch.
+  $: agentCta = agentCtaText || accessCtaText;
+  $: agentCtaHref = agentCtaUrl || accessCtaUrl;
 
   // The queue is an inline affordance - the widget stays the bar plus x.
   $: queueAvailable = isPlaylist && !isWidget && playlistStyle.split("-")[0] !== "hide";
@@ -480,6 +487,9 @@
   };
 
   const toggleChat = () => {
+    // A locked agent with no publisher copy has nothing to show.
+    if (chatDisabled && !agentCta) { return; }
+
     chatOpen = !chatOpen;
     if (chatOpen) { queueOpen = false; openMenu = null; }
 
@@ -828,9 +838,8 @@
         class="chat-button"
         class:orb-only={!chatLabelVisible}
         style="--bg: {chatOpen ? tokens.pressed : "transparent"}; --hover-bg: {chatOpen ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label={chatDisabled ? "Subscribe to chat" : isPlaylist ? "Chat about this playlist" : "Chat about this article"}
+        aria-label={(chatDisabled && agentCta) || (isPlaylist ? "Chat about this playlist" : "Chat about this article")}
         aria-expanded={chatOpen}
-        title={chatDisabled ? "Subscribe to chat to our journalism" : undefined}
         on:click={toggleChat}
         on:mouseup={blurElement}
       >
@@ -876,12 +885,16 @@
     <QueuePanel {content} {contentIndex} {summary} {tokens} {onEvent} />
   {/if}
 
-  {#if chatOpen && showChat && chatDisabled}
+  {#if chatOpen && showChat && chatDisabled && agentCta}
     <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
       <div class="hairline" style="background: {tokens.divider}"></div>
       <div class="locked-pitch">
-        <span class="pitch-copy" style="color: {tokens.text}">Ask questions about our journalism, get context, go deeper.</span>
-        <a class="pitch-link" href="#subscribe" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">Subscribe to chat</a>
+        <LockSimple size={15} color={tokens.muted} />
+        {#if agentCtaHref}
+          <a class="pitch-link" href={agentCtaHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{agentCta}</a>
+        {:else}
+          <span class="pitch-copy" style="color: {tokens.text}">{agentCta}</span>
+        {/if}
       </div>
     </div>
   {:else if chatOpen && showChat}
@@ -894,6 +907,8 @@
         {agentVoice}
         agentAccess={access}
         {agentLimit}
+        ctaText={agentCta}
+        ctaUrl={agentCtaHref}
         {shortcuts}
         {isPlaying}
         {onEvent} />
