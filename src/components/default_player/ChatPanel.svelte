@@ -15,6 +15,9 @@
   export let agentVoice = true;
   export let agentAccess = "full";
   export let agentLimit = undefined;
+  // The publisher's own words for the upgrade, or nothing at all.
+  export let ctaText = undefined;
+  export let ctaUrl = undefined;
   export let shortcuts = [];
   export let isPlaying = false;
   export let onEvent = () => {};
@@ -266,7 +269,11 @@
           You've used your {questionBudget} free questions.
         {/if}
       </span>
-      <a class="subscribe" href="#subscribe" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">Subscribe to keep talking</a>
+      {#if ctaText && ctaUrl}
+        <a class="subscribe" href={ctaUrl} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{ctaText}</a>
+      {:else if ctaText}
+        <span class="subscribe plain" style="color: {tokens.muted}">{ctaText}</span>
+      {/if}
     </div>
   {:else if voiceMode === "listening"}
     <div class="composer listening" style="border-top-color: {tokens.divider}">

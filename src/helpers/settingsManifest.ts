@@ -124,6 +124,8 @@ const settingsManifest = [
       "1 long example": ["Explain the background to this story as if I have not been following it"],
       "none": [],
     } },
+  { key: "agentCtaText", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default", needs: "agentAccess locked or a spent limit; falls back to accessCtaText" },
+  { key: "agentCtaUrl", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default", needs: "falls back to accessCtaUrl" },
   { key: "agentColor", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default" },
   { key: "agentAvatar", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default" },
 
