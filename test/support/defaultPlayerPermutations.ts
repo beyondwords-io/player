@@ -48,6 +48,9 @@ const list = [
   { ...base, disclosureText: "This article is read by an AI voice." },
   { ...base, playbackState: "playing", widgetStyle: "default", widgetPosition: "center" },
   { ...base, agentAccess: "locked" },
+
+  // A title during playback only when the publisher asked for one.
+  { ...base, playbackState: "playing", playerTitle: "The Daily Example", titleEnabled: true },
 ];
 
 const defaultPlayerPermutations = async (callback) => {
@@ -67,6 +70,7 @@ const defaultScreenshotName = (params) => (
     params.widgetPosition && `widget-${params.widgetPosition}`,
     params.disclosureText && "disclosure",
     params.agentAccess === "locked" && "locked",
+    params.playerTitle && "titled",
   ].filter(s => s).join("-")
 );
 

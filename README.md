@@ -27,6 +27,17 @@ run the following to install dependencies and start a server on port 8000:
 
 The player will live-reload when you make changes to the code.
 
+`http://localhost:8000` starts empty: enter a project ID, plus a content or
+playlist ID, in the control panel on the right and press fetch. The panel then
+shows what the `/player` endpoint returned, and the article below the player is
+rebuilt from that content's own segments, so highlighting and click-to-play can
+be tried against it. Anything you change in the panel overrides the project's
+settings, and the page's URL keeps those changes so it can be shared as a repro:
+
+```
+http://localhost:8000/?projectId=12345&contentId=abc-123&set=theme:dark&set=radius:0
+```
+
 ## Testing
 
 You can run the tests with:
