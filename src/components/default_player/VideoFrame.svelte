@@ -245,6 +245,16 @@
     pointer-events: none;
   }
 
+  /* StyleReset's all: initial gives every descendant its own
+     pointer-events: auto, so "none" on the row above cannot be inherited: say
+     it on the descendants too. Without this the seek track, the maximize button
+     and the chat button stay clickable while the overlay is faded out, so the
+     first press on a video maximizes or opens chat instead of playing, and the
+     title and time absorb the press that should toggle playback. */
+  .controls :global(*) {
+    pointer-events: none;
+  }
+
   .controls.visible .overlay-button,
   .controls.visible .overlay-chat,
   .controls.visible :global(.progress-track) {
@@ -390,5 +400,19 @@
   :global(.beyondwords-player.maximized) .video-frame {
     width: 100%;
     height: 100%;
+  }
+
+  /* Fullscreen fills the screen instead of holding the video's aspect ratio,
+     the way the media element itself does, or the frame keeps its 16:9 padding
+     inside a 100%-height box and the controls detach from the picture.
+     The hover wrapper in between has to give up its own height as well, or
+     100% resolves against nothing - the legacy video style does the same. */
+  :global(.beyondwords-player.maximized) .video-frame :global(.hoverable) {
+    height: 100%;
+  }
+
+  :global(.beyondwords-player.maximized) .frame-box {
+    height: 100%;
+    padding-bottom: 0;
   }
 </style>

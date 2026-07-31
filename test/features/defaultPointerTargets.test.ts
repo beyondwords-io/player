@@ -96,6 +96,116 @@ test("default player pointer target accessibility", async ({ page }) => {
   }
 });
 
+// The video treatment has no bar: the same controls sit over the picture and
+// fade out, and the picture itself is the play/pause target. So the overlay has
+// to stop taking presses when it is invisible, and start again when it is not.
+test("default player video pointer target accessibility", async ({ page }) => {
+  await page.goto("http://localhost:8000");
+
+  await waitForStylesToLoad(page);
+  await resetPlayerProps(page);
+  await showVideo(page);
+
+  const frame = await page.locator(".default-player .video-frame").boundingBox();
+  expect(Math.round(frame.height), "the frame holds the video's aspect ratio").toEqual(Math.round(frame.width * 9 / 16));
+
+  // Invisible overlay: the picture takes the press, so the video plays.
+  expect(await overlayState(page)).toEqual({ visible: false, hittable: [], pressAt85Percent: "frame-box" });
+
+  // Hovering reveals it, and then every control has to work.
+  await page.mouse.move(frame.x + frame.width / 2, frame.y + frame.height / 2);
+  await page.waitForTimeout(400);
+
+  const revealed = await overlayState(page);
+  expect(revealed.visible).toEqual(true);
+  expect(revealed.hittable.length, "controls are clickable once revealed").toBeGreaterThan(2);
+  expect(await surveyControls(page, {}, 512)).toEqual([]);
+
+  const maximize = await page.locator(".default-player button[aria-label='Maximize video']").boundingBox();
+  await page.mouse.click(maximize.x + maximize.width / 2, maximize.y + maximize.height / 2);
+  await page.waitForTimeout(200);
+
+  expect(await page.evaluate(() => window.__pressed), "a real click reaches the maximize button").toContain("PressedMaximize");
+
+  // Fullscreen fills the screen, so the seek track has a width to drag.
+  const fullscreen = await enterFullScreen(page);
+  expect(fullscreen.frame, "the frame fills the fullscreen viewport").toEqual(fullscreen.viewport);
+  expect(fullscreen.seekWidth, "the seek track has a width in fullscreen").toBeGreaterThan(fullscreen.viewport.width / 2);
+  expect(fullscreen.controlsWithinFrame, "the controls sit over the picture").toEqual(true);
+});
+
+const showVideo = async (page) => await page.evaluate(async () => {
+  const player = BeyondWords.Player.instances()[0];
+  const videoSize = { name: "16:9", width: 1280, height: 720 };
+  const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 30 }];
+  const video = [{ id: 2, url: "http://example.com/a.mp4", contentType: "video/mp4", duration: 30, videoSize }];
+
+  window.__pressed = [];
+  player.addEventListener("<any>", (event) => window.__pressed.push(event.type));
+
+  Object.assign(player, {
+    playerStyle: "default", video: true, widgetStyle: "none", widgetPosition: null, embedMode: "audio-agent",
+    content: [{ title: "A video article", audio, video }],
+    playbackState: "playing", duration: 30, currentTime: 10,
+    // What the media element would report once a video source had loaded.
+    loadedMedia: { id: 2, url: "http://example.com/a.mp4", contentType: "video/mp4", duration: 30, format: "video", videoSize },
+  });
+
+  await new Promise((resolve) => setTimeout(resolve, 400));
+});
+
+const overlayState = async (page) => await page.evaluate(() => {
+  const frame = document.querySelector(".default-player .video-frame");
+  const controls = frame.querySelector(".controls");
+
+  const hittable = [...controls.querySelectorAll("button, [role='slider']")].filter((el) => {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) { return false; }
+
+    const hit = document.elementFromPoint(Math.round(r.x + r.width / 2), Math.round(r.y + r.height / 2));
+    return hit === el || el.contains(hit);
+  }).map((el) => el.getAttribute("aria-label"));
+
+  // Pressing the picture is how playback toggles, so a press below the middle
+  // has to reach the frame rather than the title or the time.
+  const r = frame.getBoundingClientRect();
+  const below = document.elementFromPoint(Math.round(r.x + r.width / 2), Math.round(r.y + r.height * 0.85));
+
+  return {
+    visible: controls.classList.contains("visible"),
+    hittable,
+    pressAt85Percent: (below?.className || "").toString().split(" ")[0],
+  };
+});
+
+const enterFullScreen = async (page) => await page.evaluate(async () => {
+  const player = BeyondWords.Player.instances()[0];
+
+  // Headless cannot really go fullscreen, so apply what the browser's
+  // :fullscreen rules would apply to the element. They are UA !important
+  // declarations, which is why these have to be important too.
+  player.target.setAttribute("style", [
+    "position: fixed", "inset: 0", "margin: 0", "max-width: none",
+    "width: 100%", "height: 100%", "z-index: 2147483647",
+  ].map((declaration) => `${declaration} !important`).join("; "));
+
+  player.target.classList.add("maximized");
+  player.isFullScreen = true;
+
+  await new Promise((resolve) => setTimeout(resolve, 400));
+
+  const frame = document.querySelector(".default-player .video-frame").getBoundingClientRect();
+  const controls = document.querySelector(".default-player .controls").getBoundingClientRect();
+  const track = document.querySelector(".default-player .controls [role='slider']");
+
+  return {
+    viewport: { width: window.innerWidth, height: window.innerHeight },
+    frame: { width: Math.round(frame.width), height: Math.round(frame.height) },
+    seekWidth: track ? Math.round(track.getBoundingClientRect().width) : 0,
+    controlsWithinFrame: controls.top >= frame.top && controls.bottom <= frame.bottom + 1,
+  };
+});
+
 const menuTrigger = async (page) => await page.evaluate(() => {
   const root = document.querySelector(".default-player.fixed") || document.querySelector(".default-player");
 

@@ -108,6 +108,7 @@
   let openMenu = null;
   let menuLeft = 8;
   let menuTrigger = undefined;
+  let leaving = false;
   let selectedLanguage;
   let docked = false;
   let offline = false;
@@ -552,9 +553,12 @@
   class:fixed-left={isFixed && fixedSide === "left"}
   class:fixed-center={isFixed && fixedSide === "center"}
   class:fixed-right={isFixed && fixedSide === "right"}
+  class:leaving
   style="--fixed-margin: {fixedMargin || "16px"}; width: {widthStyle};"
   in:fly|global={{ y: isFixed ? 12 : 0, duration: isFixed ? (reduceMotion ? 0 : 200) : 0, easing: cubicOut }}
   out:fade|global={{ duration: isFixed && !reduceMotion ? 150 : 0 }}
+  on:outrostart={() => leaving = true}
+  on:outroend={() => leaving = false}
   on:keydown={handleRootKeydown}
   role="none"
 >
@@ -932,6 +936,31 @@
 
   .default-player :global(*) {
     font-family: "InterVariable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* A widget that has been closed fades for 150ms, and Svelte keeps it in the
+     DOM until that finishes. It is fixed at the bottom of the window with a
+     very high z-index, so while it is invisible it would still take the clicks
+     aimed at whatever is now underneath it. */
+  .default-player.leaving {
+    pointer-events: none;
+  }
+
+  /* Fullscreen: the player is a flex item of a black flex container, so it has
+     to claim the space before the frame's own 100% means anything. Without this
+     it shrinks to fit and the video comes out a fraction of the screen. */
+  :global(.beyondwords-player.maximized) .default-player {
+    width: 100%;
+    height: 100%;
+  }
+
+  :global(.beyondwords-player.maximized) .surface {
+    height: 100%;
+  }
+
+  /* Nothing but the picture in fullscreen. */
+  :global(.beyondwords-player.maximized) .caption.outside {
+    display: none;
   }
 
   .surface {
