@@ -92,6 +92,20 @@ test("default player access tier behaviour", async ({ page }) => {
     opens: false,
   });
 
+  // An agent-only embed has no bar to fall back to, so a locked agent has to
+  // replace the composer rather than leave one that cannot send anything.
+  expect(await agentOnly(page, { agentAccess: "locked" }), "locked leaves nothing to type into").toEqual({
+    composer: false,
+    pitch: "Subscribe to keep listening",
+    href: "https://example.com/subscribe",
+  });
+
+  expect(await agentOnly(page, { agentAccess: "full" }), "full access can be used").toEqual({
+    composer: true,
+    pitch: null,
+    href: null,
+  });
+
   // Offering one version selects it, rather than silently playing the other.
   const chosen = await page.evaluate(async () => {
     BeyondWords.Player.destroyAll();
@@ -156,6 +170,31 @@ const playThrough = async (page, params) => await page.evaluate(async (params) =
       isLink: !!bar?.querySelector(".title.tier-cta"),
       locked: !!bar?.querySelector(".tier-lock"),
     },
+  };
+}, params);
+
+// The agent-only embed: is there anything to type into?
+const agentOnly = async (page, params) => await page.evaluate(async (params) => {
+  const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
+
+  BeyondWords.Player.destroyAll();
+  const player = new BeyondWords.Player({ target: ".beyondwords-player" });
+
+  Object.assign(player, {
+    playerStyle: "default", embedMode: "agent",
+    content: [{ title: "An article", audio }],
+    accessCtaText: "Subscribe to keep listening",
+    accessCtaUrl: "https://example.com/subscribe",
+    ...params,
+  });
+
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  const root = document.querySelector(".default-player");
+
+  return {
+    composer: !!root.querySelector(".composer"),
+    pitch: root.querySelector(".locked-pitch")?.textContent.trim() || null,
+    href: root.querySelector(".locked-pitch a")?.getAttribute("href") || null,
   };
 }, params);
 
