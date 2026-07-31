@@ -610,22 +610,41 @@
     {/if}
   {:else if agentOnly}
     <div class="agent-header">
-      <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
-      <span class="agent-prompt" style="color: {tokens.text}">{agentPrompt}</span>
+      <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={chatDisabled} />
+      <span class="agent-prompt" style="color: {chatDisabled ? tokens.muted : tokens.text}">{agentPrompt}</span>
+      {#if chatDisabled}
+        <LockSimple size={15} color={tokens.muted} />
+      {/if}
     </div>
-    <div class="hairline" style="background: {tokens.divider}"></div>
-    <ChatPanel
-      {tokens}
-      {agentClient}
-      {agentPlaceholder}
-      {agentVoice}
-      agentAccess={access}
-      {agentLimit}
-      {shortcuts}
-      {isPlaying}
-      {onEvent}
-      showSlashButton={false}
-      emptyStateChips={true} />
+
+    <!-- Locked means locked: an agent-only embed offers the upgrade instead of
+         a composer that cannot send anything. -->
+    {#if !chatDisabled}
+      <div class="hairline" style="background: {tokens.divider}"></div>
+      <ChatPanel
+        {tokens}
+        {agentClient}
+        {agentPlaceholder}
+        {agentVoice}
+        agentAccess={access}
+        {agentLimit}
+        {shortcuts}
+        {isPlaying}
+        {onEvent}
+        ctaText={agentCta}
+        ctaUrl={agentCtaHref}
+        showSlashButton={false}
+        emptyStateChips={true} />
+    {:else if agentCta}
+      <div class="hairline" style="background: {tokens.divider}"></div>
+      <div class="locked-pitch">
+        {#if agentCtaHref}
+          <a class="pitch-link" href={agentCtaHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{agentCta}</a>
+        {:else}
+          <span class="pitch-copy" style="color: {tokens.text}">{agentCta}</span>
+        {/if}
+      </div>
+    {/if}
   {:else}
   <div class="bar" class:compact={foldSkips}>
     <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
@@ -1267,6 +1286,7 @@
   }
 
   .agent-header {
+    /* The lock sits after the prompt, so the row has to make room for it. */
     display: flex;
     align-items: center;
     gap: 10px;
