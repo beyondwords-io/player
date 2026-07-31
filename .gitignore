@@ -3,3 +3,4 @@ dist
 test/results
 src/helpers/daisybitStrings.ts
 *.backup
+*.log
