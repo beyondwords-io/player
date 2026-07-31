@@ -15,7 +15,8 @@
 
   $: options = optionsFor(setting, ctx);
   $: selected = selectedOption(setting, value, ctx);
-  $: text = asText(value);
+  // A setting that knows how to render itself wins over raw JSON.
+  $: text = setting.format ? setting.format(value, ctx) : asText(value);
   $: resetHint = hasApiValue ? `reset to the API's ${asText(apiValue) || "empty"}` : `reset to the default ${asText(setting.default) || "empty"}`;
 
   const asText = (raw) => {
@@ -23,6 +24,10 @@
     if (typeof raw === "object") { return JSON.stringify(raw); }
 
     return `${raw}`;
+  };
+
+  const choosePreset = (name) => {
+    if (name in setting.presets) { onChange(setting.presets[name]); }
   };
 
   const change = (raw) => {
@@ -74,6 +79,20 @@
   {/if}
 </div>
 
+{#if setting.presets}
+  <!-- Somewhere to start from, for settings you would otherwise have to type
+       out by hand. Choosing one fills the field above. -->
+  <div class="control preset">
+    <span class="label">from a preset</span>
+    <select tabindex={-1} value="" on:change={(event) => choosePreset(event.currentTarget.value)}>
+      <option value="">choose…</option>
+      {#each Object.keys(setting.presets) as name (name)}
+        <option value={name}>{name}</option>
+      {/each}
+    </select>
+  </div>
+{/if}
+
 {#if overridden && hasApiValue}
   <div class="note">API: {asText(apiValue) || "empty"}</div>
 {/if}
@@ -108,6 +127,11 @@
 
   .marker {
     color: maroon;
+  }
+
+  .control.preset {
+    margin: -4px 0 8px 0;
+    opacity: 0.75;
   }
 
   .note {

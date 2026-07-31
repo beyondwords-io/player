@@ -122,7 +122,6 @@
   export let infoText = undefined;
   export let disclosureText = undefined;
   export let disclosureLink = undefined;
-  export let languages = [];
   export let versions = [];
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
@@ -138,6 +137,7 @@
   export let apiProps = undefined;
 
   export let showMediaSession = false;
+  export let segmentLimitReached = false;
   export let metadataLoaded = false;
   export let isFullScreen = false;
   export let mediaElement = undefined;
@@ -174,6 +174,11 @@
   let noContentAvailable = false;
   onMount(() => addEventListener("NoContentAvailable", () => noContentAvailable = true));
   $: projectId, contentId, playlistId, sourceId, sourceUrl, noContentAvailable = false;
+
+  // A tier's limit stops playback and rewinds to zero, so by the time anything
+  // renders the time no longer says the preview ran out. Remember the event.
+  onMount(() => addEventListener("SegmentLimitReached", () => segmentLimitReached = true));
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, contentIndex, summary, segmentLimitReached = false;
 
   // Offering one version is a statement about what this embed plays, not just
   // about what the version menu shows, so select it. Declared before the
@@ -337,7 +342,6 @@
     {titleEnabled}
     {callToAction}
     {contentLanguage}
-    {languages}
     {versions}
     {textColor}
     {backgroundColor}
@@ -367,6 +371,7 @@
     {persistentAdvert}
     {metadataLoaded}
     {segmentLimit}
+    {segmentLimitReached}
     accessTier={accessTier}
     {accessCtaText}
     {accessCtaUrl} />
@@ -442,7 +447,6 @@
     {titleEnabled}
       {callToAction}
       {contentLanguage}
-      {languages}
       {versions}
       {textColor}
       {backgroundColor}
@@ -470,6 +474,7 @@
     {persistentAdvert}
     {metadataLoaded}
     {segmentLimit}
+    {segmentLimitReached}
     accessTier={accessTier}
     {accessCtaText}
     {accessCtaUrl} />

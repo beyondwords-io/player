@@ -44,6 +44,29 @@ test("default player access tier behaviour", async ({ page }) => {
   const fullAccess = await playThrough(page, { segments, summary: false, segmentLimit: undefined, times: [1, 26, 50] });
   expect(fullAccess.reachedLimit).toEqual(false);
 
+  // The limit stops playback and rewinds to zero, so the bar cannot read the
+  // preview-ended state off the time: it has to hear the event. The label is the
+  // publisher's own CTA text, so nothing here needs translating.
+  expect(previewOfTheArticle.barAfterwards, "a spent preview offers the upgrade").toEqual({
+    label: "Subscribe to keep listening",
+    isLink: true,
+    locked: true,
+  });
+
+  expect(titleOnly.barAfterwards, "a title-only tier offers it from the start").toEqual({
+    label: "Subscribe to keep listening",
+    isLink: true,
+    locked: true,
+  });
+
+  expect(wholeSummary.barAfterwards.locked, "the summary is not sold back to the reader").toEqual(false);
+  expect(fullAccess.barAfterwards.locked, "full access is not locked").toEqual(false);
+
+  // With no CTA text from the publisher, the bar keeps its translated title
+  // rather than inventing English.
+  const withoutCtaText = await playThrough(page, { segments, summary: false, segmentLimit: 0, times: [1], accessCtaText: undefined });
+  expect(withoutCtaText.barAfterwards.label).toEqual("Listen to this article");
+
   // Offering one version selects it, rather than silently playing the other.
   const chosen = await page.evaluate(async () => {
     BeyondWords.Player.destroyAll();
@@ -58,7 +81,7 @@ test("default player access tier behaviour", async ({ page }) => {
 
 // Loads content, plays, and reports whether the segment limit cut it off.
 const playThrough = async (page, params) => await page.evaluate(async (params) => {
-  const { segments, summary, segmentLimit, times } = params;
+  const { segments, summary, segmentLimit, times, accessCtaText } = params;
   const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
 
   BeyondWords.Player.destroyAll();
@@ -74,6 +97,8 @@ const playThrough = async (page, params) => await page.evaluate(async (params) =
     content: [{ title: "An article", audio, summarization: { audio, video: [] }, segments }],
     summary,
     segmentLimit,
+    accessCtaUrl: "https://example.com/subscribe",
+    accessCtaText: "accessCtaText" in params ? accessCtaText : "Subscribe to keep listening",
     duration: summary ? 30 : 60,
     playbackState: "playing",
   });
@@ -94,7 +119,19 @@ const playThrough = async (page, params) => await page.evaluate(async (params) =
     if (player.playbackState !== "playing" && stoppedAt === null) { stoppedAt = time; }
   }
 
-  return { reachedLimit, stoppedAt, playbackState: player.playbackState, currentSegment: player.currentSegment?.marker || null };
+  const bar = document.querySelector(".default-player");
+
+  return {
+    reachedLimit,
+    stoppedAt,
+    playbackState: player.playbackState,
+    currentSegment: player.currentSegment?.marker || null,
+    barAfterwards: {
+      label: bar?.querySelector(".title")?.textContent.trim() || null,
+      isLink: !!bar?.querySelector(".title.tier-cta"),
+      locked: !!bar?.querySelector(".tier-lock"),
+    },
+  };
 }, params);
 
 const waitForStylesToLoad = async (page) => {

@@ -51,6 +51,10 @@ const list = [
 
   // A title during playback only when the publisher asked for one.
   { ...base, playbackState: "playing", playerTitle: "The Daily Example", titleEnabled: true },
+
+  // The access tier states: the CTA takes the meta row and the bar is never dead.
+  { ...base, segmentLimit: 0, accessCtaUrl: "https://example.com/subscribe", accessCtaText: "Subscribe to keep listening" },
+  { ...base, segmentLimit: 2, segmentLimitReached: true, accessCtaUrl: "https://example.com/subscribe", accessCtaText: "Subscribe to keep listening" },
 ];
 
 const defaultPlayerPermutations = async (callback) => {
@@ -71,6 +75,8 @@ const defaultScreenshotName = (params) => (
     params.disclosureText && "disclosure",
     params.agentAccess === "locked" && "locked",
     params.playerTitle && "titled",
+    params.segmentLimit === 0 && "title-only",
+    params.segmentLimitReached && "preview-ended",
   ].filter(s => s).join("-")
 );
 

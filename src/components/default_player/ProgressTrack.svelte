@@ -12,8 +12,6 @@
   export let readonly = false;
   export let buffering = false;
   export let fillOpacity = 1;
-  export let boundaryRatio = 0;
-  export let boundaryColor = "#8f8f8f";
   export let thickness = 3;
   export let radius = "9999px";
   export let onEvent = () => {};
@@ -88,9 +86,6 @@
   aria-readonly={readonly || undefined}
 >
   <div class="fill" style="width: {Math.max(0, Math.min(progress, 1)) * 100}%; background: {fillColor}; opacity: {fillOpacity}; border-radius: {radius}"></div>
-  {#if boundaryRatio > 0 && boundaryRatio < 1}
-    <span class="boundary" style="left: {boundaryRatio * 100}%; background: {boundaryColor}"></span>
-  {/if}
 </div>
 
 <style>
@@ -120,15 +115,6 @@
     pointer-events: none;
   }
 
-  /* Marks where a preview stops, so the cut-off is never a surprise. */
-  .boundary {
-    position: absolute;
-    top: -2px;
-    width: 2px;
-    height: 7px;
-    border-radius: 1px;
-    pointer-events: none;
-  }
 
   .progress-track.readonly {
     cursor: default;
