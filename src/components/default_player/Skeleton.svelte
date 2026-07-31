@@ -1,4 +1,7 @@
 <script>
+  // The skeleton is the first thing a default-style embed renders, so it is
+  // where the styles need to start loading.
+  import("../../helpers/loadTheStyles.ts");
   import deriveTokens from "../../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
 
