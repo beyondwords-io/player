@@ -1,7 +1,7 @@
 <script>
   import("../helpers/loadTheStyles.ts");
   import { onMount, onDestroy } from "svelte";
-  import settingsManifest, { groupOrder } from "../helpers/settingsManifest";
+  import settingsManifest, { groupOrder, findSetting } from "../helpers/settingsManifest";
   import { setSetting, resetSetting, resetAllSettings, reapplySettings, overriddenSettings } from "../helpers/settingOverrides";
   import { settingsUrl } from "../helpers/settingUrl";
   import SettingControl from "./control_panel/SettingControl.svelte";
@@ -139,8 +139,15 @@
     "A playlist": { projectId: "26027", playlistId: "86791" },
   };
 
+  // Anything left at its default is not worth carrying in a shared URL.
+  const urlIdentifiers = () => Object.fromEntries(
+    loaderKeys
+      .filter((key) => loader[key] !== findSetting(key)?.default)
+      .map((key) => [key, loader[key]])
+  );
+
   const currentUrl = () => `${window.location.pathname}?${settingsUrl({
-    identifiers: Object.fromEntries(loaderKeys.map((key) => [key, loader[key]])),
+    identifiers: urlIdentifiers(),
     settings: Object.fromEntries(overrides.map((key) => [key, player.initialProps[key]])),
     extra: { advanced: showAdvanced ? "true" : "" },
   })}`;
