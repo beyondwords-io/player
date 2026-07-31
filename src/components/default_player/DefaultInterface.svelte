@@ -487,9 +487,6 @@
   };
 
   const toggleChat = () => {
-    // A locked agent with no publisher copy has nothing to show.
-    if (chatDisabled && !agentCta) { return; }
-
     chatOpen = !chatOpen;
     if (chatOpen) { queueOpen = false; openMenu = null; }
 
@@ -590,7 +587,7 @@
       onClose={handleCloseWidget}
       {onEvent} />
 
-    {#if chatOpen && showChat && !chatDisabled}
+    {#if chatOpen && showChat}
       <div
         class="chat-unfold"
         style="background: {displayBackground}; border-radius: 0 0 {tokens.radius.bar} {tokens.radius.bar}"
@@ -604,8 +601,11 @@
           agentAccess={access}
           {agentLimit}
           {shortcuts}
-        {isPlaying}
-        {onEvent} />
+          {isPlaying}
+          {onEvent}
+          ctaText={agentCta}
+          ctaUrl={agentCtaHref}
+          emptyStateChips={true} />
       </div>
     {/if}
   {:else if agentOnly}
@@ -890,19 +890,7 @@
     <QueuePanel {content} {contentIndex} {summary} {tokens} {onEvent} />
   {/if}
 
-  {#if chatOpen && showChat && chatDisabled && agentCta}
-    <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
-      <div class="hairline" style="background: {tokens.divider}"></div>
-      <div class="locked-pitch">
-        <LockSimple size={15} color={tokens.muted} />
-        {#if agentCtaHref}
-          <a class="pitch-link" href={agentCtaHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{agentCta}</a>
-        {:else}
-          <span class="pitch-copy" style="color: {tokens.text}">{agentCta}</span>
-        {/if}
-      </div>
-    </div>
-  {:else if chatOpen && showChat && !chatDisabled}
+  {#if chatOpen && showChat}
     <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
       <div class="hairline" style="background: {tokens.divider}"></div>
       <ChatPanel
@@ -916,7 +904,8 @@
         ctaUrl={agentCtaHref}
         {shortcuts}
         {isPlaying}
-        {onEvent} />
+        {onEvent}
+        emptyStateChips={true} />
     </div>
   {/if}
 
@@ -1243,33 +1232,9 @@
     min-height: 0;
   }
 
-  .locked-pitch {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    flex-wrap: wrap;
-    padding: 12px 16px;
-  }
 
-  .pitch-copy {
-    font-size: 13px;
-    line-height: 1.5;
-  }
 
-  .pitch-link {
-    font-size: 11px;
-    font-weight: 500;
-    text-decoration: none;
-    border-bottom-width: 1px;
-    border-bottom-style: dotted;
-    cursor: pointer;
-  }
 
-  .pitch-link:focus-visible {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-offset: 2px;
-  }
 
   .agent-header {
     /* The lock sits after the prompt, so the row has to make room for it. */
