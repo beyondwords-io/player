@@ -11,14 +11,22 @@
   export let onSelect = () => {};
   export let onClose = () => {};
 
+  // Both measured against the player, which is the containing block. Anchoring
+  // to the trigger rather than to the bottom of the player keeps the menu under
+  // the control that opened it however tall the player has become - with the
+  // queue open it was landing 160px below the bar.
+  export let anchorTop = 0;
+  export let anchorBottom = 0;
+
   let menu;
-  let placeAbove = false;
+  let top = anchorBottom + 6;
 
   onMount(() => {
-    // Docked at the bottom of the window, there is no room below the bar: the
-    // items would be laid out past the bottom of the viewport, where they
-    // cannot be clicked at all.
-    placeAbove = menu.getBoundingClientRect().bottom > window.innerHeight - 8;
+    // Docked at the bottom of the window there is no room below the trigger,
+    // and the items would be laid out past the edge of the screen where nothing
+    // can click them, so hang the menu above it instead.
+    const box = menu.getBoundingClientRect();
+    if (box.bottom > window.innerHeight - 8) { top = anchorTop - box.height - 6; }
 
     const handlePointerDown = (event) => {
       // A press on the trigger is the trigger's own to handle: it toggles the
@@ -49,9 +57,8 @@
 <div
   bind:this={menu}
   class="menu"
-  class:above={placeAbove}
   role="menu"
-  style="left: {left}px; background: {tokens.bubbleBackground}; border: 1px solid {tokens.divider}; border-radius: {tokens.radius.control}; box-shadow: {tokens.widgetShadow}"
+  style="left: {left}px; top: {top}px; background: {tokens.bubbleBackground}; border: 1px solid {tokens.divider}; border-radius: {tokens.radius.control}; box-shadow: {tokens.widgetShadow}"
 >
   {#each groups as group (group.label)}
     <span class="eyebrow" style="color: {tokens.muted}">{group.label}</span>
@@ -82,7 +89,6 @@
 <style>
   .menu {
     position: absolute;
-    top: calc(100% + 6px);
     z-index: 10;
     /* Nothing in the bar should be able to take a press meant for the menu. */
     pointer-events: auto;
@@ -92,11 +98,6 @@
     max-width: 220px;
     padding: 6px;
     box-sizing: border-box;
-  }
-
-  .menu.above {
-    top: auto;
-    bottom: calc(100% + 6px);
   }
 
   .eyebrow {

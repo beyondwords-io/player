@@ -108,6 +108,8 @@
   let openMenu = null;
   let menuLeft = 8;
   let menuTrigger = undefined;
+  let menuAnchorTop = 0;
+  let menuAnchorBottom = 0;
   let leaving = false;
   let selectedLanguage;
   let docked = false;
@@ -407,6 +409,11 @@
     const root = element.getBoundingClientRect();
 
     menuLeft = Math.max(8, Math.min(anchor.left - root.left, root.width - 228));
+
+    // Where the menu hangs from, so it stays with its trigger however tall the
+    // player has grown, e.g. with the queue or the chat panel open.
+    menuAnchorTop = anchor.top - root.top;
+    menuAnchorBottom = anchor.bottom - root.top;
 
     // The menu ignores presses on its own trigger, so that a second press
     // closes it here rather than being treated as a press outside.
@@ -905,7 +912,7 @@
   {/if}
 
   {#if openMenu}
-    <Menu groups={menuGroups} left={menuLeft} {tokens} trigger={menuTrigger} onSelect={handleMenuSelect} onClose={() => openMenu = null} />
+    <Menu groups={menuGroups} left={menuLeft} anchorTop={menuAnchorTop} anchorBottom={menuAnchorBottom} {tokens} trigger={menuTrigger} onSelect={handleMenuSelect} onClose={() => openMenu = null} />
   {/if}
   {/if}
 
