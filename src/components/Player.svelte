@@ -113,7 +113,7 @@
   export let agentAvatar = undefined;
   export let accentColor = undefined;
   export let accentTextColor = undefined;
-  export let agentAccess = "enabled";
+  export let agentAccess = "full";
   export let agentLimit = undefined;
   export let agentVoice = true;
   export let agentPlaceholder = undefined;
