@@ -83,7 +83,10 @@ class PlayerApiClient {
   }
 
   #fetchJson(path, params = this.params) {
-    return fetchJson(`${this.baseUrl}/${path}${this.#queryString(params)}`, { headers: this.headers });
+    // Kept so tooling can show exactly which request produced the response.
+    this.lastRequestUrl = `${this.baseUrl}/${path}${this.#queryString(params)}`;
+
+    return fetchJson(this.lastRequestUrl, { headers: this.headers });
   }
 
   #queryString(params) {

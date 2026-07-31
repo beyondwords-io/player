@@ -129,6 +129,14 @@
 
   // These are set automatically.
   export let initialProps = {};
+
+  // The last /player response, the URL it came from, and every value it tried
+  // to set (including ones an override rejected). For tooling only: ignored
+  // props, so they never reach events or analytics.
+  export let apiPayload = undefined;
+  export let apiRequestUrl = undefined;
+  export let apiProps = undefined;
+
   export let showMediaSession = false;
   export let metadataLoaded = false;
   export let isFullScreen = false;

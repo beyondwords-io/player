@@ -69,6 +69,14 @@ const setPropsFromApi = async (player) => {
   }
 
   const data = await fetchData(client, identifiers).catch(() => {});
+
+  // Kept for tooling (see the control panel): the response verbatim, the URL it
+  // came from, and every value the API tried to set. Also set when no content
+  // came back, so a 404 or an empty response is still inspectable.
+  player.apiPayload = data;
+  player.apiRequestUrl = client.lastRequestUrl;
+  player.apiProps = {};
+
   if (!data?.content) { handleNoContent(player); return; }
 
   // The player allows you to override props from the API by adding them in the script tag.
@@ -307,6 +315,10 @@ const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {
 };
 
 const set = (player, propName, value) => {
+  // Record what the API asked for, even when an override stops it being
+  // applied, so tooling can show both values and restore the API's one.
+  if (player.apiProps) { player.apiProps[propName] = value; }
+
   const overridden = typeof player.initialProps?.[propName] !== "undefined";
   if (!overridden) { player[propName] = value; }
 };
