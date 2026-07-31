@@ -84,8 +84,6 @@ const settingsManifest = [
   { key: "summary", group: "Playback", control: "select", options: bool, default: false, refetch: true, needs: "content with a summary" },
   { key: "versions", group: "Playback", control: "select", default: [], appliesTo: "default", ...csv,
     options: ["", "full", "summary", "full,summary"], format: (value) => (value || []).join(",") || "all available" },
-  { key: "languages", group: "Playback", control: "select", default: [], appliesTo: "default", ...csv,
-    options: ["", "en,fr", "en,fr,de"], format: (value) => (value || []).join(",") || "source only" },
   { key: "playerTitle", group: "Playback", control: "text", default: undefined, cleared: null, api: "player_title" },
   { key: "titleEnabled", group: "Playback", control: "select", options: bool, default: true, api: "title_enabled" },
   { key: "callToAction", group: "Playback", control: "text", default: undefined, cleared: null, api: "call_to_action", appliesTo: "legacy" },
@@ -115,8 +113,17 @@ const settingsManifest = [
   { key: "agentVoice", group: "Agent", control: "select", options: bool, default: true, appliesTo: "default" },
   { key: "agentName", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default" },
   { key: "agentPlaceholder", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default" },
-  { key: "shortcuts", group: "Agent", control: "select", default: [], appliesTo: "default",
-    options: ["", "set"], format: (value) => (value?.length ? "3 examples" : "none"), parse: (raw) => (raw ? exampleShortcuts : []) },
+  // Type your own, separated by a pipe, or start from a preset. Pipes rather
+  // than commas because these are sentences.
+  { key: "shortcuts", group: "Agent", control: "text", default: [], cleared: [], appliesTo: "default",
+    format: (value) => (value || []).join(" | "),
+    parse: (raw) => raw.split("|").map((phrase) => phrase.trim()).filter((phrase) => phrase),
+    presets: {
+      "3 news examples": exampleShortcuts,
+      "2 sport examples": ["How did the match end?", "Who scored?"],
+      "1 long example": ["Explain the background to this story as if I have not been following it"],
+      "none": [],
+    } },
   { key: "agentColor", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default" },
   { key: "agentAvatar", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default" },
 

@@ -57,7 +57,6 @@
   export let titleEnabled = true;
   export let callToAction = undefined;
   export let contentLanguage = "en";
-  export let languages = [];
   export let versions = [];
   export let textColor = undefined;
   export let backgroundColor = undefined;
@@ -94,6 +93,7 @@
   export let relativeY = undefined;
   export let absoluteY = undefined;
   export let segmentLimit = undefined;
+  export let segmentLimitReached = false;
   export let accessTier = undefined;
   export let accessCtaText = undefined;
   export let accessCtaUrl = undefined;
@@ -112,7 +112,6 @@
   let menuAnchorTop = 0;
   let menuAnchorBottom = 0;
   let leaving = false;
-  let selectedLanguage;
   let docked = false;
   let offline = false;
   let hasFinished = false;
@@ -167,12 +166,10 @@
   $: isTitleOnly = segmentLimit === 0 && !summary;
   $: isPreview = typeof segmentLimit === "number" && segmentLimit > 0 && !summary;
   $: previewEndsAt = isPreview ? (segments[segmentLimit]?.startTime ?? 0) : 0;
-  $: previewRatio = isPreview && duration > 0 ? Math.min(1, previewEndsAt / duration) : 0;
-  $: previewEnded = isPreview && previewEndsAt > 0 && currentTime >= previewEndsAt - 0.25;
+  $: previewEnded = isPreview && segmentLimitReached;
 
-  $: ctaText = accessCtaText || (isTitleOnly ? "Subscribe to listen" : "Subscribe to hear the full article");
   $: showTierCta = isTitleOnly || (isPreview && previewEnded && isStopped);
-  $: tierCtaLabel = isTitleOnly ? stoppedTitle : "Preview ended";
+  $: tierCtaText = accessCtaText || stoppedTitle;
 
   // The queue is an inline affordance - the widget stays the bar plus x.
   $: queueAvailable = isPlaylist && !isWidget && playlistStyle.split("-")[0] !== "hide";
@@ -198,6 +195,7 @@
   const STACKED_COL_W = 76;
   const CENTRED_COL_W = 112;
   const PREVIEW_EXTRA_W = 52;
+  const TIER_LOCK_W = 32; // 16px glyph plus the 8px either side the design gives it
 
   $: centredTrack = !isStopped && !isAdvert && !offline && !playingTitle;
 
@@ -206,6 +204,7 @@
     + (plan.chip ? GAP + CHIP_W : 0)
     + (plan.skips ? 2 * (GAP + CONTROL_W) : 0)
     + (plan.speed ? GAP + SPEED_W : 0)
+    + (showTierCta ? TIER_LOCK_W : 0)
     + (plan.overflow ? GAP + CONTROL_W : 0)
     + (plan.queue ? GAP + CONTROL_W : 0)
     + (plan.download ? GAP + CONTROL_W : 0)
@@ -218,7 +217,7 @@
       chip: canShowAdvertChip,
       skips: !isStopped && !isAdvert,
       speed: !isStopped && !isAdvert,
-      overflow: !isStopped && (hasVersions || hasLanguages),
+      overflow: !isStopped && hasVersions,
       queue: queueAvailable && playlistToggle !== "hide",
       download: hasDownload,
       info: hasInfo,
@@ -287,8 +286,7 @@
   $: offeredVersions = versions.length ? versions : ["full", "summary"];
   $: hasSummaryVariant = !!contentItem.summarization && offeredVersions.includes("summary");
   $: hasVersions = hasSummaryVariant && offeredVersions.includes("full");
-  $: hasLanguages = languages.length > 1;
-  $: languageName = languageNameFor(selectedLanguage || contentLanguage);
+  $: languageName = languageNameFor(contentLanguage);
   // Name the version when the reader can switch, since the menu carries the
   // durations; otherwise say how long the one they are getting is.
   $: versionLabel = summary && hasVersions ? "Summary" : totalMins;
@@ -299,7 +297,7 @@
   $: hasDownload = downloadAudioIndex !== -1 || downloadVideoIndex !== -1;
 
   $: hasInfo = !!infoText;
-  $: showOverflow = (!isStopped && (hasVersions || hasLanguages || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload) || (queueAvailable && foldQueue && playlistToggle !== "hide");
+  $: showOverflow = (!isStopped && (hasVersions || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload) || (queueAvailable && foldQueue && playlistToggle !== "hide");
 
   $: isFixed = isWidget && !!fixedPosition;
   $: fixedSide = fixedPosition === "auto" || fixedPosition === true ? "center" : fixedPosition;
@@ -348,20 +346,12 @@
     return media?.duration ? media.duration / 1000 : 0;
   };
 
-  $: languageItems = languages.map((code) => ({
-    value: code,
-    label: languageNameFor(code),
-    selected: code === (selectedLanguage || String(contentLanguage).split(/[-_]/)[0]),
-  }));
-
   $: speedItems = [{ value: "speed", label: "Speed", secondary: `${playbackRate}×`, selected: false, keepOpen: true }];
 
   $: menuGroups =
     openMenu === "version" ? [{ label: "Version", items: versionItems }] :
-    openMenu === "language" ? [{ label: "Language", items: languageItems }] :
     openMenu === "overflow" ? [
       ...(hasVersions && !isStopped ? [{ label: "Version", items: versionItems }] : []),
-      ...(hasLanguages && !isStopped ? [{ label: "Language", items: languageItems }] : []),
       ...(foldSpeed && !isStopped ? [{ label: "Speed", items: speedItems }] : []),
       ...(hasInfo && foldInfo ? [{ label: "About", items: [{ value: "info", label: "About this audio", selected: infoOpen }] }] : []),
       ...(hasDownload && foldDownload ? [{ label: "Download", items: [{ value: "download", label: translate("downloadAudio"), selected: false }] }] : []),
@@ -442,8 +432,6 @@
       handleDownload();
     } else if (item.value === "queue") {
       toggleQueue();
-    } else {
-      selectedLanguage = item.value;
     }
   };
 
@@ -635,7 +623,7 @@
         type="button"
         class="play-pause"
         style="color: {tokens.icon}; outline-color: {tokens.text}"
-        aria-label={isTitleOnly ? ctaText : playPauseLabel}
+        aria-label={isTitleOnly ? tierCtaText : playPauseLabel}
         on:click={handlePlayPause}
         on:mouseup={blurElement}
       >
@@ -649,14 +637,11 @@
 
     <div class="title-col" class:playing={!isStopped}>
       {#if isStopped && showTierCta}
-        <span class="title" style="color: {tokens.text}">{tierCtaLabel}</span>
-        <span class="meta">
-          {#if accessCtaUrl}
-            <a class="tier-cta" href={accessCtaUrl} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{ctaText}</a>
-          {:else}
-            <span class="plain" style="color: {tokens.muted}">{ctaText}</span>
-          {/if}
-        </span>
+        {#if accessCtaUrl}
+          <a class="title tier-cta" href={accessCtaUrl} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{tierCtaText}</a>
+        {:else}
+          <span class="title" style="color: {tokens.text}">{tierCtaText}</span>
+        {/if}
       {:else if isStopped}
         <span class="title" style="color: {tokens.text}">{stoppedTitle}</span>
         <span class="meta">
@@ -668,11 +653,7 @@
 
           <span class="separator" style="color: {tokens.muted}">·</span>
 
-          {#if hasLanguages}
-            <button type="button" class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" on:click={openMenuAt("language")} aria-expanded={openMenu === "language"}>{languageName}</button>
-          {:else}
-            <span class="plain" style="color: {tokens.muted}">{languageName}</span>
-          {/if}
+          <span class="plain" style="color: {tokens.muted}">{languageName}</span>
         </span>
       {:else if isAdvert}
         <div class="title-row">
@@ -717,7 +698,7 @@
         <div class="title-row">
           <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
           {#if isPreview && !remainingOnly}
-            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(previewEndsAt)} preview</span>
+            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(previewEndsAt)}</span>
           {:else if isPreview}
             <span class="time" style="color: {tokens.text}">-{formatTime(Math.max(0, previewEndsAt - currentTime))}</span>
           {:else if remainingOnly}
@@ -730,8 +711,6 @@
           {progress}
           {duration}
           {buffering}
-          boundaryRatio={previewRatio}
-          boundaryColor={tokens.muted}
           radius={tokens.radius.track}
           trackColor={tokens.track}
           fillColor={tokens.text}
@@ -745,8 +724,6 @@
               {duration}
               {buffering}
               thickness={6}
-              boundaryRatio={previewRatio}
-              boundaryColor={tokens.muted}
               radius={tokens.radius.track}
               trackColor={tokens.track}
               fillColor={tokens.text}
@@ -754,7 +731,7 @@
               {onEvent} />
           </div>
           {#if isPreview && !remainingOnly}
-            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(previewEndsAt)} preview</span>
+            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(previewEndsAt)}</span>
           {:else if isPreview}
             <span class="time" style="color: {tokens.text}">-{formatTime(Math.max(0, previewEndsAt - currentTime))}</span>
           {:else if remainingOnly}
@@ -835,6 +812,12 @@
       >
         <Info size={20} color={tokens.icon} />
       </button>
+    {/if}
+
+    {#if showTierCta}
+      <span class="tier-lock" aria-hidden="true">
+        <LockSimple size={16} color={tokens.muted} />
+      </span>
     {/if}
 
     {#if showChat}
@@ -1166,6 +1149,14 @@
     background: var(--pressed-bg);
   }
 
+  /* Closes a locked bar, per the access-tier states in the design. */
+  .tier-lock {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 8px;
+  }
+
   .chat-divider {
     width: 1px;
     height: 28px;
@@ -1359,6 +1350,16 @@
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
+  }
+
+  /* The whole label is the upgrade link when there is somewhere to send them. */
+  .title.tier-cta {
+    width: fit-content;
+    max-width: 100%;
+    text-decoration: none;
+    border-bottom-style: dotted;
+    border-bottom-width: 1px;
+    cursor: pointer;
   }
 
   .meta .tier-cta {
