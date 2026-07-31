@@ -67,6 +67,13 @@ test("default player access tier behaviour", async ({ page }) => {
   const withoutCtaText = await playThrough(page, { segments, summary: false, segmentLimit: 0, times: [1], accessCtaText: undefined });
   expect(withoutCtaText.barAfterwards.label).toEqual("Listen to this article");
 
+  // A paid placement has to survive the tier it was sold against: the preview
+  // time reserved room for a word that no longer renders, and the advertiser
+  // chip was what got folded away to pay for it.
+  for (const limit of [undefined, 2]) {
+    expect(await chipAfterTheAd(page, limit), `advertiser chip survives segmentLimit ${limit}`).toEqual(true);
+  }
+
   // Offering one version selects it, rather than silently playing the other.
   const chosen = await page.evaluate(async () => {
     BeyondWords.Player.destroyAll();
@@ -133,6 +140,40 @@ const playThrough = async (page, params) => await page.evaluate(async (params) =
     },
   };
 }, params);
+
+// Plays a pre-roll to its end the way the media element does, at the width the
+// harness itself embeds at, and reports whether the advertiser link is still there.
+const chipAfterTheAd = async (page, segmentLimit) => await page.evaluate(async (segmentLimit) => {
+  const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
+
+  BeyondWords.Player.destroyAll();
+  const player = new BeyondWords.Player({ target: ".beyondwords-player" });
+
+  Object.assign(player, {
+    playerStyle: "default",
+    embedMode: "audio-agent",
+    content: [{ title: "An article", audio, adsEnabled: true, segments: [
+      { section: "title", marker: "t", startTime: 0, duration: 5 },
+      { section: "body", marker: "b1", startTime: 5, duration: 20 },
+      { section: "body", marker: "b2", startTime: 25, duration: 20 },
+    ] }],
+    adverts: [{ id: 9, type: "custom", placement: "pre-roll", clickThroughUrl: "https://example.com/roasters", audio }],
+    duration: 60,
+    currentTime: 0,
+    playbackState: "playing",
+    advertIndex: 0,
+    segmentLimit,
+  });
+
+  player.target.style.maxWidth = "512px";
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  document.querySelector(".beyondwords-player audio, .beyondwords-player video").dispatchEvent(new Event("ended"));
+  await new Promise((resolve) => setTimeout(resolve, 450));
+
+  const bar = document.querySelector(".default-player");
+  return [...bar.querySelectorAll("a")].some((link) => (link.getAttribute("href") || "").includes("roasters"));
+}, segmentLimit);
 
 const waitForStylesToLoad = async (page) => {
   await page.evaluate(async () => {
