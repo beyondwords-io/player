@@ -107,6 +107,7 @@
   let infoOpen = false;
   let openMenu = null;
   let menuLeft = 8;
+  let menuTrigger = undefined;
   let selectedLanguage;
   let docked = false;
   let offline = false;
@@ -405,6 +406,10 @@
     const root = element.getBoundingClientRect();
 
     menuLeft = Math.max(8, Math.min(anchor.left - root.left, root.width - 228));
+
+    // The menu ignores presses on its own trigger, so that a second press
+    // closes it here rather than being treated as a press outside.
+    menuTrigger = event.currentTarget;
     openMenu = name;
   };
 
@@ -896,7 +901,7 @@
   {/if}
 
   {#if openMenu}
-    <Menu groups={menuGroups} left={menuLeft} {tokens} onSelect={handleMenuSelect} onClose={() => openMenu = null} />
+    <Menu groups={menuGroups} left={menuLeft} {tokens} trigger={menuTrigger} onSelect={handleMenuSelect} onClose={() => openMenu = null} />
   {/if}
   {/if}
 

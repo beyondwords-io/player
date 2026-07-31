@@ -16,7 +16,9 @@ test("default player pointer target accessibility", async ({ page }) => {
   await resetPlayerProps(page);
 
   const audio = [{ id: 123, url: "http://example.com/audio.mp3", contentType: "audio/mpeg", duration: 30 }];
-  const singleItem = [{ title: "A reasonable length podcast title", audio }];
+
+  // The summary variant is what puts the version menu in the bar.
+  const singleItem = [{ title: "A reasonable length podcast title", audio, summarization: { audio, video: [] } }];
   const playlistItems = [singleItem[0], { title: "Another playlist item", audio }, { title: "A third item", audio }];
   const advert = [{ clickThroughUrl: "https://example.com", audio }];
 
@@ -68,6 +70,58 @@ test("default player pointer target accessibility", async ({ page }) => {
 
   expect(await page.evaluate(() => BeyondWords.Player.instances()[0].playbackState)).toEqual("paused");
   expect(await page.locator(".default-player .menu").count()).toEqual(0);
+
+  // A menu has to be reachable, and dismissable from the control that opened it.
+  // Docked at the bottom of the window it has to open upwards, or its items are
+  // laid out past the edge of the screen where nothing can click them.
+  for (const { name, params } of [
+    { name: "inline", params: { ...base, playbackState: "stopped", versions: ["full", "summary"] } },
+    { name: "bottom widget", params: { ...base, widgetStyle: "default", widgetPosition: "center", versions: ["full", "summary"] } },
+  ]) {
+    await surveyControls(page, params, 512);
+
+    const trigger = await menuTrigger(page);
+    expect(trigger, `${name} has a menu trigger`).toBeTruthy();
+
+    await page.mouse.click(trigger.x + trigger.width / 2, trigger.y + trigger.height / 2);
+    await page.waitForTimeout(250);
+
+    expect(await menuProblems(page), `${name} menu items`).toEqual([]);
+
+    await page.mouse.click(trigger.x + trigger.width / 2, trigger.y + trigger.height / 2);
+    await page.waitForTimeout(250);
+
+    expect(await page.locator(".default-player .menu").count(), `${name} menu closes from its trigger`).toEqual(0);
+    process.stdout.write(".");
+  }
+});
+
+const menuTrigger = async (page) => await page.evaluate(() => {
+  const root = document.querySelector(".default-player.fixed") || document.querySelector(".default-player");
+
+  const trigger = [...root.querySelectorAll("button")].find((el) => (
+    el.hasAttribute("aria-expanded") && !/chat/i.test(el.getAttribute("aria-label") || "")
+  ));
+  if (!trigger) { return null; }
+
+  const r = trigger.getBoundingClientRect();
+  return { x: r.x, y: r.y, width: r.width, height: r.height };
+});
+
+const menuProblems = async (page) => await page.evaluate(() => {
+  const panel = document.querySelector(".default-player .menu");
+  if (!panel) { return ["the menu did not open"]; }
+
+  return [...panel.querySelectorAll("button")].flatMap((item) => {
+    const r = item.getBoundingClientRect();
+    const hit = document.elementFromPoint(Math.round(r.x + r.width / 2), Math.round(r.y + r.height / 2));
+    const label = item.textContent.trim().slice(0, 24);
+
+    if (r.bottom > window.innerHeight || r.top < 0) { return [`${label} is laid out off the screen`]; }
+    if (hit === item || item.contains(hit)) { return []; }
+
+    return [`${label} is covered by ${hit ? `${hit.tagName}.${(hit.className || "").toString().slice(0, 20)}` : "nothing"}`];
+  });
 });
 
 // Returns a description of every control the browser would not deliver a click
