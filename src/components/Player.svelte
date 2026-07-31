@@ -543,85 +543,9 @@
 
 {#if controlPanel}
   <ExternalWidget root={controlPanel}>
-    <ControlPanel
-      bind:controlPanel
-      bind:projectId
-      bind:contentId
-      bind:playlistId
-      bind:sourceId
-      bind:sourceUrl
-      bind:summary
-      bind:showUserInterface
-      bind:playerStyle
-      bind:playerTitle
-      bind:titleEnabled
-      bind:versions
-      bind:languages
-      bind:continuousPlaybackMode
-      bind:accentTextColor
-      bind:disclosureLink
-      bind:callToAction
-      bind:skipButtonStyle
-      bind:playlistStyle
-      bind:playlistToggle
-      bind:mediaSession
-      {content}
-      bind:contentIndex
-      {introsOutros}
-      bind:introsOutrosIndex
-      {adverts}
-      bind:advertIndex
-      bind:persistentAdImage
-      bind:persistentIndex
-      bind:duration
-      bind:currentTime
-      bind:playbackState
-      bind:playbackRate
-      bind:widgetStyle
-      bind:widgetEmbedMode
-      bind:accessCtaText
-      bind:accessCtaUrl
-      bind:segmentLimit
-      bind:downloadFormats
-      bind:shortcuts
-      bind:agentVoice
-      bind:agentName
-      bind:agentPlaceholder
-      bind:accentColor
-      bind:widgetPosition
-      bind:widgetWidth
-      bind:widgetMargin
-      bind:widgetTarget
-      bind:textColor
-      bind:backgroundColor
-      bind:iconColor
-      bind:highlightColor
-      bind:wordHighlightsEnabled
-      bind:wordHighlightColor
-      bind:videoTextColor
-      bind:videoIconColor
-      bind:logoIconEnabled
-      bind:highlightSections
-      bind:clickableSections
-      bind:segmentWidgetSections
-      bind:segmentWidgetPosition
-      bind:currentSegment
-      bind:hoveredSegment
-      bind:advertConsent
-      bind:analyticsConsent
-      bind:analyticsCustomUrl
-      bind:analyticsTag
-      bind:video
-      bind:videoSizes
-      bind:embedMode
-      bind:theme
-      bind:radius
-      bind:agentColor
-      bind:agentAvatar
-      bind:agentAccess
-      bind:agentLimit
-      bind:infoText
-      bind:disclosureText />
+    <!-- Reads the player's own props and writes them back as overrides, so it
+         needs the controller rather than a binding per setting. -->
+    <ControlPanel bind:controlPanel {controller} />
   </ExternalWidget>
 {/if}
 

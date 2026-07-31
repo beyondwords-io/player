@@ -62,7 +62,7 @@ const settingsManifest = [
   { key: "video", group: "Style", control: "select", options: bool, default: false, appliesTo: "default", refetch: true, needs: "content with a video variant" },
   { key: "videoSizes", group: "Style", control: "select", default: [], refetch: true, ...csv,
     options: ({ videoSizes }) => ["", ...videoSizes], format: (value) => value?.[0] || "auto (first match)", parse: (raw) => (raw ? [raw] : []) },
-  { key: "theme", group: "Style", control: "select", options: ["light", "dark", "custom"], default: "light", api: "theme", appliesTo: "default" },
+  { key: "theme", group: "Style", control: "select", options: ["light", "dark", "custom"], default: "light", appliesTo: "default" },
   { key: "radius", group: "Style", ...number(8), appliesTo: "default" },
   { key: "textColor", group: "Style", control: "text", default: "#111", api: "text_color" },
   { key: "backgroundColor", group: "Style", control: "text", default: "#f5f5f5", api: "background_color" },
