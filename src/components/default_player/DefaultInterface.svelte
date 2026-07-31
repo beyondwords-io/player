@@ -1079,6 +1079,10 @@
   }
 
   .icon-button {
+    /* Required: it is the containing block for the touch floor below. Without
+       it the pseudo-element resolves against .default-player and covers the
+       whole bar, swallowing every click. */
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1135,6 +1139,10 @@
   }
 
   .chat-button.orb-only {
+    /* border-box, or the 44px touch floor is added to the padding and the
+       button grows to 60px: taller than the 56px bar, so the caption row below
+       ends up covering its bottom edge and taking the tap. */
+    box-sizing: border-box;
     padding: 8px;
     min-width: 44px;
     min-height: 44px;
