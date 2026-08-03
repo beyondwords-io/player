@@ -272,12 +272,12 @@
                 {#if message.typing}
                   <!-- Decorative: the finished answer is what gets announced. -->
                   <span class="typing" aria-hidden="true">
-                    <span style="background: {tokens.muted}"></span>
-                    <span style="background: {tokens.muted}"></span>
-                    <span style="background: {tokens.muted}"></span>
+                    <span class="animating" style="background: {tokens.muted}"></span>
+                    <span class="animating" style="background: {tokens.muted}"></span>
+                    <span class="animating" style="background: {tokens.muted}"></span>
                   </span>
                 {:else}
-                  {message.text}{#if message.streaming}<span class="cursor" style="background: {tokens.sendBackground}"></span>{/if}
+                  {message.text}{#if message.streaming}<span class="cursor animating" style="background: {tokens.sendBackground}"></span>{/if}
                 {/if}
               </span>
               {#if message.citations.length > 0}
@@ -461,7 +461,12 @@
     height: 20px;
   }
 
+  /* animating: see the note in Orb.svelte. */
   .typing span {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: none;
     width: 5px;
     height: 5px;
     border-radius: 9999px;
