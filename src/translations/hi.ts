@@ -1,7 +1,7 @@
 export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "इस लेख को सुनें",
-  minutesSingularOrPlural: "{n} मि",
+  minutesSingularOrPlural: "{n} मि.",
   videoInWidget: "वीडियो मिनी प्लेयर में चल रहा है",
 
   // These translations are used by aria-label.
@@ -18,13 +18,13 @@ export default {
   closeWidget: "मिनी प्लेयर बंद करें",
   seekBack: "पीछे जाएँ",
   seekAhead: "आगे बढ़ें",
-  previousSegment: "पिछला पैराग्राफ़",
-  nextSegment: "अगला पैराग्राफ़",
+  previousSegment: "पिछला भाग",
+  nextSegment: "अगला भाग",
   previousTrack: "पिछला लेख",
   nextTrack: "अगला लेख",
   togglePlaylist: "प्लेलिस्ट दिखाएँ या छिपाएँ",
   visitSourceArticle: "मूल लेख पर जाएँ",
-  maximizeVideo: "वीडियो फ़ुल स्क्रीन करें",
-  changePlaybackRate: "प्लेबैक स्पीड बदलें",
+  maximizeVideo: "वीडियो पूर्ण स्क्रीन में देखें",
+  changePlaybackRate: "प्लेबैक गति बदलें",
   downloadAudio: "ऑडियो डाउनलोड करें",
 };

@@ -2,7 +2,7 @@ export default {
   isDefaultForLanguage: true,
   listenToThisArticle: "ਇਸ ਲੇਖ ਨੂੰ ਸੁਣੋ",
   minutesSingularOrPlural: "{n} ਮਿੰਟ",
-  videoInWidget: "ਵੀਡੀਓ ਮਿੰਨੀ ਪਲੇਅਰ ਵਿੱਚ ਚੱਲ ਰਿਹਾ ਹੈ",
+  videoInWidget: "ਵੀਡੀਓ ਮਿੰਨੀ ਪਲੇਅਰ ਵਿੱਚ ਚੱਲ ਰਹੀ ਹੈ",
 
   // These translations are used by aria-label.
   playAudio: "ਆਡੀਓ ਚਲਾਓ",
@@ -18,13 +18,13 @@ export default {
   closeWidget: "ਮਿੰਨੀ ਪਲੇਅਰ ਬੰਦ ਕਰੋ",
   seekBack: "ਪਿੱਛੇ ਜਾਓ",
   seekAhead: "ਅੱਗੇ ਜਾਓ",
-  previousSegment: "ਪਿਛਲਾ ਪੈਰਾ",
-  nextSegment: "ਅਗਲਾ ਪੈਰਾ",
+  previousSegment: "ਪਿਛਲਾ ਭਾਗ",
+  nextSegment: "ਅਗਲਾ ਭਾਗ",
   previousTrack: "ਪਿਛਲਾ ਲੇਖ",
   nextTrack: "ਅਗਲਾ ਲੇਖ",
   togglePlaylist: "ਪਲੇਲਿਸਟ ਦਿਖਾਓ ਜਾਂ ਲੁਕਾਓ",
   visitSourceArticle: "ਮੂਲ ਲੇਖ 'ਤੇ ਜਾਓ",
   maximizeVideo: "ਵੀਡੀਓ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਦੇਖੋ",
-  changePlaybackRate: "ਪਲੇਬੈਕ ਸਪੀਡ ਬਦਲੋ",
+  changePlaybackRate: "ਪਲੇਬੈਕ ਗਤੀ ਬਦਲੋ",
   downloadAudio: "ਆਡੀਓ ਡਾਊਨਲੋਡ ਕਰੋ",
 };
