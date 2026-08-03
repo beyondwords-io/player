@@ -134,6 +134,93 @@ test("default player video pointer target accessibility", async ({ page }) => {
   expect(fullscreen.controlsWithinFrame, "the controls sit over the picture").toEqual(true);
 });
 
+// The widget's geometry has three ways to go wrong that no screenshot covers:
+// the sliding video is positioned by MediaElement while its frame is positioned
+// by DefaultInterface, the margin string feeds CSS in two shapes, and a closing
+// widget hangs around for its fade.
+test("default player widget geometry accessibility", async ({ page }) => {
+  await page.goto("http://localhost:8000");
+
+  await waitForStylesToLoad(page);
+  await resetPlayerProps(page);
+
+  // The picture must sit exactly behind the frame that takes its presses.
+  const geometry = await page.evaluate(async () => {
+    const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
+    const video = [{ id: 2, url: "http://example.com/a.mp4", contentType: "video/mp4", duration: 60, videoSize: { name: "16:9", width: 1280, height: 720 } }];
+
+    const player = BeyondWords.Player.instances()[0];
+    Object.assign(player, {
+      playerStyle: "default", video: true, embedMode: "audio", widgetStyle: "default", widgetPosition: "auto",
+      showBottomWidget: true, content: [{ title: "A video", audio, video }],
+      loadedMedia: { ...video[0], format: "video" },
+      playbackState: "playing", duration: 60, currentTime: 5,
+    });
+    window.scrollTo(0, 99999);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const frame = document.querySelector(".default-player.fixed .frame-box").getBoundingClientRect();
+    const media = document.querySelector(".media-element.behind-sliding-widget").getBoundingClientRect();
+    const overlap = Math.max(0, Math.min(frame.right, media.right) - Math.max(frame.left, media.left))
+      * Math.max(0, Math.min(frame.bottom, media.bottom) - Math.max(frame.top, media.top));
+
+    return Math.round(100 * overlap / (frame.width * frame.height));
+  });
+
+  expect(geometry, "the sliding video sits behind its frame").toBeGreaterThanOrEqual(95);
+
+  // Any margin string the manifest offers must still anchor the bar to the
+  // bottom edge: a multi-part value used to void the bottom declaration and
+  // leave the widget at its static position.
+  for (const margin of ["16px", "32px 16px", "10px 20px 30px 40px"]) {
+    const anchored = await page.evaluate(async (margin) => {
+      const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
+
+      BeyondWords.Player.destroyAll();
+      const player = new BeyondWords.Player({ target: ".beyondwords-player" });
+      Object.assign(player, {
+        playerStyle: "default", widgetStyle: "default", widgetPosition: "center", widgetMargin: margin,
+        showBottomWidget: true, content: [{ title: "A", audio }], playbackState: "playing", duration: 60, currentTime: 5,
+      });
+      window.scrollTo(0, 99999);
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      const rect = document.querySelector(".default-player.fixed").getBoundingClientRect();
+      return window.innerHeight - rect.bottom;
+    }, margin);
+
+    expect(anchored, `widgetMargin "${margin}" keeps the bar at the bottom edge`).toBeLessThanOrEqual(64);
+    expect(anchored, `widgetMargin "${margin}" leaves the margin gap`).toBeGreaterThanOrEqual(0);
+  }
+
+  // A closing widget must take no presses while it fades out.
+  const closing = await page.evaluate(async () => {
+    const player = BeyondWords.Player.instances()[0];
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const widget = document.querySelector(".default-player.fixed");
+    const pause = [...widget.querySelectorAll("button")].find((b) => (b.getAttribute("aria-label") || "").includes("Pause"));
+    const r = pause.getBoundingClientRect();
+
+    player.showBottomWidget = false;
+    await new Promise((resolve) => setTimeout(resolve, 40));
+
+    const hit = document.elementFromPoint(Math.round(r.x + r.width / 2), Math.round(r.y + r.height / 2));
+    const stillThere = document.querySelector(".default-player.fixed");
+
+    return {
+      fading: !!stillThere,
+      hitsWidget: !!stillThere && stillThere.contains(hit),
+    };
+  });
+
+  if (closing.fading) {
+    expect(closing.hitsWidget, "a press during the fade goes to the page, not the dead widget").toEqual(false);
+  }
+});
+
+
+
 const showVideo = async (page) => await page.evaluate(async () => {
   const player = BeyondWords.Player.instances()[0];
   const videoSize = { name: "16:9", width: 1280, height: 720 };
