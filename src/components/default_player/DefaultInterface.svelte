@@ -16,6 +16,7 @@
   import chooseAdvertText from "../../helpers/chooseAdvertText";
   import ensureProtocol from "../../helpers/ensureProtocol";
   import formatTime from "../../helpers/formatTime";
+  import parseMargin from "../../helpers/parseMargin";
   import { contentVariantHasSection } from "../../helpers/contentVariants";
   import WifiSlash from "../svg_icons/default_player/WifiSlash.svelte";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
@@ -112,6 +113,7 @@
   let menuAnchorTop = 0;
   let menuAnchorBottom = 0;
   let leaving = false;
+  let transitionsRunning = 0;
   let docked = false;
   let offline = false;
   let hasFinished = false;
@@ -308,9 +310,10 @@
 
   $: isFixed = isWidget && !!fixedPosition;
   $: fixedSide = fixedPosition === "auto" || fixedPosition === true ? "center" : fixedPosition;
+  $: sideMargins = parseMargin(fixedMargin || "16px");
   $: widthStyle = !isFixed ? "" :
     docked ? "100%" :
-    fixedWidth === "auto" || fixedWidth === 0 || fixedWidth === "0" ? `min(440px, calc(100vw - 2 * ${fixedMargin || "16px"}))` :
+    fixedWidth === "auto" || fixedWidth === 0 || fixedWidth === "0" ? `min(440px, calc(100vw - ${sideMargins.left} - ${sideMargins.right}))` :
     fixedWidth;
 
   $: surfaceRadius = docked && isFixed ? "12px 12px 0 0" : tokens.radius.bar;
@@ -561,11 +564,14 @@
   class:fixed-center={isFixed && fixedSide === "center"}
   class:fixed-right={isFixed && fixedSide === "right"}
   class:leaving
+  class:animating={transitionsRunning > 0}
   style="--fixed-margin: {fixedMargin || "16px"}; width: {widthStyle};"
-  in:fly|global={{ y: isFixed ? 12 : 0, duration: isFixed ? (reduceMotion ? 0 : 200) : 0, easing: cubicOut }}
-  out:fade|global={{ duration: isFixed && !reduceMotion ? 150 : 0 }}
-  on:outrostart={() => leaving = true}
-  on:outroend={() => leaving = false}
+  in:fly|global={{ y: isFixed ? 12 : 0, duration: isFixed ? unfoldMs && 200 : 0, easing: cubicOut }}
+  out:fade|global={{ duration: isFixed ? unfoldMs && 150 : 0 }}
+  on:introstart={() => transitionsRunning += 1}
+  on:introend={() => transitionsRunning -= 1}
+  on:outrostart={() => { leaving = true; transitionsRunning += 1; }}
+  on:outroend={() => { leaving = false; transitionsRunning -= 1; }}
   on:keydown={handleRootKeydown}
   role="none"
 >
@@ -589,8 +595,13 @@
     {#if chatOpen && showChat}
       <div
         class="chat-unfold"
+        class:animating={transitionsRunning > 0}
         style="background: {displayBackground}; border-radius: 0 0 {tokens.radius.bar} {tokens.radius.bar}"
         transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}
+        on:introstart={() => transitionsRunning += 1}
+        on:introend={() => transitionsRunning -= 1}
+        on:outrostart={() => transitionsRunning += 1}
+        on:outroend={() => transitionsRunning -= 1}
       >
         <ChatPanel
           {tokens}
@@ -858,7 +869,7 @@
   </div>
 
   {#if infoOpen && hasInfo}
-    <div class="chat-unfold" transition:slide|local={{ duration: infoOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
+    <div class="chat-unfold" class:animating={transitionsRunning > 0} transition:slide|local={{ duration: infoOpen ? unfoldMs : collapseMs, easing: cubicOut }} on:introstart={() => transitionsRunning += 1} on:introend={() => transitionsRunning -= 1} on:outrostart={() => transitionsRunning += 1} on:outroend={() => transitionsRunning -= 1}>
       <div class="hairline" style="background: {tokens.divider}"></div>
       <div class="info-box">
         <span class="info-copy" style="color: {tokens.text}">{infoText}</span>
@@ -872,7 +883,7 @@
   {/if}
 
   {#if chatOpen && showChat}
-    <div class="chat-unfold" transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }}>
+    <div class="chat-unfold" class:animating={transitionsRunning > 0} transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }} on:introstart={() => transitionsRunning += 1} on:introend={() => transitionsRunning -= 1} on:outrostart={() => transitionsRunning += 1} on:outroend={() => transitionsRunning -= 1}>
       <div class="hairline" style="background: {tokens.divider}"></div>
       <ChatPanel
         {tokens}
@@ -917,6 +928,10 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: none;
   }
 
   .default-player :global(*) {
@@ -927,7 +942,8 @@
      DOM until that finishes. It is fixed at the bottom of the window with a
      very high z-index, so while it is invisible it would still take the clicks
      aimed at whatever is now underneath it. */
-  .default-player.leaving {
+  .default-player.leaving,
+  .default-player.leaving :global(*) {
     pointer-events: none;
   }
 
@@ -957,12 +973,13 @@
 
   .default-player.fixed {
     position: fixed;
-    bottom: var(--fixed-margin);
+    bottom: 0;
+    margin: var(--fixed-margin);
     z-index: 999999;
   }
 
   .default-player.fixed-left {
-    left: var(--fixed-margin);
+    left: 0;
   }
 
   .default-player.fixed-center {
@@ -973,7 +990,7 @@
   }
 
   .default-player.fixed-right {
-    right: var(--fixed-margin);
+    right: 0;
   }
 
   .default-player.docked {
@@ -1210,6 +1227,10 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: none;
   }
 
   .agent-header {

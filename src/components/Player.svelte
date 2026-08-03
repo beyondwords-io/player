@@ -19,6 +19,7 @@
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
+  import parseMargin from "../helpers/parseMargin";
   import deriveTokens from "../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../helpers/default_theme/explicitOverrides";
 
@@ -175,6 +176,16 @@
     if (emitIdentifiersEvent) accessTierRevision++;
   };
 
+  // Mirrors the default widget's mobile dock, so the sliding video follows it.
+  let dockedViewport = false;
+  onMount(() => {
+    const query = matchMedia("(max-width: 640px)");
+    const update = () => dockedViewport = query.matches;
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  });
+
   // Hides the default-style boot skeleton once the API reports no content.
   let noContentAvailable = false;
   onMount(() => addEventListener("NoContentAvailable", () => noContentAvailable = true));
@@ -232,6 +243,17 @@
     || (effectiveWidgetStyle === "default" && video === true && hasVideoContent);
   $: videoBehindWidget = showWidget && widgetShowsVideo && !isFullScreen;
   $: videoBehindStatic = (interfaceStyle === "video" || (interfaceStyle === "default" && isVideo)) && !videoBehindWidget;
+
+  // The sliding video and the default widget bar must land on the same rect,
+  // so the geometry the default style implies is resolved once, here, and both
+  // components are told the same thing. Legacy styles pass through unchanged.
+  $: widgetIsDefault = effectiveWidgetStyle === "default";
+  $: widgetSideMargins = parseMargin(widgetMargin || "16px");
+  $: resolvedWidgetPosition = widgetIsDefault && widgetPosition === "auto" ? "center" : widgetPosition;
+  $: resolvedWidgetWidth = widgetIsDefault && (widgetWidth === "auto" || widgetWidth === 0 || widgetWidth === "0")
+    ? (dockedViewport ? "100vw" : `min(440px, calc(100vw - ${widgetSideMargins.left} - ${widgetSideMargins.right}))`)
+    : widgetWidth;
+  $: resolvedWidgetMargin = widgetIsDefault && dockedViewport ? "0" : widgetMargin;
 
   $: showClose = showCloseWidget && effectiveWidgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
@@ -317,9 +339,9 @@
     {videoMightBeShown}
     {aspectRatio}
     {isFullScreen}
-    {widgetPosition}
-    {widgetWidth}
-    {widgetMargin}
+    widgetPosition={resolvedWidgetPosition}
+    widgetWidth={resolvedWidgetWidth}
+    widgetMargin={resolvedWidgetMargin}
     {widgetTarget} />
 </ExternalWidget>
 
