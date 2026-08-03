@@ -2,6 +2,7 @@
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
+  import formatTime from "../../helpers/formatTime";
   import Hoverable from "../helpers/Hoverable.svelte";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
   import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
@@ -38,12 +39,7 @@
   $: controlsVisible = !resting && (isHovering || !isPlaying || chatOpen);
   $: progress = duration > 0 ? Math.min(1, currentTime / duration) : 0;
 
-  $: whiteTrack = "rgba(255, 255, 255, 0.3)";
-
-  const formatTime = (seconds) => {
-    const whole = Math.max(0, Math.floor(seconds || 0));
-    return `${Math.floor(whole / 60)}:${`${whole % 60}`.padStart(2, "0")}`;
-  };
+  const whiteTrack = "rgba(255, 255, 255, 0.3)";
 
   const handlePlayPause = (event) => {
     event.preventDefault();
@@ -176,6 +172,7 @@
   }
 
   .resting-progress {
+    pointer-events: none;
     position: absolute;
     left: 0;
     right: 0;
@@ -192,6 +189,7 @@
 
   .resting-fill {
     height: 100%;
+    pointer-events: none;
   }
 
   .video-close {

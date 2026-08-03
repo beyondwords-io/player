@@ -113,4 +113,4 @@ const firstColorStop = (value) => {
   return named ? named[0].toLowerCase() : null;
 };
 
-export { parseColor, toHex, toAlphaString, luminance, contrastRatio, mix, clampContrast, isGradient, firstColorStop };
+export { parseColor, toAlphaString, luminance, contrastRatio, mix, clampContrast, isGradient, firstColorStop };

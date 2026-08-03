@@ -46,7 +46,6 @@
 </script>
 
 <div
-  type="button"
   tabindex="0"
   role="spinbutton"
   class="speed-button"

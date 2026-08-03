@@ -12,18 +12,18 @@ import playerStyles from "./playerStyles";
 //   parse      the control's string -> the value to set (undefined means "cleared")
 //   default    the Player.svelte default, so a reset can restore it
 //   cleared    what an emptied control stores; null unless stated, never undefined
-//   api        the /player settings key that feeds it, when there is one
+//   api        the /player settings key that feeds it, for reference
 //   refetch    changing it changes the API request, so re-request the content
 //   appliesTo  dimmed when the current playerStyle cannot show it
 //   needs      why a setting might look like it is doing nothing
 //   transient  apply it, but do not record it as an override (playback state)
-//   readOnly   shown in the inspector, not editable
+//   readOnly   no control; surfaced by the inspector where useful
 //   loader     part of the content loader form, not the settings list
+//   presets    named values to start a hand-typed setting from
 //   advanced   hidden until advanced settings are shown
 
 const bool = [false, true];
 const sections = ["all", "body", "none", "all-none", "none-all"];
-const exampleShortcuts = ["What are today's headlines?", "Catch me up on this story", "What's new in my topics?"];
 
 const csv = {
   format: (value) => (value || []).join(","),
@@ -86,7 +86,7 @@ const settingsManifest = [
     options: ["", "full", "summary", "full,summary"], format: (value) => (value || []).join(",") || "all available" },
   { key: "playerTitle", group: "Playback", control: "text", default: undefined, cleared: null, api: "player_title" },
   { key: "titleEnabled", group: "Playback", control: "select", options: bool, default: true, api: "title_enabled" },
-  { key: "callToAction", group: "Playback", control: "text", default: undefined, cleared: null, api: "call_to_action", appliesTo: "legacy" },
+  { key: "callToAction", group: "Playback", control: "text", default: undefined, cleared: null, api: "call_to_action" },
   { key: "skipButtonStyle", group: "Playback", control: "select", default: "auto", api: "skip_button_style",
     options: ["auto", "segments", "seconds", "seconds-15", "seconds-15-30", "tracks"] },
   { key: "downloadFormats", group: "Playback", control: "select", default: [], api: "download_button_enabled", ...csv,
@@ -119,7 +119,7 @@ const settingsManifest = [
     format: (value) => (value || []).join(" | "),
     parse: (raw) => raw.split("|").map((phrase) => phrase.trim()).filter((phrase) => phrase),
     presets: {
-      "3 news examples": exampleShortcuts,
+      "3 news examples": ["What are today's headlines?", "Catch me up on this story", "What's new in my topics?"],
       "2 sport examples": ["How did the match end?", "Who scored?"],
       "1 long example": ["Explain the background to this story as if I have not been following it"],
       "none": [],
@@ -129,7 +129,7 @@ const settingsManifest = [
   { key: "agentColor", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default" },
   { key: "agentAvatar", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default" },
 
-  { key: "playlistStyle", group: "Playlist", control: "select", options: ["auto-5-4", "auto", "show", "show-3", "show-999", "hide"], default: "auto-5-4", appliesTo: "legacy", needs: "playlist content" },
+  { key: "playlistStyle", group: "Playlist", control: "select", options: ["auto-5-4", "auto", "show", "show-3", "show-999", "hide"], default: "auto-5-4", needs: "playlist content" },
   { key: "playlistToggle", group: "Playlist", control: "select", options: ["auto", "show", "hide"], default: "auto", needs: "playlist content" },
 
   { key: "widgetStyle", group: "Widget", control: "select", options: ["auto", ...playerStyles, "none"], default: "standard", api: "widget_style" },
@@ -215,4 +215,4 @@ const selectedOption = (setting, value, ctx) => {
 };
 
 export default settingsManifest;
-export { groupOrder, findSetting, optionsFor, optionValue, parseOption, optionLabel, sameValue, selectedOption };
+export { groupOrder, findSetting, optionsFor, optionValue, parseOption, optionLabel, selectedOption };
