@@ -91,6 +91,8 @@ const settingsManifest = [
     options: ["auto", "segments", "seconds", "seconds-15", "seconds-15-30", "tracks"] },
   { key: "downloadFormats", group: "Playback", control: "select", default: [], api: "download_button_enabled", ...csv,
     options: ["", "mp3", "mp4", "mp3,mp4"], format: (value) => (value || []).join(",") || "none", needs: "playback: hidden while stopped" },
+  { key: "playerLanguage", group: "Playback", control: "text", default: undefined, cleared: null, advanced: true,
+    needs: "a supported locale code, e.g. fr; unsupported codes warn and fall back to the browser" },
   { key: "durationFormat", group: "Playback", control: "select", options: ["", "auto", "hh:mm:ss", "seconds"], default: undefined, cleared: null, advanced: true,
     parse: (raw) => raw || null, format: (value) => value || "auto (default)" },
   { key: "continuousPlaybackMode", group: "Playback", control: "select", options: ["auto", "none"], default: "auto", refetch: true },

@@ -1,7 +1,7 @@
 export default {
   isDefaultForLanguage: true,
-  listenToThisArticle: "Teerera kuchinyorwa ichi",
-  minutesSingularOrPlural: "{n} min",
+  listenToThisArticle: "هي مضمون ٻڌو",
+  minutesSingularOrPlural: "{n} منٽ",
   videoInWidget: "Video is playing in widget",
 
   // These translations are used by aria-label.

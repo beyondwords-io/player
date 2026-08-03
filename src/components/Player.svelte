@@ -19,6 +19,7 @@
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
+  import { setLocale } from "../helpers/translate";
   import parseMargin from "../helpers/parseMargin";
   import deriveTokens from "../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../helpers/default_theme/explicitOverrides";
@@ -43,6 +44,7 @@
   export let playerTitle = undefined;
   export let titleEnabled = true;
   export let callToAction = undefined;
+  export let playerLanguage = undefined;
   export let skipButtonStyle = "auto";
   export let playlistStyle = "auto-5-4";
   export let playlistToggle = "auto";
@@ -201,6 +203,8 @@
   // identifiers statement below so the first request already asks for it.
   $: if (versions.length === 1) { summary = versions[0] === "summary"; }
 
+  $: setLocale(playerLanguage);
+
   $: contentItem = content[contentIndex];
   $: activeIntroOrOutro = introsOutros[introsOutrosIndex];
   $: activeAdvert = adverts[advertIndex];
@@ -307,7 +311,8 @@
 </script>
 
 <ExternalWidget prepend root={videoRoot}>
-  <MediaElement
+{#key playerLanguage}
+    <MediaElement
     bind:this={mediaElement}
     {onEvent}
     {videoSizes}
@@ -343,9 +348,11 @@
     widgetWidth={resolvedWidgetWidth}
     widgetMargin={resolvedWidgetMargin}
     {widgetTarget} />
+{/key}
 </ExternalWidget>
 
 {#if showStaticInterface && interfaceStyle === "default"}
+  {#key playerLanguage}
   <DefaultInterface
     bind:this={userInterface}
     {onEvent}
@@ -402,7 +409,9 @@
     {accessCtaUrl}
     {agentCtaText}
     {agentCtaUrl} />
+  {/key}
 {:else if showStaticInterface}
+  {#key playerLanguage}
   <UserInterface
     bind:this={userInterface}
     {onEvent}
@@ -440,17 +449,19 @@
     {aspectRatio}
     {videoPosterImage}
     videoIsBehind={videoBehindStatic} />
+  {/key}
 {:else if showUserInterface && interfaceStyle === "default" && content.length === 0 && projectId !== undefined && !noContentAvailable}
   <DefaultSkeleton showChatBlock={embedMode !== "audio"} {theme} {radius} {backgroundColor} {textColor} />
 {/if}
 
 {#if showWidgetInterface && effectiveWidgetStyle === "default"}
   <ExternalWidget root={widgetTarget}>
+    {#key playerLanguage}
     <DefaultInterface
       bind:this={widgetInterface}
       {onEvent}
       embedMode={effectiveWidgetEmbedMode}
-    {analyticsId}
+      {analyticsId}
       {theme}
       {radius}
       isWidget={true}
@@ -497,17 +508,19 @@
       {disclosureLink}
       {logoIconEnabled}
       {activeAdvert}
-    {persistentAdvert}
-    {metadataLoaded}
-    {segmentLimit}
-    {segmentLimitReached}
-    {accessCtaText}
-    {accessCtaUrl}
-    {agentCtaText}
-    {agentCtaUrl} />
+      {persistentAdvert}
+      {metadataLoaded}
+      {segmentLimit}
+      {segmentLimitReached}
+      {accessCtaText}
+      {accessCtaUrl}
+      {agentCtaText}
+      {agentCtaUrl} />
+    {/key}
   </ExternalWidget>
 {:else if showWidgetInterface}
   <ExternalWidget root={widgetTarget}>
+    {#key playerLanguage}
     <UserInterface
       bind:this={widgetInterface}
       {onEvent}
@@ -548,11 +561,13 @@
       {aspectRatio}
       {videoPosterImage}
       videoIsBehind={videoBehindWidget} />
+    {/key}
   </ExternalWidget>
 {/if}
 
 {#each segmentWidgets as root (root)}
   <ExternalWidget {root}>
+    {#key playerLanguage}
     <UserInterface
       onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
       playerStyle="small"
@@ -575,6 +590,7 @@
       {videoTextColor}
       {videoBackgroundColor}
       {videoIconColor} />
+    {/key}
   </ExternalWidget>
 {/each}
 
