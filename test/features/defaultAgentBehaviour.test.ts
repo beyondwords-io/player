@@ -132,7 +132,42 @@ test("default player agent behaviour", async ({ page }) => {
   expect(midway, "the first deltas are on screen before the last").toBeGreaterThan(0);
   expect(finished, "and it keeps filling in").toBeGreaterThan(midway);
   expect(await page.locator(".default-player .typing").count(), "the dots give way to the answer").toEqual(0);
+
+  // Every animation in the player is a keyframe animation, and StyleReset's
+  // all: initial is !important, which beats one. So each animated element has to
+  // carry the class that exempts it, or the motion is silently dead - which is
+  // how the orb spent weeks not breathing while its CSS said 3.4s.
+  expect(await moves(page, ".default-player .orb", "transform"), "the orb breathes").toBeGreaterThan(1);
+
+  // The caret has to be sampled while an answer is still arriving.
+  await openPanel(page, { embedMode: "agent", agentAccess: "full", shortcuts });
+  await page.locator(".default-player .empty-chips button").first().click();
+  await page.waitForSelector(".default-player .cursor", { timeout: 3000 });
+
+  expect(await moves(page, ".default-player .cursor", "opacity"), "the caret blinks").toBeGreaterThan(1);
+
+  // And holds still when the reader asked for that.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await openPanel(page, { embedMode: "agent", agentAccess: "full", shortcuts });
+
+  expect(await moves(page, ".default-player .orb", "transform"), "reduced motion holds it").toEqual(1);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
 });
+
+// How many distinct values a property takes over ~1s: 1 means it is not moving.
+const moves = async (page, selector, property) => await page.evaluate(async ([selector, property]) => {
+  const element = document.querySelector(selector);
+  if (!element) { return 0; }
+
+  const seen = new Set();
+
+  for (let i = 0; i < 6; i++) {
+    seen.add(getComputedStyle(element)[property]);
+    await new Promise((resolve) => setTimeout(resolve, 160));
+  }
+
+  return seen.size;
+}, [selector, property]);
 
 const answerLength = async (page) => await page.evaluate(() => {
   const answer = [...document.querySelectorAll(".default-player .thread > div")].at(-1);

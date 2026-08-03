@@ -16,7 +16,7 @@
   $: tokens = deriveTokens({ theme, radius, overrides: explicitOverrides({ backgroundColor, textColor }) });
 </script>
 
-<div class="skeleton-bar" style="background: {tokens.background}; border-radius: {tokens.radius.bar}">
+<div class="skeleton-bar animating" style="background: {tokens.background}; border-radius: {tokens.radius.bar}">
   <span class="circle" style="background: {tokens.skeleton}"></span>
   <span class="lines">
     <span class="line title" style="background: {tokens.skeleton}"></span>
@@ -28,8 +28,12 @@
 </div>
 
 <style>
+  /* animating: exempt from StyleReset, which would otherwise out-important the
+     keyframes. See the note in Orb.svelte. */
   .skeleton-bar {
     display: flex;
+    margin: 0;
+    border: none;
     align-items: center;
     gap: 12px;
     height: 56px;

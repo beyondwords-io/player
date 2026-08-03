@@ -72,6 +72,7 @@
   class="progress-track"
   class:readonly
   class:buffering
+  class:animating={buffering}
   style="background: {trackColor}; outline-color: {focusColor}; height: {thickness}px; border-radius: {radius}"
   on:mousedown={handlePointerDown}
   on:touchstart={handlePointerDown}

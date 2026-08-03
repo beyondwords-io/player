@@ -13,6 +13,7 @@
   class="orb"
   class:generating
   class:dimmed
+  class:animating={!dimmed}
   style="width: {size}px; height: {size}px; background: {avatarUrl ? "none" : orb}; box-shadow: {ring}"
 >
   {#if avatarUrl}
@@ -21,9 +22,17 @@
 </span>
 
 <style>
+  /* The animating class is what keeps this alive: StyleReset's all: initial is
+     !important, and an important declaration beats a keyframe animation, so an
+     element inside the player cannot animate unless it is exempt. Everything the
+     reset would have given it is declared here instead. */
   .orb {
     display: block;
     flex-shrink: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: none;
     border-radius: 9999px;
     overflow: hidden;
     animation: breathe 3.4s ease-in-out infinite;
@@ -46,15 +55,16 @@
     border-radius: 9999px;
   }
 
+  /* Resting at its own size, so a paused frame is the natural one. */
   @keyframes breathe {
     0%, 100% {
-      transform: scale(0.94);
-      opacity: 0.85;
+      transform: scale(1);
+      opacity: 1;
     }
 
     50% {
-      transform: scale(1.04);
-      opacity: 1;
+      transform: scale(1.07);
+      opacity: 0.9;
     }
   }
 
