@@ -132,7 +132,6 @@ const playThrough = async (page, params) => await page.evaluate(async (params) =
     reachedLimit,
     stoppedAt,
     playbackState: player.playbackState,
-    currentSegment: player.currentSegment?.marker || null,
     barAfterwards: {
       label: bar?.querySelector(".title")?.textContent.trim() || null,
       isLink: !!bar?.querySelector(".title.tier-cta"),

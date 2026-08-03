@@ -51,8 +51,12 @@
     player = controller?.player;
     if (!player) { return; }
 
-    loader = Object.fromEntries(loaderKeys.map((key) => [key, player[key] ?? ""]));
+    syncLoader();
     refreshNow();
+  };
+
+  const syncLoader = () => {
+    loader = Object.fromEntries(loaderKeys.map((key) => [key, player[key] ?? ""]));
   };
 
   const handleEvent = (event) => {
@@ -65,7 +69,7 @@
     // so put the overrides back afterwards.
     if (event.type === "ContentAvailable" || event.type === "NoContentAvailable") {
       reapplySettings(player);
-      loader = Object.fromEntries(loaderKeys.map((key) => [key, player[key] ?? ""]));
+      syncLoader();
     }
 
     refresh();

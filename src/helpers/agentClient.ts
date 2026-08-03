@@ -19,30 +19,24 @@
 
 const SCRIPTED_ANSWERS = [
   {
-    clauses: [
-      "This article covers the launch of a new audio platform, ",
-      "which converts written journalism into listenable formats. ",
+    text: "This article covers the launch of a new audio platform, " +
+      "which converts written journalism into listenable formats. " +
       "The publisher reports early engagement well above their expectations.",
-    ],
     citations: [{ title: "From the article", url: "#segment-3" }],
   },
   {
-    clauses: [
-      "The main points are the partnership announcement, ",
-      "the rollout timeline for later this year, ",
+    text: "The main points are the partnership announcement, " +
+      "the rollout timeline for later this year, " +
       "and the early results from the pilot programme.",
-    ],
     citations: [
       { title: "Partnership details", url: "#segment-5" },
       { title: "Pilot results", url: "#segment-9" },
     ],
   },
   {
-    clauses: [
-      "Yes - the publication has covered this topic before. ",
-      "The most recent related piece looked at how newsrooms adopt audio, ",
+    text: "Yes - the publication has covered this topic before. " +
+      "The most recent related piece looked at how newsrooms adopt audio, " +
       "and there is a longer background explainer from earlier this year.",
-    ],
     citations: [{ title: "Related coverage", url: "#related" }],
   },
 ];
@@ -64,7 +58,7 @@ class MockAgentClient {
 
     // Deltas arrive token-sized, so split on word boundaries rather than
     // clauses: three big jumps does not read as an answer being written.
-    const deltas = answer.clauses.join("").match(/\S+\s*/g) || [];
+    const deltas = answer.text.match(/\S+\s*/g) || [];
 
     const instant = typeof window !== "undefined" && (window as { disableAnimation?: boolean }).disableAnimation;
     let stopped = false;

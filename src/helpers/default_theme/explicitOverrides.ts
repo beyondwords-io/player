@@ -24,4 +24,3 @@ const explicitOverrides = (props) => {
 };
 
 export default explicitOverrides;
-export { LEGACY_DEFAULTS };

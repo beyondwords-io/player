@@ -107,4 +107,4 @@ const applyValue = (player, key, value, { silent = false } = {}) => {
 };
 
 export default setSetting;
-export { setSetting, resetSetting, resetAllSettings, reapplySettings, overriddenKeys, overriddenSettings, isOverridden };
+export { setSetting, resetSetting, resetAllSettings, reapplySettings, overriddenSettings, isOverridden };

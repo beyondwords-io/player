@@ -42,4 +42,4 @@ const settingsUrl = ({ identifiers = {}, settings = {}, extra = {} } = {}) => {
 };
 
 export default settingsUrl;
-export { settingsUrl, encodeSettingValue };
+export { settingsUrl };

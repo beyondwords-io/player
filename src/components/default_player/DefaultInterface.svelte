@@ -1,4 +1,3 @@
-<!-- svelte-ignore unused-export-let -->
 <script>
   // Loads dist/style.js, which injects the player CSS and un-hides the target.
   // Without this a built default-style embed is invisible (see UserInterface).
@@ -16,6 +15,7 @@
   import MockAgentClient from "../../helpers/agentClient";
   import chooseAdvertText from "../../helpers/chooseAdvertText";
   import ensureProtocol from "../../helpers/ensureProtocol";
+  import formatTime from "../../helpers/formatTime";
   import { contentVariantHasSection } from "../../helpers/contentVariants";
   import WifiSlash from "../svg_icons/default_player/WifiSlash.svelte";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
@@ -80,7 +80,6 @@
   export let disclosureLink = undefined;
   export let logoIconEnabled = true;
   export let activeAdvert = undefined;
-  export let activeIntroOrOutro = undefined;
   export let persistentAdvert = undefined;
   export let metadataLoaded = false;
   export let fixedPosition = undefined;
@@ -94,7 +93,6 @@
   export let absoluteY = undefined;
   export let segmentLimit = undefined;
   export let segmentLimitReached = false;
-  export let accessTier = undefined;
   export let accessCtaText = undefined;
   export let accessCtaUrl = undefined;
   export let agentCtaText = undefined;
@@ -188,10 +186,10 @@
 
   // Width folds, driven by the container. Rather than guess thresholds, the
   // widths the controls actually occupy are added up and the row gives things
-  // away in the design's order until what is left fits: the finished ad's
-  // link, then the optional controls, then speed with the time compressing to
-  // remaining-only, then the skips, then the queue. Play, the title/progress
-  // column and Chat never fold, though Chat drops to its orb last of all.
+  // away until what is left fits: the optional controls, then speed with the
+  // time compressing to remaining-only, then the skips, then the queue, then
+  // the finished ad's link. Play, the title/progress column and Chat never
+  // fold, though Chat drops to its orb last of all.
   const GAP = 12;
   const PLAY_W = 40;
   const CONTROL_W = 32;
@@ -381,12 +379,11 @@
     return translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(seconds / 60)));
   };
 
-  const formatTime = (seconds) => {
-    const whole = Math.max(0, Math.floor(seconds || 0));
-    const mins = Math.floor(whole / 60);
-    const secs = `${whole % 60}`.padStart(2, "0");
-    return `${mins}:${secs}`;
-  };
+  $: timeLabel =
+    isPreview && !remainingOnly ? `${formatTime(currentTime)} / ${formatTime(previewEndsAt)}` :
+    isPreview ? `-${formatTime(Math.max(0, previewEndsAt - currentTime))}` :
+    remainingOnly ? `-${formatTime(duration - currentTime)}` :
+    `${formatTime(currentTime)} / ${formatTime(duration)}`;
 
   const handlePlayPause = (event) => {
     event.preventDefault();
@@ -606,8 +603,7 @@
           {isPlaying}
           {onEvent}
           ctaText={agentCta}
-          ctaUrl={agentCtaHref}
-          emptyStateChips={true} />
+          ctaUrl={agentCtaHref} />
       </div>
     {/if}
   {:else if agentOnly}
@@ -631,8 +627,7 @@
       {onEvent}
       ctaText={agentCta}
       ctaUrl={agentCtaHref}
-      showSlashButton={false}
-      emptyStateChips={true} />
+      showSlashButton={false} />
   {:else}
   <div class="bar" class:compact={foldSkips}>
     <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
@@ -714,15 +709,7 @@
       {:else if playingTitle}
         <div class="title-row">
           <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
-          {#if isPreview && !remainingOnly}
-            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(previewEndsAt)}</span>
-          {:else if isPreview}
-            <span class="time" style="color: {tokens.text}">-{formatTime(Math.max(0, previewEndsAt - currentTime))}</span>
-          {:else if remainingOnly}
-            <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
-          {:else}
-            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
-          {/if}
+          <span class="time" style="color: {tokens.text}">{timeLabel}</span>
         </div>
         <ProgressTrack
           {progress}
@@ -747,15 +734,7 @@
               focusColor={tokens.text}
               {onEvent} />
           </div>
-          {#if isPreview && !remainingOnly}
-            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(previewEndsAt)}</span>
-          {:else if isPreview}
-            <span class="time" style="color: {tokens.text}">-{formatTime(Math.max(0, previewEndsAt - currentTime))}</span>
-          {:else if remainingOnly}
-            <span class="time" style="color: {tokens.text}">-{formatTime(duration - currentTime)}</span>
-          {:else}
-            <span class="time" style="color: {tokens.text}">{formatTime(currentTime)} / {formatTime(duration)}</span>
-          {/if}
+          <span class="time" style="color: {tokens.text}">{timeLabel}</span>
         </div>
       {/if}
     </div>
@@ -906,8 +885,7 @@
         ctaUrl={agentCtaHref}
         {shortcuts}
         {isPlaying}
-        {onEvent}
-        emptyStateChips={true} />
+        {onEvent} />
     </div>
   {/if}
 
@@ -1234,10 +1212,6 @@
     min-height: 0;
   }
 
-
-
-
-
   .agent-header {
     /* The lock sits after the prompt, so the row has to make room for it. */
     display: flex;
@@ -1317,7 +1291,6 @@
     flex: 1;
     min-width: 40px;
   }
-
 
   .time {
     flex-shrink: 0;

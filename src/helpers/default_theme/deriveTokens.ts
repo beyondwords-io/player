@@ -145,4 +145,4 @@ const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = 
 };
 
 export default deriveTokens;
-export { PRESETS, parseAgentColor, scaleRadius };
+export { parseAgentColor, scaleRadius };

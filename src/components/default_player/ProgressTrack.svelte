@@ -90,7 +90,13 @@
 </div>
 
 <style>
+  /* Declares its own box, since the animating exemption while buffering costs
+     it the reset's protection from page styles. See the note in Orb.svelte. */
   .progress-track {
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-sizing: border-box;
     position: relative;
     height: 3px;
     cursor: pointer;

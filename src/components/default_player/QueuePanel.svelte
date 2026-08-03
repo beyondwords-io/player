@@ -1,4 +1,5 @@
 <script>
+  import formatTime from "../../helpers/formatTime";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
   import { toAlphaString } from "../../helpers/default_theme/colorMath";
@@ -15,11 +16,9 @@
   $: activeRow = toAlphaString(tokens.text, 0.04);
   $: hoverRow = toAlphaString(tokens.text, 0.03);
 
-  const durationFor = (item) => {
-    const seconds = (summary ? item.summarization?.duration : item.duration) || 0;
-    const whole = Math.floor(seconds);
-    return `${Math.floor(whole / 60)}:${`${whole % 60}`.padStart(2, "0")}`;
-  };
+  const durationFor = (item) => (
+    formatTime((summary ? item.summarization?.duration : item.duration) || 0)
+  );
 
   const handleClick = (index) => () => {
     onEvent(newEvent({

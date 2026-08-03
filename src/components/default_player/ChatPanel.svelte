@@ -1,4 +1,5 @@
 <script>
+  import formatTime from "../../helpers/formatTime";
   import { tick, onDestroy } from "svelte";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
@@ -22,8 +23,6 @@
   export let isPlaying = false;
   export let onEvent = () => {};
   export let showSlashButton = true;
-  export let emptyStateChips = false;
-  export let onMessageSent = () => {};
 
   let thread = [];
   let input = "";
@@ -58,7 +57,7 @@
   $: budgetSpent = agentAccess === "limited" && (questionsLeft === 0 || (minutesBudget && secondsLeft === 0));
   $: showCounter = questionBudget !== null && questionsUsed >= 1 && !budgetSpent;
 
-  $: formattedSecondsLeft = `${Math.floor((secondsLeft || 0) / 60)}:${`${(secondsLeft || 0) % 60}`.padStart(2, "0")}`;
+  $: formattedSecondsLeft = formatTime(secondsLeft || 0);
 
   // Pressing / lists the publisher's questions and typing narrows them. There
   // are no commands to invent, and nothing to collide.
@@ -95,7 +94,6 @@
     thread = [...thread, { role: "reader", text }, { role: "agent", text: "", citations: [], streaming: true, typing: true }];
     streaming = true;
     voiceMode = fromVoice ? "talking" : null;
-    onMessageSent(text);
     scrollToEnd();
 
     streamHandle = agentClient.send(text, {
@@ -175,12 +173,7 @@
   };
 
   const stopListening = ({ send: shouldSend = true } = {}) => {
-    clearInterval(minuteTimer);
-    minuteTimer = null;
-
-    const transcript = listenHandle?.transcript() || partialTranscript;
-    listenHandle?.stop();
-    listenHandle = null;
+    const transcript = stopMic();
 
     // Sending keeps us in voice mode for the spoken reply.
     if (shouldSend && transcript) {
@@ -192,15 +185,21 @@
   };
 
   const switchToTyping = () => {
+    const transcript = stopMic();
+    leaveVoiceMode();
+    input = transcript;
+    tick().then(() => inputElement?.focus());
+  };
+
+  const stopMic = () => {
     clearInterval(minuteTimer);
     minuteTimer = null;
 
     const transcript = listenHandle?.transcript() || partialTranscript;
     listenHandle?.stop();
     listenHandle = null;
-    leaveVoiceMode();
-    input = transcript;
-    tick().then(() => inputElement?.focus());
+
+    return transcript;
   };
 
   const handleKeydown = (event) => {
@@ -229,7 +228,7 @@
 </script>
 
 <div class="chat-panel">
-  {#if emptyStateChips && thread.length === 0 && shortcuts.length > 0}
+  {#if thread.length === 0 && shortcuts.length > 0}
     <div class="empty-chips">
       {#each shortcuts as question (question)}
         <button
@@ -331,7 +330,7 @@
       {#if ctaText && ctaUrl}
         <a class="subscribe" href={ctaUrl} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{ctaText}</a>
       {:else if ctaText}
-        <span class="subscribe plain" style="color: {tokens.muted}">{ctaText}</span>
+        <span class="subscribe" style="color: {tokens.muted}">{ctaText}</span>
       {/if}
     </div>
   {:else if voiceMode === "listening"}
@@ -488,6 +487,9 @@
 
   .cursor {
     display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: none;
     width: 7px;
     height: 13px;
     margin-left: 2px;
@@ -759,10 +761,6 @@
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
-  }
-
-  .composer.spent {
-    align-items: center;
   }
 
   .spent-copy {

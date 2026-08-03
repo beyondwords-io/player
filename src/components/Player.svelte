@@ -372,12 +372,10 @@
     videoIsBehind={videoBehindStatic}
     {aspectRatio}
     {activeAdvert}
-    {activeIntroOrOutro}
     {persistentAdvert}
     {metadataLoaded}
     {segmentLimit}
     {segmentLimitReached}
-    accessTier={accessTier}
     {accessCtaText}
     {accessCtaUrl}
     {agentCtaText}
@@ -477,12 +475,10 @@
       {disclosureLink}
       {logoIconEnabled}
       {activeAdvert}
-      {activeIntroOrOutro}
     {persistentAdvert}
     {metadataLoaded}
     {segmentLimit}
     {segmentLimitReached}
-    accessTier={accessTier}
     {accessCtaText}
     {accessCtaUrl}
     {agentCtaText}
