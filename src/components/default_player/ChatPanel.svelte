@@ -1,13 +1,11 @@
 <script>
   import formatTime from "../../helpers/formatTime";
   import { tick, onDestroy } from "svelte";
-  import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
   import Orb from "./Orb.svelte";
   import ArrowUp from "../svg_icons/default_player/ArrowUp.svelte";
   import ArrowUpRight from "../svg_icons/default_player/ArrowUpRight.svelte";
-  import Microphone from "../svg_icons/default_player/Microphone.svelte";
-  import Keyboard from "../svg_icons/default_player/Keyboard.svelte";
+  import VoiceMode from "../svg_icons/default_player/VoiceMode.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
 
   export let tokens;
@@ -20,24 +18,21 @@
   export let ctaText = undefined;
   export let ctaUrl = undefined;
   export let shortcuts = [];
-  export let isPlaying = false;
-  export let onEvent = () => {};
   export let showSlashButton = true;
 
-  let thread = [];
   let input = "";
   let inputElement;
   let threadElement;
-  let streaming = false;
-  let streamHandle = null;
   let shortcutsOpen = false;
-  let announced = "";
-  let voiceMode = null; // null | "listening" | "talking"
-  let listenHandle = null;
-  let partialTranscript = "";
   let minuteTimer = null;
   let secondsLeft = null;
-  let pausedForVoice = false;
+
+  // The client is the store: thread rows, the conversation kind, and the voice
+  // call's state all live there, because they outlive this component.
+  $: ({ thread, kind, status, announced } = $agentClient);
+  $: lastRow = thread[thread.length - 1];
+  $: streaming = !!(lastRow && lastRow.streaming);
+  $: inCall = kind === "voice" && status !== "connecting";
 
   $: placeholder = agentPlaceholder || "Ask about this article, or anything we've covered…";
 
@@ -53,6 +48,7 @@
     secondsLeft = mins * 60 + secs;
   }
   $: locked = agentAccess === "locked";
+  $: syncMinuteTimer(inCall);
   $: lockedAsked = locked && thread.length > 0;
   $: budgetSpent = agentAccess === "limited" && (questionsLeft === 0 || (minutesBudget && secondsLeft === 0));
   $: showCounter = questionBudget !== null && questionsUsed >= 1 && !budgetSpent;
@@ -76,9 +72,13 @@
     if (threadElement) { threadElement.scrollTop = threadElement.scrollHeight; }
   };
 
-  const send = (question, { fromVoice = false } = {}) => {
+  const send = (question) => {
     const text = (question || input).trim();
-    if (!text || streaming || budgetSpent) { return; }
+    if (!text || budgetSpent) { return; }
+
+    // A text reply finishes before the next ask; in a call, sending over the
+    // agent interrupts it, exactly like speaking over it.
+    if (streaming && kind !== "voice") { return; }
 
     input = "";
     shortcutsOpen = false;
@@ -86,123 +86,44 @@
     // Locked: the question is worth asking for, so keep it on screen and answer
     // with the publisher's offer rather than pretending to think.
     if (locked) {
-      thread = [...thread, { role: "reader", text }, { role: "locked" }];
+      agentClient.appendLocked(text);
       scrollToEnd();
       return;
     }
 
-    thread = [...thread, { role: "reader", text }, { role: "agent", text: "", citations: [], streaming: true, typing: true }];
-    streaming = true;
-    voiceMode = fromVoice ? "talking" : null;
+    agentClient.sendUserMessage(text);
     scrollToEnd();
-
-    streamHandle = agentClient.send(text, {
-      // The agent platform sends the answer as deltas, so the panel reveals it
-      // as it arrives rather than animating a string it already has.
-      onTyping: () => {
-        const last = thread[thread.length - 1];
-        last.typing = true;
-        thread = thread;
-      },
-
-      onPart: ({ type, text: delta }) => {
-        const last = thread[thread.length - 1];
-
-        if (type === "start") { last.typing = false; }
-        if (type === "delta") { last.typing = false; last.text += delta; }
-
-        thread = thread;
-        scrollToEnd();
-      },
-      onDone: (citations) => {
-        const last = thread[thread.length - 1];
-        last.streaming = false;
-        last.typing = false;
-        last.citations = citations || [];
-        thread = thread;
-        streaming = false;
-        streamHandle = null;
-        if (voiceMode === "talking") { leaveVoiceMode(); }
-        announced = last.text;
-        scrollToEnd();
-      },
-    });
   };
 
-  const stop = () => streamHandle?.stop();
+  const stop = () => agentClient.interrupt();
 
-  // Article audio resumes once the exchange is over, as it does after ducking.
-  const leaveVoiceMode = () => {
-    voiceMode = null;
-    if (!pausedForVoice) { return; }
+  // The waveform starts a call; the composer becomes the strip in place.
+  const startCall = () => {
+    if (budgetSpent || locked) { return; }
 
-    pausedForVoice = false;
-
-    onEvent(newEvent({
-      type: "PressedPlay",
-      description: "The play button was pressed.",
-      initiatedBy: "user",
-    }));
+    agentClient.startSession();
   };
 
-  const startListening = () => {
-    if (budgetSpent) { return; }
+  const endCall = () => agentClient.endSession();
 
-    // The mic would otherwise pick up the article audio.
-    if (isPlaying) {
-      pausedForVoice = true;
-
-      onEvent(newEvent({
-        type: "PressedPause",
-        description: "The pause button was pressed.",
-        initiatedBy: "user",
-      }));
-    }
-
-    voiceMode = "listening";
-    partialTranscript = "";
-    listenHandle = agentClient.listen({ onPartial: (text) => partialTranscript = text });
-
-    // Voice budgets count down only while the mic is live.
-    if (minutesBudget && secondsLeft > 0) {
+  // Voice minutes only count while a call is live; spent ends it.
+  const syncMinuteTimer = (live) => {
+    if (live && minutesBudget && (secondsLeft ?? 0) > 0 && !minuteTimer) {
       minuteTimer = setInterval(() => {
         secondsLeft = Math.max(0, secondsLeft - 1);
-        if (secondsLeft === 0) { stopListening({ send: false }); }
+        if (secondsLeft === 0) { agentClient.endSession("budget"); }
       }, 1000);
     }
-  };
 
-  const stopListening = ({ send: shouldSend = true } = {}) => {
-    const transcript = stopMic();
-
-    // Sending keeps us in voice mode for the spoken reply.
-    if (shouldSend && transcript) {
-      voiceMode = null;
-      send(transcript, { fromVoice: true });
-    } else {
-      leaveVoiceMode();
+    if (!live && minuteTimer) {
+      clearInterval(minuteTimer);
+      minuteTimer = null;
     }
-  };
-
-  const switchToTyping = () => {
-    const transcript = stopMic();
-    leaveVoiceMode();
-    input = transcript;
-    tick().then(() => inputElement?.focus());
-  };
-
-  const stopMic = () => {
-    clearInterval(minuteTimer);
-    minuteTimer = null;
-
-    const transcript = listenHandle?.transcript() || partialTranscript;
-    listenHandle?.stop();
-    listenHandle = null;
-
-    return transcript;
   };
 
   const handleKeydown = (event) => {
+    agentClient.sendUserActivity();
+
     if (event.key === "Enter") {
       event.preventDefault();
 
@@ -220,11 +141,7 @@
     }
   };
 
-  onDestroy(() => {
-    clearInterval(minuteTimer);
-    listenHandle?.stop();
-    streamHandle?.stop();
-  });
+  onDestroy(() => clearInterval(minuteTimer));
 </script>
 
 <div class="chat-panel">
@@ -248,6 +165,12 @@
         {#if message.role === "reader"}
           <div class="reader-row">
             <span class="bubble" style="background: {tokens.bubbleBackground}; color: {tokens.bubbleText}; border-radius: {tokens.radius.bubble}">{message.text}</span>
+          </div>
+        {:else if message.role === "divider"}
+          <div class="divider-row" role="separator">
+            <span class="divider-line" style="background: {tokens.divider}"></span>
+            <span class="divider-text" style="color: {tokens.muted}">{message.text}</span>
+            <span class="divider-line" style="background: {tokens.divider}"></span>
           </div>
         {:else if message.role === "locked"}
           <div class="agent-row">
@@ -333,30 +256,33 @@
         <span class="subscribe" style="color: {tokens.muted}">{ctaText}</span>
       {/if}
     </div>
-  {:else if voiceMode === "listening"}
-    <div class="composer listening" style="border-top-color: {tokens.divider}">
-      <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
-      <span class="listening-label" style="color: {tokens.text}">Listening…</span>
-      <span class="partial" style="color: {tokens.muted}">{partialTranscript}</span>
-      {#if minutesBudget}
-        <span class="counter" style="color: {tokens.muted}">{formattedSecondsLeft} left</span>
-      {/if}
-      <button type="button" class="quiet" style="outline-color: {tokens.text}; --hover-bg: {tokens.hover}" aria-label="Switch to typing" on:click={switchToTyping} on:mouseup={blurElement}>
-        <Keyboard size={18} color={tokens.muted} />
-      </button>
-      <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Stop listening" on:click={() => stopListening()} on:mouseup={blurElement}>
-        <span class="stop-square" style="background: {tokens.sendIcon}"></span>
-      </button>
-    </div>
-  {:else if voiceMode === "talking"}
-    <div class="composer talking" style="border-top-color: {tokens.divider}">
-      <span class="talking-label" style="color: {tokens.muted}">Talking</span>
-      <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Stop" on:click={stop} on:mouseup={blurElement}>
-        <span class="stop-square" style="background: {tokens.sendIcon}"></span>
-      </button>
+  {:else if status === "connecting"}
+    <div class="composer strip" style="border-top-color: {tokens.divider}">
+      <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} generating={true} />
+      <span class="strip-label" style="color: {tokens.text}">Connecting…</span>
+      <span class="strip-grow"></span>
+      <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => agentClient.cancelConnect()} on:mouseup={blurElement}>Cancel</button>
     </div>
   {:else}
-    <div class="composer" style="border-top-color: {tokens.divider}">
+    {#if inCall}
+      <div class="composer strip" style="border-top-color: {tokens.divider}">
+        <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} generating={status === "talking"} />
+        {#if status === "talking"}
+          <!-- The whole label is the interrupt: speak over it, or tap. -->
+          <button type="button" class="strip-interrupt" style="color: {tokens.text}; outline-color: {tokens.text}" on:click={stop} on:mouseup={blurElement}>
+            Talking — speak over it, or tap
+          </button>
+        {:else}
+          <span class="strip-label" style="color: {tokens.text}">Listening…</span>
+        {/if}
+        <span class="strip-grow"></span>
+        {#if minutesBudget}
+          <span class="counter" style="color: {tokens.muted}">{formattedSecondsLeft} left</span>
+        {/if}
+        <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={endCall} on:mouseup={blurElement}>End</button>
+      </div>
+    {/if}
+    <div class="composer" class:borderless={inCall} style="border-top-color: {tokens.divider}">
       {#if showSlashButton && shortcuts.length > 0}
         <button
           type="button"
@@ -383,9 +309,9 @@
         <span class="counter" style="color: {tokens.muted}">{questionsLeft} of {questionBudget} left</span>
       {/if}
 
-      {#if agentVoice}
-        <button type="button" class="quiet" style="outline-color: {tokens.text}; --hover-bg: {tokens.hover}" aria-label="Speak" on:click={startListening} on:mouseup={blurElement}>
-          <Microphone size={18} color={tokens.muted} />
+      {#if agentVoice && !locked && kind === "none"}
+        <button type="button" class="voice" style="background: {tokens.hover}; --hover-bg: {tokens.pressed}; outline-color: {tokens.text}" aria-label="Start a voice conversation" on:click={startCall} on:mouseup={blurElement}>
+          <VoiceMode size={20} color={tokens.text} />
         </button>
       {/if}
 
@@ -395,7 +321,7 @@
         </button>
       {:else}
         <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Send" on:click={() => send()} on:mouseup={blurElement}>
-          <ArrowUp size={14} color={tokens.sendIcon} />
+          <ArrowUp size={16} color={tokens.sendIcon} />
         </button>
       {/if}
     </div>
@@ -664,8 +590,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 40px;
+    height: 40px;
     transition: opacity 150ms ease-out;
     flex-shrink: 0;
     padding: 0;
@@ -742,25 +668,106 @@
     white-space: nowrap;
   }
 
-  .listening-label {
+  .strip-label {
     flex-shrink: 0;
     font-size: 13px;
   }
 
-  .partial {
+  .strip-grow {
     flex: 1;
-    min-width: 0;
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
-  .talking-label {
-    flex: 1;
-    font-size: 10px;
+  .strip-interrupt {
+    flex-shrink: 0;
+    padding: 4px 2px;
+    margin: 0;
+    border: none;
+    background: none;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .strip-interrupt:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  .pill {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    margin: 0;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 9999px;
+    background: transparent;
+    font-size: 12px;
     font-weight: 500;
-    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+
+  .pill:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pill:hover {
+      background: var(--hover-bg);
+    }
+  }
+
+  /* The waveform is the same 40px disc as the play button - thumb-sized, and
+     visibly "you can talk" through its tint. */
+  .voice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+  }
+
+  .voice:focus-visible {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .voice:hover {
+      background: var(--hover-bg);
+    }
+  }
+
+  .divider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+  }
+
+  .divider-text {
+    flex-shrink: 0;
+    font-size: 11px;
+  }
+
+
+
+  .composer.borderless {
+    border-top: none;
+    padding-top: 8px;
   }
 
   .spent-copy {

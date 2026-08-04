@@ -113,6 +113,112 @@ test("default player agent behaviour", async ({ page }) => {
 
   expect(await page.locator(".default-player .shortcuts").count()).toEqual(0);
 
+  // Voice is a call, not dictation: a session starts on the first user act,
+  // never on opening the panel; the two kinds are separate conversations; and
+  // collapsing the panel neither hangs up nor loses the thread. Timers are
+  // real here, so animation stays on and waits are generous.
+  await page.evaluate(() => { window.disableAnimation = false; window.__agentSilenceTimeoutMs = undefined; });
+
+  // Cancel abandons before anything starts: no session, no divider, no rows.
+  await openPanel(page, { embedMode: "audio-agent", agentAccess: "full", shortcuts });
+  await page.locator(".default-player .voice").click();
+
+  await page.waitForSelector(".default-player .strip", { timeout: 2000 });
+  expect(await stripText(page), "the composer becomes the call strip in place").toContain("Connecting");
+
+  await page.locator(".default-player .pill", { hasText: "Cancel" }).click();
+  await page.waitForTimeout(200);
+
+  expect(await page.locator(".default-player .strip").count(), "Cancel returns the composer").toEqual(0);
+  expect((await panelState(page)).thread, "and nothing is marked in the thread").toEqual([]);
+
+  // The full loop: connect, listen, the utterance lands as a message (no
+  // word-by-word transcript), the spoken reply can be interrupted by a tap,
+  // and the call returns to listening with no button between turns.
+  await page.locator(".default-player .voice").click();
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 3000 });
+
+  expect(await page.locator(".default-player .thread .partial").count(), "no partial transcript in the strip").toEqual(0);
+
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Talking"), null, { timeout: 6000 });
+
+  const midCall = await panelState(page);
+  expect(midCall.thread[0], "the utterance lands whole").toEqual("What changed since last week's story?");
+
+  await page.locator(".default-player .strip-interrupt").click();
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 2000 });
+
+  expect(await page.evaluate(() => !document.querySelector(".default-player .cursor")), "the tap interrupted the reply").toEqual(true);
+
+  // Typing mid-call needs no mode: the composer sits under the call row, the
+  // typed ask stays in the same conversation, and the waveform is gone - there
+  // is no second conversation to start.
+  expect(await page.locator(".default-player .composer input").count(), "the composer is there during the call").toEqual(1);
+  expect(await page.locator(".default-player .voice").count(), "no waveform mid-call").toEqual(0);
+
+  const callInput = page.locator(".default-player .composer input").first();
+  await callInput.click();
+  await callInput.type("Who is involved?");
+  await callInput.press("Enter");
+
+  await page.waitForFunction(() => (
+    [...document.querySelectorAll(".default-player .thread > div")].some((row) => row.textContent.includes("Who is involved?"))
+  ), null, { timeout: 2000 });
+
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 15000 });
+
+  // Collapse never hangs up: the bar says a call is running, reopening finds
+  // the thread and the strip, and End marks where the call stopped.
+  await page.locator(".default-player .chat-button").click();
+  await page.waitForTimeout(400);
+
+  expect(await page.evaluate(() => getComputedStyle(document.querySelector(".default-player .chat-button .orb")).animationDuration), "the orb's quicker breath says so").toEqual("1.6s");
+
+  await page.locator(".default-player .chat-button").click();
+  await page.waitForSelector(".default-player .strip", { timeout: 2000 });
+
+  const reopened = await panelState(page);
+  expect(reopened.thread.length, "the thread survived the collapse").toBeGreaterThan(0);
+
+  await page.locator(".default-player .pill", { hasText: "End" }).click();
+  await page.waitForTimeout(300);
+
+  const ended = await panelState(page);
+  expect(ended.thread.at(-1), "the call marks its end in the thread").toContain("Call ended");
+  expect(await page.locator(".default-player .composer input").count(), "the composer returns").toBeGreaterThan(0);
+  expect(await page.locator(".default-player .voice").count(), "a fresh call can follow a finished one").toEqual(1);
+
+  await page.locator(".default-player .voice").click();
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 3000 });
+
+  expect((await panelState(page)).thread, "the divider says nothing carries over").toContain("New voice chat — nothing carries over");
+  await page.locator(".default-player .pill", { hasText: "End" }).click();
+  await page.waitForTimeout(300);
+
+  // Separate conversations: once a typed exchange exists there is no voice
+  // entry to hand it to.
+  await openPanel(page, { embedMode: "audio-agent", agentAccess: "full", shortcuts });
+  await page.locator(".default-player .empty-chips button").first().click();
+  await page.waitForFunction(() => !document.querySelector(".default-player .cursor") && document.querySelectorAll(".default-player .thread > div").length >= 2, null, { timeout: 15000 });
+
+  expect(await page.locator(".default-player .voice").count(), "a text conversation removes the voice entry").toEqual(0);
+
+  // Article audio pauses for the length of the call - not per exchange - and
+  // ~30s of silence hangs up by itself (shortened through the test seam).
+  await page.evaluate(() => { window.__agentSilenceTimeoutMs = 900; });
+  await openPanel(page, { embedMode: "audio-agent", agentAccess: "full", shortcuts, playbackState: "playing", duration: 60, currentTime: 5 });
+
+  await page.locator(".default-player .voice").click();
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 3000 });
+
+  expect(await playback(page), "the article pauses when the call starts").toEqual("paused");
+
+  await page.waitForFunction(() => !document.querySelector(".default-player .strip"), null, { timeout: 3000 });
+
+  expect((await panelState(page)).thread.at(-1), "silence ended the call").toContain("Call ended");
+  expect(await playback(page), "and the article resumes at call end").toEqual("playing");
+  await page.evaluate(() => { window.__agentSilenceTimeoutMs = undefined; window.disableAnimation = true; });
+
   // The answer is revealed as it arrives, not animated from a string the panel
   // already has: dots while the agent composes, then the text behind a caret.
   // Kept last, since it is the one case that needs animation left on.
@@ -168,6 +274,12 @@ const moves = async (page, selector, property) => await page.evaluate(async ([se
 
   return seen.size;
 }, [selector, property]);
+
+const stripText = async (page) => await page.evaluate(() => (
+  document.querySelector(".default-player .strip")?.textContent?.trim() || ""
+));
+
+const playback = async (page) => await page.evaluate(() => BeyondWords.Player.instances()[0].playbackState);
 
 const answerLength = async (page) => await page.evaluate(() => {
   const answer = [...document.querySelectorAll(".default-player .thread > div")].at(-1);
