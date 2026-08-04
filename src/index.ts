@@ -87,6 +87,10 @@ class Player extends PlayerComponent {
     return `https://proxy.beyondwords.io/npm/@beyondwords/player@${version}/dist/hls.light.min.js`;
   }
 
+  static get agentSrc() {
+    return `https://proxy.beyondwords.io/npm/@beyondwords/player@${version}/dist/elevenlabs-client.js`;
+  }
+
   static instances() {
     return [...Player.#instances];
   }

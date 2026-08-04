@@ -58,6 +58,10 @@ class MockAgentClient {
   answerIndex: number;
   silenceTimeoutMs: number;
 
+  // The mock can stop a reply on demand; the real SDK cannot (speaking over
+  // the agent is the interrupt), so the panel checks before offering a tap.
+  canInterrupt = true;
+
   // kind: what conversation is live. status: the voice call's state - text
   // sessions show no connection state at all, so theirs stays "idle".
   state: {
