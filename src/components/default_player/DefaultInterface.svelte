@@ -2,7 +2,7 @@
   // Loads dist/style.js, which injects the player CSS and un-hides the target.
   // Without this a built default-style embed is invisible (see UserInterface).
   import("../../helpers/loadTheStyles.ts");
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import ResizeObserver from "resize-observer-polyfill";
   import { slide, fly, fade } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
@@ -121,6 +121,39 @@
   let pageBackground = "#ffffff";
 
   const agentClient = new MockAgentClient();
+
+  // A collapsed panel does not end a call - the bar says one is running.
+  $: callLive = $agentClient.kind === "voice";
+
+  // Article audio pauses for the length of the call and resumes at its end -
+  // not per exchange. Only resumes what the call itself paused.
+  let pausedForCall = false;
+  $: syncCallPause(callLive);
+
+  const syncCallPause = (live) => {
+    if (live && isPlaying && !pausedForCall) {
+      pausedForCall = true;
+
+      onEvent(newEvent({
+        type: "PressedPause",
+        description: "The pause button was pressed.",
+        initiatedBy: "user",
+      }));
+    }
+
+    if (!live && pausedForCall) {
+      pausedForCall = false;
+
+      onEvent(newEvent({
+        type: "PressedPlay",
+        description: "The play button was pressed.",
+        initiatedBy: "user",
+      }));
+    }
+  };
+
+  // Leaving the page or dismissing the widget hangs up; collapse never does.
+  onDestroy(() => agentClient.endSession());
 
   const reduceMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   $: unfoldMs = reduceMotion || (typeof window !== "undefined" && window.disableAnimation) ? 0 : 240;
@@ -476,6 +509,8 @@
   };
 
   const handleCloseWidget = () => {
+    agentClient.endSession();
+
     onEvent(newEvent({
       type: "PressedCloseWidget",
       description: "The close widget button was pressed.",
@@ -611,8 +646,6 @@
           agentAccess={access}
           {agentLimit}
           {shortcuts}
-          {isPlaying}
-          {onEvent}
           ctaText={agentCta}
           ctaUrl={agentCtaHref} />
       </div>
@@ -634,8 +667,6 @@
       agentAccess={access}
       {agentLimit}
       {shortcuts}
-      {isPlaying}
-      {onEvent}
       ctaText={agentCta}
       ctaUrl={agentCtaHref}
       showSlashButton={false} />
@@ -840,7 +871,7 @@
         on:click={toggleChat}
         on:mouseup={blurElement}
       >
-        <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={chatDisabled} />
+        <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={chatDisabled} generating={callLive && !chatOpen} />
         {#if chatLabelVisible}
           <span class="chat-label" style="color: {chatDisabled ? tokens.muted : tokens.text}">Chat</span>
           {#if chatDisabled}
@@ -894,9 +925,7 @@
         {agentLimit}
         ctaText={agentCta}
         ctaUrl={agentCtaHref}
-        {shortcuts}
-        {isPlaying}
-        {onEvent} />
+        {shortcuts} />
     </div>
   {/if}
 
