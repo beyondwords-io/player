@@ -2,7 +2,7 @@
   // Loads dist/style.js, which injects the player CSS and un-hides the target.
   // Without this a built default-style embed is invisible (see UserInterface).
   import("../../helpers/loadTheStyles.ts");
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
   import ResizeObserver from "resize-observer-polyfill";
   import { slide, fly, fade } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
@@ -12,7 +12,6 @@
   import deriveTokens from "../../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
   import { clampContrast, luminance, parseColor } from "../../helpers/default_theme/colorMath";
-  import MockAgentClient from "../../helpers/agentClient";
   import chooseAdvertText from "../../helpers/chooseAdvertText";
   import ensureProtocol from "../../helpers/ensureProtocol";
   import formatTime from "../../helpers/formatTime";
@@ -39,6 +38,7 @@
   import Close from "../svg_icons/default_player/Close.svelte";
 
   export let onEvent = () => {};
+  export let agentClient;
   export let embedMode = "audio";
   export let theme = "light";
   export let radius = 8;
@@ -120,40 +120,8 @@
   let lastAdvert;
   let pageBackground = "#ffffff";
 
-  const agentClient = new MockAgentClient();
-
   // A collapsed panel does not end a call - the bar says one is running.
   $: callLive = $agentClient.kind === "voice";
-
-  // Article audio pauses for the length of the call and resumes at its end -
-  // not per exchange. Only resumes what the call itself paused.
-  let pausedForCall = false;
-  $: syncCallPause(callLive);
-
-  const syncCallPause = (live) => {
-    if (live && isPlaying && !pausedForCall) {
-      pausedForCall = true;
-
-      onEvent(newEvent({
-        type: "PressedPause",
-        description: "The pause button was pressed.",
-        initiatedBy: "user",
-      }));
-    }
-
-    if (!live && pausedForCall) {
-      pausedForCall = false;
-
-      onEvent(newEvent({
-        type: "PressedPlay",
-        description: "The play button was pressed.",
-        initiatedBy: "user",
-      }));
-    }
-  };
-
-  // Leaving the page or dismissing the widget hangs up; collapse never does.
-  onDestroy(() => agentClient.endSession());
 
   const reduceMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   $: unfoldMs = reduceMotion || (typeof window !== "undefined" && window.disableAnimation) ? 0 : 240;

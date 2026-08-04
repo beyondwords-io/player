@@ -42,39 +42,46 @@
   };
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<div class="queue" bind:this={panel} on:keydown={handleKeydown} role="list">
+<ol class="queue" bind:this={panel}>
   {#each content as item, i (i)}
-    <button
-      type="button"
-      class="row"
-      role="listitem"
-      style="--bg: {i === contentIndex ? activeRow : "transparent"}; --hover-bg: {i === contentIndex ? activeRow : hoverRow}; outline-color: {tokens.text}"
-      on:click={handleClick(i)}
-      on:mouseup={blurElement}
-    >
-      <span class="marker-slot">
-        {#if i === contentIndex}
-          <NowPlayingMarker size={16} color={tokens.text} />
-        {:else}
-          <span class="index" style="color: {tokens.muted}">{i + 1}</span>
-          <svg class="play-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
-            <path fill={tokens.text} d="M8.5 6.82 Q7.4 6.2 7.4 7.5 L7.4 16.5 Q7.4 17.8 8.5 17.18 L16.9 12.78 Q18.3 12 16.9 11.22Z" />
-          </svg>
-        {/if}
-      </span>
+    <li class="queue-item">
+      <button
+        type="button"
+        class="row"
+        style="--bg: {i === contentIndex ? activeRow : "transparent"}; --hover-bg: {i === contentIndex ? activeRow : hoverRow}; outline-color: {tokens.text}"
+        on:click={handleClick(i)}
+        on:keydown={handleKeydown}
+        on:mouseup={blurElement}
+      >
+        <span class="marker-slot">
+          {#if i === contentIndex}
+            <NowPlayingMarker size={16} color={tokens.text} />
+          {:else}
+            <span class="index" style="color: {tokens.muted}">{i + 1}</span>
+            <svg class="play-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+              <path fill={tokens.text} d="M8.5 6.82 Q7.4 6.2 7.4 7.5 L7.4 16.5 Q7.4 17.8 8.5 17.18 L16.9 12.78 Q18.3 12 16.9 11.22Z" />
+            </svg>
+          {/if}
+        </span>
 
-      <span class="row-title" style="color: {tokens.text}">{item.title || ""}</span>
-      <span class="duration" style="color: {i === contentIndex ? tokens.text : tokens.muted}">{durationFor(item)}</span>
-    </button>
+        <span class="row-title" style="color: {tokens.text}">{item.title || ""}</span>
+        <span class="duration" style="color: {i === contentIndex ? tokens.text : tokens.muted}">{durationFor(item)}</span>
+      </button>
+    </li>
   {/each}
-</div>
+</ol>
 
 <style>
   .queue {
     display: flex;
     flex-direction: column;
     padding: 6px 8px 8px;
+    margin: 0;
+    list-style: none;
+  }
+
+  .queue-item {
+    display: block;
   }
 
   .row {
@@ -90,6 +97,7 @@
     background: var(--bg, transparent);
     cursor: pointer;
     text-align: left;
+    width: 100%;
   }
 
   .row:focus-visible {

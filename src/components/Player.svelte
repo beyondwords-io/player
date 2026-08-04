@@ -15,6 +15,8 @@
   import SegmentClickables from "../helpers/segmentClickables";
   import SegmentHighlights from "../helpers/segmentHighlights";
   import identifiersEvent from "../helpers/identifiersEvent";
+  import newEvent from "../helpers/newEvent";
+  import MockAgentClient from "../helpers/agentClient";
   import sectionEnabled from "../helpers/sectionEnabled";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
@@ -136,6 +138,7 @@
 
   // These are set automatically.
   export let initialProps = {};
+  export let videoPlayerStyleAlias = undefined;
 
   // The last /player response, the URL it came from, and every value it tried
   // to set (including ones an override rejected). For tooling only: ignored
@@ -169,6 +172,40 @@
   export let segmentClickables = new SegmentClickables();
   export let segmentHighlights = new SegmentHighlights();
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
+
+  // The inline player and its widget are two views of one conversation. Keep
+  // the client above both interfaces so scrolling between them cannot fork the
+  // thread or leave a hidden voice session running.
+  const agentClient = new MockAgentClient();
+  let pausedForAgentCall = false;
+
+  $: agentCallLive = $agentClient.kind === "voice";
+  $: syncAgentCallPlayback(agentCallLive, playbackState);
+
+  const syncAgentCallPlayback = (live, state) => {
+    // The transport stays visible beside Chat. If it is pressed during a call,
+    // immediately restore the call's pause instead of letting both audio
+    // streams play together.
+    if (live && state === "playing") {
+      pausedForAgentCall = true;
+
+      onEvent(newEvent({
+        type: "PressedPause",
+        description: "The pause button was pressed.",
+        initiatedBy: "user",
+      }));
+    }
+
+    if (!live && pausedForAgentCall) {
+      pausedForAgentCall = false;
+
+      onEvent(newEvent({
+        type: "PressedPlay",
+        description: "The play button was pressed.",
+        initiatedBy: "user",
+      }));
+    }
+  };
 
   let accessTierRevision = 0;
   export let accessTier = undefined;
@@ -262,7 +299,8 @@
   $: showClose = showCloseWidget && effectiveWidgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
-  $: hasVideoContent = content.some(item => (item.video || []).length > 0);
+  $: currentVideoContent = summary ? contentItem?.summarization?.video : contentItem?.video;
+  $: hasVideoContent = (currentVideoContent || []).length > 0;
   $: videoMightBeShown = playerStyle === "video" || effectiveWidgetStyle === "video" || ((playerStyle === "default" || effectiveWidgetStyle === "default") && video === true);
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
   $: aspectRatio = isVideo && loadedMedia.videoSize ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
@@ -303,6 +341,7 @@
   $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: activeHighlightColor, wordHighlightColor: activeWordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
   onDestroy(() => {
+    agentClient.endSession();
     segmentContainers.reset();
     segmentClickables.reset();
     segmentHighlights.reset("current");
@@ -356,6 +395,7 @@
   <DefaultInterface
     bind:this={userInterface}
     {onEvent}
+    {agentClient}
     {embedMode}
     {analyticsId}
     {theme}
@@ -460,6 +500,7 @@
     <DefaultInterface
       bind:this={widgetInterface}
       {onEvent}
+      {agentClient}
       embedMode={effectiveWidgetEmbedMode}
       {analyticsId}
       {theme}

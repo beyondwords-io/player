@@ -29,14 +29,35 @@ class Player extends PlayerComponent {
     renameProp("xdv3rts", "adverts", props);
     renameProp("xdv3rtIndex", "advertIndex", props);
     renameProp("loadContentAs", "summary", props, value => value?.[0] === "summary");
-    // For the default style, video stays a boolean prop rather than aliasing
-    // to the legacy video playerStyle.
+    const initialVideo = props.video;
+    const playerStyleWasProvided = typeof props.playerStyle !== "undefined";
+
+    // For an explicitly selected default style, video stays a boolean prop.
+    // Otherwise retain the legacy alias while the API decides whether this is
+    // actually a default-style project.
     if (props.playerStyle !== "default") {
       renameProp("video", "playerStyle", props, bool => bool ? "video" : props.playerStyle);
     }
 
     const initialProps = { showUserInterface, ...props };
-    super({ target: newTarget, props: { controller, ...initialProps, initialProps } });
+    let componentProps = initialProps;
+
+    if (initialVideo && !playerStyleWasProvided) {
+      const aliasedPlayerStyle = initialProps.playerStyle;
+
+      // The alias chooses the initial request and remains the legacy fallback,
+      // but it is not an explicit playerStyle override: `/player` may reveal
+      // that `video` is the default style's boolean setting instead.
+      delete initialProps.playerStyle;
+      initialProps.video = initialVideo;
+      componentProps = {
+        ...initialProps,
+        playerStyle: aliasedPlayerStyle,
+        videoPlayerStyleAlias: aliasedPlayerStyle,
+      };
+    }
+
+    super({ target: newTarget, props: { controller, ...componentProps, initialProps } });
 
     Object.defineProperty(this, "accessTier", {
       get: () => this.getAccessTier?.(),
