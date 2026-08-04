@@ -184,7 +184,7 @@ class MockAgentClient {
     this.state.muted = false;
 
     if (wasVoice && reason !== "switched") {
-      this.state.thread = [...this.state.thread, { role: "divider", text: "Call ended · everything said is in the thread" }];
+      this.state.thread = [...this.state.thread, { role: "divider", text: "Chat ended" }];
     }
 
     this.#notify();

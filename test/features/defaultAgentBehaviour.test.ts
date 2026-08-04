@@ -184,7 +184,7 @@ test("default player agent behaviour", async ({ page }) => {
   await page.waitForTimeout(300);
 
   const ended = await panelState(page);
-  expect(ended.thread.at(-1), "the call marks its end in the thread").toContain("Call ended");
+  expect(ended.thread.at(-1), "the call marks its end in the thread").toEqual("Chat ended");
   expect(await page.locator(".default-player .composer input").count(), "the composer returns").toBeGreaterThan(0);
   expect(await page.locator(".default-player .voice").count(), "a fresh call can follow a finished one").toEqual(1);
 
@@ -215,7 +215,7 @@ test("default player agent behaviour", async ({ page }) => {
 
   await page.waitForFunction(() => !document.querySelector(".default-player .strip"), null, { timeout: 3000 });
 
-  expect((await panelState(page)).thread.at(-1), "silence ended the call").toContain("Call ended");
+  expect((await panelState(page)).thread.at(-1), "silence ended the call").toEqual("Chat ended");
   expect(await playback(page), "and the article resumes at call end").toEqual("playing");
   await page.evaluate(() => { window.__agentSilenceTimeoutMs = undefined; window.disableAnimation = true; });
 
