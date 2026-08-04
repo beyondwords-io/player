@@ -25,6 +25,29 @@ test("default player accessibility standards", async ({ page }) => {
     expect(results.violations).toEqual([]);
     process.stdout.write(".");
   });
+
+  // The normal permutations leave the queue collapsed. Open it explicitly so
+  // axe also checks the list semantics of the interactive playlist rows.
+  await page.evaluate(() => {
+    const player = BeyondWords.Player.instances()[0];
+    const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 30 }];
+
+    Object.assign(player, {
+      playerStyle: "default",
+      widgetStyle: "none",
+      playlistStyle: "show",
+      content: [
+        { title: "First item", audio },
+        { title: "Second item", audio },
+      ],
+    });
+  });
+
+  const queueResults = await new AxeBuilder({ page })
+    .include(".default-player .queue")
+    .analyze();
+
+  expect(queueResults.violations).toEqual([]);
 });
 
 const waitForStylesToLoad = async (page) => {

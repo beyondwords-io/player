@@ -319,6 +319,17 @@ const set = (player, propName, value) => {
   // applied, so tooling can show both values and restore the API's one.
   if (player.apiProps) { player.apiProps[propName] = value; }
 
+  // `video: true` historically aliases to playerStyle: "video", but in the
+  // default style it is a boolean preference. When no playerStyle was supplied
+  // explicitly, let the API disambiguate while retaining the legacy fallback
+  // for every non-default API style.
+  const videoPlayerStyleAlias = player.videoPlayerStyleAlias;
+  const playerStyleWasOverridden = typeof player.initialProps?.playerStyle !== "undefined";
+  if (propName === "playerStyle" && videoPlayerStyleAlias && !playerStyleWasOverridden) {
+    player[propName] = value === "default" ? value : videoPlayerStyleAlias;
+    return;
+  }
+
   const overridden = typeof player.initialProps?.[propName] !== "undefined";
   if (!overridden) { player[propName] = value; }
 };
