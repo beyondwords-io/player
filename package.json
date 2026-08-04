@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.7",
+    "@elevenlabs/client": "^1.17.0",
     "@eslint/js": "^9.0",
     "@fontsource/inter": "^4.5",
     "@iabtechlabtcf/core": "^1.5",

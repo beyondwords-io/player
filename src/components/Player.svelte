@@ -17,6 +17,7 @@
   import identifiersEvent from "../helpers/identifiersEvent";
   import newEvent from "../helpers/newEvent";
   import MockAgentClient from "../helpers/agentClient";
+  import RealAgentClient from "../helpers/realAgentClient";
   import sectionEnabled from "../helpers/sectionEnabled";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
@@ -117,6 +118,11 @@
   // inherit the ones above.
   export let agentCtaText = undefined;
   export let agentCtaUrl = undefined;
+
+  // A public ElevenLabs agent id connects the live agent in place of the
+  // scripted mock. Served as conversational_agent.elevenlabs_agent_id by
+  // /player; a token endpoint replaces it when agent auth lands.
+  export let agentId = undefined;
   export let theme = "light";
   export let radius = 8;
   export let agentColor = undefined;
@@ -176,8 +182,33 @@
   // The inline player and its widget are two views of one conversation. Keep
   // the client above both interfaces so scrolling between them cannot fork the
   // thread or leave a hidden voice session running.
-  const agentClient = new MockAgentClient();
+  //
+  // An agent id (from /player or the script tag) selects the live client; it
+  // can arrive after mount, so swapping ends whatever the old client had open.
+  let agentClient = new MockAgentClient();
   let pausedForAgentCall = false;
+
+  $: syncAgentClient(agentId);
+
+  const syncAgentClient = (id) => {
+    const wantedId = typeof id === "string" && id.trim().length > 0 ? id.trim() : null;
+    const currentId = agentClient instanceof RealAgentClient ? agentClient.agentId : null;
+    if (wantedId === currentId) { return; }
+
+    agentClient.endSession();
+    agentClient = wantedId
+      ? new RealAgentClient({ agentId: wantedId, dynamicVariables: agentDynamicVariables })
+      : new MockAgentClient();
+  };
+
+  // Per-page context for the agent's prompt, read at session start so the
+  // loaded content is in by then. Keys match the /player payload's naming.
+  const agentDynamicVariables = () => ({
+    project_id: projectId,
+    content_id: contentItem?.id,
+    source_id: contentItem?.sourceId,
+    title: contentItem?.title,
+  });
 
   $: agentCallLive = $agentClient.kind === "voice";
   $: syncAgentCallPlayback(agentCallLive, playbackState);
