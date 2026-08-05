@@ -1,3 +1,5 @@
+import translate from "./translate";
+
 // The live agent client: the same store shape and methods as MockAgentClient
 // (see that file for the session model), backed by the ElevenLabs Agents SDK.
 // The player selects this client when the project serves an agent id
@@ -178,7 +180,7 @@ class RealAgentClient {
     this.#resetToIdle();
 
     if (wasVoice && reason !== "switched") {
-      this.state.thread = [...this.state.thread, { role: "divider", text: "Chat ended" }];
+      this.state.thread = [...this.state.thread, { role: "divider", text: translate("chatEnded") }];
     }
 
     this.#notify();
@@ -250,7 +252,7 @@ class RealAgentClient {
 
     if (status === "connected") {
       if (this.#conversationRows() > 0) {
-        this.state.thread = [...this.state.thread, { role: "divider", text: "New voice chat — nothing carries over" }];
+        this.state.thread = [...this.state.thread, { role: "divider", text: translate("newVoiceChat") }];
       }
 
       this.state.status = "listening";
@@ -423,7 +425,7 @@ class RealAgentClient {
     this.#resetToIdle();
 
     if (wasVoice) {
-      this.state.thread = [...this.state.thread, { role: "divider", text: "Chat ended" }];
+      this.state.thread = [...this.state.thread, { role: "divider", text: translate("chatEnded") }];
     }
 
     this.#notify();

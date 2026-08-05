@@ -24,15 +24,19 @@ export const setLocale = (locale) => {
 
 const translate = (key, { locale } = {}) => {
   const translations = translationsForBrowserPreference(locale);
+  // Feature copy can ship before every locale has caught up. Fall back one
+  // key at a time so a partially translated locale remains usable instead of
+  // throwing as soon as a newer control is rendered.
+  const translation = translations[key] || languages.en[key];
 
-  if (!translations[key]) {
+  if (!translation) {
     throwError([
       `No translations found for the '${key}' translation key.`,
       `Please ensure '${key}: "something"' is set in src/translations/`,
     ]);
   }
 
-  return translations[key];
+  return translation;
 };
 
 const translationsForBrowserPreference = (locale = null) => {
