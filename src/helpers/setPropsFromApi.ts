@@ -114,6 +114,7 @@ const handleNoContent = (player) => {
   resetSomeProps(player);
   setContentProp(player);
   setAdvertsProp(player);
+  set(player, "agentId", undefined);
 
   player.onEvent?.(newEvent({
     type: "NoContentAvailable",

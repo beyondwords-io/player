@@ -44,7 +44,6 @@ class RealAgentClient {
   #queued: string[] = [];
   #epoch = 0;
   #partTurnId: number | null = null;
-  #sawParts = false;
 
   constructor({ agentId, dynamicVariables, loadSdk, silenceTimeoutMs } = {}) {
     this.agentId = agentId;
@@ -125,7 +124,7 @@ class RealAgentClient {
     const pending = this.#streamingReply();
     if (pending) { this.#finalizeReply(pending, { interrupted: true }); }
 
-    const reply = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice" };
+    const reply = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
     this.state.thread = [...this.state.thread, { role: "reader", text }, reply];
     this.#disarmSilenceTimer();
     this.#notify();
@@ -210,7 +209,7 @@ class RealAgentClient {
       ...this.#dynamicVariablesConfig(),
       onStatusChange: guarded(({ status }) => this.#handleStatusChange(status)),
       onModeChange: guarded(({ mode }) => this.#handleModeChange(mode)),
-      onMessage: guarded(({ message, role, source }) => this.#handleMessage(message, role || source)),
+      onMessage: guarded(({ message, role, source, event_id: eventId }) => this.#handleMessage(message, role || source, eventId)),
       onAgentChatResponsePart: guarded((part) => this.#handleResponsePart(part)),
       onAgentResponseCorrection: guarded((event) => this.#handleCorrection(event)),
       onDisconnect: guarded(() => this.#handleDisconnected()),
@@ -259,7 +258,7 @@ class RealAgentClient {
   // Voice transcripts land per utterance once the reader finishes - there is
   // no word-by-word transcript. Agent turns fill the pending reply if one is
   // on screen, otherwise they append whole.
-  #handleMessage(message, role) {
+  #handleMessage(message, role, eventId) {
     if (role === "user") {
       // A just-typed message echoed back is not a second row.
       const recent = this.state.thread.slice(-2) as { role?: string; text?: string }[];
@@ -275,17 +274,48 @@ class RealAgentClient {
     // is nothing to render, and the pending bubble stays open for the answer.
     if (!message || !message.trim()) { return; }
 
-    // Streams already put this text on screen delta by delta.
-    if (this.#sawParts && this.state.kind === "text") { return; }
+    // A whole agent_response follows the streamed parts for the same turn.
+    // Correlate it to that turn rather than suppressing all whole messages for
+    // the rest of the session: later turns (and later sessions) may use the
+    // whole-message fallback instead.
+    const replies = this.state.thread.filter((row: { role?: string; sessionEpoch?: number }) => row.role === "agent" && row.sessionEpoch === this.#epoch) as {
+      eventId?: number;
+      fromParts?: boolean;
+      sessionEpoch?: number;
+      streaming?: boolean;
+      text?: string;
+    }[];
+    const matchingPartsReply = eventId === undefined || eventId === null
+      ? null
+      : [...replies].reverse().find((reply) => reply.fromParts && reply.eventId === eventId);
+
+    if (matchingPartsReply?.text) {
+      const changed = matchingPartsReply.text !== message || matchingPartsReply.streaming;
+      matchingPartsReply.text = message;
+      this.#finalizeReply(matchingPartsReply);
+      if (changed) { this.#notify(); }
+      return;
+    }
+
+    // Older SDK events can omit event_id. Exact text on the most recent
+    // parts-built reply is still enough to identify the duplicate safely.
+    const lastReply = replies[replies.length - 1];
+    if ((eventId === undefined || eventId === null) && lastReply?.fromParts && lastReply.text === message) {
+      const changed = lastReply.streaming;
+      this.#finalizeReply(lastReply);
+      if (changed) { this.#notify(); }
+      return;
+    }
 
     const pending = this.#streamingReply();
 
     if (pending && pending.text === "") {
       pending.typing = false;
       pending.text = message;
+      pending.eventId = eventId;
       this.#finalizeReply(pending);
     } else if (!pending) {
-      const reply = { role: "agent", text: message, citations: [], streaming: false, typing: false, spoken: this.state.kind === "voice" };
+      const reply = { role: "agent", text: message, citations: [], streaming: false, typing: false, spoken: this.state.kind === "voice", eventId, sessionEpoch: this.#epoch };
       this.state.thread = [...this.state.thread, reply];
       this.state.announced = message;
     } else {
@@ -301,14 +331,18 @@ class RealAgentClient {
   // so a turn we cut off locally cannot leak into the next reply.
   #handleResponsePart({ text, type, event_id: eventId }) {
     if (type === "start") {
-      this.#sawParts = true;
       this.#partTurnId = eventId ?? -1;
 
       if (!this.#streamingReply()) {
-        const reply = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice" };
+        const reply = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
         this.state.thread = [...this.state.thread, reply];
         this.#notify();
       }
+
+      const pending = this.#streamingReply();
+      pending.eventId = eventId;
+      pending.fromParts = true;
+      pending.sessionEpoch = this.#epoch;
 
       return;
     }
@@ -337,12 +371,26 @@ class RealAgentClient {
 
   // The agent withdrew part of an answer (usually after an interruption);
   // what is on screen follows suit.
-  #handleCorrection({ corrected_agent_response: corrected }) {
-    const lastReply = [...this.state.thread].reverse().find((row: { role?: string }) => row.role === "agent");
-    if (!lastReply || typeof corrected !== "string") { return; }
+  #handleCorrection({ corrected_agent_response: corrected, original_agent_response: original, event_id: eventId }) {
+    if (typeof corrected !== "string") { return; }
 
-    (lastReply as { text: string }).text = corrected;
-    if (this.state.announced) { this.state.announced = corrected; }
+    const replies = this.state.thread.filter((row: { role?: string; sessionEpoch?: number }) => row.role === "agent" && row.sessionEpoch === this.#epoch) as {
+      eventId?: number;
+      sessionEpoch?: number;
+      streaming?: boolean;
+      text?: string;
+    }[];
+    const reply = (eventId === undefined || eventId === null
+      ? null
+      : [...replies].reverse().find((row) => row.eventId === eventId))
+      ?? (typeof original === "string" ? [...replies].reverse().find((row) => row.text === original) : null);
+
+    // A delayed correction must never land in a newer turn's pending bubble.
+    if (!reply) { return; }
+
+    const announcedReply = [...replies].reverse().find((row) => !row.streaming && row.text === this.state.announced);
+    reply.text = corrected;
+    if (announcedReply === reply) { this.state.announced = corrected; }
     this.#notify();
   }
 
