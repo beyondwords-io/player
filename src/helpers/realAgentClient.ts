@@ -119,6 +119,9 @@ class RealAgentClient {
   sendUserMessage(text) {
     if (this.state.kind === "none") { this.startSession({ textOnly: true }); }
 
+    // A reply that has text stays, cut short; one that never got any goes -
+    // the platform will answer the newest question in the fresh bubble.
+    this.#dropEmptyReply();
     const pending = this.#streamingReply();
     if (pending) { this.#finalizeReply(pending, { interrupted: true }); }
 
@@ -268,6 +271,10 @@ class RealAgentClient {
       return;
     }
 
+    // The platform sends an empty agent_response while its tools run; there
+    // is nothing to render, and the pending bubble stays open for the answer.
+    if (!message || !message.trim()) { return; }
+
     // Streams already put this text on screen delta by delta.
     if (this.#sawParts && this.state.kind === "text") { return; }
 
@@ -318,6 +325,10 @@ class RealAgentClient {
     }
 
     if (type === "stop") {
+      // The platform closes an empty turn while its tools run, then restarts
+      // the same event_id with the answer: the reply stays open until then.
+      if (!pending.text) { return; }
+
       this.#partTurnId = null;
       this.#finalizeReply(pending);
       this.#notify();

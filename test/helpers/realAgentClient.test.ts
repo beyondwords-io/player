@@ -108,6 +108,74 @@ describe("realAgentClient", () => {
     expect(client.state.announced).toEqual("It launched.");
   });
 
+  it("ignores the empty agent message sent while the platform's tools run", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What are today's top stories?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    // Observed live: an empty agent_response arrives first, then the real
+    // reply streams. The pending bubble must wait for the real one.
+    conversation.emitMessage("", "agent");
+    expect(client.state.thread[1]).toMatchObject({ text: "", streaming: true });
+
+    conversation.emitPart("start", "", 2);
+    conversation.emitPart("delta", "Here are the top stories.", 2);
+    conversation.emitPart("stop", "", 2);
+
+    expect(client.state.thread).toHaveLength(2);
+    expect(client.state.thread[1]).toMatchObject({ text: "Here are the top stories.", streaming: false });
+  });
+
+  it("keeps the reply open through the platform's empty tool-call turn", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What are today's top stories?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    // Observed live: start/stop with no deltas while tools run, then the
+    // same event_id starts again with the real answer.
+    conversation.emitPart("start", "", 2);
+    conversation.emitPart("stop", "", 2);
+    expect(client.state.thread).toHaveLength(2);
+    expect(client.state.thread[1]).toMatchObject({ text: "", streaming: true });
+
+    conversation.emitPart("start", "", 2);
+    conversation.emitPart("delta", "Here are the top stories.", 2);
+    conversation.emitPart("stop", "", 2);
+
+    expect(client.state.thread).toHaveLength(2);
+    expect(client.state.thread[1]).toMatchObject({ text: "Here are the top stories.", streaming: false });
+    expect(client.state.announced).toEqual("Here are the top stories.");
+  });
+
+  it("drops an unanswered bubble when the reader asks again mid-turn", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("First question");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    conversation.emitPart("start", "", 2);
+    conversation.emitPart("stop", "", 2);
+
+    client.sendUserMessage("Second question");
+
+    expect(client.state.thread.map((row) => [row.role, row.text])).toEqual([
+      ["reader", "First question"],
+      ["reader", "Second question"],
+      ["agent", ""],
+    ]);
+
+    conversation.emitPart("start", "", 3);
+    conversation.emitPart("delta", "Answering the second.", 3);
+    conversation.emitPart("stop", "", 3);
+
+    expect(client.state.thread[2]).toMatchObject({ text: "Answering the second.", streaming: false });
+  });
+
   it("fills the pending reply from a whole message when the platform sends no parts", async () => {
     const { client, calls } = newClient();
 
