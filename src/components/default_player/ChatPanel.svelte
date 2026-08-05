@@ -2,6 +2,7 @@
   import formatTime from "../../helpers/formatTime";
   import { tick, onDestroy } from "svelte";
   import blurElement from "../../helpers/blurElement";
+  import translate from "../../helpers/translate";
   import Orb from "./Orb.svelte";
   import ArrowUp from "../svg_icons/default_player/ArrowUp.svelte";
   import ArrowUpRight from "../svg_icons/default_player/ArrowUpRight.svelte";
@@ -34,7 +35,7 @@
   $: streaming = !!(lastRow && lastRow.streaming);
   $: inCall = kind === "voice" && status !== "connecting";
 
-  $: placeholder = agentPlaceholder || "Ask about this article, or anything we've covered…";
+  $: placeholder = agentPlaceholder || `${translate("askAboutThisArticle")}…`;
 
   // Limited access: a question budget ("3") or a voice-minutes budget ("5:00").
   $: minutesBudget = typeof agentLimit === "string" && agentLimit.includes(":");
@@ -229,7 +230,7 @@
 
   {#if shortcutsOpen && shortcutRows.length > 0}
     <div class="shortcuts" style="background: {tokens.bubbleBackground}; border-radius: {tokens.radius.bar}; box-shadow: {tokens.widgetShadow}">
-      <span class="eyebrow" style="color: {tokens.muted}">Shortcuts</span>
+      <span class="eyebrow" style="color: {tokens.muted}">{translate("shortcuts")}</span>
       {#each shortcutRows as question (question)}
         <button type="button" class="shortcut-row" style="--hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => send(question)}>
           <span class="question" style="color: {tokens.text}">{question}</span>
@@ -245,9 +246,9 @@
         {#if lockedAsked}
           <!-- The CTA above the composer already says it; no need to repeat. -->
         {:else if minutesBudget}
-          You've used your free conversation time.
+          {translate("freeConversationTimeUsed")}
         {:else}
-          You've used your {questionBudget} free questions.
+          {translate(questionBudget === 1 ? "freeQuestionUsed" : "freeQuestionsUsed").replace("{n}", questionBudget)}
         {/if}
       </span>
       {#if ctaText && ctaUrl}
@@ -259,9 +260,9 @@
   {:else if status === "connecting"}
     <div class="composer strip" style="border-top-color: {tokens.divider}">
       <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} generating={true} />
-      <span class="strip-label" style="color: {tokens.text}">Connecting…</span>
+      <span class="strip-label" style="color: {tokens.text}">{translate("connecting")}</span>
       <span class="strip-grow"></span>
-      <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => agentClient.cancelConnect()} on:mouseup={blurElement}>Cancel</button>
+      <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => agentClient.cancelConnect()} on:mouseup={blurElement}>{translate("cancel")}</button>
     </div>
   {:else}
     {#if inCall}
@@ -270,16 +271,16 @@
         {#if status === "talking"}
           <!-- The whole label is the interrupt: speak over it, or tap. -->
           <button type="button" class="strip-interrupt" style="color: {tokens.text}; outline-color: {tokens.text}" on:click={stop} on:mouseup={blurElement}>
-            Talking — speak over it, or tap
+            {translate("talkingSpeakOverOrTap")}
           </button>
         {:else}
-          <span class="strip-label" style="color: {tokens.text}">Listening…</span>
+          <span class="strip-label" style="color: {tokens.text}">{translate("listening")}</span>
         {/if}
         <span class="strip-grow"></span>
         {#if minutesBudget}
-          <span class="counter" style="color: {tokens.muted}">{formattedSecondsLeft} left</span>
+          <span class="counter" style="color: {tokens.muted}">{translate("timeLeft").replace("{time}", formattedSecondsLeft)}</span>
         {/if}
-        <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={endCall} on:mouseup={blurElement}>End</button>
+        <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={endCall} on:mouseup={blurElement}>{translate("end")}</button>
       </div>
     {/if}
     <div class="composer" class:borderless={inCall} style="border-top-color: {tokens.divider}">
@@ -288,7 +289,7 @@
           type="button"
           class="slash"
           style="border-color: {tokens.divider}; --bg: {shortcutsOpen ? tokens.pressed : tokens.bubbleBackground}; --hover-bg: {tokens.pressed}; color: {tokens.muted}; outline-color: {tokens.text}"
-          aria-label="Shortcuts"
+          aria-label={translate("shortcuts")}
           aria-expanded={shortcutsOpen}
           on:click={() => shortcutsOpen = !shortcutsOpen}
           on:mouseup={blurElement}
@@ -306,21 +307,21 @@
       />
 
       {#if showCounter}
-        <span class="counter" style="color: {tokens.muted}">{questionsLeft} of {questionBudget} left</span>
+        <span class="counter" style="color: {tokens.muted}">{translate("questionsRemaining").replace("{remaining}", questionsLeft).replace("{total}", questionBudget)}</span>
       {/if}
 
       {#if agentVoice && !locked && kind === "none"}
-        <button type="button" class="voice" style="background: {tokens.hover}; --hover-bg: {tokens.pressed}; outline-color: {tokens.text}" aria-label="Start a voice conversation" on:click={startCall} on:mouseup={blurElement}>
+        <button type="button" class="voice" style="background: {tokens.hover}; --hover-bg: {tokens.pressed}; outline-color: {tokens.text}" aria-label={translate("startVoiceConversation")} on:click={startCall} on:mouseup={blurElement}>
           <VoiceMode size={20} color={tokens.text} />
         </button>
       {/if}
 
       {#if streaming}
-        <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Stop" on:click={stop} on:mouseup={blurElement}>
+        <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label={translate("stop")} on:click={stop} on:mouseup={blurElement}>
           <span class="stop-square" style="background: {tokens.sendIcon}"></span>
         </button>
       {:else}
-        <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label="Send" on:click={() => send()} on:mouseup={blurElement}>
+        <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label={translate("send")} on:click={() => send()} on:mouseup={blurElement}>
           <ArrowUp size={16} color={tokens.sendIcon} />
         </button>
       {/if}

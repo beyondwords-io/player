@@ -260,6 +260,42 @@ test("default player agent behaviour", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
 });
 
+test("default player translation behaviour uses established copy and falls back for new agent copy", async ({ page }) => {
+  await page.goto("http://localhost:8000");
+  await waitForStylesToLoad(page);
+
+  await page.evaluate(async () => {
+    const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
+
+    BeyondWords.Player.destroyAll();
+    const player = new BeyondWords.Player({ target: ".beyondwords-player" });
+
+    Object.assign(player, {
+      playerStyle: "default",
+      playerLanguage: "fr",
+      embedMode: "audio-agent",
+      content: [{ title: "Un article", audio }],
+      shortcuts: ["Que s'est-il passé ?"],
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 400));
+  });
+
+  const root = page.locator(".default-player");
+  await expect(root.locator(".title")).toHaveText("Écoutez cet article");
+  await expect(root.locator(".play-pause")).toHaveAttribute("aria-label", "Lire l'audio");
+
+  const chat = root.locator(".chat-button");
+  await expect(chat).toHaveAttribute("aria-label", "Chat about this article");
+  await chat.click();
+
+  await expect(root.locator(".composer input")).toHaveAttribute(
+    "placeholder",
+    "Ask about this article, or anything we've covered…"
+  );
+  await expect(root.locator(".slash")).toHaveAttribute("aria-label", "Shortcuts");
+});
+
 // How many distinct values a property takes over ~1s: 1 means it is not moving.
 const moves = async (page, selector, property) => await page.evaluate(async ([selector, property]) => {
   const element = document.querySelector(selector);

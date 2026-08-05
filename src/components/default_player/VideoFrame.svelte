@@ -102,7 +102,7 @@
             </button>
             <span class="time" style="color: {tokens.videoText}">{formatTime(currentTime)} / {formatTime(duration)}</span>
             {#if showChat}
-              <button type="button" class="overlay-button" aria-label="Chat about this video" aria-expanded={chatOpen} on:click={onToggleChat} on:mouseup={blurElement}>
+              <button type="button" class="overlay-button" aria-label={translate("chatAboutThisVideo")} aria-expanded={chatOpen} on:click={onToggleChat} on:mouseup={blurElement}>
                 <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
               </button>
             {/if}
@@ -126,9 +126,9 @@
 
           {#if showChat}
             <div class="v-divider"></div>
-            <button type="button" class="overlay-chat" aria-label="Chat about this video" aria-expanded={chatOpen} on:click={onToggleChat} on:mouseup={blurElement}>
+            <button type="button" class="overlay-chat" aria-label={translate("chatAboutThisVideo")} aria-expanded={chatOpen} on:click={onToggleChat} on:mouseup={blurElement}>
               <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
-              <span class="chat-label" style="color: {tokens.videoText}">Chat</span>
+              <span class="chat-label" style="color: {tokens.videoText}">{translate("chat")}</span>
               <span class="chat-caret" class:flipped={chatOpen}>
                 <CaretDown size={14} color="#dbdbdb" />
               </span>
