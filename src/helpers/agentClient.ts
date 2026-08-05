@@ -1,3 +1,5 @@
+import translate from "./translate";
+
 // Agent client for the default player's Chat/Talk surfaces.
 //
 // The real backend integration does not exist yet, so the player ships with a
@@ -121,7 +123,7 @@ class MockAgentClient {
       if (this.state.status !== "connecting") { return; }
 
       if (this.#conversationRows() > 0) {
-        this.state.thread = [...this.state.thread, { role: "divider", text: "New voice chat — nothing carries over" }];
+        this.state.thread = [...this.state.thread, { role: "divider", text: translate("newVoiceChat") }];
       }
 
       this.state.status = "listening";
@@ -184,7 +186,7 @@ class MockAgentClient {
     this.state.muted = false;
 
     if (wasVoice && reason !== "switched") {
-      this.state.thread = [...this.state.thread, { role: "divider", text: "Chat ended" }];
+      this.state.thread = [...this.state.thread, { role: "divider", text: translate("chatEnded") }];
     }
 
     this.#notify();

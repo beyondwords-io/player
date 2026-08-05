@@ -281,7 +281,7 @@
   $: if (isPlaying && duration > 0 && currentTime / duration > 0.98) { hasFinished = true; }
   $: if (isPlaying && duration > 0 && currentTime / duration < 0.5) { hasFinished = false; }
 
-  $: stoppedTitle = hasFinished ? "Listen again" : callToAction || translate("listenToThisArticle");
+  $: stoppedTitle = hasFinished ? translate("listenAgain") : callToAction || translate("listenToThisArticle");
 
   // No title shows in the bar during playback unless the publisher opted in
   // through the title setting - a project name isn't worth the row. When the
@@ -299,7 +299,7 @@
   $: languageName = languageNameFor(contentLanguage);
   // Name the version when the reader can switch, since the menu carries the
   // durations; otherwise say how long the one they are getting is.
-  $: versionLabel = summary && hasVersions ? "Summary" : totalMins;
+  $: versionLabel = summary && hasVersions ? translate("summary") : totalMins;
 
   $: downloadAudio = (summary ? contentItem.summarization?.audio : contentItem.audio) || [];
   $: downloadVideo = (summary ? contentItem.summarization?.video : contentItem.video) || [];
@@ -337,13 +337,15 @@
   $: isAdvert && (chatOpen = false);
   $: chatDisabled = access === "locked";
   $: agentOnly = embedMode === "agent";
-  $: agentPrompt = agentName ? `Ask ${agentName}` : "Ask about this article, or anything we've covered";
+  $: agentPrompt = agentName
+    ? translate("askAgent").replace("{name}", agentName)
+    : translate("askAboutThisArticle");
 
   $: playPauseLabel = isPlaying ? translate("pauseAudio") : translate("playAudio");
 
   $: versionItems = [
-    ...(offeredVersions.includes("full") ? [{ value: "full", label: "Full", secondary: formatMins(mediaDuration(contentItem)), selected: !summary }] : []),
-    ...(hasSummaryVariant ? [{ value: "summary", label: "Summary", secondary: formatMins(mediaDuration(contentItem.summarization)), selected: summary }] : []),
+    ...(offeredVersions.includes("full") ? [{ value: "full", label: translate("full"), secondary: formatMins(mediaDuration(contentItem)), selected: !summary }] : []),
+    ...(hasSummaryVariant ? [{ value: "summary", label: translate("summary"), secondary: formatMins(mediaDuration(contentItem.summarization)), selected: summary }] : []),
   ];
 
   // The API doesn't yet serialize a top-level duration on summarization (and
@@ -357,16 +359,16 @@
     return media?.duration ? media.duration / 1000 : 0;
   };
 
-  $: speedItems = [{ value: "speed", label: "Speed", secondary: `${playbackRate}×`, selected: false, keepOpen: true }];
+  $: speedItems = [{ value: "speed", label: translate("speed"), secondary: `${playbackRate}×`, selected: false, keepOpen: true }];
 
   $: menuGroups =
-    openMenu === "version" ? [{ label: "Version", items: versionItems }] :
+    openMenu === "version" ? [{ label: translate("version"), items: versionItems }] :
     openMenu === "overflow" ? [
-      ...(hasVersions && !isStopped ? [{ label: "Version", items: versionItems }] : []),
-      ...(foldSpeed && !isStopped ? [{ label: "Speed", items: speedItems }] : []),
-      ...(hasInfo && foldInfo ? [{ label: "About", items: [{ value: "info", label: "About this audio", selected: infoOpen }] }] : []),
-      ...(hasDownload && foldDownload ? [{ label: "Download", items: [{ value: "download", label: translate("downloadAudio"), selected: false }] }] : []),
-      ...(queueAvailable && foldQueue && playlistToggle !== "hide" ? [{ label: "Queue", items: [{ value: "queue", label: translate("togglePlaylist"), selected: queueOpen }] }] : []),
+      ...(hasVersions && !isStopped ? [{ label: translate("version"), items: versionItems }] : []),
+      ...(foldSpeed && !isStopped ? [{ label: translate("speed"), items: speedItems }] : []),
+      ...(hasInfo && foldInfo ? [{ label: translate("about"), items: [{ value: "info", label: translate("aboutThisAudio"), selected: infoOpen }] }] : []),
+      ...(hasDownload && foldDownload ? [{ label: translate("download"), items: [{ value: "download", label: translate("downloadAudio"), selected: false }] }] : []),
+      ...(queueAvailable && foldQueue && playlistToggle !== "hide" ? [{ label: translate("queue"), items: [{ value: "queue", label: translate("togglePlaylist"), selected: queueOpen }] }] : []),
     ] : [];
 
   const languageNameFor = (code) => {
@@ -684,8 +686,8 @@
           {:else}
             <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
           {/if}
-          <span class="time" style="color: {tokens.text}" role="status" aria-live="polite">{formatTime(Math.max(0, duration - currentTime))} left</span>
-          <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}" role="img" aria-label="Advertisement">AD</span>
+          <span class="time" style="color: {tokens.text}" role="status" aria-live="polite">{translate("timeLeft").replace("{time}", formatTime(Math.max(0, duration - currentTime)))}</span>
+          <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}" role="img" aria-label={translate("advertisement")}>{translate("advertisementAbbreviation")}</span>
         </div>
         <ProgressTrack
           {progress}
@@ -703,7 +705,7 @@
           {/if}
           <span class="offline-note" style="color: {tokens.muted}">
             <WifiSlash size={12} color={tokens.muted} />
-            Offline — will resume
+            {translate("offlineWillResume")}
           </span>
         </div>
         <ProgressTrack
@@ -752,7 +754,7 @@
     {#if showPersistentChip}
       <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.muted}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
         {persistentText}
-        <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}">AD</span>
+        <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}">{translate("advertisementAbbreviation")}</span>
       </a>
     {/if}
 
@@ -770,7 +772,7 @@
         type="button"
         class="icon-button"
         style="--bg: {openMenu === "overflow" ? tokens.pressed : "transparent"}; --hover-bg: {openMenu === "overflow" ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label="Options"
+        aria-label={translate("options")}
         aria-expanded={openMenu === "overflow"}
         on:click={openMenuAt("overflow")}
         on:mouseup={blurElement}
@@ -811,7 +813,7 @@
         type="button"
         class="icon-button"
         style="--bg: {infoOpen ? tokens.pressed : "transparent"}; --hover-bg: {infoOpen ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label="About this audio"
+        aria-label={translate("aboutThisAudio")}
         aria-expanded={infoOpen}
         on:click={toggleInfo}
         on:mouseup={blurElement}
@@ -834,14 +836,14 @@
         class="chat-button"
         class:orb-only={!chatLabelVisible}
         style="--bg: {chatOpen ? tokens.pressed : "transparent"}; --hover-bg: {chatOpen ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label={(chatDisabled && agentCta) || (isPlaylist ? "Chat about this playlist" : "Chat about this article")}
+        aria-label={(chatDisabled && agentCta) || translate(isPlaylist ? "chatAboutThisPlaylist" : "chatAboutThisArticle")}
         aria-expanded={chatOpen}
         on:click={toggleChat}
         on:mouseup={blurElement}
       >
         <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={chatDisabled} generating={callLive && !chatOpen} />
         {#if chatLabelVisible}
-          <span class="chat-label" style="color: {chatDisabled ? tokens.muted : tokens.text}">Chat</span>
+          <span class="chat-label" style="color: {chatDisabled ? tokens.muted : tokens.text}">{translate("chat")}</span>
           {#if chatDisabled}
             <LockSimple size={13} color={tokens.muted} />
           {:else}
@@ -914,7 +916,7 @@
       {/if}
     </span>
     {#if logoIconEnabled}
-      <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}; --hover-color: {tokens.text}" aria-label={translate("visitBeyondWords")}>Powered by BeyondWords</a>
+      <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}; --hover-color: {tokens.text}" aria-label={translate("visitBeyondWords")}>{translate("poweredByBeyondWords")}</a>
     {/if}
   </div>
 {/if}
