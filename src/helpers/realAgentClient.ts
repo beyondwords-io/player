@@ -44,6 +44,9 @@ class RealAgentClient {
   #queued: string[] = [];
   #epoch = 0;
   #partTurnId: number | null = null;
+  #unanswered: string[] = [];
+  #greetingOverrideSent = false;
+  #greetingOverrideRejected = false;
 
   constructor({ agentId, dynamicVariables, loadSdk, silenceTimeoutMs } = {}) {
     this.agentId = agentId;
@@ -129,6 +132,9 @@ class RealAgentClient {
     this.#disarmSilenceTimer();
     this.#notify();
 
+    // Kept until a reply lands, so a rejected session start can replay them.
+    this.#unanswered.push(text);
+
     if (this.#conversation) {
       this.#conversation.sendUserMessage(text);
     } else {
@@ -203,16 +209,25 @@ class RealAgentClient {
       handler(payload);
     };
 
+    // The reader types first in a text chat, so the configured greeting would
+    // arrive as a non-answer after their question: this channel suppresses it.
+    // Voice keeps it - the agent speaking first is what starting a call means.
+    // Suppression needs the first-message override enabled in the agent's
+    // security settings; when the platform says no, #handleDisconnected
+    // reconnects without it and the greeting shows as before.
+    this.#greetingOverrideSent = textOnly && !this.#greetingOverrideRejected;
+
     return {
       agentId: this.agentId,
       ...(textOnly ? { textOnly: true } : {}),
+      ...(this.#greetingOverrideSent ? { overrides: { agent: { firstMessage: "" } } } : {}),
       ...this.#dynamicVariablesConfig(),
       onStatusChange: guarded(({ status }) => this.#handleStatusChange(status)),
       onModeChange: guarded(({ mode }) => this.#handleModeChange(mode)),
       onMessage: guarded(({ message, role, source, event_id: eventId }) => this.#handleMessage(message, role || source, eventId)),
       onAgentChatResponsePart: guarded((part) => this.#handleResponsePart(part)),
       onAgentResponseCorrection: guarded((event) => this.#handleCorrection(event)),
-      onDisconnect: guarded(() => this.#handleDisconnected()),
+      onDisconnect: guarded((details) => this.#handleDisconnected(details)),
       onError: (message, context) => console.warn(`BeyondWords.Player agent error: ${message}`, context),
     };
   }
@@ -396,8 +411,10 @@ class RealAgentClient {
 
   // The server ended it: the agent hung up, the connection dropped, or the
   // platform turned the session away.
-  #handleDisconnected() {
+  #handleDisconnected(details = undefined) {
     if (this.state.kind === "none") { return; }
+
+    if (this.#isGreetingOverrideRejection(details)) { this.#retryWithoutGreetingOverride(); return; }
 
     const wasVoice = this.state.kind === "voice" && this.state.status !== "connecting";
 
@@ -410,6 +427,39 @@ class RealAgentClient {
     }
 
     this.#notify();
+  }
+
+  // Observed live: an agent whose security settings do not allow the
+  // first-message override refuses the whole session (close code 1008,
+  // "Override for field 'first_message' is not allowed by config").
+  #isGreetingOverrideRejection(details) {
+    return this.#greetingOverrideSent
+      && details?.reason === "error"
+      && /override/i.test(String(details?.message ?? ""));
+  }
+
+  // Reconnect without the override and replay what the reader asked. Their
+  // pending bubble stays on screen; the new session's reply streams into it.
+  // The greeting shows for this agent, exactly as before suppression existed.
+  #retryWithoutGreetingOverride() {
+    console.info("BeyondWords.Player: the agent's security settings do not allow the first-message override, so its greeting will show in text chats. Enable the override in ElevenLabs (Agent > Security > First message) to suppress it.");
+
+    this.#greetingOverrideRejected = true;
+    this.#greetingOverrideSent = false;
+
+    const textOnly = this.state.kind === "text";
+    const replay = this.#unanswered.splice(0);
+
+    // The server already closed the session: invalidate its callbacks and
+    // start over, keeping the thread exactly as it stands.
+    this.#epoch += 1;
+    this.#conversation = null;
+    this.#partTurnId = null;
+    this.state.kind = "none";
+    this.state.status = "idle";
+
+    this.startSession({ textOnly });
+    this.#queued.push(...replay);
   }
 
   #streamingReply() {
@@ -431,12 +481,15 @@ class RealAgentClient {
     reply.streaming = false;
     reply.typing = false;
     if (!interrupted || reply.text) { this.state.announced = reply.text; }
+    if (reply.text) { this.#unanswered = []; }
     this.#partTurnId = null;
   }
 
   #resetToIdle() {
     this.#epoch += 1;
     this.#queued = [];
+    this.#unanswered = [];
+    this.#greetingOverrideSent = false;
     this.#partTurnId = null;
     this.#disarmSilenceTimer();
 
