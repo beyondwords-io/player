@@ -379,6 +379,8 @@
   .answer {
     font-size: 13px;
     line-height: 1.5;
+    /* The live agent writes paragraph breaks; keep them, collapse the rest. */
+    white-space: pre-line;
   }
 
   /* Fills the gap between the question being sent and the first delta. */
