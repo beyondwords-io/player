@@ -58,7 +58,10 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
     });
   }, audio);
 
-  const player = page.locator(".default-player");
+  // Scope to the inline player: the page is still scrolled to the bottom from
+  // the widget interactions above, so the fresh player is out of view and can
+  // elect its own bottom widget - a second .default-player - at any moment.
+  const player = page.locator(".beyondwords-player .default-player");
   await player.locator(".chat-button").click();
   await player.locator(".voice").click();
   await expect(player.locator(".strip-label")).toContainText("Listening");
