@@ -22,9 +22,9 @@ const fakeSdk = () => {
 
           emitStatus: (status) => config.onStatusChange?.({ status }),
           emitMode: (mode) => config.onModeChange?.({ mode }),
-          emitMessage: (message, role) => config.onMessage?.({ message, role, source: role === "agent" ? "ai" : "user" }),
+          emitMessage: (message, role, eventId = 1) => config.onMessage?.({ message, role, source: role === "agent" ? "ai" : "user", event_id: eventId }),
           emitPart: (type, text, eventId = 1) => config.onAgentChatResponsePart?.({ type, text, event_id: eventId }),
-          emitCorrection: (corrected) => config.onAgentResponseCorrection?.({ original_agent_response: "x", corrected_agent_response: corrected, event_id: 1 }),
+          emitCorrection: (corrected, eventId = 1, original = "x") => config.onAgentResponseCorrection?.({ original_agent_response: original, corrected_agent_response: corrected, event_id: eventId }),
           emitDisconnect: () => config.onDisconnect?.({ reason: "agent" }),
         };
 
@@ -101,7 +101,7 @@ describe("realAgentClient", () => {
     expect(client.state.thread[1]).toMatchObject({ text: "It launched.", typing: false, streaming: true });
 
     conversation.emitPart("stop", "", 7);
-    conversation.emitMessage("It launched.", "agent");
+    conversation.emitMessage("It launched.", "agent", 7);
 
     expect(client.state.thread).toHaveLength(2);
     expect(client.state.thread[1]).toMatchObject({ text: "It launched.", streaming: false });
@@ -187,6 +187,53 @@ describe("realAgentClient", () => {
     expect(client.state.thread).toHaveLength(2);
     expect(client.state.thread[1]).toMatchObject({ text: "It launched.", streaming: false, typing: false });
     expect(client.state.announced).toEqual("It launched.");
+  });
+
+  it("accepts a whole-message reply after an earlier turn used response parts", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("First question");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    conversation.emitPart("start", "", 1);
+    conversation.emitPart("delta", "First answer.", 1);
+    conversation.emitPart("stop", "", 1);
+
+    client.sendUserMessage("Second question");
+    conversation.emitMessage("Second answer.", "agent", 2);
+
+    expect(client.state.thread.map((row) => [row.role, row.text])).toEqual([
+      ["reader", "First question"],
+      ["agent", "First answer."],
+      ["reader", "Second question"],
+      ["agent", "Second answer."],
+    ]);
+    expect(client.state.thread.at(-1)).toMatchObject({ streaming: false, typing: false });
+    expect(client.state.announced).toEqual("Second answer.");
+  });
+
+  it("does not correlate reused event ids to a reply from an ended session", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("First session question");
+    await settle();
+    calls.conversations[0].emitPart("start", "", 1);
+    calls.conversations[0].emitPart("delta", "First session answer.", 1);
+    calls.conversations[0].emitPart("stop", "", 1);
+    client.endSession();
+
+    client.sendUserMessage("Second session question");
+    await settle();
+    calls.conversations[1].emitMessage("Second session answer.", "agent", 1);
+
+    expect(client.state.thread.map((row) => [row.role, row.text])).toEqual([
+      ["reader", "First session question"],
+      ["agent", "First session answer."],
+      ["reader", "Second session question"],
+      ["agent", "Second session answer."],
+    ]);
+    expect(client.state.thread.at(-1)).toMatchObject({ streaming: false, typing: false });
   });
 
   it("runs a voice call through connecting, listening and talking", async () => {
@@ -376,6 +423,31 @@ describe("realAgentClient", () => {
     conversation.emitCorrection("It launched");
     expect(client.state.thread[1].text).toEqual("It launched");
     expect(client.state.announced).toEqual("It launched");
+  });
+
+  it("applies a delayed correction to its own turn instead of the next pending reply", async () => {
+    const { client, calls } = newClient();
+
+    client.startSession();
+    await settle();
+    const conversation = calls.conversations[0];
+    conversation.emitStatus("connected");
+
+    conversation.emitMessage("First question", "user", 10);
+    conversation.emitMessage("A long first answer.", "agent", 11);
+
+    client.sendUserMessage("Second question");
+    conversation.emitCorrection("A short first answer.", 11, "A long first answer.");
+    conversation.emitMessage("The second answer.", "agent", 12);
+
+    expect(client.state.thread.map((row) => [row.role, row.text])).toEqual([
+      ["reader", "First question"],
+      ["agent", "A short first answer."],
+      ["reader", "Second question"],
+      ["agent", "The second answer."],
+    ]);
+    expect(client.state.thread.at(-1)).toMatchObject({ streaming: false, typing: false });
+    expect(client.state.announced).toEqual("The second answer.");
   });
 
   it("marks the thread when the server ends the call", async () => {
