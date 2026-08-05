@@ -25,7 +25,7 @@ const fakeSdk = () => {
           emitMessage: (message, role, eventId = 1) => config.onMessage?.({ message, role, source: role === "agent" ? "ai" : "user", event_id: eventId }),
           emitPart: (type, text, eventId = 1) => config.onAgentChatResponsePart?.({ type, text, event_id: eventId }),
           emitCorrection: (corrected, eventId = 1, original = "x") => config.onAgentResponseCorrection?.({ original_agent_response: original, corrected_agent_response: corrected, event_id: eventId }),
-          emitDisconnect: () => config.onDisconnect?.({ reason: "agent" }),
+          emitDisconnect: (details = { reason: "agent" }) => config.onDisconnect?.(details),
         };
 
         calls.configs.push(config);
@@ -474,6 +474,72 @@ describe("realAgentClient", () => {
 
     expect(client.state.kind).toEqual("none");
     expect(client.state.thread.at(-1)).toMatchObject({ role: "divider", text: "Chat ended" });
+  });
+
+  it("suppresses the configured greeting for text sessions but not for calls", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What happened?");
+    await settle();
+
+    expect(calls.configs[0].overrides).toEqual({ agent: { firstMessage: "" } });
+
+    client.startSession();
+    await settle();
+
+    expect(calls.configs[1].textOnly).toBeUndefined();
+    expect(calls.configs[1].overrides).toBeUndefined();
+  });
+
+  it("reconnects without the override when the agent's settings refuse it", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What happened?");
+    await settle();
+
+    // Observed live: the session connects, then the platform closes it.
+    calls.conversations[0].emitStatus("connected");
+    calls.conversations[0].emitDisconnect({
+      reason: "error",
+      message: "Override for field 'first_message' is not allowed by config.",
+      context: { type: "close", code: 1008 },
+    });
+    await settle();
+
+    expect(calls.configs).toHaveLength(2);
+    expect(calls.configs[1].overrides).toBeUndefined();
+    expect(calls.conversations[1].sent, "the question is replayed").toEqual(["What happened?"]);
+
+    // The reader's bubble survived the reconnect, and the reply lands in it.
+    expect(client.state.thread.map((row) => row.role)).toEqual(["reader", "agent"]);
+
+    calls.conversations[1].emitPart("start", "", 1);
+    calls.conversations[1].emitPart("delta", "It launched.", 1);
+    calls.conversations[1].emitPart("stop", "", 1);
+
+    expect(client.state.thread).toHaveLength(2);
+    expect(client.state.thread[1]).toMatchObject({ text: "It launched.", streaming: false });
+
+    // The refusal is remembered: later sessions skip the override outright.
+    client.endSession();
+    client.sendUserMessage("And another thing?");
+    await settle();
+
+    expect(calls.configs).toHaveLength(3);
+    expect(calls.configs[2].overrides).toBeUndefined();
+  });
+
+  it("treats other error disconnects normally, without a retry", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What happened?");
+    await settle();
+    calls.conversations[0].emitDisconnect({ reason: "error", message: "The connection dropped." });
+    await settle();
+
+    expect(calls.configs).toHaveLength(1);
+    expect(client.state).toMatchObject({ kind: "none", status: "idle" });
+    expect(client.state.thread.map((row) => row.role), "no blank bubble stays behind").toEqual(["reader"]);
   });
 
   it("answers locked questions with the offer and no session", async () => {
