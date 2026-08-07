@@ -60,8 +60,9 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
 
   // Scope to the inline player: the page is still scrolled to the bottom from
   // the widget interactions above, so the fresh player is out of view and can
-  // elect its own bottom widget - a second .default-player - at any moment.
-  const player = page.locator(".beyondwords-player .default-player");
+  // elect its own bottom widget - a second .default-player, rendered inside
+  // the same target - at any moment.
+  const player = page.locator(".beyondwords-player .default-player:not(.fixed)");
   await player.locator(".chat-button").click();
   await player.locator(".voice").click();
   await expect(player.locator(".strip-label")).toContainText("Listening");
@@ -180,9 +181,10 @@ test("default bar folds Chat using the rendered label width", async ({ page }) =
   await expect(renderedChatLabel).toHaveCount(1);
 
   await page.evaluate(() => {
-    const style = document.createElement("style");
-    style.textContent = ".chat-width-sizer .chat-label { font-size: 80px !important; }";
-    document.head.appendChild(style);
+    // Inline + important: a stylesheet cannot outrank the player's own CSS,
+    // which is all !important behind the .bwp prefix chain.
+    const sizerLabel = document.querySelector(".chat-width-sizer .chat-label");
+    sizerLabel.style.setProperty("font-size", "80px", "important");
   });
 
   await expect(renderedChatLabel).toHaveCount(0);
