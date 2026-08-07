@@ -74,16 +74,16 @@ test("default player access tier behaviour", async ({ page }) => {
     expect(await chipAfterTheAd(page, limit), `advertiser chip survives segmentLimit ${limit}`).toEqual(true);
   }
 
-  // Offering one version selects it, rather than silently playing the other.
+  // Offering one variant selects it, rather than silently playing the other.
   const chosen = await page.evaluate(async () => {
     BeyondWords.Player.destroyAll();
-    const player = new BeyondWords.Player({ target: ".beyondwords-player", playerStyle: "default", versions: ["summary"] });
+    const player = new BeyondWords.Player({ target: ".beyondwords-player", playerStyle: "default", variants: ["summary"] });
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    return { summary: player.summary, versions: player.versions };
+    return { summary: player.summary, variants: player.variants };
   });
 
-  expect(chosen, "versions: [summary] plays the summary").toEqual({ summary: true, versions: ["summary"] });
+  expect(chosen, "variants: [summary] plays the summary").toEqual({ summary: true, variants: ["summary"] });
 });
 
 // Loads content, plays, and reports whether the segment limit cut it off.

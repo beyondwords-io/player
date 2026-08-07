@@ -4,6 +4,7 @@
   import translate from "../../helpers/translate";
   import formatTime from "../../helpers/formatTime";
   import Hoverable from "../helpers/Hoverable.svelte";
+  import Visibility from "../helpers/Visibility.svelte";
   import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
   import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
   import CornersOut from "../svg_icons/default_player/CornersOut.svelte";
@@ -28,6 +29,9 @@
   export let showClose = false;
   export let onClose = () => {};
   export let onEvent = () => {};
+  export let isVisible = undefined;
+  export let relativeY = undefined;
+  export let absoluteY = undefined;
 
   let isHovering = false;
 
@@ -97,9 +101,11 @@
           <span class="v-title" style="color: {tokens.videoText}">{title}</span>
           <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={whiteTrack} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
           <div class="v-row">
-            <button type="button" class="overlay-button" aria-label={isPlaying ? translate("pauseAudio") : translate("playAudio")} on:click={handlePlayPause} on:mouseup={blurElement}>
-              {#if isPlaying}<PauseCircle size={32} color={tokens.videoIcon} />{:else}<PlayCircle size={32} color={tokens.videoIcon} />{/if}
-            </button>
+            <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
+              <button type="button" class="overlay-button" aria-label={isPlaying ? translate("pauseAudio") : translate("playAudio")} on:click={handlePlayPause} on:mouseup={blurElement}>
+                {#if isPlaying}<PauseCircle size={32} color={tokens.videoIcon} />{:else}<PlayCircle size={32} color={tokens.videoIcon} />{/if}
+              </button>
+            </Visibility>
             <span class="time" style="color: {tokens.videoText}">{formatTime(currentTime)} / {formatTime(duration)}</span>
             {#if showChat}
               <button type="button" class="overlay-button" aria-label={translate("chatAboutThisVideo")} aria-expanded={chatOpen} on:click={onToggleChat} on:mouseup={blurElement}>
@@ -108,9 +114,11 @@
             {/if}
           </div>
         {:else}
-          <button type="button" class="overlay-button play" aria-label={isPlaying ? translate("pauseAudio") : translate("playAudio")} on:click={handlePlayPause} on:mouseup={blurElement}>
-            {#if isPlaying}<PauseCircle size={40} color={tokens.videoIcon} />{:else}<PlayCircle size={isStopped ? 44 : 40} color={tokens.videoIcon} />{/if}
-          </button>
+          <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
+            <button type="button" class="overlay-button play" aria-label={isPlaying ? translate("pauseAudio") : translate("playAudio")} on:click={handlePlayPause} on:mouseup={blurElement}>
+              {#if isPlaying}<PauseCircle size={40} color={tokens.videoIcon} />{:else}<PlayCircle size={isStopped ? 44 : 40} color={tokens.videoIcon} />{/if}
+            </button>
+          </Visibility>
 
           <div class="title-col">
             <div class="title-row">

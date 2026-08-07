@@ -101,6 +101,90 @@ test("default player mixed-media playlist behaviour", async ({ page }) => {
   await expect(widget.locator(".video-frame")).toHaveCount(1);
 });
 
+test("media preference changes do not replace sources after playback starts", async ({ page }) => {
+  const sources = await page.evaluate(async ({ audio, video }) => {
+    window.disableMediaLoad = false;
+
+    const player = new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      video: false,
+      currentTime: 10,
+      playbackState: "paused",
+      content: [{ title: "Article", audio, video }],
+    });
+
+    const sourceUrls = () => Array.from(document.querySelectorAll(".media-element source"), source => source.getAttribute("src"));
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const before = sourceUrls();
+    player.video = true;
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    return { before, after: sourceUrls() };
+  }, { audio, video });
+
+  expect(sources.before).toHaveLength(1);
+  expect(sources.before[0]).toContain("a.mp3");
+  expect(sources.after).toEqual(sources.before);
+});
+
+test("inline video elects its widget after it is scrolled out of view", async ({ page }) => {
+  await page.evaluate(({ audio, video }) => {
+    window.scrollTo(0, 0);
+
+    const player = new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "default",
+      video: true,
+      content: [{ title: "Article", audio, video }],
+    });
+
+    Object.assign(player, {
+      loadedMedia: { ...video[0], format: "video" },
+      playbackState: "playing",
+      currentTime: 10,
+      duration: 60,
+    });
+  }, { audio, video });
+
+  await expect(page.locator(".beyondwords-player .default-player:not(.fixed) .video-frame")).toHaveCount(1);
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(page.locator(".default-player.fixed .video-frame")).toHaveCount(1);
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(page.locator(".default-player.fixed")).toHaveCount(0);
+});
+
+test("default bar folds Chat using the rendered label width", async ({ page }) => {
+  await page.evaluate((audio) => {
+    const target = document.querySelector(".beyondwords-player");
+    target.style.width = "320px";
+    target.style.maxWidth = "none";
+
+    new BeyondWords.Player({
+      target,
+      playerStyle: "default",
+      embedMode: "audio-agent",
+      playbackState: "stopped",
+      content: [{ title: "Article", audio }],
+    });
+  }, audio);
+
+  const renderedChatLabel = page.locator(".default-player .bar .chat-label");
+  await expect(renderedChatLabel).toHaveCount(1);
+
+  await page.evaluate(() => {
+    const style = document.createElement("style");
+    style.textContent = ".chat-width-sizer .chat-label { font-size: 80px !important; }";
+    document.head.appendChild(style);
+  });
+
+  await expect(renderedChatLabel).toHaveCount(0);
+});
+
 test("default player API video alias behaviour", async ({ page }) => {
   await page.route("https://api.beyondwords.io/**", async (route) => {
     const playerStyle = route.request().url().includes("c-default") ? "default" : "standard";

@@ -17,7 +17,7 @@ test("default player pointer target accessibility", async ({ page }) => {
 
   const audio = [{ id: 123, url: "http://example.com/audio.mp3", contentType: "audio/mpeg", duration: 30 }];
 
-  // The summary variant is what puts the version menu in the bar.
+  // The summary variant is what puts the Version menu in the bar.
   const singleItem = [{ title: "A reasonable length podcast title", audio, summarization: { audio, video: [] } }];
   const playlistItems = [singleItem[0], { title: "Another playlist item", audio }, { title: "A third item", audio }];
   const advert = [{ clickThroughUrl: "https://example.com", audio }];
@@ -75,8 +75,8 @@ test("default player pointer target accessibility", async ({ page }) => {
   // Docked at the bottom of the window it has to open upwards, or its items are
   // laid out past the edge of the screen where nothing can click them.
   for (const { name, params } of [
-    { name: "inline", params: { ...base, playbackState: "stopped", versions: ["full", "summary"] } },
-    { name: "bottom widget", params: { ...base, widgetStyle: "default", widgetPosition: "center", versions: ["full", "summary"] } },
+    { name: "inline", params: { ...base, playbackState: "stopped", variants: ["full", "summary"] } },
+    { name: "bottom widget", params: { ...base, widgetStyle: "default", widgetPosition: "center", variants: ["full", "summary"] } },
   ]) {
     await surveyControls(page, params, 512);
 

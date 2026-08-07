@@ -58,7 +58,7 @@
   export let titleEnabled = true;
   export let callToAction = undefined;
   export let contentLanguage = "en";
-  export let versions = [];
+  export let variants = [];
   export let textColor = undefined;
   export let backgroundColor = undefined;
   export let iconColor = undefined;
@@ -102,7 +102,9 @@
   export let aspectRatio = 16 / 9;
 
   let element;
+  let chatWidthSizer;
   let width = 600;
+  let fullChatWidth = 102;
   let queueOpen = false;
   let appliedPlaylistStyle;
   let chatOpen = false;
@@ -198,9 +200,8 @@
   const CONTROL_W = 32;
   const SPEED_W = 30;
   const CHIP_W = 108;
-  const CHAT_LABEL_W = 102;
   const CHAT_ORB_W = 44;
-  const STACKED_COL_W = 76;
+  const STACKED_COL_W = 100;
   const CENTRED_COL_W = 112;
   const TIER_LOCK_W = 32; // 16px glyph plus the 8px either side the design gives it
 
@@ -216,7 +217,7 @@
     + (plan.queue ? GAP + CONTROL_W : 0)
     + (plan.download ? GAP + CONTROL_W : 0)
     + (plan.info ? GAP + CONTROL_W : 0)
-    + (showChat ? GAP + 1 + GAP + (plan.chatLabel ? CHAT_LABEL_W : CHAT_ORB_W) : 0)
+    + (showChat ? GAP + 1 + GAP + (plan.chatLabel ? fullChatWidth : CHAT_ORB_W) : 0)
     + (isWidget && showClose ? GAP + CONTROL_W : 0);
 
   $: layout = (() => {
@@ -224,7 +225,7 @@
       chip: canShowAdvertChip,
       skips: !isStopped && !isAdvert,
       speed: !isStopped && !isAdvert,
-      overflow: !isStopped && hasVersions,
+      overflow: !isStopped && hasVariants,
       queue: queueAvailable && playlistToggle !== "hide",
       download: hasDownload,
       info: hasInfo,
@@ -291,15 +292,15 @@
   $: videoTitle = contentItem.title || playerTitle || stoppedTitle;
 
   $: totalMins = translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(duration / 60)));
-  // versions restricts what the Version group offers; unset means every
+  // variants restricts what the Version group offers; unset means every
   // variant the content actually has.
-  $: offeredVersions = versions.length ? versions : ["full", "summary"];
-  $: hasSummaryVariant = !!contentItem.summarization && offeredVersions.includes("summary");
-  $: hasVersions = hasSummaryVariant && offeredVersions.includes("full");
+  $: offeredVariants = variants.length ? variants : ["full", "summary"];
+  $: hasSummaryVariant = !!contentItem.summarization && offeredVariants.includes("summary");
+  $: hasVariants = hasSummaryVariant && offeredVariants.includes("full");
   $: languageName = languageNameFor(contentLanguage);
   // Name the version when the reader can switch, since the menu carries the
   // durations; otherwise say how long the one they are getting is.
-  $: versionLabel = summary && hasVersions ? translate("summary") : totalMins;
+  $: versionLabel = summary && hasVariants ? translate("summary") : totalMins;
 
   $: downloadAudio = (summary ? contentItem.summarization?.audio : contentItem.audio) || [];
   $: downloadVideo = (summary ? contentItem.summarization?.video : contentItem.video) || [];
@@ -307,7 +308,7 @@
   $: hasDownload = downloadAudioIndex !== -1 || downloadVideoIndex !== -1;
 
   $: hasInfo = !!infoText;
-  $: showOverflow = (!isStopped && (hasVersions || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload) || (queueAvailable && foldQueue && playlistToggle !== "hide");
+  $: showOverflow = (!isStopped && (hasVariants || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload) || (queueAvailable && foldQueue && playlistToggle !== "hide");
 
   $: isFixed = isWidget && !!fixedPosition;
   $: fixedSide = fixedPosition === "auto" || fixedPosition === true ? "center" : fixedPosition;
@@ -344,7 +345,7 @@
   $: playPauseLabel = isPlaying ? translate("pauseAudio") : translate("playAudio");
 
   $: versionItems = [
-    ...(offeredVersions.includes("full") ? [{ value: "full", label: translate("full"), secondary: formatMins(mediaDuration(contentItem)), selected: !summary }] : []),
+    ...(offeredVariants.includes("full") ? [{ value: "full", label: translate("full"), secondary: formatMins(mediaDuration(contentItem)), selected: !summary }] : []),
     ...(hasSummaryVariant ? [{ value: "summary", label: translate("summary"), secondary: formatMins(mediaDuration(contentItem.summarization)), selected: summary }] : []),
   ];
 
@@ -364,7 +365,7 @@
   $: menuGroups =
     openMenu === "version" ? [{ label: translate("version"), items: versionItems }] :
     openMenu === "overflow" ? [
-      ...(hasVersions && !isStopped ? [{ label: translate("version"), items: versionItems }] : []),
+      ...(hasVariants && !isStopped ? [{ label: translate("version"), items: versionItems }] : []),
       ...(foldSpeed && !isStopped ? [{ label: translate("speed"), items: speedItems }] : []),
       ...(hasInfo && foldInfo ? [{ label: translate("about"), items: [{ value: "info", label: translate("aboutThisAudio"), selected: infoOpen }] }] : []),
       ...(hasDownload && foldDownload ? [{ label: translate("download"), items: [{ value: "download", label: translate("downloadAudio"), selected: false }] }] : []),
@@ -532,8 +533,20 @@
   };
 
   onMount(() => {
-    const observer = new ResizeObserver(() => width = element?.clientWidth || width);
+    const updateWidths = () => {
+      width = element?.clientWidth || width;
+
+      // Unlike the icon controls, the full Chat control contains translated
+      // copy. Measure the rendered font instead of budgeting for the English
+      // label so changing playerLanguage cannot make the fold plan overflow.
+      const measuredChatWidth = chatWidthSizer?.getBoundingClientRect().width;
+      if (measuredChatWidth) { fullChatWidth = Math.ceil(measuredChatWidth); }
+    };
+
+    const observer = new ResizeObserver(updateWidths);
     if (element) { observer.observe(element); }
+    if (chatWidthSizer) { observer.observe(chatWidthSizer); }
+    updateWidths();
 
     const mobileQuery = matchMedia("(max-width: 640px)");
     const updateDocked = () => docked = mobileQuery.matches;
@@ -580,6 +593,11 @@
   on:keydown={handleRootKeydown}
   role="none"
 >
+<div class="chat-width-sizer" bind:this={chatWidthSizer} aria-hidden="true">
+  <span class="chat-width-orb"></span>
+  <span class="chat-label">{translate("chat")}</span>
+  <span class="chat-width-trailing"></span>
+</div>
 <div class="surface" style="background: {videoIsBehind ? "transparent" : displayBackground}; border-radius: {surfaceRadius}; box-shadow: {videoIsBehind ? "none" : surfaceShadow};">
   {#if videoIsBehind && !agentOnly}
     <VideoFrame
@@ -595,6 +613,9 @@
       {isWidget}
       showClose={isWidget && showClose}
       onClose={handleCloseWidget}
+      bind:isVisible
+      bind:relativeY
+      bind:absoluteY
       {onEvent} />
 
     {#if chatOpen && showChat}
@@ -669,7 +690,7 @@
       {:else if isStopped}
         <span class="title" style="color: {tokens.text}">{stoppedTitle}</span>
         <span class="meta">
-          {#if hasVersions}
+          {#if hasVariants}
             <button type="button" class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" on:click={openMenuAt("version")} aria-expanded={openMenu === "version"}>{versionLabel}</button>
           {:else}
             <span class="plain" style="color: {tokens.muted}">{versionLabel}</span>
@@ -935,6 +956,33 @@
 
   .default-player :global(*) {
     font-family: "InterVariable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* Kept out of layout and accessibility while retaining the exact typography
+     and chrome of the expanded Chat control for the folding calculation. */
+  .chat-width-sizer {
+    position: fixed;
+    left: -10000px;
+    top: -10000px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: max-content;
+    padding: 8px 10px;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .chat-width-orb {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+  }
+
+  .chat-width-trailing {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
   }
 
   /* A widget that has been closed fades for 150ms, and Svelte keeps it in the
@@ -1211,6 +1259,7 @@
   .chat-label {
     font-size: 13px;
     font-weight: 500;
+    white-space: nowrap;
   }
 
   .chat-caret {
@@ -1323,6 +1372,10 @@
     display: flex;
     align-items: baseline;
     gap: 4px;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .meta .trigger,
@@ -1331,6 +1384,14 @@
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
+  }
+
+  .meta .trigger,
+  .meta .plain {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* The whole label is the upgrade link when there is somewhere to send them. */
@@ -1448,7 +1509,9 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    flex-shrink: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
