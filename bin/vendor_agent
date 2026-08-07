@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# We want to load the ElevenLabs Agents SDK dynamically so that its WebRTC
+# stack is only loaded when a reader actually starts a conversation, using the
+# same approach as bin/vendor_hls and bin/vendor_style:
+#
+# 1) Set elevenLabsSdk.ts as an external in vite.config to exclude it from
+#    es.js and umd.js
+# 2) Load the SDK from node_modules in development (elevenLabsSdk.ts re-exports
+#    @elevenlabs/client)
+# 3) Load the SDK from dist/elevenlabs-client.js in production
+#    a) Bundle @elevenlabs/client into a single ES module using the script
+#       below (esbuild ships with vite; the browser condition pulls in the
+#       SDK's web platform side effects)
+#    b) Replace references to elevenLabsSdk.ts with dist/
+
+echo 'export * from "@elevenlabs/client";' | npx esbuild --bundle --format=esm --minify --sourcemap --outfile=dist/elevenlabs-client.js --log-level=warning
+
+# Replace with a path specifier of equal length to keep the sourcemap intact.
+sed -i.backup 's:"./helpers/elevenLabsSdk.ts":"./././elevenlabs-client.js":' dist/es.js
+sed -i.backup 's:"./helpers/elevenLabsSdk.ts":BeyondWords.Player.agentSrc :' dist/umd.js
+
+rm dist/*.backup

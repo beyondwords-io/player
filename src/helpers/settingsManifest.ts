@@ -110,6 +110,8 @@ const settingsManifest = [
   { key: "accessCtaUrl", group: "Access", control: "text", default: undefined, cleared: null, appliesTo: "default" },
 
   { key: "embedMode", group: "Agent", control: "select", options: ["audio", "audio-agent", "agent"], default: "audio", appliesTo: "default" },
+  { key: "agentId", group: "Agent", control: "text", default: undefined, cleared: null, api: "conversational_agent.elevenlabs_agent_id", appliesTo: "default",
+    needs: "a public ElevenLabs agent id; connects the live agent in place of the scripted mock" },
   { key: "agentAccess", group: "Agent", control: "select", options: ["full", "limited", "locked", "off"], default: "full", appliesTo: "default", needs: "an embedMode other than audio" },
   { key: "agentLimit", group: "Agent", control: "text", default: undefined, cleared: null, appliesTo: "default", needs: "agentAccess: limited" },
   { key: "agentVoice", group: "Agent", control: "select", options: bool, default: true, appliesTo: "default" },

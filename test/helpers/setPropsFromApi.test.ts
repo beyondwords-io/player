@@ -170,5 +170,22 @@ describe("setPropsFromApi", () => {
       expect(player.apiRequestUrl).toContain("by_content_id/c1");
       expect(player.content).toEqual([]);
     });
+
+    it("clears an API-provided agent when a later response has no content", async () => {
+      const player = mockPlayer();
+      mocks.fetchJson.mockResolvedValueOnce({
+        ...payload,
+        conversational_agent: { elevenlabs_agent_id: "agent_previous" },
+      });
+
+      await setPropsFromApi(player);
+      expect(player.agentId).toEqual("agent_previous");
+
+      mocks.fetchJson.mockResolvedValueOnce({ content: null });
+      await setPropsFromApi(player);
+
+      expect(player.agentId).toBeUndefined();
+      expect(player.apiProps.agentId).toBeUndefined();
+    });
   });
 });

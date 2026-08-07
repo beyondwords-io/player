@@ -268,11 +268,14 @@
     {#if inCall}
       <div class="composer strip" style="border-top-color: {tokens.divider}">
         <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} generating={status === "talking"} />
-        {#if status === "talking"}
+        {#if status === "talking" && agentClient.canInterrupt}
           <!-- The whole label is the interrupt: speak over it, or tap. -->
           <button type="button" class="strip-interrupt" style="color: {tokens.text}; outline-color: {tokens.text}" on:click={stop} on:mouseup={blurElement}>
             {translate("talkingSpeakOverOrTap")}
           </button>
+        {:else if status === "talking"}
+          <!-- The live agent has no client-side interrupt; speaking over it is the interrupt. -->
+          <span class="strip-label" style="color: {tokens.text}">{translate("talkingSpeakOver")}</span>
         {:else}
           <span class="strip-label" style="color: {tokens.text}">{translate("listening")}</span>
         {/if}
@@ -377,6 +380,8 @@
   .answer {
     font-size: 13px;
     line-height: 1.5;
+    /* The live agent writes paragraph breaks; keep them, collapse the rest. */
+    white-space: pre-line;
   }
 
   /* Fills the gap between the question being sent and the first delta. */

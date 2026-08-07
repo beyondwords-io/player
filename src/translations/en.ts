@@ -31,6 +31,7 @@ export default {
   connecting: "Connecting…",
   cancel: "Cancel",
   talkingSpeakOverOrTap: "Talking — speak over it, or tap",
+  talkingSpeakOver: "Talking — speak over it",
   listening: "Listening…",
   end: "End",
   questionsRemaining: "{remaining} of {total} left",

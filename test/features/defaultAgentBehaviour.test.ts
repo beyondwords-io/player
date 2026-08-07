@@ -260,6 +260,110 @@ test("default player agent behaviour", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
 });
 
+// The live client: an agentId selects it in place of the scripted mock, and it
+// drives the same panel through the ElevenLabs SDK's callbacks. The SDK is
+// stubbed at its loader seam, so this exercises everything but the network.
+test("default player live agent behaviour", async ({ page }) => {
+  await page.goto("http://localhost:8000");
+  await waitForStylesToLoad(page);
+
+  await page.evaluate(() => {
+    window.__sdkLog = [];
+
+    window.__elevenLabsClientStub = {
+      Conversation: {
+        startSession: async (config) => {
+          window.__sdkLog.push({ event: "start", agentId: config.agentId, textOnly: !!config.textOnly, dynamicVariables: config.dynamicVariables });
+          window.__conversationConfig = config;
+
+          if (!config.textOnly) {
+            setTimeout(() => config.onStatusChange?.({ status: "connected" }), 30);
+          }
+
+          return {
+            sendUserMessage: (text) => {
+              window.__sdkLog.push({ event: "message", text });
+
+              setTimeout(() => {
+                config.onAgentChatResponsePart?.({ type: "start", text: "", event_id: 1 });
+                config.onAgentChatResponsePart?.({ type: "delta", text: "A live ", event_id: 1 });
+                config.onAgentChatResponsePart?.({ type: "delta", text: "answer.", event_id: 1 });
+                config.onAgentChatResponsePart?.({ type: "stop", text: "", event_id: 1 });
+              }, 50);
+            },
+            sendUserActivity: () => {},
+            setMicMuted: () => {},
+            endSession: async () => { window.__sdkLog.push({ event: "end" }); },
+          };
+        },
+      },
+    };
+  });
+
+  // Without an agentId the stub is never touched: the mock still answers.
+  await openPanel(page, { embedMode: "audio-agent" });
+  const input = page.locator(".default-player .composer input").first();
+  await input.click();
+  await input.type("Anyone there?");
+  await input.press("Enter");
+  await page.waitForTimeout(400);
+
+  expect(await page.evaluate(() => window.__sdkLog), "no agentId, no SDK").toEqual([]);
+
+  // With one, opening the panel still connects nothing; the first typed send
+  // starts a text session carrying the id and the page's context.
+  await openPanel(page, { embedMode: "audio-agent", agentId: "agent_wired123" });
+  expect(await page.evaluate(() => window.__sdkLog), "opening the panel is free").toEqual([]);
+
+  const wiredInput = page.locator(".default-player .composer input").first();
+  await wiredInput.click();
+  await wiredInput.type("What happened?");
+  await wiredInput.press("Enter");
+  await page.waitForTimeout(500);
+
+  const log = await page.evaluate(() => window.__sdkLog);
+  expect(log[0]).toMatchObject({ event: "start", agentId: "agent_wired123", textOnly: true });
+  expect(log[0].dynamicVariables).toMatchObject({ title: "An article" });
+  expect(log[1]).toMatchObject({ event: "message", text: "What happened?" });
+
+  const answered = await panelState(page);
+  expect(answered.thread, "the reply streamed in from response parts").toEqual(["What happened?", "A live answer."]);
+
+  // A voice call runs on the SDK's status and mode: connecting, listening,
+  // talking - and the strip never promises a tap the SDK cannot deliver.
+  await openPanel(page, { embedMode: "audio-agent", agentId: "agent_wired123" });
+  await page.evaluate(() => { window.__sdkLog = []; });
+
+  await page.locator(".default-player .composer .voice").click();
+  await page.waitForTimeout(300);
+
+  expect(await page.evaluate(() => window.__sdkLog.map((entry) => entry.event)), "the waveform opened a voice session").toEqual(["start"]);
+  expect(await stripText(page), "and the call is live").toContain("Listening");
+
+  await page.evaluate(() => window.__conversationConfig.onMessage({ message: "What changed this week?", role: "user", source: "user" }));
+  await page.evaluate(() => window.__conversationConfig.onModeChange({ mode: "speaking" }));
+  await page.waitForTimeout(100);
+
+  expect(await stripText(page)).toContain("Talking — speak over it");
+  expect(await page.locator(".default-player .strip-interrupt").count(), "no tap-to-interrupt on the live agent").toEqual(0);
+
+  await page.evaluate(() => window.__conversationConfig.onMessage({ message: "Quite a lot.", role: "agent", source: "ai" }));
+  await page.evaluate(() => window.__conversationConfig.onModeChange({ mode: "listening" }));
+  await page.waitForTimeout(100);
+
+  const call = await panelState(page);
+  expect(call.thread).toEqual(["What changed this week?", "Quite a lot."]);
+  expect(await stripText(page)).toContain("Listening");
+
+  // End hangs up through the SDK and marks the thread.
+  await page.locator(".default-player .strip .pill", { hasText: "End" }).click();
+  await page.waitForTimeout(200);
+
+  expect(await page.evaluate(() => window.__sdkLog.map((entry) => entry.event))).toEqual(["start", "end"]);
+  expect((await panelState(page)).thread.at(-1)).toEqual("Chat ended");
+  expect(await page.locator(".default-player .composer input").count(), "the composer came back").toBeGreaterThan(0);
+});
+
 test("default player translation behaviour uses established copy and falls back for new agent copy", async ({ page }) => {
   await page.goto("http://localhost:8000");
   await waitForStylesToLoad(page);

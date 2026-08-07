@@ -114,6 +114,7 @@ const handleNoContent = (player) => {
   resetSomeProps(player);
   setContentProp(player);
   setAdvertsProp(player);
+  set(player, "agentId", undefined);
 
   player.onEvent?.(newEvent({
     type: "NoContentAvailable",
@@ -175,6 +176,9 @@ const setProps = (player, data) => {
   set(player, "analyticsId", data.settings.analytics_id);
   set(player, "segmentLimit", data.settings.segment_limit);
   set(player, "contentLanguage", data.language);
+
+  // Key always present; the id only when the project's agent is enabled.
+  set(player, "agentId", data.conversational_agent?.elevenlabs_agent_id ?? undefined);
 };
 
 const resetSomeProps = (player) => {
