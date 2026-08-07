@@ -132,7 +132,7 @@
   export let infoText = undefined;
   export let disclosureText = undefined;
   export let disclosureLink = undefined;
-  export let versions = [];
+  export let variants = [];
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
@@ -235,10 +235,10 @@
   onMount(() => addEventListener("SegmentLimitReached", () => segmentLimitReached = true));
   $: projectId, contentId, playlistId, sourceId, sourceUrl, contentIndex, summary, segmentLimitReached = false;
 
-  // Offering one version is a statement about what this embed plays, not just
-  // about what the version menu shows, so select it. Declared before the
+  // Offering one variant is a statement about what this embed plays, not just
+  // about what the Version menu shows, so select it. Declared before the
   // identifiers statement below so the first request already asks for it.
-  $: if (versions.length === 1) { summary = versions[0] === "summary"; }
+  $: if (variants.length === 1) { summary = variants[0] === "summary"; }
 
   $: setLocale(playerLanguage);
 
@@ -416,7 +416,7 @@
     {titleEnabled}
     {callToAction}
     {contentLanguage}
-    {versions}
+    {variants}
     {textColor}
     {backgroundColor}
     {iconColor}
@@ -526,7 +526,7 @@
     {titleEnabled}
       {callToAction}
       {contentLanguage}
-      {versions}
+      {variants}
       {textColor}
       {backgroundColor}
       {iconColor}

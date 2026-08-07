@@ -82,7 +82,7 @@ const settingsManifest = [
   { key: "contentIndex", group: "Playback", control: "select", default: 0, transient: true,
     options: ({ content }) => (content || []).map((_item, index) => index), format: (value) => `${value}` },
   { key: "summary", group: "Playback", control: "select", options: bool, default: false, refetch: true, needs: "content with a summary" },
-  { key: "versions", group: "Playback", control: "select", default: [], appliesTo: "default", ...csv,
+  { key: "variants", group: "Playback", control: "select", default: [], appliesTo: "default", ...csv,
     options: ["", "full", "summary", "full,summary"], format: (value) => (value || []).join(",") || "all available" },
   { key: "playerTitle", group: "Playback", control: "text", default: undefined, cleared: null, api: "player_title" },
   { key: "titleEnabled", group: "Playback", control: "select", options: bool, default: true, api: "title_enabled" },
