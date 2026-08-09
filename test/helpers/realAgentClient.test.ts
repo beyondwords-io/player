@@ -392,7 +392,7 @@ describe("realAgentClient", () => {
     expect(client.state.thread).toMatchObject([{ role: "reader", text: "What happened?" }]);
   });
 
-  it("stops the local reveal on interrupt and drops the turn's late deltas", async () => {
+  it("stops the local reveal and ignores every later event from that turn", async () => {
     const { client, calls } = newClient();
 
     client.sendUserMessage("What happened?");
@@ -406,7 +406,37 @@ describe("realAgentClient", () => {
     expect(client.state.thread[1]).toMatchObject({ text: "It ", streaming: false });
 
     conversation.emitPart("delta", "launched.", 3);
+    conversation.emitMessage("It launched.", "agent", 3);
+    conversation.emitCorrection("It launched after all.", 3, "It launched.");
     expect(client.state.thread[1].text).toEqual("It ");
+  });
+
+  it("drops a blank interrupted reply and suppresses its turn once it starts", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What happened?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    client.interrupt();
+    expect(client.state.thread.map((row) => row.role)).toEqual(["reader"]);
+
+    conversation.emitPart("start", "", 3);
+    conversation.emitPart("delta", "It launched.", 3);
+    conversation.emitPart("stop", "", 3);
+    conversation.emitMessage("It launched.", "agent", 3);
+    expect(client.state.thread.map((row) => row.role)).toEqual(["reader"]);
+
+    client.sendUserMessage("What happened next?");
+    conversation.emitPart("start", "", 4);
+    conversation.emitPart("delta", "It landed.", 4);
+    conversation.emitPart("stop", "", 4);
+
+    expect(client.state.thread.map((row) => [row.role, row.text])).toEqual([
+      ["reader", "What happened?"],
+      ["reader", "What happened next?"],
+      ["agent", "It landed."],
+    ]);
   });
 
   it("applies the agent's own corrections to the last reply", async () => {

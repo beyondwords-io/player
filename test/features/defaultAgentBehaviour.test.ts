@@ -55,6 +55,14 @@ test("default player agent behaviour", async ({ page }) => {
     expect(answered.thread[1], `${embedMode}: and gets a real answer`).not.toEqual("Subscribe to ask questions");
   }
 
+  // A numeric allowance meters discrete questions, so it cannot safely expose
+  // an open microphone. Time-based allowances can meter the whole call.
+  await openPanel(page, { embedMode: "audio-agent", agentAccess: "limited", agentLimit: "1", agentVoice: true });
+  expect(await page.locator(".default-player .voice").count(), "question limits do not offer voice").toEqual(0);
+
+  await openPanel(page, { embedMode: "audio-agent", agentAccess: "limited", agentLimit: "1:00", agentVoice: true });
+  expect(await page.locator(".default-player .voice").count(), "minute limits still offer voice").toEqual(1);
+
   // Whose words the offer uses: the agent's own, or the article's, or none.
   await openPanel(page, { embedMode: "audio-agent", agentAccess: "locked", shortcuts, accessCtaText: "Subscribe to keep listening", accessCtaUrl: "https://example.com/subscribe" });
   await page.locator(".default-player .empty-chips button").first().click();
