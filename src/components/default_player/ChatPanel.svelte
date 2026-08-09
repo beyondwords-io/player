@@ -313,7 +313,7 @@
         <span class="counter" style="color: {tokens.muted}">{translate("questionsRemaining").replace("{remaining}", questionsLeft).replace("{total}", questionBudget)}</span>
       {/if}
 
-      {#if agentVoice && !locked && kind === "none"}
+      {#if agentVoice && !locked && questionBudget === null && kind === "none"}
         <button type="button" class="voice" style="background: {tokens.hover}; --hover-bg: {tokens.pressed}; outline-color: {tokens.text}" aria-label={translate("startVoiceConversation")} on:click={startCall} on:mouseup={blurElement}>
           <VoiceMode size={20} color={tokens.text} />
         </button>

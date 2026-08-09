@@ -46,6 +46,9 @@ class RealAgentClient {
   #queued: string[] = [];
   #epoch = 0;
   #partTurnId: number | null = null;
+  #interruptedTurnIds = new Set<number>();
+  #ignoreNextAgentTurn = false;
+  #ignoreNextUncorrelatedWholeMessage = false;
   #unanswered: string[] = [];
   #greetingOverrideSent = false;
   #greetingOverrideRejected = false;
@@ -165,7 +168,24 @@ class RealAgentClient {
     const pending = this.#streamingReply();
     if (!pending) { return; }
 
-    this.#finalizeReply(pending, { interrupted: true });
+    const { eventId, fromParts, text } = pending as { eventId?: number; fromParts?: boolean; text?: string };
+
+    if (fromParts) {
+      if (eventId !== undefined && eventId !== null) { this.#interruptedTurnIds.add(eventId); }
+      this.#ignoreNextUncorrelatedWholeMessage = true;
+    } else {
+      // Stop can be pressed while the typing dots are still waiting for the
+      // SDK's start event. Suppress that next turn once its id is known.
+      this.#ignoreNextAgentTurn = true;
+    }
+
+    if (text) {
+      this.#finalizeReply(pending, { interrupted: true });
+    } else {
+      this.#dropEmptyReply();
+      this.#partTurnId = null;
+    }
+
     this.#notify();
   }
 
@@ -298,13 +318,33 @@ class RealAgentClient {
     const replies = this.state.thread.filter((row: { role?: string; sessionEpoch?: number }) => row.role === "agent" && row.sessionEpoch === this.#epoch) as {
       eventId?: number;
       fromParts?: boolean;
+      interrupted?: boolean;
       sessionEpoch?: number;
       streaming?: boolean;
       text?: string;
     }[];
+
+    if (this.#ignoreNextAgentTurn) {
+      this.#ignoreNextAgentTurn = false;
+      if (eventId !== undefined && eventId !== null) { this.#interruptedTurnIds.add(eventId); }
+      return;
+    }
+
+    if (eventId !== undefined && eventId !== null && this.#interruptedTurnIds.has(eventId)) {
+      this.#ignoreNextUncorrelatedWholeMessage = false;
+      return;
+    }
+
+    if ((eventId === undefined || eventId === null) && this.#ignoreNextUncorrelatedWholeMessage) {
+      this.#ignoreNextUncorrelatedWholeMessage = false;
+      return;
+    }
+
     const matchingPartsReply = eventId === undefined || eventId === null
       ? null
       : [...replies].reverse().find((reply) => reply.fromParts && reply.eventId === eventId);
+
+    if (matchingPartsReply?.interrupted) { return; }
 
     if (matchingPartsReply?.text) {
       const changed = matchingPartsReply.text !== message || matchingPartsReply.streaming;
@@ -350,6 +390,15 @@ class RealAgentClient {
     if (type === "start") {
       this.#partTurnId = eventId ?? -1;
 
+      if (this.#ignoreNextAgentTurn) {
+        this.#ignoreNextAgentTurn = false;
+        if (eventId !== undefined && eventId !== null) { this.#interruptedTurnIds.add(eventId); }
+        this.#ignoreNextUncorrelatedWholeMessage = true;
+        return;
+      }
+
+      if (eventId !== undefined && eventId !== null && this.#interruptedTurnIds.has(eventId)) { return; }
+
       if (!this.#streamingReply()) {
         const reply = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
         this.state.thread = [...this.state.thread, reply];
@@ -361,6 +410,11 @@ class RealAgentClient {
       pending.fromParts = true;
       pending.sessionEpoch = this.#epoch;
 
+      return;
+    }
+
+    if (eventId !== undefined && eventId !== null && this.#interruptedTurnIds.has(eventId)) {
+      if (type === "stop") { this.#partTurnId = null; }
       return;
     }
 
@@ -393,6 +447,7 @@ class RealAgentClient {
 
     const replies = this.state.thread.filter((row: { role?: string; sessionEpoch?: number }) => row.role === "agent" && row.sessionEpoch === this.#epoch) as {
       eventId?: number;
+      interrupted?: boolean;
       sessionEpoch?: number;
       streaming?: boolean;
       text?: string;
@@ -403,7 +458,7 @@ class RealAgentClient {
       ?? (typeof original === "string" ? [...replies].reverse().find((row) => row.text === original) : null);
 
     // A delayed correction must never land in a newer turn's pending bubble.
-    if (!reply) { return; }
+    if (!reply || reply.interrupted) { return; }
 
     const announcedReply = [...replies].reverse().find((row) => !row.streaming && row.text === this.state.announced);
     reply.text = corrected;
@@ -482,6 +537,7 @@ class RealAgentClient {
 
     reply.streaming = false;
     reply.typing = false;
+    reply.interrupted = interrupted;
     if (!interrupted || reply.text) { this.state.announced = reply.text; }
     if (reply.text) { this.#unanswered = []; }
     this.#partTurnId = null;
@@ -493,6 +549,9 @@ class RealAgentClient {
     this.#unanswered = [];
     this.#greetingOverrideSent = false;
     this.#partTurnId = null;
+    this.#interruptedTurnIds.clear();
+    this.#ignoreNextAgentTurn = false;
+    this.#ignoreNextUncorrelatedWholeMessage = false;
     this.#disarmSilenceTimer();
 
     this.#conversation?.endSession?.()?.catch?.(() => {});
