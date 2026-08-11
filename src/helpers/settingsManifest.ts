@@ -101,10 +101,9 @@ const settingsManifest = [
   { key: "currentSegment", group: "Playback", readOnly: true, default: undefined },
   { key: "hoveredSegment", group: "Playback", readOnly: true, default: undefined },
 
-  // The tier is requested, then echoed back by the API, so the two can differ.
+  // accessTier requests a tier; the resolved tier is visible in the response inspector.
   { key: "accessTier", group: "Access", control: "text", default: undefined, cleared: null, api: "access_tier", refetch: true, needs: "a project with access tiers" },
-  { key: "resolvedAccessTier", group: "Access", readOnly: true, default: undefined, api: "access_tier.slug" },
-  { key: "segmentLimit", group: "Access", control: "select", default: undefined, cleared: null, api: "segment_limit",
+  { key: "segmentLimit", group: "Access", control: "select", default: undefined, cleared: null, api: "access_tier.segment_limit",
     options: [null, 0, 2, 5], format: (value) => (value === null || value === undefined ? "full access" : `${value}${value === 0 ? " (title only)" : " (preview)"}`),
     parse: (raw) => (raw === "" || raw === "null" ? null : Number(raw)), needs: "normally served by the project's access tier" },
   { key: "accessCtaText", group: "Access", control: "text", default: undefined, cleared: null, api: "access_tier.cta_text", appliesTo: "default" },

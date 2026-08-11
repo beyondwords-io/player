@@ -102,7 +102,6 @@
   export let analyticsTag = undefined;
   export let mediaCustomUrl = undefined;
   export let segmentLimit = undefined;
-  export let resolvedAccessTier = undefined;
   export let captureErrors = true;
   export let onError = () => {};
   export let transitions = [];
@@ -229,7 +228,7 @@
   $: agentQuestionsRemaining = remainingAgentLimit(normalizedAgentQuestionsLimit, agentQuestionsUsed);
   $: agentVoiceSecondsRemaining = remainingAgentLimit(normalizedAgentVoiceSecondsLimit, agentVoiceSecondsUsed);
   $: resetAgentAllowance(JSON.stringify([
-    projectId, contentId, playlistId, sourceId, sourceUrl, accessTier, resolvedAccessTier,
+    projectId, contentId, playlistId, sourceId, sourceUrl, accessTier, apiPayload?.access_tier?.slug,
     normalizedAgentQuestionsLimit, normalizedAgentVoiceSecondsLimit,
   ]));
   $: syncAgentVoiceAllowance(agentVoiceSessionLive, agentVoiceSecondsRemaining);
