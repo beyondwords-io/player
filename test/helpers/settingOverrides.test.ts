@@ -124,16 +124,15 @@ describe("settingOverrides", () => {
     expect(mocks.fetchJson).toHaveBeenCalledTimes(1);
   });
 
-  it("re-applies overrides that the API writes around set()", () => {
+  it("re-applies overrides after a direct player write", () => {
     const player = mockPlayer();
 
-    setSetting(player, "accessTier", "subscribed");
-    expect(player.accessTier).toEqual("subscribed");
+    setSetting(player, "sourceUrl", "https://example.com/article");
+    expect(player.sourceUrl).toEqual("https://example.com/article");
 
-    // What setAccessTierProp does with whatever the API echoed back.
-    player.accessTier = "anonymous";
+    player.sourceUrl = window.location.href;
     reapplySettings(player);
 
-    expect(player.accessTier).toEqual("subscribed");
+    expect(player.sourceUrl).toEqual("https://example.com/article");
   });
 });

@@ -29,7 +29,8 @@ test("default player pointer target accessibility", async ({ page }) => {
     embedMode: "audio-agent",
     theme: "light",
     radius: 8,
-    agentAccess: "full",
+    agentQuestionsLimit: null,
+    agentVoiceSecondsLimit: null,
     adverts: [],
     advertIndex: -1,
     duration: 30,
@@ -75,8 +76,8 @@ test("default player pointer target accessibility", async ({ page }) => {
   // Docked at the bottom of the window it has to open upwards, or its items are
   // laid out past the edge of the screen where nothing can click them.
   for (const { name, params } of [
-    { name: "inline", params: { ...base, playbackState: "stopped", variants: ["full", "summary"] } },
-    { name: "bottom widget", params: { ...base, widgetStyle: "default", widgetPosition: "center", variants: ["full", "summary"] } },
+    { name: "inline", params: { ...base, playbackState: "stopped", variants: ["article", "summary"] } },
+    { name: "bottom widget", params: { ...base, widgetStyle: "default", widgetPosition: "center", variants: ["article", "summary"] } },
   ]) {
     await surveyControls(page, params, 512);
 

@@ -3,6 +3,11 @@ import snakeCaseKeys from "./snakeCaseKeys";
 import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 import rewriteMediaUrl from "./rewriteMediaUrl";
+import { normalizeAgentLimit } from "./agentLimits";
+
+const EMBED_MODES = new Set(["audio", "audio-agent", "agent"]);
+const WIDGET_EMBED_MODES = new Set(["auto", ...EMBED_MODES]);
+const CONTENT_VARIANTS = new Set(["article", "summary"]);
 
 const appendContinuousPlaybackContentFromApi = async (player) => {
   const client = new PlayerApiClient({
@@ -115,6 +120,15 @@ const handleNoContent = (player) => {
   setContentProp(player);
   setAdvertsProp(player);
   set(player, "agentId", undefined);
+  set(player, "agentName", undefined);
+  set(player, "agentSessionConfig", {});
+  set(player, "resolvedAccessTier", undefined);
+  set(player, "accessCtaText", undefined);
+  set(player, "accessCtaUrl", undefined);
+  set(player, "agentCtaText", undefined);
+  set(player, "agentCtaUrl", undefined);
+  set(player, "agentQuestionsLimit", null);
+  set(player, "agentVoiceSecondsLimit", null);
 
   player.onEvent?.(newEvent({
     type: "NoContentAvailable",
@@ -132,29 +146,29 @@ const handleContent = (player) => {
 };
 
 const setProps = (player, data) => {
-  const theme = resolveTheme(data.settings.theme);
-  const themeColors = data.settings[`${theme}_theme`];
-  const videoColors = data.settings["video_theme"];
+  const settings = data.settings || {};
+  const theme = resolveTheme(settings.theme);
+  const themeColors = settings[`${theme}_theme`];
+  const videoColors = settings["video_theme"];
 
   resetSomeProps(player);
   setContentProp(player, data);
   setAdvertsProp(player, data);
-  setAccessTierProp(player, data);
 
   const content = player.content[player.contentIndex];
 
-  set(player, "playerStyle", data.settings.player_style);
-  set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
-  set(player, "titleEnabled", data.settings.title_enabled);
-  set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
-  set(player, "skipButtonStyle", data.settings.skip_button_style);
-  set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
-  set(player, "introsOutros", rewriteIntrosOutrosUrls(data.settings.intros_outros, player.mediaCustomUrl));
-  set(player, "outroPlaybackMode", data.settings.outro_playback_mode);
-  set(player, "persistentAdImage", data.settings.persistent_ad_image);
+  set(player, "playerStyle", settings.player_style);
+  set(player, "playerTitle", data.playlist?.title || settings.player_title);
+  set(player, "titleEnabled", settings.title_enabled);
+  set(player, "callToAction", settings.call_to_action === "Listen to this article" ? null : settings.call_to_action);
+  set(player, "skipButtonStyle", settings.skip_button_style);
+  set(player, "downloadFormats", settings.download_button_enabled ? ["mp3"] : []);
+  set(player, "introsOutros", rewriteIntrosOutrosUrls(settings.intros_outros, player.mediaCustomUrl));
+  set(player, "outroPlaybackMode", settings.outro_playback_mode);
+  set(player, "persistentAdImage", settings.persistent_ad_image);
   set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);
-  set(player, "widgetStyle", data.settings.widget_style);
-  set(player, "widgetPosition", data.settings.widget_position);
+  set(player, "widgetStyle", settings.widget_style);
+  set(player, "widgetPosition", settings.widget_position);
   set(player, "textColor", themeColors.text_color);
   set(player, "backgroundColor", themeColors.background_color);
   set(player, "iconColor", themeColors.icon_color);
@@ -162,23 +176,50 @@ const setProps = (player, data) => {
   set(player, "videoTextColor", videoColors.text_color);
   set(player, "videoBackgroundColor", videoColors.background_color);
   set(player, "videoIconColor", videoColors.icon_color);
-  set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
+  set(player, "logoIconEnabled", settings.logo_icon_enabled);
   set(player, "logoImagePosition", data.video_settings.logo_image_position);
-  set(player, "wordHighlightsEnabled", data.settings.word_highlights_enabled);
+  set(player, "wordHighlightsEnabled", settings.word_highlights_enabled);
   set(player, "wordHighlightColor", themeColors.word_highlight_color);
-  set(player, "highlightSections", data.settings.segment_highlights_enabled ? "all" : "none");
-  set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
+  set(player, "highlightSections", settings.segment_highlights_enabled ? "all" : "none");
+  set(player, "clickableSections", settings.segment_playback_enabled ? "all" : "none");
   set(player, "segmentWidgetSections", "none");
-  set(player, "analyticsConsent", analyticsConsent(data.settings));
-  set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
-  set(player, "analyticsTag", data.settings.analytics_tag);
-  set(player, "analyticsUrl", data.settings.analytics_url);
-  set(player, "analyticsId", data.settings.analytics_id);
-  set(player, "segmentLimit", data.settings.segment_limit);
+  set(player, "analyticsConsent", analyticsConsent(settings));
+  set(player, "analyticsCustomUrl", settings.analytics_custom_url);
+  set(player, "analyticsTag", settings.analytics_tag);
+  set(player, "analyticsUrl", settings.analytics_url);
+  set(player, "analyticsId", settings.analytics_id);
+  set(player, "segmentLimit", resolvedSegmentLimit(data));
   set(player, "contentLanguage", data.language);
+
+  set(player, "radius", nonNegativeInteger(settings.radius, 8));
+  set(player, "accentColor", stringOrUndefined(settings.accent_color));
+  set(player, "accentTextColor", stringOrUndefined(settings.accent_text_color));
+  set(player, "disclosureText", stringOrUndefined(settings.disclosure_text));
+  set(player, "disclosureLink", safeHttpUrl(settings.disclosure_link));
+  set(player, "agentColor", stringOrUndefined(settings.agent_color));
+  set(player, "agentAvatar", safeHttpUrl(settings.agent_avatar_url));
+  set(player, "agentPlaceholder", stringOrUndefined(settings.agent_placeholder));
+  set(player, "shortcuts", stringArray(settings.agent_shortcuts));
+  set(player, "infoText", stringOrUndefined(settings.info_text));
+  set(player, "agentVoice", typeof settings.agent_voice_enabled === "boolean" ? settings.agent_voice_enabled : true);
+  set(player, "variants", enumArray(settings.variants, CONTENT_VARIANTS));
+  set(player, "embedMode", enumValue(settings.embed_mode, EMBED_MODES, "audio"));
+  set(player, "widgetEmbedMode", enumValue(settings.widget_embed_mode, WIDGET_EMBED_MODES, "auto"));
+
+  const accessTier = data.access_tier || undefined;
+  const playerAgent = accessTier?.player_agent || {};
+  set(player, "resolvedAccessTier", stringOrUndefined(accessTier?.slug || settings.access_tier));
+  set(player, "accessCtaText", stringOrUndefined(accessTier?.cta_text));
+  set(player, "accessCtaUrl", safeHttpUrl(accessTier?.cta_url));
+  set(player, "agentCtaText", stringOrUndefined(playerAgent.cta_text));
+  set(player, "agentCtaUrl", safeHttpUrl(playerAgent.cta_url));
+  set(player, "agentQuestionsLimit", normalizeAgentLimit(playerAgent.questions_limit));
+  set(player, "agentVoiceSecondsLimit", normalizeAgentLimit(playerAgent.seconds_limit));
 
   // Key always present; the id only when the project's agent is enabled.
   set(player, "agentId", data.conversational_agent?.elevenlabs_agent_id ?? undefined);
+  set(player, "agentName", nonEmptyString(data.conversational_agent?.name));
+  set(player, "agentSessionConfig", agentSessionConfig(data.conversational_agent));
 };
 
 const resetSomeProps = (player) => {
@@ -302,10 +343,51 @@ const setAdvertsProp = (player, data) => {
   }));
 };
 
-const setAccessTierProp = (player, data) => {
-  if (typeof player.accessTier === "undefined") { return; }
+const resolvedSegmentLimit = (data) => (
+  data.access_tier && Object.prototype.hasOwnProperty.call(data.access_tier, "segment_limit")
+    ? data.access_tier.segment_limit
+    : data.settings?.segment_limit
+);
 
-  player.setAccessTier(data.settings.access_tier, false);
+const nonNegativeInteger = (value, fallback) => (
+  Number.isInteger(value) && value >= 0 ? value : fallback
+);
+
+const stringOrUndefined = (value) => typeof value === "string" ? value : undefined;
+const nonEmptyString = (value) => typeof value === "string" && value.trim() ? value.trim() : undefined;
+
+const stringArray = (value) => Array.isArray(value)
+  ? value.filter((item) => typeof item === "string")
+  : [];
+
+const enumArray = (value, allowed) => Array.isArray(value)
+  ? [...new Set(value.filter((item) => allowed.has(item)))]
+  : [];
+
+const enumValue = (value, allowed, fallback) => allowed.has(value) ? value : fallback;
+
+const safeHttpUrl = (value) => {
+  if (typeof value !== "string" || !value.trim()) { return undefined; }
+
+  try {
+    const url = new URL(value, typeof window === "undefined" ? "https://beyondwords.io" : window.location.href);
+    return ["http:", "https:"].includes(url.protocol) ? value : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const agentSessionConfig = (agent) => {
+  if (!agent || typeof agent !== "object") { return {}; }
+
+  return Object.fromEntries(Object.entries({
+    firstMessage: stringOrUndefined(agent.first_message),
+    model: stringOrUndefined(agent.model),
+    systemPrompt: stringOrUndefined(agent.system_prompt),
+    language: nonEmptyString(agent.language?.code),
+    voiceId: nonEmptyString(agent.voice?.voice_id),
+    voiceModelId: nonEmptyString(agent.voice?.model_id),
+  }).filter(([, value]) => typeof value !== "undefined"));
 };
 
 const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {

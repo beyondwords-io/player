@@ -22,7 +22,8 @@ const base = {
   embedMode: "audio-agent",
   theme: "light",
   radius: 8,
-  agentAccess: "full",
+  agentQuestionsLimit: null,
+  agentVoiceSecondsLimit: null,
   adverts: [],
   advertIndex: -1,
   duration: 30,
@@ -47,7 +48,7 @@ const list = [
   { ...base, content: playlistItems, playbackState: "playing" },
   { ...base, disclosureText: "This article is read by an AI voice." },
   { ...base, playbackState: "playing", widgetStyle: "default", widgetPosition: "center" },
-  { ...base, agentAccess: "locked" },
+  { ...base, agentQuestionsLimit: 0, agentVoiceSecondsLimit: 0 },
 
   // A title during playback only when the publisher asked for one.
   { ...base, playbackState: "playing", playerTitle: "The Daily Example", titleEnabled: true },
@@ -73,7 +74,7 @@ const defaultScreenshotName = (params) => (
     params.content.length > 1 && "playlist",
     params.widgetPosition && `widget-${params.widgetPosition}`,
     params.disclosureText && "disclosure",
-    params.agentAccess === "locked" && "locked",
+    params.agentQuestionsLimit === 0 && params.agentVoiceSecondsLimit === 0 && "locked",
     params.playerTitle && "titled",
     params.segmentLimit === 0 && "title-only",
     params.segmentLimitReached && "preview-ended",

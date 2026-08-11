@@ -13,7 +13,7 @@ const decodeSettingValue = (raw) => {
   try {
     return JSON.parse(raw);
   } catch {
-    // A bare string, e.g. set=theme:dark or set=agentLimit:5:00
+    // A bare string, e.g. set=theme:dark or set=agentName:Zoe
     return raw;
   }
 };

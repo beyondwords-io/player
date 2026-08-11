@@ -79,8 +79,8 @@ const apiOrDefaultValue = (player, key) => (
 );
 
 // Re-applies every override after a response. set() already respects them, but
-// a few writes bypass it: the access tier is written back by the API, and
-// sourceUrl falls back to the page URL when no identifiers are set.
+// a few writes bypass it, such as sourceUrl falling back to the page URL when
+// no identifiers are set.
 const reapplySettings = (player) => {
   overriddenKeys(player).forEach((key) => {
     applyValue(player, key, player.initialProps[key], { silent: true });

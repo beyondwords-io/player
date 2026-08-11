@@ -23,18 +23,18 @@ describe("setting URLs", () => {
   });
 
   it("keeps strings that look like other types", () => {
-    const settings = { widgetWidth: "0", agentLimit: "5:00", widgetMargin: "32px 16px", accessCtaText: "true" };
+    const settings = { widgetWidth: "0", agentName: "5:00", widgetMargin: "32px 16px", accessCtaText: "true" };
 
     expect(roundTrip(settings)).toEqual(settings);
   });
 
   it("reads a hand-written URL", () => {
     const { identifiers, settings, advanced } = decodeUrlState(
-      "?projectId=54044&contentId=97e4a9df&advanced=true&set=theme:dark&set=radius:0&set=agentAccess:locked"
+      "?projectId=54044&contentId=97e4a9df&advanced=true&set=theme:dark&set=radius:0&set=agentQuestionsLimit:0&set=agentVoiceSecondsLimit:0"
     );
 
     expect(identifiers).toEqual({ projectId: "54044", contentId: "97e4a9df" });
-    expect(settings).toEqual({ theme: "dark", radius: 0, agentAccess: "locked" });
+    expect(settings).toEqual({ theme: "dark", radius: 0, agentQuestionsLimit: 0, agentVoiceSecondsLimit: 0 });
     expect(advanced).toEqual(true);
   });
 

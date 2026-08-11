@@ -18,10 +18,6 @@ function boot() {
     target: "#player",
     controlPanel: ".control-panel",
 
-    // The harness is for the new player; switch playerStyle in the panel to
-    // compare against the legacy styles.
-    playerStyle: "default",
-
     ...identifiers,
     ...settings,
 

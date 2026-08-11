@@ -6,6 +6,7 @@
   export let apiRequestUrl = undefined;
 
   $: settings = apiPayload?.settings || {};
+  $: accessTier = apiPayload?.access_tier;
   $: item = (snapshot.content || [])[snapshot.contentIndex || 0];
 
   $: variants = item ? [
@@ -45,6 +46,8 @@
 
   $: accessDescription = [
     (snapshot.segmentLimit ?? null) === null ? "full access" : `${snapshot.segmentLimit} segments`,
+    accessTier?.player_agent ? `${accessTier.player_agent.questions_limit ?? "∞"} questions` : undefined,
+    accessTier?.player_agent ? `${accessTier.player_agent.seconds_limit ?? "∞"} voice seconds` : undefined,
     item ? `ads ${item.adsEnabled ? "enabled" : "disabled"}` : undefined,
   ].filter((part) => part).join(", ");
 </script>
@@ -98,7 +101,7 @@
     <div class="row">
       <span>tier</span>
       <span class="value">
-        asked {snapshot.accessTier ?? "none"}, got {settings.access_tier ?? "none"}
+        asked {snapshot.accessTier ?? "none"}, got {snapshot.resolvedAccessTier ?? accessTier?.slug ?? settings.access_tier ?? "none"}
       </span>
     </div>
 
