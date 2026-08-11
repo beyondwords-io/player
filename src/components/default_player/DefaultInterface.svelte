@@ -70,8 +70,11 @@
   export let agentAvatar = undefined;
   export let accentColor = undefined;
   export let accentTextColor = undefined;
-  export let agentAccess = "full";
-  export let agentLimit = undefined;
+  export let agentQuestionsLimit = null;
+  export let agentVoiceSecondsLimit = null;
+  export let agentQuestionsRemaining = null;
+  export let agentVoiceSecondsRemaining = null;
+  export let onAgentQuestion = () => {};
   export let agentVoice = true;
   export let agentPlaceholder = undefined;
   export let agentName = undefined;
@@ -294,9 +297,9 @@
   $: totalMins = translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(duration / 60)));
   // variants restricts what the Version group offers; unset means every
   // variant the content actually has.
-  $: offeredVariants = variants.length ? variants : ["full", "summary"];
+  $: offeredVariants = variants.length ? variants : ["article", "summary"];
   $: hasSummaryVariant = !!contentItem.summarization && offeredVariants.includes("summary");
-  $: hasVariants = hasSummaryVariant && offeredVariants.includes("full");
+  $: hasVariants = hasSummaryVariant && offeredVariants.includes("article");
   $: languageName = languageNameFor(contentLanguage);
   // Name the version when the reader can switch, since the menu carries the
   // durations; otherwise say how long the one they are getting is.
@@ -330,13 +333,11 @@
   $: attributionHref = typeof window === "undefined" ? "https://beyondwords.io" :
     `https://beyondwords.io/?utm_source=${encodeURIComponent(window.location.origin)}&utm_medium=player&utm_campaign=${analyticsId || ""}`;
 
-  // full | limited | locked | off, with the earlier enabled/disabled spellings
-  // normalised here so the rest of the subtree only sees the four names.
-  $: access = agentAccess === "enabled" ? "full" : agentAccess === "disabled" ? "locked" : agentAccess;
-
-  $: showChat = embedMode !== "audio" && access !== "off" && !isAdvert;
+  $: agentTextAvailable = agentQuestionsRemaining === null || agentQuestionsRemaining > 0;
+  $: agentVoiceAvailable = agentVoice && (agentVoiceSecondsRemaining === null || agentVoiceSecondsRemaining > 0);
+  $: showChat = embedMode !== "audio" && !isAdvert;
   $: isAdvert && (chatOpen = false);
-  $: chatDisabled = access === "locked";
+  $: chatDisabled = !agentTextAvailable && !agentVoiceAvailable;
   $: agentOnly = embedMode === "agent";
   $: agentPrompt = agentName
     ? translate("askAgent").replace("{name}", agentName)
@@ -345,7 +346,7 @@
   $: playPauseLabel = isPlaying ? translate("pauseAudio") : translate("playAudio");
 
   $: versionItems = [
-    ...(offeredVariants.includes("full") ? [{ value: "full", label: translate("full"), secondary: formatMins(mediaDuration(contentItem)), selected: !summary }] : []),
+    ...(offeredVariants.includes("article") ? [{ value: "article", label: translate("full"), secondary: formatMins(mediaDuration(contentItem)), selected: !summary }] : []),
     ...(hasSummaryVariant ? [{ value: "summary", label: translate("summary"), secondary: formatMins(mediaDuration(contentItem.summarization)), selected: summary }] : []),
   ];
 
@@ -431,7 +432,7 @@
   };
 
   const handleMenuSelect = (item) => {
-    if (item.value === "full" || item.value === "summary") {
+    if (item.value === "article" || item.value === "summary") {
       summary = item.value === "summary";
     } else if (item.value === "speed") {
       onEvent(newEvent({
@@ -634,8 +635,11 @@
           {agentClient}
           {agentPlaceholder}
           {agentVoice}
-          agentAccess={access}
-          {agentLimit}
+          {agentQuestionsLimit}
+          {agentVoiceSecondsLimit}
+          {agentQuestionsRemaining}
+          {agentVoiceSecondsRemaining}
+          {onAgentQuestion}
           {shortcuts}
           ctaText={agentCta}
           ctaUrl={agentCtaHref} />
@@ -655,8 +659,11 @@
       {agentClient}
       {agentPlaceholder}
       {agentVoice}
-      agentAccess={access}
-      {agentLimit}
+      {agentQuestionsLimit}
+      {agentVoiceSecondsLimit}
+      {agentQuestionsRemaining}
+      {agentVoiceSecondsRemaining}
+      {onAgentQuestion}
       {shortcuts}
       ctaText={agentCta}
       ctaUrl={agentCtaHref}
@@ -912,8 +919,11 @@
         {agentClient}
         {agentPlaceholder}
         {agentVoice}
-        agentAccess={access}
-        {agentLimit}
+        {agentQuestionsLimit}
+        {agentVoiceSecondsLimit}
+        {agentQuestionsRemaining}
+        {agentVoiceSecondsRemaining}
+        {onAgentQuestion}
         ctaText={agentCta}
         ctaUrl={agentCtaHref}
         {shortcuts} />
@@ -1402,22 +1412,6 @@
     border-bottom-style: dotted;
     border-bottom-width: 1px;
     cursor: pointer;
-  }
-
-  .meta .tier-cta {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    border-bottom-width: 1px;
-    border-bottom-style: dotted;
-    cursor: pointer;
-  }
-
-  .meta .tier-cta:focus-visible {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-offset: 2px;
   }
 
   .meta .trigger {

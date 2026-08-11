@@ -1,6 +1,6 @@
 <script>
   import formatTime from "../../helpers/formatTime";
-  import { tick, onDestroy } from "svelte";
+  import { tick } from "svelte";
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
   import Orb from "./Orb.svelte";
@@ -13,8 +13,11 @@
   export let agentClient;
   export let agentPlaceholder = undefined;
   export let agentVoice = true;
-  export let agentAccess = "full";
-  export let agentLimit = undefined;
+  export let agentQuestionsLimit = null;
+  export let agentVoiceSecondsLimit = null;
+  export let agentQuestionsRemaining = null;
+  export let agentVoiceSecondsRemaining = null;
+  export let onAgentQuestion = () => {};
   // The publisher's own words for the upgrade, or nothing at all.
   export let ctaText = undefined;
   export let ctaUrl = undefined;
@@ -25,8 +28,6 @@
   let inputElement;
   let threadElement;
   let shortcutsOpen = false;
-  let minuteTimer = null;
-  let secondsLeft = null;
 
   // The client is the store: thread rows, the conversation kind, and the voice
   // call's state all live there, because they outlive this component.
@@ -37,22 +38,19 @@
 
   $: placeholder = agentPlaceholder || `${translate("askAboutThisArticle")}…`;
 
-  // Limited access: a question budget ("3") or a voice-minutes budget ("5:00").
-  $: minutesBudget = typeof agentLimit === "string" && agentLimit.includes(":");
-  $: questionBudget = agentAccess === "limited" && !minutesBudget && parseInt(agentLimit, 10) > 0
-    ? parseInt(agentLimit, 10)
-    : null;
-  $: questionsUsed = thread.filter((message) => message.role === "reader").length;
-  $: questionsLeft = questionBudget === null ? null : Math.max(0, questionBudget - questionsUsed);
-  $: if (agentAccess === "limited" && minutesBudget && secondsLeft === null) {
-    const [mins, secs] = agentLimit.split(":").map((n) => parseInt(n, 10) || 0);
-    secondsLeft = mins * 60 + secs;
-  }
-  $: locked = agentAccess === "locked";
-  $: syncMinuteTimer(inCall);
+  // The two allowances are independent. null is unlimited, zero disables that
+  // mode, and only both modes being unavailable locks the whole agent.
+  $: questionBudget = agentQuestionsLimit;
+  $: voiceBudget = agentVoiceSecondsLimit;
+  $: questionsLeft = agentQuestionsRemaining;
+  $: secondsLeft = agentVoiceSecondsRemaining;
+  $: questionsUsed = questionBudget === null ? 0 : Math.max(0, questionBudget - (questionsLeft || 0));
+  $: textAvailable = questionsLeft === null || questionsLeft > 0;
+  $: voiceAvailable = agentVoice && (secondsLeft === null || secondsLeft > 0);
+  $: locked = agentQuestionsLimit === 0 && (!agentVoice || agentVoiceSecondsLimit === 0);
   $: lockedAsked = locked && thread.length > 0;
-  $: budgetSpent = agentAccess === "limited" && (questionsLeft === 0 || (minutesBudget && secondsLeft === 0));
-  $: showCounter = questionBudget !== null && questionsUsed >= 1 && !budgetSpent;
+  $: budgetSpent = !locked && !textAvailable && !voiceAvailable;
+  $: showCounter = questionBudget !== null && questionBudget > 0 && questionsUsed >= 1 && !budgetSpent;
 
   $: formattedSecondsLeft = formatTime(secondsLeft || 0);
 
@@ -75,7 +73,7 @@
 
   const send = (question) => {
     const text = (question || input).trim();
-    if (!text || budgetSpent) { return; }
+    if (!text || budgetSpent || (!locked && !textAvailable)) { return; }
 
     // A text reply finishes before the next ask; in a call, sending over the
     // agent interrupts it, exactly like speaking over it.
@@ -93,6 +91,7 @@
     }
 
     agentClient.sendUserMessage(text);
+    onAgentQuestion();
     scrollToEnd();
   };
 
@@ -100,27 +99,12 @@
 
   // The waveform starts a call; the composer becomes the strip in place.
   const startCall = () => {
-    if (budgetSpent || locked) { return; }
+    if (budgetSpent || locked || !voiceAvailable) { return; }
 
     agentClient.startSession();
   };
 
   const endCall = () => agentClient.endSession();
-
-  // Voice minutes only count while a call is live; spent ends it.
-  const syncMinuteTimer = (live) => {
-    if (live && minutesBudget && (secondsLeft ?? 0) > 0 && !minuteTimer) {
-      minuteTimer = setInterval(() => {
-        secondsLeft = Math.max(0, secondsLeft - 1);
-        if (secondsLeft === 0) { agentClient.endSession("budget"); }
-      }, 1000);
-    }
-
-    if (!live && minuteTimer) {
-      clearInterval(minuteTimer);
-      minuteTimer = null;
-    }
-  };
 
   const handleKeydown = (event) => {
     agentClient.sendUserActivity();
@@ -142,11 +126,10 @@
     }
   };
 
-  onDestroy(() => clearInterval(minuteTimer));
 </script>
 
 <div class="chat-panel">
-  {#if thread.length === 0 && shortcuts.length > 0}
+  {#if thread.length === 0 && shortcuts.length > 0 && (locked || textAvailable)}
     <div class="empty-chips">
       {#each shortcuts as question (question)}
         <button
@@ -245,7 +228,7 @@
       <span class="spent-copy" style="color: {tokens.muted}">
         {#if lockedAsked}
           <!-- The CTA above the composer already says it; no need to repeat. -->
-        {:else if minutesBudget}
+        {:else if questionBudget === null || questionBudget === 0 || questionsLeft !== 0}
           {translate("freeConversationTimeUsed")}
         {:else}
           {translate(questionBudget === 1 ? "freeQuestionUsed" : "freeQuestionsUsed").replace("{n}", questionBudget)}
@@ -280,14 +263,14 @@
           <span class="strip-label" style="color: {tokens.text}">{translate("listening")}</span>
         {/if}
         <span class="strip-grow"></span>
-        {#if minutesBudget}
+        {#if voiceBudget !== null}
           <span class="counter" style="color: {tokens.muted}">{translate("timeLeft").replace("{time}", formattedSecondsLeft)}</span>
         {/if}
         <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={endCall} on:mouseup={blurElement}>{translate("end")}</button>
       </div>
     {/if}
     <div class="composer" class:borderless={inCall} style="border-top-color: {tokens.divider}">
-      {#if showSlashButton && shortcuts.length > 0}
+      {#if showSlashButton && shortcuts.length > 0 && (locked || textAvailable)}
         <button
           type="button"
           class="slash"
@@ -306,6 +289,7 @@
         style="color: {tokens.text}; --placeholder-color: {tokens.placeholder}; outline-color: {tokens.text}"
         placeholder={placeholder}
         aria-label={placeholder}
+        disabled={!locked && !textAvailable}
         on:keydown={handleKeydown}
       />
 
@@ -313,7 +297,7 @@
         <span class="counter" style="color: {tokens.muted}">{translate("questionsRemaining").replace("{remaining}", questionsLeft).replace("{total}", questionBudget)}</span>
       {/if}
 
-      {#if agentVoice && !locked && questionBudget === null && kind === "none"}
+      {#if voiceAvailable && !locked && kind === "none"}
         <button type="button" class="voice" style="background: {tokens.hover}; --hover-bg: {tokens.pressed}; outline-color: {tokens.text}" aria-label={translate("startVoiceConversation")} on:click={startCall} on:mouseup={blurElement}>
           <VoiceMode size={20} color={tokens.text} />
         </button>
@@ -324,7 +308,7 @@
           <span class="stop-square" style="background: {tokens.sendIcon}"></span>
         </button>
       {:else}
-        <button type="button" class="send" style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label={translate("send")} on:click={() => send()} on:mouseup={blurElement}>
+        <button type="button" class="send" disabled={!locked && !textAvailable} style="background: {tokens.sendBackground}; outline-color: {tokens.text}" aria-label={translate("send")} on:click={() => send()} on:mouseup={blurElement}>
           <ArrowUp size={16} color={tokens.sendIcon} />
         </button>
       {/if}
@@ -560,8 +544,7 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .slash:hover,
-    .quiet:hover {
+    .slash:hover {
       background: var(--hover-bg, transparent);
     }
   }
@@ -592,6 +575,11 @@
     color: var(--placeholder-color);
   }
 
+  .input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
   .send {
     display: flex;
     align-items: center;
@@ -607,8 +595,13 @@
     cursor: pointer;
   }
 
+  .send:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
   @media (hover: hover) and (pointer: fine) {
-    .send:hover {
+    .send:not(:disabled):hover {
       opacity: 0.85;
     }
   }
@@ -647,25 +640,6 @@
     .chip:hover {
       background: var(--hover-bg);
     }
-  }
-
-  .quiet {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    padding: 4px;
-    margin: 0;
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .quiet:focus-visible {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-offset: 2px;
   }
 
   .counter {

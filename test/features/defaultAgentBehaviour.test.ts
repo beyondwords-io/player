@@ -12,7 +12,7 @@ test("default player agent behaviour", async ({ page }) => {
 
   // Both surfaces behave the same: the bar's panel and the agent-only embed.
   for (const embedMode of ["agent", "audio-agent"]) {
-    await openPanel(page, { embedMode, agentAccess: "locked", shortcuts, ...cta });
+    await openPanel(page, { embedMode, agentQuestionsLimit: 0, agentVoiceSecondsLimit: 0, shortcuts, ...cta });
 
     expect(await panelState(page), `${embedMode}: a locked agent still invites a question`).toEqual({
       chips: shortcuts,
@@ -32,7 +32,7 @@ test("default player agent behaviour", async ({ page }) => {
     });
 
     // Typing gets there too, not just the chips.
-    await openPanel(page, { embedMode, agentAccess: "locked", shortcuts, ...cta });
+    await openPanel(page, { embedMode, agentQuestionsLimit: 0, agentVoiceSecondsLimit: 0, shortcuts, ...cta });
 
     const input = page.locator(".default-player .composer input").first();
     await input.click();
@@ -46,7 +46,7 @@ test("default player agent behaviour", async ({ page }) => {
     expect(typed.canType, `${embedMode}: and the composer closes behind it`).toEqual(false);
 
     // An unlocked agent is unaffected.
-    await openPanel(page, { embedMode, agentAccess: "full", shortcuts, ...cta });
+    await openPanel(page, { embedMode, agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts, ...cta });
     await page.locator(".default-player .empty-chips button").first().click();
     await page.waitForTimeout(400);
 
@@ -55,16 +55,30 @@ test("default player agent behaviour", async ({ page }) => {
     expect(answered.thread[1], `${embedMode}: and gets a real answer`).not.toEqual("Subscribe to ask questions");
   }
 
-  // A numeric allowance meters discrete questions, so it cannot safely expose
-  // an open microphone. Time-based allowances can meter the whole call.
-  await openPanel(page, { embedMode: "audio-agent", agentAccess: "limited", agentLimit: "1", agentVoice: true });
-  expect(await page.locator(".default-player .voice").count(), "question limits do not offer voice").toEqual(0);
+  // Text questions and voice seconds are independent allowances.
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: 1, agentVoiceSecondsLimit: 0, agentVoice: true });
+  expect(await page.locator(".default-player .voice").count(), "zero voice seconds hides voice").toEqual(0);
 
-  await openPanel(page, { embedMode: "audio-agent", agentAccess: "limited", agentLimit: "1:00", agentVoice: true });
-  expect(await page.locator(".default-player .voice").count(), "minute limits still offer voice").toEqual(1);
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: 1, agentVoiceSecondsLimit: 60, agentVoice: true });
+  expect(await page.locator(".default-player .voice").count(), "a question limit does not hide metered voice").toEqual(1);
+
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: 0, agentVoiceSecondsLimit: 60, agentVoice: true });
+  expect(await page.locator(".default-player .voice").count(), "voice remains when text is unavailable").toEqual(1);
+  expect(await page.locator(".default-player .composer input").isDisabled(), "only the text input is disabled").toEqual(true);
+
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: 1, agentVoiceSecondsLimit: 0, shortcuts, ...cta });
+  await page.locator(".default-player .empty-chips button").first().click();
+  await page.waitForTimeout(400);
+  expect(await page.locator(".default-player .composer.spent").count(), "the shared question allowance is spent after one ask").toEqual(1);
+
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: 0, agentVoiceSecondsLimit: 1, agentVoice: true, ...cta });
+  await page.locator(".default-player .voice").click();
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 3000 });
+  await page.waitForSelector(".default-player .composer.spent", { timeout: 3000 });
+  expect(await page.locator(".default-player .strip").count(), "spending the voice allowance ends the call").toEqual(0);
 
   // Whose words the offer uses: the agent's own, or the article's, or none.
-  await openPanel(page, { embedMode: "audio-agent", agentAccess: "locked", shortcuts, accessCtaText: "Subscribe to keep listening", accessCtaUrl: "https://example.com/subscribe" });
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: 0, agentVoiceSecondsLimit: 0, shortcuts, accessCtaText: "Subscribe to keep listening", accessCtaUrl: "https://example.com/subscribe" });
   await page.locator(".default-player .empty-chips button").first().click();
   await page.waitForTimeout(350);
 
@@ -75,7 +89,7 @@ test("default player agent behaviour", async ({ page }) => {
     ctaHref: "https://example.com/subscribe",
   });
 
-  await openPanel(page, { embedMode: "audio-agent", agentAccess: "locked", shortcuts, accessCtaText: "Subscribe to keep listening", accessCtaUrl: "https://example.com/subscribe", ...cta });
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: 0, agentVoiceSecondsLimit: 0, shortcuts, accessCtaText: "Subscribe to keep listening", accessCtaUrl: "https://example.com/subscribe", ...cta });
   await page.locator(".default-player .empty-chips button").first().click();
   await page.waitForTimeout(350);
 
@@ -83,7 +97,7 @@ test("default player agent behaviour", async ({ page }) => {
 
   // With nothing configured the answer is the lock alone: no invented copy and
   // no link that goes nowhere.
-  await openPanel(page, { embedMode: "audio-agent", agentAccess: "locked", shortcuts });
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: 0, agentVoiceSecondsLimit: 0, shortcuts });
   await page.locator(".default-player .empty-chips button").first().click();
   await page.waitForTimeout(350);
 
@@ -95,7 +109,7 @@ test("default player agent behaviour", async ({ page }) => {
 
   // Shortcuts: pressing / lists the publisher's questions and typing narrows
   // them. No slugs, so nothing to collide and nothing to translate.
-  await openPanel(page, { embedMode: "agent", agentAccess: "full", shortcuts });
+  await openPanel(page, { embedMode: "agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
 
   const input = page.locator(".default-player .composer input").first();
   await input.click();
@@ -128,7 +142,7 @@ test("default player agent behaviour", async ({ page }) => {
   await page.evaluate(() => { window.disableAnimation = false; window.__agentSilenceTimeoutMs = undefined; });
 
   // Cancel abandons before anything starts: no session, no divider, no rows.
-  await openPanel(page, { embedMode: "audio-agent", agentAccess: "full", shortcuts });
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
   await page.locator(".default-player .voice").click();
 
   await page.waitForSelector(".default-player .strip", { timeout: 2000 });
@@ -205,7 +219,7 @@ test("default player agent behaviour", async ({ page }) => {
 
   // Separate conversations: once a typed exchange exists there is no voice
   // entry to hand it to.
-  await openPanel(page, { embedMode: "audio-agent", agentAccess: "full", shortcuts });
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
   await page.locator(".default-player .empty-chips button").first().click();
   await page.waitForFunction(() => !document.querySelector(".default-player .cursor") && document.querySelectorAll(".default-player .thread > div").length >= 2, null, { timeout: 15000 });
 
@@ -214,7 +228,7 @@ test("default player agent behaviour", async ({ page }) => {
   // Article audio pauses for the length of the call - not per exchange - and
   // ~30s of silence hangs up by itself (shortened through the test seam).
   await page.evaluate(() => { window.__agentSilenceTimeoutMs = 900; });
-  await openPanel(page, { embedMode: "audio-agent", agentAccess: "full", shortcuts, playbackState: "playing", duration: 60, currentTime: 5 });
+  await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts, playbackState: "playing", duration: 60, currentTime: 5 });
 
   await page.locator(".default-player .voice").click();
   await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 3000 });
@@ -231,7 +245,7 @@ test("default player agent behaviour", async ({ page }) => {
   // already has: dots while the agent composes, then the text behind a caret.
   // Kept last, since it is the one case that needs animation left on.
   await page.evaluate(() => { window.disableAnimation = false; });
-  await openPanel(page, { embedMode: "agent", agentAccess: "full", shortcuts });
+  await openPanel(page, { embedMode: "agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
   await page.locator(".default-player .empty-chips button").first().click();
 
   await page.waitForSelector(".default-player .typing", { timeout: 2000 });
@@ -254,7 +268,7 @@ test("default player agent behaviour", async ({ page }) => {
   expect(await moves(page, ".default-player .orb", "transform"), "the orb breathes").toBeGreaterThan(1);
 
   // The caret has to be sampled while an answer is still arriving.
-  await openPanel(page, { embedMode: "agent", agentAccess: "full", shortcuts });
+  await openPanel(page, { embedMode: "agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
   await page.locator(".default-player .empty-chips button").first().click();
   await page.waitForSelector(".default-player .cursor", { timeout: 3000 });
 
@@ -262,7 +276,7 @@ test("default player agent behaviour", async ({ page }) => {
 
   // And holds still when the reader asked for that.
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await openPanel(page, { embedMode: "agent", agentAccess: "full", shortcuts });
+  await openPanel(page, { embedMode: "agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
 
   expect(await moves(page, ".default-player .orb", "transform"), "reduced motion holds it").toEqual(1);
   await page.emulateMedia({ reducedMotion: "no-preference" });

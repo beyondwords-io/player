@@ -26,6 +26,7 @@
   import parseMargin from "../helpers/parseMargin";
   import deriveTokens from "../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../helpers/default_theme/explicitOverrides";
+  import { normalizeAgentLimit, remainingAgentLimit } from "../helpers/agentLimits";
 
   // Please document all settings and keep in-sync with the developer docs:
   // https://github.com/beyondwords-core/docs/blob/main/docs-and-guides/distribution/player/sdk/javascript/player-settings.mdx
@@ -101,13 +102,14 @@
   export let analyticsTag = undefined;
   export let mediaCustomUrl = undefined;
   export let segmentLimit = undefined;
+  export let resolvedAccessTier = undefined;
   export let captureErrors = true;
   export let onError = () => {};
   export let transitions = [];
   export let controlPanel = undefined;
 
-  // Settings for the "default" player style only (script-tag configured for
-  // now; not yet served by the /player API).
+  // Settings for the "default" player style. The /player API supplies the
+  // project baseline; script-tag and preview values remain overrides.
   export let video = false;
   export let embedMode = "audio";
   export let widgetEmbedMode = "auto";
@@ -129,11 +131,12 @@
   export let agentAvatar = undefined;
   export let accentColor = undefined;
   export let accentTextColor = undefined;
-  export let agentAccess = "full";
-  export let agentLimit = undefined;
+  export let agentQuestionsLimit = null;
+  export let agentVoiceSecondsLimit = null;
   export let agentVoice = true;
   export let agentPlaceholder = undefined;
   export let agentName = undefined;
+  export let agentSessionConfig = {};
   export let shortcuts = [];
   export let infoText = undefined;
   export let disclosureText = undefined;
@@ -188,16 +191,18 @@
   let agentClient = new MockAgentClient();
   let pausedForAgentCall = false;
 
-  $: syncAgentClient(agentId);
+  $: syncAgentClient(agentId, agentSessionConfig);
 
-  const syncAgentClient = (id) => {
+  const syncAgentClient = (id, sessionConfig) => {
     const wantedId = typeof id === "string" && id.trim().length > 0 ? id.trim() : null;
     const currentId = agentClient instanceof RealAgentClient ? agentClient.agentId : null;
-    if (wantedId === currentId) { return; }
+    const wantedConfigKey = JSON.stringify(sessionConfig || {});
+    const currentConfigKey = agentClient instanceof RealAgentClient ? agentClient.sessionConfigKey : "{}";
+    if (wantedId === currentId && wantedConfigKey === currentConfigKey) { return; }
 
     agentClient.endSession();
     agentClient = wantedId
-      ? new RealAgentClient({ agentId: wantedId, dynamicVariables: agentDynamicVariables })
+      ? new RealAgentClient({ agentId: wantedId, sessionConfig, dynamicVariables: agentDynamicVariables })
       : new MockAgentClient();
   };
 
@@ -211,7 +216,54 @@
   });
 
   $: agentCallLive = $agentClient.kind === "voice";
+  $: agentVoiceSessionLive = agentCallLive && $agentClient.status !== "connecting";
   $: syncAgentCallPlayback(agentCallLive, playbackState);
+
+  let agentQuestionsUsed = 0;
+  let agentVoiceSecondsUsed = 0;
+  let agentAllowanceIdentity;
+  let agentVoiceAllowanceTimer;
+
+  $: normalizedAgentQuestionsLimit = normalizeAgentLimit(agentQuestionsLimit);
+  $: normalizedAgentVoiceSecondsLimit = normalizeAgentLimit(agentVoiceSecondsLimit);
+  $: agentQuestionsRemaining = remainingAgentLimit(normalizedAgentQuestionsLimit, agentQuestionsUsed);
+  $: agentVoiceSecondsRemaining = remainingAgentLimit(normalizedAgentVoiceSecondsLimit, agentVoiceSecondsUsed);
+  $: resetAgentAllowance(JSON.stringify([
+    projectId, contentId, playlistId, sourceId, sourceUrl, accessTier, resolvedAccessTier,
+    normalizedAgentQuestionsLimit, normalizedAgentVoiceSecondsLimit,
+  ]));
+  $: syncAgentVoiceAllowance(agentVoiceSessionLive, agentVoiceSecondsRemaining);
+
+  const resetAgentAllowance = (identity) => {
+    if (identity === agentAllowanceIdentity) { return; }
+
+    agentAllowanceIdentity = identity;
+    agentQuestionsUsed = 0;
+    agentVoiceSecondsUsed = 0;
+  };
+
+  const useAgentQuestion = () => {
+    if (agentQuestionsRemaining === null || agentQuestionsRemaining === 0) { return; }
+    agentQuestionsUsed += 1;
+  };
+
+  const syncAgentVoiceAllowance = (live, secondsRemaining) => {
+    const shouldMeter = live && secondsRemaining !== null && secondsRemaining > 0;
+
+    if (shouldMeter && !agentVoiceAllowanceTimer) {
+      agentVoiceAllowanceTimer = setInterval(() => {
+        agentVoiceSecondsUsed += 1;
+        if (remainingAgentLimit(normalizedAgentVoiceSecondsLimit, agentVoiceSecondsUsed) === 0) {
+          agentClient.endSession("budget");
+        }
+      }, 1000);
+    }
+
+    if (!shouldMeter && agentVoiceAllowanceTimer) {
+      clearInterval(agentVoiceAllowanceTimer);
+      agentVoiceAllowanceTimer = undefined;
+    }
+  };
 
   const syncAgentCallPlayback = (live, state) => {
     // The transport stays visible beside Chat. If it is pressed during a call,
@@ -372,6 +424,7 @@
   $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: activeHighlightColor, wordHighlightColor: activeWordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
   onDestroy(() => {
+    clearInterval(agentVoiceAllowanceTimer);
     agentClient.endSession();
     segmentContainers.reset();
     segmentClickables.reset();
@@ -459,8 +512,11 @@
     {agentAvatar}
     {accentColor}
     {accentTextColor}
-    {agentAccess}
-    {agentLimit}
+    agentQuestionsLimit={normalizedAgentQuestionsLimit}
+    agentVoiceSecondsLimit={normalizedAgentVoiceSecondsLimit}
+    {agentQuestionsRemaining}
+    {agentVoiceSecondsRemaining}
+    onAgentQuestion={useAgentQuestion}
     {agentVoice}
     {agentPlaceholder}
     {agentName}
@@ -569,8 +625,11 @@
       {agentAvatar}
       {accentColor}
       {accentTextColor}
-      {agentAccess}
-      {agentLimit}
+      agentQuestionsLimit={normalizedAgentQuestionsLimit}
+      agentVoiceSecondsLimit={normalizedAgentVoiceSecondsLimit}
+      {agentQuestionsRemaining}
+      {agentVoiceSecondsRemaining}
+      onAgentQuestion={useAgentQuestion}
       {agentVoice}
       {agentPlaceholder}
       {agentName}

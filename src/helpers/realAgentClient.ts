@@ -26,6 +26,8 @@ const SILENCE_TIMEOUT_MS = 30_000;
 
 class RealAgentClient {
   agentId: string;
+  agentSessionConfig: Record<string, unknown>;
+  sessionConfigKey: string;
   dynamicVariables: (() => Record<string, unknown>) | undefined;
   loadSdk: () => Promise<{ Conversation: { startSession: (options: unknown) => Promise<unknown> } }>;
   silenceTimeoutMs: number;
@@ -53,8 +55,10 @@ class RealAgentClient {
   #greetingOverrideSent = false;
   #greetingOverrideRejected = false;
 
-  constructor({ agentId, dynamicVariables, loadSdk, silenceTimeoutMs } = {}) {
+  constructor({ agentId, sessionConfig, dynamicVariables, loadSdk, silenceTimeoutMs } = {}) {
     this.agentId = agentId;
+    this.agentSessionConfig = sessionConfig || {};
+    this.sessionConfigKey = JSON.stringify(this.agentSessionConfig);
     this.dynamicVariables = dynamicVariables;
     this.loadSdk = loadSdk ?? defaultLoadSdk;
 
@@ -239,10 +243,12 @@ class RealAgentClient {
     // reconnects without it and the greeting shows as before.
     this.#greetingOverrideSent = textOnly && !this.#greetingOverrideRejected;
 
+    const overrides = this.#overrides(textOnly);
+
     return {
       agentId: this.agentId,
       ...(textOnly ? { textOnly: true } : {}),
-      ...(this.#greetingOverrideSent ? { overrides: { agent: { firstMessage: "" } } } : {}),
+      ...(Object.keys(overrides).length ? { overrides } : {}),
       ...this.#dynamicVariablesConfig(),
       onStatusChange: guarded(({ status }) => this.#handleStatusChange(status)),
       onModeChange: guarded(({ mode }) => this.#handleModeChange(mode)),
@@ -251,6 +257,36 @@ class RealAgentClient {
       onAgentResponseCorrection: guarded((event) => this.#handleCorrection(event)),
       onDisconnect: guarded((details) => this.#handleDisconnected(details)),
       onError: (message, context) => console.warn(`BeyondWords.Player agent error: ${message}`, context),
+    };
+  }
+
+  #overrides(textOnly) {
+    const config = this.agentSessionConfig as {
+      firstMessage?: string;
+      language?: string;
+      model?: string;
+      systemPrompt?: string;
+      voiceId?: string;
+    };
+
+    const prompt = Object.fromEntries(Object.entries({
+      prompt: config.systemPrompt,
+      llm: config.model,
+    }).filter(([, value]) => typeof value === "string" && value.length > 0));
+
+    const agent = Object.fromEntries(Object.entries({
+      ...(Object.keys(prompt).length ? { prompt } : {}),
+      firstMessage: this.#greetingOverrideSent && textOnly ? "" : config.firstMessage,
+      language: config.language,
+    }).filter(([, value]) => typeof value !== "undefined"));
+
+    const tts = typeof config.voiceId === "string" && config.voiceId
+      ? { voiceId: config.voiceId }
+      : {};
+
+    return {
+      ...(Object.keys(agent).length ? { agent } : {}),
+      ...(Object.keys(tts).length ? { tts } : {}),
     };
   }
 

@@ -87,6 +87,36 @@ describe("realAgentClient", () => {
     expect(calls.conversations[0].sent).toEqual(["What happened?"]);
   });
 
+  it("passes the API-provided agent overrides supported by the SDK", async () => {
+    const sessionConfig = {
+      firstMessage: "Hello from Zoe",
+      model: "gemini-2.0-flash",
+      systemPrompt: "Answer from the article",
+      language: "fr",
+      voiceId: "voice_123",
+      voiceModelId: "eleven_turbo_v2",
+    };
+
+    const text = newClient({ sessionConfig });
+    text.client.sendUserMessage("Que s'est-il passé ?");
+    await settle();
+
+    expect(text.calls.configs[0].overrides).toEqual({
+      agent: {
+        prompt: { prompt: "Answer from the article", llm: "gemini-2.0-flash" },
+        firstMessage: "",
+        language: "fr",
+      },
+      tts: { voiceId: "voice_123" },
+    });
+
+    const voice = newClient({ sessionConfig });
+    await voice.client.startSession();
+
+    expect(voice.calls.configs[0].overrides.agent.firstMessage).toEqual("Hello from Zoe");
+    expect(voice.calls.configs[0].overrides.tts).toEqual({ voiceId: "voice_123" });
+  });
+
   it("streams a text reply from response parts and ignores the duplicate whole message", async () => {
     const { client, calls } = newClient();
 

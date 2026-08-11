@@ -187,5 +187,123 @@ describe("setPropsFromApi", () => {
       expect(player.agentId).toBeUndefined();
       expect(player.apiProps.agentId).toBeUndefined();
     });
+
+    it("maps the new settings, resolved access tier and agent metadata", async () => {
+      mocks.fetchJson.mockResolvedValueOnce({
+        ...payload,
+        settings: {
+          ...payload.settings,
+          radius: 12,
+          accent_color: "#123456",
+          accent_text_color: "#ffffff",
+          disclosure_text: "AI generated",
+          disclosure_link: "https://example.com/disclosure",
+          agent_color: "#111111,#222222",
+          agent_avatar_url: "https://example.com/avatar.png",
+          agent_placeholder: "Ask us anything",
+          agent_shortcuts: ["What happened?", "Why now?"],
+          info_text: "Answers may be inaccurate",
+          agent_voice_enabled: false,
+          variants: ["article", "summary"],
+          embed_mode: "audio-agent",
+          widget_embed_mode: "agent",
+        },
+        access_tier: {
+          slug: "subscribed",
+          segment_limit: 5,
+          cta_text: "Subscribe",
+          cta_url: "https://example.com/subscribe",
+          player_agent: {
+            cta_text: "Upgrade to ask more",
+            cta_url: "https://example.com/agent",
+            questions_limit: 3,
+            seconds_limit: 90,
+          },
+        },
+        conversational_agent: {
+          elevenlabs_agent_id: "agent_123",
+          name: "Zoe",
+          first_message: "Hello",
+          model: "gemini-2.0-flash",
+          system_prompt: "Answer from the article",
+          language: { code: "en" },
+          voice: { voice_id: "voice_123", model_id: "eleven_turbo_v2" },
+        },
+      });
+
+      const player = mockPlayer();
+      await setPropsFromApi(player);
+
+      expect(player).toMatchObject({
+        radius: 12,
+        accentColor: "#123456",
+        accentTextColor: "#ffffff",
+        disclosureText: "AI generated",
+        disclosureLink: "https://example.com/disclosure",
+        agentColor: "#111111,#222222",
+        agentAvatar: "https://example.com/avatar.png",
+        agentPlaceholder: "Ask us anything",
+        shortcuts: ["What happened?", "Why now?"],
+        infoText: "Answers may be inaccurate",
+        agentVoice: false,
+        variants: ["article", "summary"],
+        embedMode: "audio-agent",
+        widgetEmbedMode: "agent",
+        resolvedAccessTier: "subscribed",
+        segmentLimit: 5,
+        accessCtaText: "Subscribe",
+        accessCtaUrl: "https://example.com/subscribe",
+        agentCtaText: "Upgrade to ask more",
+        agentCtaUrl: "https://example.com/agent",
+        agentQuestionsLimit: 3,
+        agentVoiceSecondsLimit: 90,
+        agentId: "agent_123",
+        agentName: "Zoe",
+        agentSessionConfig: {
+          firstMessage: "Hello",
+          model: "gemini-2.0-flash",
+          systemPrompt: "Answer from the article",
+          language: "en",
+          voiceId: "voice_123",
+          voiceModelId: "eleven_turbo_v2",
+        },
+      });
+    });
+
+    it("falls back safely for legacy or malformed new fields", async () => {
+      mocks.fetchJson.mockResolvedValueOnce({
+        ...payload,
+        settings: {
+          ...payload.settings,
+          radius: -1,
+          agent_shortcuts: ["Valid", 42],
+          agent_voice_enabled: "yes",
+          variants: ["full", "summary", "unknown"],
+          embed_mode: "hidden",
+          widget_embed_mode: "floating",
+          disclosure_link: "javascript:alert(1)",
+        },
+        access_tier: {
+          slug: "anonymous",
+          player_agent: { questions_limit: -2, seconds_limit: "invalid", cta_url: "javascript:alert(1)" },
+        },
+      });
+
+      const player = mockPlayer();
+      await setPropsFromApi(player);
+
+      expect(player).toMatchObject({
+        radius: 8,
+        shortcuts: ["Valid"],
+        agentVoice: true,
+        variants: ["summary"],
+        embedMode: "audio",
+        widgetEmbedMode: "auto",
+        agentQuestionsLimit: null,
+        agentVoiceSecondsLimit: null,
+      });
+      expect(player.disclosureLink).toBeUndefined();
+      expect(player.agentCtaUrl).toBeUndefined();
+    });
   });
 });
