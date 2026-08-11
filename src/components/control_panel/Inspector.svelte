@@ -1,11 +1,10 @@
 <script>
   // What is actually loaded, so testing is not guesswork: the request that
-  // produced it, what the project's settings said, and what the player resolved.
+  // produced it, and what the API resolved.
   export let snapshot = {};
   export let apiPayload = undefined;
   export let apiRequestUrl = undefined;
 
-  $: settings = apiPayload?.settings || {};
   $: accessTier = apiPayload?.access_tier;
   $: item = (snapshot.content || [])[snapshot.contentIndex || 0];
 
@@ -101,7 +100,7 @@
     <div class="row">
       <span>tier</span>
       <span class="value">
-        asked {snapshot.accessTier ?? "none"}, got {snapshot.resolvedAccessTier ?? accessTier?.slug ?? settings.access_tier ?? "none"}
+        asked {snapshot.accessTier ?? "none"}, got {accessTier?.slug ?? "none"}
       </span>
     </div>
 

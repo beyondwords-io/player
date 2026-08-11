@@ -188,7 +188,7 @@ describe("setPropsFromApi", () => {
       expect(player.apiProps.agentId).toBeUndefined();
     });
 
-    it("maps the new settings, resolved access tier and agent metadata", async () => {
+    it("maps the new settings, access tier and agent metadata", async () => {
       mocks.fetchJson.mockResolvedValueOnce({
         ...payload,
         settings: {
@@ -249,7 +249,6 @@ describe("setPropsFromApi", () => {
         variants: ["article", "summary"],
         embedMode: "audio-agent",
         widgetEmbedMode: "agent",
-        resolvedAccessTier: "subscribed",
         segmentLimit: 5,
         accessCtaText: "Subscribe",
         accessCtaUrl: "https://example.com/subscribe",
@@ -270,40 +269,42 @@ describe("setPropsFromApi", () => {
       });
     });
 
-    it("falls back safely for legacy or malformed new fields", async () => {
+    it("uses access_tier as the sole source of tier response data", async () => {
       mocks.fetchJson.mockResolvedValueOnce({
         ...payload,
         settings: {
           ...payload.settings,
-          radius: -1,
-          agent_shortcuts: ["Valid", 42],
-          agent_voice_enabled: "yes",
-          variants: ["full", "summary", "unknown"],
-          embed_mode: "hidden",
-          widget_embed_mode: "floating",
-          disclosure_link: "javascript:alert(1)",
+          access_tier: "deprecated-tier",
+          segment_limit: 9,
         },
         access_tier: {
           slug: "anonymous",
-          player_agent: { questions_limit: -2, seconds_limit: "invalid", cta_url: "javascript:alert(1)" },
+          segment_limit: 2,
+          cta_text: "Subscribe",
+          cta_url: "https://example.com/subscribe",
+          player_agent: {
+            cta_text: "Upgrade",
+            cta_url: "https://example.com/agent",
+            questions_limit: 3,
+            seconds_limit: 60,
+          },
         },
       });
 
-      const player = mockPlayer();
+      const player = mockPlayer({ accessTier: "requested-tier" });
       await setPropsFromApi(player);
 
       expect(player).toMatchObject({
-        radius: 8,
-        shortcuts: ["Valid"],
-        agentVoice: true,
-        variants: ["summary"],
-        embedMode: "audio",
-        widgetEmbedMode: "auto",
-        agentQuestionsLimit: null,
-        agentVoiceSecondsLimit: null,
+        accessTier: "requested-tier",
+        segmentLimit: 2,
+        accessCtaText: "Subscribe",
+        accessCtaUrl: "https://example.com/subscribe",
+        agentCtaText: "Upgrade",
+        agentCtaUrl: "https://example.com/agent",
+        agentQuestionsLimit: 3,
+        agentVoiceSecondsLimit: 60,
       });
-      expect(player.disclosureLink).toBeUndefined();
-      expect(player.agentCtaUrl).toBeUndefined();
+      expect(player).not.toHaveProperty("resolvedAccessTier");
     });
   });
 });
