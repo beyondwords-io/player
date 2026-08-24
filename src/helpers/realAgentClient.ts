@@ -1,4 +1,14 @@
 import translate from "./translate";
+import { writable } from "svelte/store";
+import type { Subscriber, Writable } from "svelte/store";
+import type {
+  AgentClient,
+  AgentEndReason,
+  AgentReplyMessage,
+  AgentSessionConfig,
+  AgentSessionOptions,
+  AgentState,
+} from "./agentContracts";
 
 // The live agent client: the same store shape and methods as MockAgentClient
 // (see that file for the session model), backed by the ElevenLabs Agents SDK.
@@ -24,27 +34,42 @@ import translate from "./translate";
 
 const SILENCE_TIMEOUT_MS = 30_000;
 
-class RealAgentClient {
-  agentId: string;
-  agentSessionConfig: Record<string, unknown>;
+interface AgentConversation {
+  endSession?: () => Promise<void> | void;
+  sendUserActivity?: () => void;
+  sendUserMessage: (text: string) => void;
+  setMicMuted?: (muted: boolean) => void;
+}
+
+interface ElevenLabsAgentSdk {
+  Conversation: {
+    startSession: (options: unknown) => Promise<AgentConversation>;
+  };
+}
+
+interface RealAgentClientOptions {
+  agentId?: string;
+  sessionConfig?: AgentSessionConfig;
+  dynamicVariables?: () => Record<string, unknown>;
+  loadSdk?: () => Promise<ElevenLabsAgentSdk>;
+  silenceTimeoutMs?: number;
+}
+
+class RealAgentClient implements AgentClient {
+  agentId: string | undefined;
+  agentSessionConfig: AgentSessionConfig;
   sessionConfigKey: string;
   dynamicVariables: (() => Record<string, unknown>) | undefined;
-  loadSdk: () => Promise<{ Conversation: { startSession: (options: unknown) => Promise<unknown> } }>;
+  loadSdk: () => Promise<ElevenLabsAgentSdk>;
   silenceTimeoutMs: number;
   canInterrupt = false;
 
-  state: {
-    kind: "none" | "text" | "voice";
-    status: "idle" | "connecting" | "listening" | "talking";
-    muted: boolean;
-    thread: unknown[];
-    announced: string;
-  };
+  state: AgentState;
 
-  subscribers: Set<(state: unknown) => void>;
+  store: Writable<AgentState>;
   silenceTimer: ReturnType<typeof setTimeout> | null;
 
-  #conversation = null;
+  #conversation: AgentConversation | null = null;
   #queued: string[] = [];
   #epoch = 0;
   #partTurnId: number | null = null;
@@ -55,7 +80,7 @@ class RealAgentClient {
   #greetingOverrideSent = false;
   #greetingOverrideRejected = false;
 
-  constructor({ agentId, sessionConfig, dynamicVariables, loadSdk, silenceTimeoutMs } = {}) {
+  constructor({ agentId, sessionConfig, dynamicVariables, loadSdk, silenceTimeoutMs }: RealAgentClientOptions = {}) {
     this.agentId = agentId;
     this.agentSessionConfig = sessionConfig || {};
     this.sessionConfigKey = JSON.stringify(this.agentSessionConfig);
@@ -67,21 +92,18 @@ class RealAgentClient {
       ?? SILENCE_TIMEOUT_MS;
 
     this.state = { kind: "none", status: "idle", muted: false, thread: [], announced: "" };
-    this.subscribers = new Set();
+    this.store = writable(this.state);
     this.silenceTimer = null;
   }
 
-  subscribe(run) {
-    this.subscribers.add(run);
-    run(this.state);
-
-    return () => this.subscribers.delete(run);
+  subscribe(run: Subscriber<AgentState>): () => void {
+    return this.store.subscribe(run);
   }
 
   // A session starts on the first user act, never on opening the panel.
   // Switching kinds ends the live conversation first: text and voice are
   // separate conversations on the platform too, so nothing carries over.
-  async startSession({ textOnly = false } = {}) {
+  async startSession({ textOnly = false }: AgentSessionOptions = {}): Promise<void> {
     const kind = textOnly ? "text" : "voice";
     if (this.state.kind === kind) { return; }
 
@@ -107,7 +129,11 @@ class RealAgentClient {
       const conversation = await Conversation.startSession(this.#sessionConfig(epoch, textOnly));
 
       // Ended or cancelled while connecting: the session opened, so close it.
-      if (epoch !== this.#epoch) { (conversation as { endSession: () => Promise<void> })?.endSession?.()?.catch?.(() => {}); return; }
+      if (epoch !== this.#epoch) {
+        const ending = conversation.endSession?.();
+        if (ending instanceof Promise) { ending.catch(() => {}); }
+        return;
+      }
 
       this.#conversation = conversation;
       this.#flushQueued();
@@ -127,7 +153,7 @@ class RealAgentClient {
   // Typed asks work inside a voice call - same conversation, replies stay
   // spoken. Sending over a reply starts a new turn; the server interrupts the
   // agent for us, we just close the on-screen reveal.
-  sendUserMessage(text) {
+  sendUserMessage(text: string): void {
     if (this.state.kind === "none") { this.startSession({ textOnly: true }); }
 
     // A reply that has text stays, cut short; one that never got any goes -
@@ -136,7 +162,7 @@ class RealAgentClient {
     const pending = this.#streamingReply();
     if (pending) { this.#finalizeReply(pending, { interrupted: true }); }
 
-    const reply = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
+    const reply: AgentReplyMessage = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
     this.state.thread = [...this.state.thread, { role: "reader", text }, reply];
     this.#disarmSilenceTimer();
     this.#notify();
@@ -152,12 +178,12 @@ class RealAgentClient {
   }
 
   // Keystrokes: the agent holds instead of talking over you.
-  sendUserActivity() {
+  sendUserActivity(): void {
     this.#conversation?.sendUserActivity?.();
     if (this.state.kind === "voice") { this.#armSilenceTimer(); }
   }
 
-  setMicMuted(muted) {
+  setMicMuted(muted: boolean): void {
     if (this.state.kind !== "voice") { return; }
 
     this.#conversation?.setMicMuted?.(muted);
@@ -168,7 +194,7 @@ class RealAgentClient {
 
   // The SDK has no client-side interrupt - speaking over the agent is the
   // interrupt - so this only stops the local reveal of a text reply.
-  interrupt() {
+  interrupt(): void {
     const pending = this.#streamingReply();
     if (!pending) { return; }
 
@@ -195,7 +221,7 @@ class RealAgentClient {
 
   // The End pill, the widget's x, teardown, or the silence timeout. Ending
   // keeps the thread; a voice call marks where it stopped.
-  endSession(reason = "ended") {
+  endSession(reason: AgentEndReason = "ended"): void {
     if (this.state.kind === "none") { return; }
 
     const wasVoice = this.state.kind === "voice" && this.state.status !== "connecting";
@@ -213,7 +239,7 @@ class RealAgentClient {
   // Cancel during "Connecting…": nothing started, nothing to mark. If the
   // session resolves after this, startSession sees the stale epoch and
   // closes it.
-  cancelConnect() {
+  cancelConnect(): void {
     if (this.state.status !== "connecting") { return; }
 
     this.#resetToIdle();
@@ -222,7 +248,7 @@ class RealAgentClient {
 
   // A locked agent takes the question without a session and answers with the
   // publisher's offer; the panel supplies no copy of its own.
-  appendLocked(text) {
+  appendLocked(text: string): void {
     this.state.thread = [...this.state.thread, { role: "reader", text }, { role: "locked" }];
     this.#notify();
   }
@@ -261,13 +287,7 @@ class RealAgentClient {
   }
 
   #overrides(textOnly) {
-    const config = this.agentSessionConfig as {
-      firstMessage?: string;
-      language?: string;
-      model?: string;
-      systemPrompt?: string;
-      voiceId?: string;
-    };
+    const config = this.agentSessionConfig;
 
     const prompt = Object.fromEntries(Object.entries({
       prompt: config.systemPrompt,
@@ -351,14 +371,9 @@ class RealAgentClient {
     // Correlate it to that turn rather than suppressing all whole messages for
     // the rest of the session: later turns (and later sessions) may use the
     // whole-message fallback instead.
-    const replies = this.state.thread.filter((row: { role?: string; sessionEpoch?: number }) => row.role === "agent" && row.sessionEpoch === this.#epoch) as {
-      eventId?: number;
-      fromParts?: boolean;
-      interrupted?: boolean;
-      sessionEpoch?: number;
-      streaming?: boolean;
-      text?: string;
-    }[];
+    const replies = this.state.thread.filter((row): row is AgentReplyMessage => (
+      row.role === "agent" && row.sessionEpoch === this.#epoch
+    ));
 
     if (this.#ignoreNextAgentTurn) {
       this.#ignoreNextAgentTurn = false;
@@ -408,7 +423,7 @@ class RealAgentClient {
       pending.eventId = eventId;
       this.#finalizeReply(pending);
     } else if (!pending) {
-      const reply = { role: "agent", text: message, citations: [], streaming: false, typing: false, spoken: this.state.kind === "voice", eventId, sessionEpoch: this.#epoch };
+      const reply: AgentReplyMessage = { role: "agent", text: message, citations: [], streaming: false, typing: false, spoken: this.state.kind === "voice", eventId, sessionEpoch: this.#epoch };
       this.state.thread = [...this.state.thread, reply];
       this.state.announced = message;
     } else {
@@ -436,7 +451,7 @@ class RealAgentClient {
       if (eventId !== undefined && eventId !== null && this.#interruptedTurnIds.has(eventId)) { return; }
 
       if (!this.#streamingReply()) {
-        const reply = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
+        const reply: AgentReplyMessage = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
         this.state.thread = [...this.state.thread, reply];
         this.#notify();
       }
@@ -555,20 +570,20 @@ class RealAgentClient {
     this.#queued.push(...replay);
   }
 
-  #streamingReply() {
+  #streamingReply(): AgentReplyMessage | null {
     const last = this.state.thread[this.state.thread.length - 1];
-    return last && (last as { role?: string }).role === "agent" && (last as { streaming?: boolean }).streaming ? last : null;
+    return last?.role === "agent" && last.streaming ? last : null;
   }
 
   // A reply that never received any text is a blank bubble, not an answer.
   #dropEmptyReply() {
     const pending = this.#streamingReply();
-    if (!pending || (pending as { text?: string }).text) { return; }
+    if (!pending || pending.text) { return; }
 
     this.state.thread = this.state.thread.slice(0, -1);
   }
 
-  #finalizeReply(reply, { interrupted = false } = {}) {
+  #finalizeReply(reply: AgentReplyMessage | null, { interrupted = false }: { interrupted?: boolean } = {}): void {
     if (!reply) { return; }
 
     reply.streaming = false;
@@ -590,7 +605,8 @@ class RealAgentClient {
     this.#ignoreNextUncorrelatedWholeMessage = false;
     this.#disarmSilenceTimer();
 
-    this.#conversation?.endSession?.()?.catch?.(() => {});
+    const ending = this.#conversation?.endSession?.();
+    if (ending instanceof Promise) { ending.catch(() => {}); }
     this.#conversation = null;
 
     this.state.kind = "none";
@@ -629,18 +645,18 @@ class RealAgentClient {
   #notify() {
     // A fresh object so Svelte's store contract sees a change.
     this.state = { ...this.state };
-    this.subscribers.forEach((run) => run(this.state));
+    this.store.set(this.state);
   }
 }
 
 // The behaviour suite stubs the SDK from the page; everything else loads the
 // real one (node_modules in development, dist/elevenlabs-client.js in builds -
 // see bin/vendor_agent).
-const defaultLoadSdk = async () => {
+const defaultLoadSdk = async (): Promise<ElevenLabsAgentSdk> => {
   const stub = typeof window !== "undefined" && (window as { __elevenLabsClientStub?: unknown }).__elevenLabsClientStub;
-  if (stub) { return stub; }
+  if (stub) { return stub as ElevenLabsAgentSdk; }
 
-  return await import("./elevenLabsSdk.ts");
+  return await import("./elevenLabsSdk.ts") as ElevenLabsAgentSdk;
 };
 
 export default RealAgentClient;

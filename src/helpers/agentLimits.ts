@@ -1,11 +1,13 @@
-const normalizeAgentLimit = (value) => {
+type AgentLimit = number | null;
+
+const normalizeAgentLimit = (value: unknown): AgentLimit => {
   if (value === null || typeof value === "undefined") { return null; }
 
   const number = typeof value === "number" ? value : Number(value);
   return Number.isInteger(number) && number >= 0 ? number : null;
 };
 
-const remainingAgentLimit = (limit, used) => {
+const remainingAgentLimit = (limit: unknown, used: number): AgentLimit => {
   const normalized = normalizeAgentLimit(limit);
   if (normalized === null) { return null; }
 
@@ -13,3 +15,4 @@ const remainingAgentLimit = (limit, used) => {
 };
 
 export { normalizeAgentLimit, remainingAgentLimit };
+export type { AgentLimit };

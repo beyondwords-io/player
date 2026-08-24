@@ -3,6 +3,33 @@ import ChatPanel from "../../src/components/default_player/ChatPanel.svelte";
 import MockAgentClient from "../../src/helpers/agentClient";
 
 describe("ChatPanel", () => {
+  it("renders subsequent agent state notifications", async () => {
+    vi.useFakeTimers();
+    window.disableAnimation = true;
+    const target = document.createElement("div");
+    const agentClient = new MockAgentClient();
+    const component = new ChatPanel({
+      target,
+      props: {
+        tokens: { radius: {} },
+        agentClient,
+        agentQuestionsLimit: null,
+        agentVoiceSecondsLimit: null,
+        agentQuestionsRemaining: null,
+        agentVoiceSecondsRemaining: null,
+      },
+    });
+
+    agentClient.startSession();
+    await vi.advanceTimersByTimeAsync(0);
+    await tick();
+
+    expect(target.querySelector(".strip")?.textContent).toContain("Listening");
+    component.$destroy();
+    delete window.disableAnimation;
+    vi.useRealTimers();
+  });
+
   it("applies text and voice allowances independently", async () => {
     const target = document.createElement("div");
     const component = new ChatPanel({

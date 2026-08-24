@@ -1,6 +1,8 @@
-<script>
+<script lang="ts">
   // Loads dist/style.js, which injects the player CSS and un-hides the target.
   // Without this a built default-style embed is invisible (see UserInterface).
+  // The build replaces this external marker with the generated style bundle.
+  // @ts-expect-error TypeScript disallows explicit .ts imports without a project config.
   import("../../helpers/loadTheStyles.ts");
   import { onMount } from "svelte";
   import ResizeObserver from "resize-observer-polyfill";
@@ -15,29 +17,26 @@
   import chooseAdvertText from "../../helpers/chooseAdvertText";
   import ensureProtocol from "../../helpers/ensureProtocol";
   import formatTime from "../../helpers/formatTime";
-  import parseMargin from "../../helpers/parseMargin";
+  import planDefaultPlayerLayout, { DEFAULT_PLAYER_LAYOUT_MEASUREMENTS } from "../../helpers/defaultPlayerLayout";
+  import { resolveFixedWidgetGeometry } from "../../helpers/defaultWidgetGeometry";
+  import { mediaQueryMatches, subscribeMediaQuery } from "../../helpers/mediaQuery";
   import { contentVariantHasSection } from "../../helpers/contentVariants";
-  import WifiSlash from "../svg_icons/default_player/WifiSlash.svelte";
-  import PlayCircle from "../svg_icons/default_player/PlayCircle.svelte";
-  import PauseCircle from "../svg_icons/default_player/PauseCircle.svelte";
-  import Queue from "../svg_icons/default_player/Queue.svelte";
-  import DotsThree from "../svg_icons/default_player/DotsThree.svelte";
   import CaretDown from "../svg_icons/default_player/CaretDown.svelte";
-  import ProgressTrack from "./ProgressTrack.svelte";
   import SkipButton from "./SkipButton.svelte";
   import SpeedButton from "./SpeedButton.svelte";
   import Menu from "./Menu.svelte";
   import QueuePanel from "./QueuePanel.svelte";
   import ChatPanel from "./ChatPanel.svelte";
+  import DefaultCaption from "./DefaultCaption.svelte";
+  import DefaultPlayPauseButton from "./DefaultPlayPauseButton.svelte";
+  import DefaultPlaybackMetadata from "./DefaultPlaybackMetadata.svelte";
+  import DefaultUtilityControls from "./DefaultUtilityControls.svelte";
   import Orb from "./Orb.svelte";
   import VideoFrame from "./VideoFrame.svelte";
   import Visibility from "../helpers/Visibility.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
-  import Info from "../svg_icons/default_player/Info.svelte";
-  import Download from "../svg_icons/default_player/Download.svelte";
-  import Close from "../svg_icons/default_player/Close.svelte";
 
-  export let onEvent = () => {};
+  export let onEvent: (event?: unknown) => void = () => {};
   export let agentClient;
   export let embedMode = "audio";
   export let theme = "light";
@@ -128,9 +127,12 @@
   // A collapsed panel does not end a call - the bar says one is running.
   $: callLive = $agentClient.kind === "voice";
 
-  const reduceMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  $: unfoldMs = reduceMotion || (typeof window !== "undefined" && window.disableAnimation) ? 0 : 240;
-  $: collapseMs = reduceMotion || (typeof window !== "undefined" && window.disableAnimation) ? 0 : 180;
+  const reduceMotion = mediaQueryMatches("(prefers-reduced-motion: reduce)");
+  const animationWindow = typeof window === "undefined"
+    ? undefined
+    : window as Window & { disableAnimation?: boolean };
+  $: unfoldMs = reduceMotion || animationWindow?.disableAnimation ? 0 : 240;
+  $: collapseMs = reduceMotion || animationWindow?.disableAnimation ? 0 : 180;
 
   $: isAdvert = !!activeAdvert && playbackState !== "stopped";
 
@@ -198,62 +200,25 @@
   // time compressing to remaining-only, then the skips, then the queue, then
   // the finished ad's link. Play, the title/progress column and Chat never
   // fold, though Chat drops to its orb last of all.
-  const GAP = 12;
-  const PLAY_W = 40;
-  const CONTROL_W = 32;
-  const SPEED_W = 30;
-  const CHIP_W = 108;
-  const CHAT_ORB_W = 44;
-  const STACKED_COL_W = 100;
-  const CENTRED_COL_W = 112;
-  const TIER_LOCK_W = 32; // 16px glyph plus the 8px either side the design gives it
-
   $: centredTrack = !isStopped && !isAdvert && !offline && !playingTitle;
-
-  $: widthNeededFor = (plan) => GAP + 16 + PLAY_W
-    + GAP + (centredTrack ? CENTRED_COL_W : STACKED_COL_W)
-    + (plan.chip ? GAP + CHIP_W : 0)
-    + (plan.skips ? 2 * (GAP + CONTROL_W) : 0)
-    + (plan.speed ? GAP + SPEED_W : 0)
-    + (showTierCta ? TIER_LOCK_W : 0)
-    + (plan.overflow ? GAP + CONTROL_W : 0)
-    + (plan.queue ? GAP + CONTROL_W : 0)
-    + (plan.download ? GAP + CONTROL_W : 0)
-    + (plan.info ? GAP + CONTROL_W : 0)
-    + (showChat ? GAP + 1 + GAP + (plan.chatLabel ? fullChatWidth : CHAT_ORB_W) : 0)
-    + (isWidget && showClose ? GAP + CONTROL_W : 0);
-
-  $: layout = (() => {
-    const plan = {
+  $: layout = planDefaultPlayerLayout({
+    availableWidth: width,
+    availability: {
+      chat: showChat,
       chip: canShowAdvertChip,
-      skips: !isStopped && !isAdvert,
-      speed: !isStopped && !isAdvert,
-      overflow: !isStopped && hasVariants,
-      queue: queueAvailable && playlistToggle !== "hide",
+      close: isWidget && showClose,
       download: hasDownload,
       info: hasInfo,
-      chatLabel: true,
-    };
-
-    // Given away in this order until the bar fits. The controls go first
-    // because the overflow menu still holds them; the advertiser chip has
-    // nowhere else to go, and it is a paid placement, so it outlives them.
-    const giveAway = [
-      () => { plan.download = false; plan.info = false; plan.overflow = plan.overflow || hasDownload || hasInfo; },
-      () => { plan.speed = false; plan.overflow = plan.overflow || !isStopped; },
-      () => { plan.skips = false; plan.overflow = plan.overflow || !isStopped; },
-      () => { plan.queue = false; plan.overflow = plan.overflow || (queueAvailable && playlistToggle !== "hide"); },
-      () => { plan.chip = false; },
-      () => { plan.chatLabel = false; },
-    ];
-
-    for (const step of giveAway) {
-      if (widthNeededFor(plan) <= width) { break; }
-      step();
-    }
-
-    return plan;
-  })();
+      overflow: !isStopped && hasVariants,
+      queue: queueAvailable && playlistToggle !== "hide",
+      showTierCta,
+      skips: !isStopped && !isAdvert,
+      speed: !isStopped && !isAdvert,
+      transport: !isStopped,
+    },
+    centredTrack,
+    measurements: { ...DEFAULT_PLAYER_LAYOUT_MEASUREMENTS, chatLabel: fullChatWidth },
+  });
 
   $: showPersistentChipInRow = layout.chip;
   $: foldSkips = !layout.skips;
@@ -294,7 +259,7 @@
   $: playingTitle = titleEnabled ? playerTitle || "" : "";
   $: videoTitle = contentItem.title || playerTitle || stoppedTitle;
 
-  $: totalMins = translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(duration / 60)));
+  $: totalMins = translate("minutesSingularOrPlural").replace("{n}", String(Math.max(1, Math.round(duration / 60))));
   // variants restricts what the Version group offers; unset means every
   // variant the content actually has.
   $: offeredVariants = variants.length ? variants : ["article", "summary"];
@@ -313,13 +278,13 @@
   $: hasInfo = !!infoText;
   $: showOverflow = (!isStopped && (hasVariants || foldSpeed)) || (hasInfo && foldInfo) || (hasDownload && foldDownload) || (queueAvailable && foldQueue && playlistToggle !== "hide");
 
-  $: isFixed = isWidget && !!fixedPosition;
-  $: fixedSide = fixedPosition === "auto" || fixedPosition === true ? "center" : fixedPosition;
-  $: sideMargins = parseMargin(fixedMargin || "16px");
-  $: widthStyle = !isFixed ? "" :
-    docked ? "100%" :
-    fixedWidth === "auto" || fixedWidth === 0 || fixedWidth === "0" ? `min(440px, calc(100vw - ${sideMargins.left} - ${sideMargins.right}))` :
-    fixedWidth;
+  $: ({ fixed: isFixed, side: fixedSide, widthStyle } = resolveFixedWidgetGeometry({
+    docked,
+    isWidget,
+    margin: fixedMargin,
+    position: fixedPosition,
+    width: fixedWidth,
+  }));
 
   $: surfaceRadius = docked && isFixed ? "12px 12px 0 0" : tokens.radius.bar;
   $: surfaceShadow = docked && isFixed ? "0 -2px 8px rgba(0, 0, 0, 0.12)" :
@@ -384,7 +349,7 @@
 
   const formatMins = (seconds) => {
     if (!seconds) { return undefined; }
-    return translate("minutesSingularOrPlural").replace("{n}", Math.max(1, Math.round(seconds / 60)));
+    return translate("minutesSingularOrPlural").replace("{n}", String(Math.max(1, Math.round(seconds / 60))));
   };
 
   $: timeLabel =
@@ -549,10 +514,7 @@
     if (chatWidthSizer) { observer.observe(chatWidthSizer); }
     updateWidths();
 
-    const mobileQuery = matchMedia("(max-width: 640px)");
-    const updateDocked = () => docked = mobileQuery.matches;
-    updateDocked();
-    mobileQuery.addEventListener("change", updateDocked);
+    const unsubscribeDocked = subscribeMediaQuery("(max-width: 640px)", (matches) => docked = matches);
 
     const bodyStyle = getComputedStyle(document.body);
     const parsed = parseColor(bodyStyle.backgroundColor);
@@ -566,7 +528,7 @@
 
     return () => {
       observer.disconnect();
-      mobileQuery.removeEventListener("change", updateDocked);
+      unsubscribeDocked();
       window.removeEventListener("offline", handleOffline);
       window.removeEventListener("online", handleOnline);
     };
@@ -671,113 +633,32 @@
   {:else}
   <div class="bar" class:compact={foldSkips}>
     <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
-      <button
-        type="button"
-        class="play-pause"
-        style="color: {tokens.icon}; outline-color: {tokens.text}"
-        aria-label={isTitleOnly ? tierCtaText : playPauseLabel}
-        on:click={handlePlayPause}
-        on:mouseup={blurElement}
-      >
-        {#if isPlaying}
-          <PauseCircle size={40} color={tokens.icon} />
-        {:else}
-          <PlayCircle size={40} color={tokens.icon} />
-        {/if}
-      </button>
+      <DefaultPlayPauseButton label={isTitleOnly ? tierCtaText : playPauseLabel} onToggle={handlePlayPause} playing={isPlaying} {tokens} />
     </Visibility>
 
-    <div class="title-col" class:playing={!isStopped}>
-      {#if isStopped && showTierCta}
-        {#if accessCtaUrl}
-          <a class="title tier-cta" href={accessCtaUrl} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{tierCtaText}</a>
-        {:else}
-          <span class="title" style="color: {tokens.text}">{tierCtaText}</span>
-        {/if}
-      {:else if isStopped}
-        <span class="title" style="color: {tokens.text}">{stoppedTitle}</span>
-        <span class="meta">
-          {#if hasVariants}
-            <button type="button" class="trigger" style="color: {tokens.muted}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}" on:click={openMenuAt("version")} aria-expanded={openMenu === "version"}>{versionLabel}</button>
-          {:else}
-            <span class="plain" style="color: {tokens.muted}">{versionLabel}</span>
-          {/if}
-
-          <span class="separator" style="color: {tokens.muted}">·</span>
-
-          <span class="plain" style="color: {tokens.muted}">{languageName}</span>
-        </span>
-      {:else if isAdvert}
-        <div class="title-row">
-          {#if advertHref && advertText}
-            <a class="advert-link" href={advertHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.text}; outline-color: {tokens.text}">{advertText}</a>
-          {:else}
-            <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
-          {/if}
-          <span class="time" style="color: {tokens.text}" role="status" aria-live="polite">{translate("timeLeft").replace("{time}", formatTime(Math.max(0, duration - currentTime)))}</span>
-          <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}" role="img" aria-label={translate("advertisement")}>{translate("advertisementAbbreviation")}</span>
-        </div>
-        <ProgressTrack
-          {progress}
-          {duration}
-          readonly={true}
-          radius={tokens.radius.track}
-          trackColor={tokens.track}
-          fillColor={tokens.text}
-          focusColor={tokens.text}
-          {onEvent} />
-      {:else if offline}
-        <div class="title-row">
-          {#if playingTitle}
-            <span class="title playing" style="color: {tokens.text}; opacity: 0.4">{playingTitle}</span>
-          {/if}
-          <span class="offline-note" style="color: {tokens.muted}">
-            <WifiSlash size={12} color={tokens.muted} />
-            {translate("offlineWillResume")}
-          </span>
-        </div>
-        <ProgressTrack
-          {progress}
-          {duration}
-          readonly={true}
-          radius={tokens.radius.track}
-          trackColor={tokens.track}
-          fillColor={tokens.text}
-          fillOpacity={0.4}
-          focusColor={tokens.text}
-          {onEvent} />
-      {:else if playingTitle}
-        <div class="title-row">
-          <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
-          <span class="time" style="color: {tokens.text}">{timeLabel}</span>
-        </div>
-        <ProgressTrack
-          {progress}
-          {duration}
-          {buffering}
-          radius={tokens.radius.track}
-          trackColor={tokens.track}
-          fillColor={tokens.text}
-          focusColor={tokens.text}
-          {onEvent} />
-      {:else}
-        <div class="progress-row">
-          <div class="progress-grow">
-            <ProgressTrack
-              {progress}
-              {duration}
-              {buffering}
-              thickness={6}
-              radius={tokens.radius.track}
-              trackColor={tokens.track}
-              fillColor={tokens.text}
-              focusColor={tokens.text}
-              {onEvent} />
-          </div>
-          <span class="time" style="color: {tokens.text}">{timeLabel}</span>
-        </div>
-      {/if}
-    </div>
+    <DefaultPlaybackMetadata
+      {accessCtaUrl}
+      {advertHref}
+      {advertText}
+      {buffering}
+      {currentTime}
+      {duration}
+      {hasVariants}
+      {isAdvert}
+      {isStopped}
+      {languageName}
+      {offline}
+      {onEvent}
+      {openMenu}
+      openVersionMenu={openMenuAt("version")}
+      {playingTitle}
+      {progress}
+      {showTierCta}
+      {stoppedTitle}
+      {tierCtaText}
+      {timeLabel}
+      {tokens}
+      {versionLabel} />
 
     {#if showPersistentChip}
       <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.muted}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
@@ -795,66 +676,22 @@
       <SpeedButton rates={playbackRates} rate={playbackRate} color={tokens.text} hoverBackground={tokens.hover} pressedBackground={tokens.pressed} focusColor={tokens.text} radius={tokens.radius.control} {onEvent} />
     {/if}
 
-    {#if showOverflow}
-      <button
-        type="button"
-        class="icon-button"
-        style="--bg: {openMenu === "overflow" ? tokens.pressed : "transparent"}; --hover-bg: {openMenu === "overflow" ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label={translate("options")}
-        aria-expanded={openMenu === "overflow"}
-        on:click={openMenuAt("overflow")}
-        on:mouseup={blurElement}
-      >
-        <DotsThree size={18} color={tokens.icon} />
-      </button>
-    {/if}
-
-    {#if showQueueToggle}
-      <button
-        type="button"
-        class="icon-button"
-        style="--bg: {queueOpen ? tokens.pressed : "transparent"}; --hover-bg: {queueOpen ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label={translate("togglePlaylist")}
-        aria-expanded={queueOpen}
-        on:click={toggleQueue}
-        on:mouseup={blurElement}
-      >
-        <Queue size={22} color={tokens.icon} />
-      </button>
-    {/if}
-
-    {#if hasDownload && !foldDownload}
-      <button
-        type="button"
-        class="icon-button"
-        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label={translate("downloadAudio")}
-        on:click={handleDownload}
-        on:mouseup={blurElement}
-      >
-        <Download size={22} color={tokens.icon} />
-      </button>
-    {/if}
-
-    {#if hasInfo && !foldInfo}
-      <button
-        type="button"
-        class="icon-button"
-        style="--bg: {infoOpen ? tokens.pressed : "transparent"}; --hover-bg: {infoOpen ? tokens.pressed : tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label={translate("aboutThisAudio")}
-        aria-expanded={infoOpen}
-        on:click={toggleInfo}
-        on:mouseup={blurElement}
-      >
-        <Info size={20} color={tokens.icon} />
-      </button>
-    {/if}
-
-    {#if showTierCta}
-      <span class="tier-lock" aria-hidden="true">
-        <LockSimple size={16} color={tokens.muted} />
-      </span>
-    {/if}
+    <DefaultUtilityControls
+      {infoOpen}
+      onClose={handleCloseWidget}
+      onDownload={handleDownload}
+      onToggleInfo={toggleInfo}
+      onToggleOverflow={openMenuAt("overflow")}
+      onToggleQueue={toggleQueue}
+      overflowOpen={openMenu === "overflow"}
+      {queueOpen}
+      showClose={false}
+      showDownload={hasDownload && !foldDownload}
+      showInfo={hasInfo && !foldInfo}
+      {showOverflow}
+      showQueue={showQueueToggle}
+      showTierLock={showTierCta}
+      {tokens} />
 
     {#if showChat}
       <div class="chat-divider" style="background: {tokens.divider}"></div>
@@ -883,18 +720,22 @@
       </button>
     {/if}
 
-    {#if isWidget && showClose}
-      <button
-        type="button"
-        class="icon-button"
-        style="--hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}"
-        aria-label={translate("closeWidget")}
-        on:click={handleCloseWidget}
-        on:mouseup={blurElement}
-      >
-        <Close size={14} color={tokens.muted} />
-      </button>
-    {/if}
+    <DefaultUtilityControls
+      {infoOpen}
+      onClose={handleCloseWidget}
+      onDownload={handleDownload}
+      onToggleInfo={toggleInfo}
+      onToggleOverflow={openMenuAt("overflow")}
+      onToggleQueue={toggleQueue}
+      overflowOpen={false}
+      {queueOpen}
+      showClose={isWidget && showClose}
+      showDownload={false}
+      showInfo={false}
+      showOverflow={false}
+      showQueue={false}
+      showTierLock={false}
+      {tokens} />
   </div>
 
   {#if infoOpen && hasInfo}
@@ -938,18 +779,7 @@
 </div>
 
 {#if !isWidget && showCaption && !agentOnly}
-  <div class="caption outside">
-    <span class="caption-left">
-      {#if disclosureText && disclosureLink}
-        <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}; --hover-color: {tokens.text}">{disclosureText}</a>
-      {:else if disclosureText}
-        <span class="caption-text" style="color: {captionColor}">{disclosureText}</span>
-      {/if}
-    </span>
-    {#if logoIconEnabled}
-      <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {captionColor}; border-bottom-color: {captionColor}; outline-color: {captionColor}; --hover-color: {tokens.text}" aria-label={translate("visitBeyondWords")}>{translate("poweredByBeyondWords")}</a>
-    {/if}
-  </div>
+  <DefaultCaption {attributionHref} color={captionColor} {disclosureLink} {disclosureText} hoverColor={tokens.text} {logoIconEnabled} />
 {/if}
 </div>
 
@@ -1016,11 +846,6 @@
     height: 100%;
   }
 
-  /* Nothing but the picture in fullscreen. */
-  :global(.beyondwords-player.maximized) .caption.outside {
-    display: none;
-  }
-
   .surface {
     display: flex;
     flex-direction: column;
@@ -1068,52 +893,6 @@
     flex-direction: column-reverse;
   }
 
-  .caption {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .caption.outside {
-    padding: 6px 8px 0;
-  }
-
-  .caption-left {
-    display: flex;
-    min-width: 0;
-  }
-
-  .caption-text,
-  .caption-link {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .caption-link {
-    text-decoration: none;
-    border-bottom-width: 1px;
-    border-bottom-style: dotted;
-    cursor: pointer;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .caption-link:hover {
-      color: var(--hover-color);
-      border-bottom-color: var(--hover-color);
-    }
-  }
-
-  .caption-link:focus-visible {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-offset: 2px;
-  }
-
   .info-box {
     padding: 12px 16px;
   }
@@ -1140,84 +919,6 @@
   .hairline {
     height: 1px;
     flex-shrink: 0;
-  }
-
-  .play-pause {
-    display: flex;
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    margin: 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: transform 150ms ease-out;
-  }
-
-  .play-pause:focus-visible {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-offset: 3px;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .play-pause:hover {
-      transform: scale(1.04);
-    }
-  }
-
-  .play-pause:active {
-    transform: scale(0.96);
-  }
-
-  .icon-button {
-    /* Required: it is the containing block for the touch floor below. Without
-       it the pseudo-element resolves against .default-player and covers the
-       whole bar, swallowing every click. */
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    background: var(--bg, transparent);
-    width: 28px;
-    height: 28px;
-    padding: 2px;
-    margin: 0;
-    border: none;
-    cursor: pointer;
-  }
-
-  /* Keeps the 44px touch floor without changing the visual size. */
-  .icon-button::before {
-    content: "";
-    position: absolute;
-    inset: -8px;
-  }
-
-  .icon-button:focus-visible {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-offset: 2px;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .icon-button:hover {
-      background: var(--hover-bg);
-    }
-  }
-
-  .icon-button:active {
-    background: var(--pressed-bg);
-  }
-
-  /* Closes a locked bar, per the access-tier states in the design. */
-  .tier-lock {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    padding: 0 8px;
   }
 
   .chat-divider {
@@ -1312,163 +1013,9 @@
 
   @media (prefers-reduced-motion: reduce) {
     .chat-caret,
-    .chat-button,
-    .play-pause {
+    .chat-button {
       transition: none;
     }
-
-    .play-pause:hover,
-    .play-pause:active {
-      transform: none;
-    }
-  }
-
-  .title-col {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 3px;
-    flex: 1;
-    min-width: 100px;
-  }
-
-  .title-col.playing {
-    gap: 7px;
-  }
-
-  .title {
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .title.playing {
-    font-size: 13px;
-    line-height: 1.2;
-    flex: 1;
-  }
-
-  .title-row {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  .progress-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-  }
-
-  .progress-grow {
-    flex: 1;
-    min-width: 40px;
-  }
-
-  .time {
-    flex-shrink: 0;
-    font-size: 11px;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .meta {
-    display: flex;
-    align-items: baseline;
-    gap: 4px;
-    min-width: 0;
-    max-width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-
-  .meta .trigger,
-  .meta .plain,
-  .meta .separator {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
-
-  .meta .trigger,
-  .meta .plain {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* The whole label is the upgrade link when there is somewhere to send them. */
-  .title.tier-cta {
-    width: fit-content;
-    max-width: 100%;
-    text-decoration: none;
-    border-bottom-style: dotted;
-    border-bottom-width: 1px;
-    cursor: pointer;
-  }
-
-  .meta .trigger {
-    padding: 0;
-    margin: 0;
-    background: none;
-    border: none;
-    border-bottom-width: 1px;
-    border-bottom-style: dotted;
-    cursor: pointer;
-  }
-
-  .meta .trigger:focus-visible {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-offset: 2px;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .meta .trigger:hover {
-      border-bottom-style: solid;
-    }
-  }
-
-  .separator {
-    opacity: 0.5;
-  }
-
-  .advert-link {
-    flex: 1;
-    min-width: 0;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    cursor: pointer;
-  }
-
-  .advert-link:focus-visible {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-offset: 2px;
-  }
-
-  .ad-badge {
-    flex-shrink: 0;
-    padding: 2px 5px;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 4px;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
   }
 
   .persistent-chip {
@@ -1487,6 +1034,17 @@
     cursor: pointer;
   }
 
+  .ad-badge {
+    flex-shrink: 0;
+    padding: 2px 5px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
   .persistent-chip:focus-visible {
     outline-width: 2px;
     outline-style: solid;
@@ -1499,16 +1057,4 @@
     }
   }
 
-  .offline-note {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-  }
 </style>

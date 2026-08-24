@@ -23,10 +23,11 @@
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
   import { setLocale } from "../helpers/translate";
-  import parseMargin from "../helpers/parseMargin";
+  import { resolveDefaultWidgetGeometry } from "../helpers/defaultWidgetGeometry";
+  import { subscribeMediaQuery } from "../helpers/mediaQuery";
   import deriveTokens from "../helpers/default_theme/deriveTokens";
   import explicitOverrides from "../helpers/default_theme/explicitOverrides";
-  import { normalizeAgentLimit, remainingAgentLimit } from "../helpers/agentLimits";
+  import AgentAllowanceState from "../helpers/agentAllowanceState";
 
   // Please document all settings and keep in-sync with the developer docs:
   // https://github.com/beyondwords-core/docs/blob/main/docs-and-guides/distribution/player/sdk/javascript/player-settings.mdx
@@ -218,51 +219,31 @@
   $: agentVoiceSessionLive = agentCallLive && $agentClient.status !== "connecting";
   $: syncAgentCallPlayback(agentCallLive, playbackState);
 
-  let agentQuestionsUsed = 0;
-  let agentVoiceSecondsUsed = 0;
-  let agentAllowanceIdentity;
-  let agentVoiceAllowanceTimer;
+  const agentAllowance = new AgentAllowanceState({
+    onVoiceExhausted: () => agentClient.endSession("budget"),
+  });
 
-  $: normalizedAgentQuestionsLimit = normalizeAgentLimit(agentQuestionsLimit);
-  $: normalizedAgentVoiceSecondsLimit = normalizeAgentLimit(agentVoiceSecondsLimit);
-  $: agentQuestionsRemaining = remainingAgentLimit(normalizedAgentQuestionsLimit, agentQuestionsUsed);
-  $: agentVoiceSecondsRemaining = remainingAgentLimit(normalizedAgentVoiceSecondsLimit, agentVoiceSecondsUsed);
-  $: resetAgentAllowance(JSON.stringify([
-    projectId, contentId, playlistId, sourceId, sourceUrl, accessTier, apiPayload?.access_tier?.slug,
-    normalizedAgentQuestionsLimit, normalizedAgentVoiceSecondsLimit,
-  ]));
-  $: syncAgentVoiceAllowance(agentVoiceSessionLive, agentVoiceSecondsRemaining);
+  let normalizedAgentQuestionsLimit = null;
+  let agentQuestionsRemaining = null;
+  let normalizedAgentVoiceSecondsLimit = null;
+  let agentVoiceSecondsRemaining = null;
+  const unsubscribeAgentAllowance = agentAllowance.subscribe((allowance) => {
+    normalizedAgentQuestionsLimit = allowance.questionsLimit;
+    agentQuestionsRemaining = allowance.questionsRemaining;
+    normalizedAgentVoiceSecondsLimit = allowance.voiceSecondsLimit;
+    agentVoiceSecondsRemaining = allowance.voiceSecondsRemaining;
+  });
+  $: agentAllowance.configure({
+    identity: JSON.stringify([
+      projectId, contentId, playlistId, sourceId, sourceUrl, accessTier, apiPayload?.access_tier?.slug,
+      agentQuestionsLimit, agentVoiceSecondsLimit,
+    ]),
+    questionsLimit: agentQuestionsLimit,
+    voiceSecondsLimit: agentVoiceSecondsLimit,
+  });
+  $: agentAllowance.setVoiceLive(agentVoiceSessionLive);
 
-  const resetAgentAllowance = (identity) => {
-    if (identity === agentAllowanceIdentity) { return; }
-
-    agentAllowanceIdentity = identity;
-    agentQuestionsUsed = 0;
-    agentVoiceSecondsUsed = 0;
-  };
-
-  const useAgentQuestion = () => {
-    if (agentQuestionsRemaining === null || agentQuestionsRemaining === 0) { return; }
-    agentQuestionsUsed += 1;
-  };
-
-  const syncAgentVoiceAllowance = (live, secondsRemaining) => {
-    const shouldMeter = live && secondsRemaining !== null && secondsRemaining > 0;
-
-    if (shouldMeter && !agentVoiceAllowanceTimer) {
-      agentVoiceAllowanceTimer = setInterval(() => {
-        agentVoiceSecondsUsed += 1;
-        if (remainingAgentLimit(normalizedAgentVoiceSecondsLimit, agentVoiceSecondsUsed) === 0) {
-          agentClient.endSession("budget");
-        }
-      }, 1000);
-    }
-
-    if (!shouldMeter && agentVoiceAllowanceTimer) {
-      clearInterval(agentVoiceAllowanceTimer);
-      agentVoiceAllowanceTimer = undefined;
-    }
-  };
+  const useAgentQuestion = () => agentAllowance.useQuestion();
 
   const syncAgentCallPlayback = (live, state) => {
     // The transport stays visible beside Chat. If it is pressed during a call,
@@ -300,11 +281,7 @@
   // Mirrors the default widget's mobile dock, so the sliding video follows it.
   let dockedViewport = false;
   onMount(() => {
-    const query = matchMedia("(max-width: 640px)");
-    const update = () => dockedViewport = query.matches;
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
+    return subscribeMediaQuery("(max-width: 640px)", (matches) => dockedViewport = matches);
   });
 
   // Hides the default-style boot skeleton once the API reports no content.
@@ -371,12 +348,17 @@
   // so the geometry the default style implies is resolved once, here, and both
   // components are told the same thing. Legacy styles pass through unchanged.
   $: widgetIsDefault = effectiveWidgetStyle === "default";
-  $: widgetSideMargins = parseMargin(widgetMargin || "16px");
-  $: resolvedWidgetPosition = widgetIsDefault && widgetPosition === "auto" ? "center" : widgetPosition;
-  $: resolvedWidgetWidth = widgetIsDefault && (widgetWidth === "auto" || widgetWidth === 0 || widgetWidth === "0")
-    ? (dockedViewport ? "100vw" : `min(440px, calc(100vw - ${widgetSideMargins.left} - ${widgetSideMargins.right}))`)
-    : widgetWidth;
-  $: resolvedWidgetMargin = widgetIsDefault && dockedViewport ? "0" : widgetMargin;
+  $: ({
+    position: resolvedWidgetPosition,
+    width: resolvedWidgetWidth,
+    margin: resolvedWidgetMargin,
+  } = resolveDefaultWidgetGeometry({
+    docked: dockedViewport,
+    isDefault: widgetIsDefault,
+    margin: widgetMargin,
+    position: widgetPosition,
+    width: widgetWidth,
+  }));
 
   $: showClose = showCloseWidget && effectiveWidgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
@@ -423,7 +405,8 @@
   $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: activeHighlightColor, wordHighlightColor: activeWordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
   onDestroy(() => {
-    clearInterval(agentVoiceAllowanceTimer);
+    unsubscribeAgentAllowance();
+    agentAllowance.destroy();
     agentClient.endSession();
     segmentContainers.reset();
     segmentClickables.reset();
@@ -594,9 +577,9 @@
       isWidget={true}
       videoIsBehind={videoBehindWidget}
       {aspectRatio}
-      fixedPosition={!widgetTarget && widgetPosition}
-      fixedWidth={widgetWidth}
-      fixedMargin={widgetMargin}
+      fixedPosition={!widgetTarget && resolvedWidgetPosition}
+      fixedWidth={resolvedWidgetWidth}
+      fixedMargin={resolvedWidgetMargin}
       {showClose}
       {content}
       {contentIndex}
