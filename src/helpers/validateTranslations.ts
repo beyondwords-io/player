@@ -1,12 +1,19 @@
 import throwError from "./throwError";
 
-const validateTranslations = (locales, languages) => {
+interface TranslationRecord {
+  isDefaultForLanguage?: boolean;
+  [key: string]: string | boolean | undefined;
+}
+
+type TranslationMap = Record<string, TranslationRecord>;
+
+const validateTranslations = (locales: TranslationMap, languages: TranslationMap): void => {
   validateAtLeastOneDefault(locales, languages);
   validateAtMostOneDefault(locales);
-  validateTranslationKeys(locales, languages);
+  validateTranslationKeys(locales);
 };
 
-const validateAtLeastOneDefault = (locales, languages) => {
+const validateAtLeastOneDefault = (locales: TranslationMap, languages: TranslationMap): void => {
   for (const locale of Object.keys(locales)) {
     const language = locale.split("-")[0];
     if (languages[language]) { continue; }
@@ -18,8 +25,8 @@ const validateAtLeastOneDefault = (locales, languages) => {
   }
 };
 
-const validateAtMostOneDefault = (locales) => {
-  const defaults = {};
+const validateAtMostOneDefault = (locales: TranslationMap): void => {
+  const defaults: Record<string, string[]> = {};
 
   for (const [locale, translations] of Object.entries(locales)) {
     const language = locale.split("-")[0];
@@ -39,7 +46,7 @@ const validateAtMostOneDefault = (locales) => {
   }
 };
 
-const validateTranslationKeys = (locales) => {
+const validateTranslationKeys = (locales: TranslationMap): void => {
   const allKeys = Object.values(locales).map(Object.keys).flat();
   const uniqKeys = new Set(allKeys.filter(k => k !== "isDefaultForLanguage"));
 
@@ -56,3 +63,4 @@ const validateTranslationKeys = (locales) => {
 };
 
 export default validateTranslations;
+export type { TranslationMap, TranslationRecord };

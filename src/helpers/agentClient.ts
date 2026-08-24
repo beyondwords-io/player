@@ -1,4 +1,13 @@
 import translate from "./translate";
+import { writable } from "svelte/store";
+import type { Subscriber, Writable } from "svelte/store";
+import type {
+  AgentClient,
+  AgentEndReason,
+  AgentReplyMessage,
+  AgentSessionOptions,
+  AgentState,
+} from "./agentContracts";
 
 // Agent client for the default player's Chat/Talk surfaces.
 //
@@ -56,7 +65,11 @@ const CONNECT_MS = 700;
 const FIRST_UTTERANCE_MS = 2400;
 const SILENCE_TIMEOUT_MS = 30_000;
 
-class MockAgentClient {
+interface MockAgentClientOptions {
+  silenceTimeoutMs?: number;
+}
+
+class MockAgentClient implements AgentClient {
   answerIndex: number;
   silenceTimeoutMs: number;
 
@@ -66,20 +79,14 @@ class MockAgentClient {
 
   // kind: what conversation is live. status: the voice call's state - text
   // sessions show no connection state at all, so theirs stays "idle".
-  state: {
-    kind: "none" | "text" | "voice";
-    status: "idle" | "connecting" | "listening" | "talking";
-    muted: boolean;
-    thread: unknown[];
-    announced: string;
-  };
+  state: AgentState;
 
-  subscribers: Set<(state: unknown) => void>;
+  store: Writable<AgentState>;
   timers: Set<ReturnType<typeof setTimeout>>;
   silenceTimer: ReturnType<typeof setTimeout> | null;
   replying: boolean;
 
-  constructor({ silenceTimeoutMs } = {}) {
+  constructor({ silenceTimeoutMs }: MockAgentClientOptions = {}) {
     this.answerIndex = 0;
 
     // The panel constructs its own client, so the behaviour suite cannot reach
@@ -88,23 +95,20 @@ class MockAgentClient {
       ?? (typeof window !== "undefined" && (window as { __agentSilenceTimeoutMs?: number }).__agentSilenceTimeoutMs)
       ?? SILENCE_TIMEOUT_MS;
     this.state = { kind: "none", status: "idle", muted: false, thread: [], announced: "" };
-    this.subscribers = new Set();
+    this.store = writable(this.state);
     this.timers = new Set();
     this.silenceTimer = null;
     this.replying = false;
   }
 
-  subscribe(run) {
-    this.subscribers.add(run);
-    run(this.state);
-
-    return () => this.subscribers.delete(run);
+  subscribe(run: Subscriber<AgentState>): () => void {
+    return this.store.subscribe(run);
   }
 
   // A session starts on the first user act, never on opening the panel: text
   // for a typed send, voice for the waveform. Switching kinds ends the live
   // conversation first - context does not carry over, and the thread says so.
-  startSession({ textOnly = false } = {}) {
+  startSession({ textOnly = false }: AgentSessionOptions = {}): void {
     const kind = textOnly ? "text" : "voice";
     if (this.state.kind === kind) { return; }
 
@@ -147,7 +151,7 @@ class MockAgentClient {
   // Typed asks work inside a voice call - same conversation, replies stay
   // spoken. A typed send while the agent is talking interrupts it, exactly
   // like speaking over it.
-  sendUserMessage(text) {
+  sendUserMessage(text: string): void {
     if (this.state.kind === "none") { this.startSession({ textOnly: true }); }
     if (this.state.status === "talking") { this.interrupt(); }
 
@@ -155,12 +159,12 @@ class MockAgentClient {
   }
 
   // Keystrokes: the agent holds instead of talking over you.
-  sendUserActivity() {
+  sendUserActivity(): void {
     if (this.state.kind === "voice") { this.#armSilenceTimer(); }
   }
 
   // The keyboard toggle mid-call: mic off, composer back, call still live.
-  setMicMuted(muted) {
+  setMicMuted(muted: boolean): void {
     if (this.state.kind !== "voice") { return; }
 
     this.state.muted = muted;
@@ -169,7 +173,7 @@ class MockAgentClient {
   }
 
   // Speaking over the agent, tapping the strip, or a typed send mid-reply.
-  interrupt() {
+  interrupt(): void {
     if (!this.replying) { return; }
 
     this.stopReply?.();
@@ -177,7 +181,7 @@ class MockAgentClient {
 
   // The End pill, the widget's x, teardown, or the silence timeout. Ending
   // keeps the thread; a voice call marks where it stopped.
-  endSession(reason = "ended") {
+  endSession(reason: AgentEndReason = "ended"): void {
     if (this.state.kind === "none") { return; }
 
     const wasVoice = this.state.kind === "voice" && this.state.status !== "connecting";
@@ -197,7 +201,7 @@ class MockAgentClient {
   }
 
   // Cancel during "Connecting…": nothing started, nothing to mark.
-  cancelConnect() {
+  cancelConnect(): void {
     if (this.state.status !== "connecting") { return; }
 
     this.#clearTimers();
@@ -208,7 +212,7 @@ class MockAgentClient {
 
   // What the reader said, delivered per utterance once they finish - there is
   // no word-by-word transcript in the strip. Tests and the demo both use this.
-  simulateUtterance(text = MOCK_UTTERANCE) {
+  simulateUtterance(text = MOCK_UTTERANCE): void {
     if (this.state.kind !== "voice" || this.state.muted) { return; }
     if (this.state.status === "talking") { this.interrupt(); }
 
@@ -217,15 +221,15 @@ class MockAgentClient {
 
   // A locked agent takes the question without a session and answers with the
   // publisher's offer; the panel supplies no copy of its own.
-  appendLocked(text) {
+  appendLocked(text: string): void {
     this.state.thread = [...this.state.thread, { role: "reader", text }, { role: "locked" }];
     this.#notify();
   }
 
   // private
 
-  #ask(text, { spoken = false } = {}) {
-    const reply = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken };
+  #ask(text: string, { spoken = false }: { spoken?: boolean } = {}): void {
+    const reply: AgentReplyMessage = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken };
 
     this.state.thread = [...this.state.thread, { role: "reader", text }, reply];
     if (spoken && this.state.kind === "voice") { this.state.status = "talking"; }
@@ -240,7 +244,7 @@ class MockAgentClient {
     // does not read as an answer being written.
     const deltas = answer.text.match(/\S+\s*/g) || [];
 
-    const finish = (interrupted) => {
+    const finish = (interrupted: boolean): void => {
       reply.streaming = false;
       reply.typing = false;
       reply.citations = interrupted ? [] : answer.citations;
@@ -259,7 +263,7 @@ class MockAgentClient {
     };
 
     let index = 0;
-    let timer;
+    let timer: ReturnType<typeof setTimeout>;
 
     const deliver = () => {
       if (index >= deltas.length) { finish(false); return; }
@@ -289,25 +293,25 @@ class MockAgentClient {
 
   stopReply: (() => void) | null = null;
 
-  #conversationRows() {
-    return this.state.thread.filter((row: { role?: string }) => row.role !== "divider").length;
+  #conversationRows(): number {
+    return this.state.thread.filter((row) => row.role !== "divider").length;
   }
 
   // Voice minutes only count while a call is live, so an idle call hangs up
   // by itself. Anything the reader does re-arms it.
-  #armSilenceTimer() {
+  #armSilenceTimer(): void {
     this.#disarmSilenceTimer();
     if (this.state.kind !== "voice" || this.state.status !== "listening") { return; }
 
     this.silenceTimer = setTimeout(() => this.endSession("silence"), this.silenceTimeoutMs);
   }
 
-  #disarmSilenceTimer() {
+  #disarmSilenceTimer(): void {
     if (this.silenceTimer) { clearTimeout(this.silenceTimer); }
     this.silenceTimer = null;
   }
 
-  #after(ms, fn) {
+  #after(ms: number, fn: () => void): ReturnType<typeof setTimeout> {
     const timer = setTimeout(() => {
       this.timers.delete(timer);
       fn();
@@ -317,20 +321,20 @@ class MockAgentClient {
     return timer;
   }
 
-  #clearTimers() {
+  #clearTimers(): void {
     this.timers.forEach((timer) => clearTimeout(timer));
     this.timers.clear();
     this.#disarmSilenceTimer();
   }
 
-  #instant() {
-    return typeof window !== "undefined" && (window as { disableAnimation?: boolean }).disableAnimation;
+  #instant(): boolean {
+    return !!(typeof window !== "undefined" && (window as { disableAnimation?: boolean }).disableAnimation);
   }
 
-  #notify() {
+  #notify(): void {
     // A fresh object so Svelte's store contract sees a change.
     this.state = { ...this.state };
-    this.subscribers.forEach((run) => run(this.state));
+    this.store.set(this.state);
   }
 }
 
