@@ -150,7 +150,7 @@
     ...adOverrides,
   };
 
-  $: tokens = deriveTokens({ theme, radius, overrides, pageDark });
+  $: tokens = deriveTokens({ theme, radius, overrides, pageDark, pageBackground });
 
   // Painted from the validated token, so an unparseable publisher colour can
   // never leave the surface transparent while the tokens assume a preset.

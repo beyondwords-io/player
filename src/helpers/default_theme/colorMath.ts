@@ -81,13 +81,33 @@ const mix = (from, to, t) => {
   });
 };
 
+// Source-over blend: the colour the reader actually sees when a translucent
+// colour sits on an opaque backdrop. Returns fg unchanged when it is already
+// opaque or the backdrop is unusable.
+const compositeOver = (fg, bg) => {
+  const top = parseColor(fg);
+  if (!top) { return bg; }
+
+  const under = parseColor(bg);
+  if (!under || top.a >= 1) { return fg; }
+
+  return toHex({
+    r: top.r * top.a + under.r * (1 - top.a),
+    g: top.g * top.a + under.g * (1 - top.a),
+    b: top.b * top.a + under.b * (1 - top.a),
+  });
+};
+
 // Moves fg toward black or white in 5% steps until it passes the contrast
 // floor against bg, per the design system builder's reference implementation.
 const clampContrast = (fg, bg, floor) => {
   if (!parseColor(fg)) { return fg; }
   if (contrastRatio(fg, bg) >= floor) { return fg; }
 
-  const target = luminance(bg) > 0.4 ? "#000000" : "#ffffff";
+  // Walk toward whichever pole actually has the more contrast to give: on a
+  // mid-luminance background (a grey, or a translucent colour composited over
+  // the page) white can top out below the floor while black sails past it.
+  const target = contrastRatio("#000000", bg) >= contrastRatio("#ffffff", bg) ? "#000000" : "#ffffff";
 
   for (let t = 0.05; t <= 1.0001; t += 0.05) {
     const candidate = mix(fg, target, t);
@@ -113,4 +133,4 @@ const firstColorStop = (value) => {
   return named ? named[0].toLowerCase() : null;
 };
 
-export { parseColor, toAlphaString, luminance, contrastRatio, mix, clampContrast, isGradient, firstColorStop };
+export { parseColor, toAlphaString, luminance, contrastRatio, mix, compositeOver, clampContrast, isGradient, firstColorStop };

@@ -1,4 +1,4 @@
-import { parseColor, toAlphaString, luminance, contrastRatio, mix, clampContrast, isGradient, firstColorStop } from "./colorMath";
+import { parseColor, toAlphaString, luminance, contrastRatio, mix, compositeOver, clampContrast, isGradient, firstColorStop } from "./colorMath";
 
 // The 11-colour contract for the "default" player style. Presets fill every
 // property; theme "custom" starts from light and overrides per property.
@@ -66,7 +66,7 @@ const scaleRadius = (radius) => {
 // overrides = only colours the publisher (or API) explicitly set; everything
 // else comes from the theme preset. Every visible pair is contrast-clamped so
 // an illegible player is impossible to configure.
-const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = false } = {}) => {
+const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = false, pageBackground = undefined } = {}) => {
   const preset = PRESETS[theme === "dark" ? "dark" : "light"];
 
   const defined = {};
@@ -84,7 +84,15 @@ const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = 
   const background = paintable ? input.backgroundColor : preset.backgroundColor;
 
   const measurable = parseColor(background) ? background : firstColorStop(background);
-  const backgroundBase = measurable && parseColor(measurable) ? measurable : preset.backgroundColor;
+  const measured = measurable && parseColor(measurable) ? measurable : preset.backgroundColor;
+
+  // A translucent background still paints as configured, but the reader sees
+  // the page through it - so every measurement (dark mode, contrast clamping,
+  // the muted mix) composites it over the page colour first. "transparent"
+  // therefore measures as the page itself, and the publisher's own text and
+  // icon colours survive verbatim whenever they are legible there.
+  const backdrop = parseColor(pageBackground) ? pageBackground : preset.backgroundColor;
+  const backgroundBase = (parseColor(measured)?.a ?? 1) < 1 ? compositeOver(measured, backdrop) : measured;
 
   const isDark = luminance(backgroundBase) < 0.35;
 
