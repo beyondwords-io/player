@@ -1,4 +1,4 @@
-import { contrastRatio, clampContrast, mix, toAlphaString, luminance } from "../../src/helpers/default_theme/colorMath";
+import { contrastRatio, clampContrast, mix, compositeOver, toAlphaString, luminance } from "../../src/helpers/default_theme/colorMath";
 import deriveTokens, { parseAgentColor, scaleRadius } from "../../src/helpers/default_theme/deriveTokens";
 
 describe("colorMath", () => {
@@ -26,8 +26,17 @@ describe("colorMath", () => {
     expect(clamped).toEqual(mix("#b06ef7", "#ffffff", 0.95));
   });
 
-  it("falls back to pure black or white when nothing passes", () => {
-    expect(clampContrast("#808080", "#808080", 21)).toEqual("#ffffff");
+  it("falls back to the more contrasting pole when nothing passes", () => {
+    // Mid-grey gives black 5.3:1 but white only 3.9:1, so black is the floor.
+    expect(clampContrast("#808080", "#808080", 21)).toEqual("#000000");
+  });
+
+  it("composites translucent colours over an opaque backdrop", () => {
+    expect(compositeOver("rgba(0, 0, 0, 0.5)", "#ffffff")).toEqual("#808080");
+    expect(compositeOver("transparent", "#ffffff")).toEqual("#ffffff");
+    expect(compositeOver("#212121", "#ffffff")).toEqual("#212121");
+    expect(compositeOver("rgba(0, 0, 0, 0.5)", "nonsense")).toEqual("rgba(0, 0, 0, 0.5)");
+    expect(compositeOver("nonsense", "#ffffff")).toEqual("#ffffff");
   });
 });
 
@@ -150,5 +159,46 @@ describe("deriveTokens", () => {
     expect(deriveTokens({ overrides: { backgroundColor: "radial-gradient(rgba(20, 20, 20, 1), #fff)" } }).backgroundBase)
       .toEqual("rgba(20, 20, 20, 1)");
     expect(deriveTokens({ overrides: { backgroundColor: "linear-gradient(white, #eee)" } }).isDark).toEqual(false);
+  });
+
+  it("paints a transparent background but measures the page behind it", () => {
+    const tokens = deriveTokens({ overrides: { backgroundColor: "transparent", textColor: "#212121", iconColor: "#212121" } });
+
+    // On a light page the publisher's colours are legible, so they survive
+    // verbatim instead of being walked toward white "for contrast on black".
+    expect(tokens.background).toEqual("transparent");
+    expect(tokens.isDark).toEqual(false);
+    expect(tokens.text).toEqual("#212121");
+    expect(tokens.icon).toEqual("#212121");
+    expect(tokens.muted).not.toEqual(tokens.text);
+    expect(tokens.sendIcon).not.toEqual("transparent");
+  });
+
+  it("derives for the actual page colour when a transparent player sits on a dark page", () => {
+    const tokens = deriveTokens({ pageBackground: "#111111", overrides: { backgroundColor: "transparent", textColor: "#212121" } });
+
+    expect(tokens.isDark).toEqual(true);
+    expect(contrastRatio(tokens.text, "#111111")).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("measures a semi-transparent background as its blend with the page", () => {
+    const smoked = deriveTokens({ pageBackground: "#ffffff", overrides: { backgroundColor: "rgba(0, 0, 0, 0.5)" } });
+    const veiled = deriveTokens({ pageBackground: "#ffffff", overrides: { backgroundColor: "rgba(255, 255, 255, 0.5)", textColor: "#212121" } });
+
+    expect(smoked.backgroundBase).toEqual("#808080");
+    expect(contrastRatio(smoked.text, smoked.backgroundBase)).toBeGreaterThanOrEqual(4.5);
+
+    // A light veil over a light page stays light, and legible colours survive.
+    expect(veiled.isDark).toEqual(false);
+    expect(veiled.text).toEqual("#212121");
+  });
+
+  it("composites a gradient's translucent first stop the same way", () => {
+    const gradient = "linear-gradient(rgba(0, 0, 0, 0), #444444)";
+    const tokens = deriveTokens({ pageBackground: "#ffffff", overrides: { backgroundColor: gradient, textColor: "#212121" } });
+
+    expect(tokens.background).toEqual(gradient);
+    expect(tokens.isDark).toEqual(false);
+    expect(tokens.text).toEqual("#212121");
   });
 });
