@@ -14,7 +14,6 @@
   export let hasVariants = false;
   export let isAdvert = false;
   export let isStopped = false;
-  export let languageName = "";
   export let offline = false;
   export let onEvent: (event?: unknown) => void = () => {};
   export let openMenu: string | null = null;
@@ -44,8 +43,6 @@
       {:else}
         <span class="plain" style="color: {tokens.muted}">{versionLabel}</span>
       {/if}
-      <span class="separator" style="color: {tokens.muted}">·</span>
-      <span class="plain" style="color: {tokens.muted}">{languageName}</span>
     </span>
   {:else if isAdvert}
     <div class="title-row">
@@ -146,8 +143,7 @@
   }
 
   .meta .trigger,
-  .meta .plain,
-  .meta .separator {
+  .meta .plain {
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.02em;
@@ -190,8 +186,6 @@
   @media (hover: hover) and (pointer: fine) {
     .meta .trigger:hover { border-bottom-style: solid; }
   }
-
-  .separator { opacity: 0.5; }
 
   .advert-link {
     flex: 1;

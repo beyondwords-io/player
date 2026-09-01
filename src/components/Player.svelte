@@ -481,7 +481,6 @@
     {playerTitle}
     {titleEnabled}
     {callToAction}
-    {contentLanguage}
     {variants}
     {textColor}
     {backgroundColor}
@@ -594,7 +593,6 @@
       {playerTitle}
     {titleEnabled}
       {callToAction}
-      {contentLanguage}
       {variants}
       {textColor}
       {backgroundColor}
