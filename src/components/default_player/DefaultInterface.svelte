@@ -56,7 +56,6 @@
   export let playerTitle = undefined;
   export let titleEnabled = true;
   export let callToAction = undefined;
-  export let contentLanguage = "en";
   export let variants = [];
   export let textColor = undefined;
   export let backgroundColor = undefined;
@@ -265,7 +264,6 @@
   $: offeredVariants = variants.length ? variants : ["article", "summary"];
   $: hasSummaryVariant = !!contentItem.summarization && offeredVariants.includes("summary");
   $: hasVariants = hasSummaryVariant && offeredVariants.includes("article");
-  $: languageName = languageNameFor(contentLanguage);
   // Name the version when the reader can switch, since the menu carries the
   // durations; otherwise say how long the one they are getting is.
   $: versionLabel = summary && hasVariants ? translate("summary") : totalMins;
@@ -337,15 +335,6 @@
       ...(hasDownload && foldDownload ? [{ label: translate("download"), items: [{ value: "download", label: translate("downloadAudio"), selected: false }] }] : []),
       ...(queueAvailable && foldQueue && playlistToggle !== "hide" ? [{ label: translate("queue"), items: [{ value: "queue", label: translate("togglePlaylist"), selected: queueOpen }] }] : []),
     ] : [];
-
-  const languageNameFor = (code) => {
-    const base = String(code || "en").split(/[-_]/)[0].toLowerCase();
-    try {
-      return new Intl.DisplayNames([base], { type: "language" }).of(base) || base;
-    } catch {
-      return base;
-    }
-  };
 
   const formatMins = (seconds) => {
     if (!seconds) { return undefined; }
@@ -646,7 +635,6 @@
       {hasVariants}
       {isAdvert}
       {isStopped}
-      {languageName}
       {offline}
       {onEvent}
       {openMenu}

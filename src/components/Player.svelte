@@ -466,13 +466,6 @@
       {analyticsId}
       {theme}
       {radius}
-      isWidget={true}
-      videoIsBehind={videoBehindWidget}
-      {aspectRatio}
-      fixedPosition={!widgetTarget && resolvedWidgetPosition}
-      fixedWidth={resolvedWidgetWidth}
-      fixedMargin={resolvedWidgetMargin}
-      {showClose}
       {content}
       {contentIndex}
       bind:summary
@@ -488,7 +481,6 @@
       {playerTitle}
       {titleEnabled}
       {callToAction}
-      {contentLanguage}
       {variants}
       {textColor}
       {backgroundColor}
@@ -584,9 +576,9 @@
         isWidget={true}
         videoIsBehind={videoBehindWidget}
         {aspectRatio}
-        fixedPosition={!widgetTarget && widgetPosition}
-        fixedWidth={widgetWidth}
-        fixedMargin={widgetMargin}
+        fixedPosition={!widgetTarget && resolvedWidgetPosition}
+        fixedWidth={resolvedWidgetWidth}
+        fixedMargin={resolvedWidgetMargin}
         {showClose}
         {content}
         {contentIndex}
@@ -601,7 +593,6 @@
         {playerTitle}
         {titleEnabled}
         {callToAction}
-        {contentLanguage}
         {variants}
         {textColor}
         {backgroundColor}
