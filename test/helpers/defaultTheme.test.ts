@@ -137,6 +137,16 @@ describe("deriveTokens", () => {
     expect(contrastRatio(tokens.bubbleText, tokens.bubbleBackground)).toBeGreaterThanOrEqual(4.5);
   });
 
+  it("clamps the send arrow against its disc like any other icon", () => {
+    const clashing = deriveTokens({ overrides: { accentColor: "#1f7ef7", accentTextColor: "#2fc94f" } });
+    const legible = deriveTokens({ overrides: { accentColor: "#0b2e13", accentTextColor: "#a4ff00" } });
+    const defaults = deriveTokens();
+
+    expect(contrastRatio(clashing.sendIcon, clashing.sendBackground)).toBeGreaterThanOrEqual(3);
+    expect(legible.sendIcon).toEqual("#a4ff00");
+    expect(defaults.sendIcon).toEqual(defaults.backgroundBase);
+  });
+
   it("ignores invalid backgrounds and unset overrides", () => {
     const tokens = deriveTokens({ overrides: { backgroundColor: "nonsense", textColor: undefined } });
 

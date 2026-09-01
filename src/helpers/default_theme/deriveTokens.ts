@@ -106,6 +106,11 @@ const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = 
   const bubbleBackground = input.accentColor || (isDark ? mix(backgroundBase, "#ffffff", 0.1) : "#ffffff");
   const bubbleText = clampContrast(input.accentTextColor || text, bubbleBackground, TEXT_CONTRAST_FLOOR);
 
+  // The arrow is an icon on the send disc, so it gets the icon guard like
+  // every other pairing; unset, it punches through to the surface colour.
+  const sendBackground = input.accentColor || text;
+  const sendIcon = clampContrast(input.accentTextColor || backgroundBase, sendBackground, ICON_CONTRAST_FLOOR);
+
   const agentTint = hasAvatar ? text : agent.from;
   const citation = clampContrast(agentTint, bubbleBackground, TEXT_CONTRAST_FLOOR);
   const link = clampContrast(agentTint, backgroundBase, TEXT_CONTRAST_FLOOR);
@@ -139,8 +144,8 @@ const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = 
 
     bubbleBackground,
     bubbleText,
-    sendBackground: input.accentColor || text,
-    sendIcon: input.accentTextColor || backgroundBase,
+    sendBackground,
+    sendIcon,
     citation,
     citationBorder: mix(citation, bubbleBackground, 0.65),
     link,
