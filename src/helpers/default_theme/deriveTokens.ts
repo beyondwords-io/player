@@ -1,58 +1,59 @@
-import { parseColor, toAlphaString, luminance, contrastRatio, mix, compositeOver, clampContrast, isGradient, firstColorStop } from "./colorMath";
+import { contrastRatio, firstColorStop, parseColor, toAlphaString } from "./colorMath";
+import {
+  completePlayerTheme,
+  completeVideoTheme,
+  type PlayerColorTheme,
+  type PlayerThemeName,
+  type VideoColorTheme,
+} from "./palettes";
 
-// The 11-colour contract for the "default" player style. Presets fill every
-// property; theme "custom" starts from light and overrides per property.
-//
-// Highlighting keeps the lime the player has always used - it reads as a
-// marker pen rather than brand chrome. The wash is the same in both modes; the
-// word mark eases off on dark because lime is a light hue, so a strong mark
-// would push light body text below AA (40% holds 5.4:1 on #141414, 80% on a
-// white page still leaves 15:1).
-const PRESETS = {
-  light: {
-    backgroundColor: "#f5f5f5",
-    textColor: "#212121",
-    iconColor: "#212121",
-    highlightColor: "rgba(164, 255, 0, 0.2)",
-    wordHighlightColor: "rgba(164, 255, 0, 0.8)",
-    videoTextColor: "#ffffff",
-    videoIconColor: "#ffffff",
-    agentColor: "#943bfc,#e23ad0",
-    agentAvatar: undefined,
-    accentColor: undefined,
-    accentTextColor: undefined,
-  },
-  dark: {
-    backgroundColor: "#212121",
-    textColor: "#fafafa",
-    iconColor: "#fafafa",
-    highlightColor: "rgba(164, 255, 0, 0.2)",
-    wordHighlightColor: "rgba(164, 255, 0, 0.4)",
-    videoTextColor: "#ffffff",
-    videoIconColor: "#ffffff",
-    agentColor: "#943bfc,#e23ad0",
-    agentAvatar: undefined,
-    accentColor: undefined,
-    accentTextColor: undefined,
-  },
-};
-
-const TEXT_CONTRAST_FLOOR = 4.5;
-const ICON_CONTRAST_FLOOR = 3;
 const ORB_NEAR_BACKGROUND_RATIO = 1.6;
 
-const parseAgentColor = (value) => {
-  const parts = (Array.isArray(value) ? value : String(value || "").split(","))
-    .map((part) => String(part).trim())
-    .filter((part) => parseColor(part));
+const splitTopLevelCommas = (value: string) => {
+  const parts = [];
+  let depth = 0;
+  let start = 0;
 
-  const from = parts[0] || "#943bfc";
-  const to = parts[1];
+  for (let index = 0; index < value.length; index += 1) {
+    if (value[index] === "(") { depth += 1; }
+    if (value[index] === ")") { depth = Math.max(0, depth - 1); }
+    if (value[index] === "," && depth === 0) {
+      parts.push(value.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
 
-  return { from, to, css: to ? `linear-gradient(100deg, ${from}, ${to})` : from };
+  parts.push(value.slice(start).trim());
+  return parts.filter(Boolean);
 };
 
-const scaleRadius = (radius) => {
+// A CSS colour or gradient is literal. Only the old comma-separated shorthand
+// is translated, so integrations do not need to migrate in lockstep.
+const parseAgentColor = (value: unknown) => {
+  if (Array.isArray(value)) {
+    const parts = value.map(String).map((part) => part.trim()).filter(Boolean);
+    const from = parts[0];
+    return { from, to: parts[1], css: parts[1] ? `linear-gradient(100deg, ${from}, ${parts[1]})` : from };
+  }
+
+  const css = String(value ?? "");
+  const legacyParts = splitTopLevelCommas(css);
+  if (legacyParts.length > 1) {
+    return {
+      from: legacyParts[0],
+      to: legacyParts[1],
+      css: `linear-gradient(100deg, ${legacyParts[0]}, ${legacyParts[1]})`,
+    };
+  }
+
+  return { from: firstColorStop(css) || css, to: undefined, css };
+};
+
+const overlay = (color: string, alpha: number) => (
+  parseColor(color) ? toAlphaString(color, alpha) : `color-mix(in srgb, ${color} ${alpha * 100}%, transparent)`
+);
+
+const scaleRadius = (radius: unknown) => {
   const base = Math.max(0, Math.min(16, Number.isFinite(Number(radius)) ? Number(radius) : 8));
 
   return {
@@ -63,96 +64,94 @@ const scaleRadius = (radius) => {
   };
 };
 
-// overrides = only colours the publisher (or API) explicitly set; everything
-// else comes from the theme preset. Every visible pair is contrast-clamped so
-// an illegible player is impossible to configure.
-const deriveTokens = ({ theme = "light", radius = 8, overrides = {}, pageDark = false, pageBackground = undefined } = {}) => {
-  const preset = PRESETS[theme === "dark" ? "dark" : "light"];
+interface DeriveTokenOptions {
+  theme?: string;
+  radius?: unknown;
+  palette?: Partial<PlayerColorTheme>;
+  videoTheme?: Partial<VideoColorTheme>;
+  // Kept for direct component users and deprecated flat SDK properties.
+  overrides?: Partial<PlayerColorTheme> & {
+    videoBackgroundColor?: string;
+    videoTextColor?: string;
+    videoIconColor?: string;
+    videoSubtleColor?: string;
+    agentAvatar?: string;
+  };
+  pageDark?: boolean;
+  pageBackground?: string;
+  agentAvatar?: string;
+}
 
-  const defined = {};
-  for (const [key, value] of Object.entries(overrides)) {
-    if (value !== undefined && value !== null && value !== "") { defined[key] = value; }
-  }
+const deriveTokens = ({
+  theme = "light",
+  radius = 8,
+  palette,
+  videoTheme,
+  overrides = {},
+  pageDark = false,
+  agentAvatar,
+}: DeriveTokenOptions = {}) => {
+  const selectedTheme: PlayerThemeName = theme === "dark" ? "dark" : "light";
+  const player = completePlayerTheme(selectedTheme, palette, overrides);
+  const video = completeVideoTheme(videoTheme, {
+    backgroundColor: overrides.videoBackgroundColor,
+    textColor: overrides.videoTextColor,
+    iconColor: overrides.videoIconColor,
+    subtleColor: overrides.videoSubtleColor,
+  });
 
-  const input = { ...preset, ...defined };
-
-  // backgroundColor may legally be a gradient, which is paintable but not
-  // measurable, so the surface paints `background` while every derived value
-  // and contrast check works from `backgroundBase` - the gradient's first
-  // colour stop, or the preset when the value is unusable either way.
-  const paintable = parseColor(input.backgroundColor) || isGradient(input.backgroundColor);
-  const background = paintable ? input.backgroundColor : preset.backgroundColor;
-
-  const measurable = parseColor(background) ? background : firstColorStop(background);
-  const measured = measurable && parseColor(measurable) ? measurable : preset.backgroundColor;
-
-  // A translucent background still paints as configured, but the reader sees
-  // the page through it - so every measurement (dark mode, contrast clamping,
-  // the muted mix) composites it over the page colour first. "transparent"
-  // therefore measures as the page itself, and the publisher's own text and
-  // icon colours survive verbatim whenever they are legible there.
-  const backdrop = parseColor(pageBackground) ? pageBackground : preset.backgroundColor;
-  const backgroundBase = (parseColor(measured)?.a ?? 1) < 1 ? compositeOver(measured, backdrop) : measured;
-
-  const isDark = luminance(backgroundBase) < 0.35;
-
-  const text = clampContrast(input.textColor, backgroundBase, TEXT_CONTRAST_FLOOR);
-  const icon = clampContrast(input.iconColor, backgroundBase, ICON_CONTRAST_FLOOR);
-
-  const agent = parseAgentColor(input.agentColor);
-  const hasAvatar = !!input.agentAvatar;
-  const orbNearBackground = contrastRatio(agent.from, backgroundBase) < ORB_NEAR_BACKGROUND_RATIO;
-
-  const bubbleBackground = input.accentColor || (isDark ? mix(backgroundBase, "#ffffff", 0.1) : "#ffffff");
-  const bubbleText = clampContrast(input.accentTextColor || text, bubbleBackground, TEXT_CONTRAST_FLOOR);
-
-  // The arrow is an icon on the send disc, so it gets the icon guard like
-  // every other pairing; unset, it punches through to the surface colour.
-  const sendBackground = input.accentColor || text;
-  const sendIcon = clampContrast(input.accentTextColor || backgroundBase, sendBackground, ICON_CONTRAST_FLOOR);
-
-  const agentTint = hasAvatar ? text : agent.from;
-  const citation = clampContrast(agentTint, bubbleBackground, TEXT_CONTRAST_FLOOR);
-  const link = clampContrast(agentTint, backgroundBase, TEXT_CONTRAST_FLOOR);
+  const agent = parseAgentColor(player.agentColor);
+  const avatarUrl = agentAvatar ?? overrides.agentAvatar;
+  const measurableBackground = parseColor(player.backgroundColor)
+    ? player.backgroundColor
+    : firstColorStop(player.backgroundColor);
+  const orbNearBackground = !!agent.from && !!measurableBackground
+    && !!parseColor(agent.from) && !!parseColor(measurableBackground)
+    && contrastRatio(agent.from, measurableBackground) < ORB_NEAR_BACKGROUND_RATIO;
 
   return {
-    isDark,
-    background,
-    backgroundBase,
-    text,
-    icon,
-    highlight: input.highlightColor,
-    wordHighlight: input.wordHighlightColor,
-    videoText: input.videoTextColor,
-    videoIcon: input.videoIconColor,
+    isDark: selectedTheme === "dark",
+    background: player.backgroundColor,
+    backgroundBase: player.backgroundColor,
+    text: player.textColor,
+    secondary: player.secondaryTextColor,
+    icon: player.iconColor,
+    subtle: player.subtleColor,
+    highlight: player.highlightColor,
+    wordHighlight: player.wordHighlightColor,
+    videoBackground: video.backgroundColor,
+    videoText: video.textColor,
+    videoIcon: video.iconColor,
+    videoSubtle: video.subtleColor,
 
-    // Neutral tints derive from textColor, flipping with background luminance.
-    divider: toAlphaString(text, isDark ? 0.15 : 0.08),
-    track: toAlphaString(text, isDark ? 0.2 : 0.1),
-    hover: toAlphaString(text, 0.05),
-    pressed: toAlphaString(text, 0.1),
-    underline: toAlphaString(text, 0.45),
-    muted: clampContrast(mix(text, backgroundBase, 0.45), backgroundBase, TEXT_CONTRAST_FLOOR),
-    placeholder: clampContrast(mix(text, backgroundBase, 0.45), backgroundBase, TEXT_CONTRAST_FLOOR),
-    skeleton: toAlphaString(text, isDark ? 0.09 : 0.08),
+    // Interaction treatments stay internal effects; visible roles are literal.
+    hover: overlay(player.textColor, 0.05),
+    pressed: overlay(player.textColor, 0.1),
+    divider: player.subtleColor,
+    track: player.subtleColor,
+    muted: player.secondaryTextColor,
+    placeholder: player.secondaryTextColor,
+    skeleton: player.subtleColor,
+    underline: player.linkColor,
 
     orb: agent.css,
     orbSolid: agent.from,
     orbRing: orbNearBackground ? "0 0 0 1px rgba(255, 255, 255, 0.4)" : "none",
-    hasAvatar,
-    avatarUrl: hasAvatar ? input.agentAvatar : undefined,
+    hasAvatar: !!avatarUrl,
+    avatarUrl,
 
-    bubbleBackground,
-    bubbleText,
-    sendBackground,
-    sendIcon,
-    citation,
-    citationBorder: mix(citation, bubbleBackground, 0.65),
-    link,
+    // The accent pair belongs only to user messages. Send controls deliberately
+    // use the primary/background pair from the consolidated role mapping.
+    bubbleBackground: player.accentColor,
+    bubbleText: player.accentTextColor,
+    sendBackground: player.textColor,
+    sendIcon: player.backgroundColor,
+    citation: player.linkColor,
+    citationBorder: player.subtleColor,
+    link: player.linkColor,
 
     barRing: pageDark ? "0 0 0 1px rgba(255, 255, 255, 0.1)" : "none",
     widgetShadow: `${pageDark ? "0 0 0 1px rgba(255, 255, 255, 0.1), " : ""}0 0 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.2)`,
-
     radius: scaleRadius(radius),
   };
 };

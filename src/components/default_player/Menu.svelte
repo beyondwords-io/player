@@ -73,7 +73,7 @@
   bind:this={menu}
   class="menu"
   role="menu"
-  style="left: {left}px; top: {top}px; background: {tokens.bubbleBackground}; border: 1px solid {tokens.divider}; border-radius: {tokens.radius.control}; box-shadow: {tokens.widgetShadow}"
+  style="left: {left}px; top: {top}px; background: {tokens.background}; border: 1px solid {tokens.divider}; border-radius: {tokens.radius.control}; box-shadow: {tokens.widgetShadow}"
 >
   {#each groups as group (group.label)}
     <span class="eyebrow" style="color: {tokens.muted}">{group.label}</span>

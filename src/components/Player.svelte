@@ -26,7 +26,12 @@
   import { resolveDefaultWidgetGeometry } from "../helpers/defaultWidgetGeometry";
   import { subscribeMediaQuery } from "../helpers/mediaQuery";
   import deriveTokens from "../helpers/default_theme/deriveTokens";
-  import explicitOverrides from "../helpers/default_theme/explicitOverrides";
+  import {
+    completePlayerTheme,
+    completeVideoTheme,
+    normalizeThemePreference,
+    resolveThemePreference,
+  } from "../helpers/default_theme/palettes";
   import AgentAllowanceState from "../helpers/agentAllowanceState";
 
   // Please document all settings and keep in-sync with the developer docs:
@@ -83,7 +88,7 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
   export let videoTextColor = "white";
-  export let videoBackgroundColor = "black"; // TODO: how to implement with easing gradient?
+  export let videoBackgroundColor = "black";
   export let videoIconColor = "white";
   export let logoIconEnabled = true;
   export let highlightSections = "all";
@@ -125,7 +130,13 @@
   // scripted mock. Served as conversational_agent.elevenlabs_agent_id by
   // /player; a token endpoint replaces it when agent auth lands.
   export let agentId = undefined;
-  export let theme = "light";
+  // Undefined means "follow the project". Assign light/dark/auto to override
+  // it at runtime; assign null/undefined to restore the project preference.
+  // The deprecated custom value is accepted as an alias for light.
+  export let theme = undefined;
+  export let lightTheme = {};
+  export let darkTheme = {};
+  export let videoTheme = {};
   export let radius = 8;
   export let agentColor = undefined;
   export let agentAvatar = undefined;
@@ -155,6 +166,18 @@
   export let apiPayload = undefined;
   export let apiRequestUrl = undefined;
   export let apiProps = undefined;
+
+  // API-owned colour state is intentionally separate from public SDK
+  // overrides. Refetching content can update the project without erasing a
+  // runtime theme or palette assignment.
+  export let projectTheme = "light";
+  export let apiLightTheme = {};
+  export let apiDarkTheme = {};
+  export let apiVideoTheme = {};
+  export let resolvedLightTheme = {};
+  export let resolvedDarkTheme = {};
+  export let resolvedVideoTheme = {};
+  export let resolvedThemePreference = "light";
 
   export let showMediaSession = false;
   export let segmentLimitReached = false;
@@ -284,6 +307,58 @@
     return subscribeMediaQuery("(max-width: 640px)", (matches) => dockedViewport = matches);
   });
 
+  // Theme auto is live rather than a one-off choice made while deserializing
+  // /player. The same resolved mode is shared by the inline and widget views.
+  let systemDark = false;
+  onMount(() => subscribeMediaQuery("(prefers-color-scheme: dark)", (matches) => systemDark = matches));
+
+  const legacyColorDefaults = {
+    textColor: "#111",
+    backgroundColor: "#f5f5f5",
+    iconColor: "rgba(0, 0, 0, 0.8)",
+    highlightColor: "#eee",
+    wordHighlightColor: undefined,
+    agentColor: undefined,
+    accentColor: undefined,
+    accentTextColor: undefined,
+    videoTextColor: "white",
+    videoBackgroundColor: "black",
+    videoIconColor: "white",
+  };
+
+  // Exact historical defaults such as #111 and #eee still count when they
+  // were explicitly supplied. API-populated flat props do not masquerade as
+  // SDK overrides, while later direct assignments do.
+  const flatSdkValue = (key, value) => {
+    if (Object.prototype.hasOwnProperty.call(initialProps, key)) { return value; }
+    if (apiProps && Object.prototype.hasOwnProperty.call(apiProps, key)) {
+      return value === apiProps[key] ? undefined : value;
+    }
+    return value === legacyColorDefaults[key] ? undefined : value;
+  };
+
+  $: legacyPaletteOverrides = {
+    textColor: flatSdkValue("textColor", textColor),
+    backgroundColor: flatSdkValue("backgroundColor", backgroundColor),
+    iconColor: flatSdkValue("iconColor", iconColor),
+    highlightColor: flatSdkValue("highlightColor", highlightColor),
+    wordHighlightColor: flatSdkValue("wordHighlightColor", wordHighlightColor),
+    agentColor: flatSdkValue("agentColor", agentColor),
+    accentColor: flatSdkValue("accentColor", accentColor),
+    accentTextColor: flatSdkValue("accentTextColor", accentTextColor),
+  };
+  $: legacyVideoOverrides = {
+    textColor: flatSdkValue("videoTextColor", videoTextColor),
+    backgroundColor: flatSdkValue("videoBackgroundColor", videoBackgroundColor),
+    iconColor: flatSdkValue("videoIconColor", videoIconColor),
+  };
+  $: resolvedLightTheme = completePlayerTheme("light", apiLightTheme, legacyPaletteOverrides, lightTheme);
+  $: resolvedDarkTheme = completePlayerTheme("dark", apiDarkTheme, legacyPaletteOverrides, darkTheme);
+  $: resolvedVideoTheme = completeVideoTheme(apiVideoTheme, legacyVideoOverrides, videoTheme);
+  $: resolvedThemePreference = normalizeThemePreference(theme ?? projectTheme);
+  $: resolvedTheme = resolveThemePreference(resolvedThemePreference, systemDark);
+  $: activePlayerTheme = resolvedTheme === "dark" ? resolvedDarkTheme : resolvedLightTheme;
+
   // Hides the default-style boot skeleton once the API reports no content.
   let noContentAvailable = false;
   onMount(() => addEventListener("NoContentAvailable", () => noContentAvailable = true));
@@ -393,7 +468,7 @@
   // In-article highlighting is part of the default style's colour contract, so
   // an unconfigured project gets the theme's lime rather than the legacy props.
   $: defaultTokens = playerStyle === "default"
-    ? deriveTokens({ theme, overrides: explicitOverrides({ highlightColor, wordHighlightColor }) })
+    ? deriveTokens({ theme: resolvedTheme, palette: activePlayerTheme, videoTheme: resolvedVideoTheme })
     : undefined;
 
   $: activeHighlightColor = defaultTokens?.highlight || highlightColor;
@@ -464,7 +539,11 @@
     {agentClient}
     {embedMode}
     {analyticsId}
-    {theme}
+    theme={resolvedTheme}
+    {systemDark}
+    lightTheme={resolvedLightTheme}
+    darkTheme={resolvedDarkTheme}
+    videoTheme={resolvedVideoTheme}
     {radius}
     {content}
     {contentIndex}
@@ -482,17 +561,7 @@
     {titleEnabled}
     {callToAction}
     {variants}
-    {textColor}
-    {backgroundColor}
-    {iconColor}
-    {highlightColor}
-    {wordHighlightColor}
-    {videoTextColor}
-    {videoIconColor}
-    {agentColor}
     {agentAvatar}
-    {accentColor}
-    {accentTextColor}
     agentQuestionsLimit={normalizedAgentQuestionsLimit}
     agentVoiceSecondsLimit={normalizedAgentVoiceSecondsLimit}
     {agentQuestionsRemaining}
@@ -559,7 +628,7 @@
     videoIsBehind={videoBehindStatic} />
   {/key}
 {:else if showUserInterface && interfaceStyle === "default" && content.length === 0 && projectId !== undefined && !noContentAvailable}
-  <DefaultSkeleton showChatBlock={embedMode !== "audio"} {theme} {radius} {backgroundColor} {textColor} />
+  <DefaultSkeleton showChatBlock={embedMode !== "audio"} theme={resolvedTheme} {radius} palette={activePlayerTheme} />
 {/if}
 
 {#if showWidgetInterface && effectiveWidgetStyle === "default"}
@@ -571,7 +640,11 @@
       {agentClient}
       embedMode={effectiveWidgetEmbedMode}
       {analyticsId}
-      {theme}
+      theme={resolvedTheme}
+      {systemDark}
+      lightTheme={resolvedLightTheme}
+      darkTheme={resolvedDarkTheme}
+      videoTheme={resolvedVideoTheme}
       {radius}
       isWidget={true}
       videoIsBehind={videoBehindWidget}
@@ -594,17 +667,7 @@
     {titleEnabled}
       {callToAction}
       {variants}
-      {textColor}
-      {backgroundColor}
-      {iconColor}
-      {highlightColor}
-      {wordHighlightColor}
-      {videoTextColor}
-      {videoIconColor}
-      {agentColor}
       {agentAvatar}
-      {accentColor}
-      {accentTextColor}
       agentQuestionsLimit={normalizedAgentQuestionsLimit}
       agentVoiceSecondsLimit={normalizedAgentVoiceSecondsLimit}
       {agentQuestionsRemaining}

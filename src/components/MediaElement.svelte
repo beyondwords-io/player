@@ -395,7 +395,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    background: black;
+    background: var(--beyondwords-video-background, black);
     overflow: hidden;
     min-width: 300px;
   }
@@ -485,7 +485,7 @@
   :global(.beyondwords-player.maximized .external-widget) {
     display: flex;
     align-items: center;
-    background: black;
+    background: var(--beyondwords-video-background, black);
   }
 
   :global(.beyondwords-player.maximized) .media-element {

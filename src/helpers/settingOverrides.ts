@@ -20,6 +20,10 @@ const refetchedByPlayer = new Set([
   "projectId", "contentId", "playlistId", "sourceId", "sourceUrl", "playlist", "previewToken", "accessTier",
 ]);
 
+// These public props are overlays on API-owned project state. Resetting means
+// removing the overlay, not copying today's API value into a new SDK override.
+const projectBackedOverrides = new Set(["theme", "lightTheme", "darkTheme", "videoTheme"]);
+
 const overriddenKeys = (player) => Object.entries(player?.initialProps || {})
   .filter(([key, value]) => typeof value !== "undefined" && !bootKeys.has(key))
   .map(([key]) => key);
@@ -75,7 +79,9 @@ const resetAllSettings = (player) => {
 // Prefer what the API asked for over the built-in default, so a reset lands on
 // the value the project is actually configured with.
 const apiOrDefaultValue = (player, key) => (
-  key in (player.apiProps || {}) ? player.apiProps[key] : findSetting(key)?.default
+  projectBackedOverrides.has(key) ? undefined
+    : key in (player.apiProps || {}) ? player.apiProps[key]
+    : findSetting(key)?.default
 );
 
 // Re-applies every override after a response. set() already respects them, but

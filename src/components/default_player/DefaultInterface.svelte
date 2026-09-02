@@ -4,7 +4,7 @@
   // The build replaces this external marker with the generated style bundle.
   // @ts-expect-error TypeScript disallows explicit .ts imports without a project config.
   import("../../helpers/loadTheStyles.ts");
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import ResizeObserver from "resize-observer-polyfill";
   import { slide, fly, fade } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
@@ -12,8 +12,8 @@
   import blurElement from "../../helpers/blurElement";
   import translate from "../../helpers/translate";
   import deriveTokens from "../../helpers/default_theme/deriveTokens";
-  import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
-  import { clampContrast, luminance, parseColor } from "../../helpers/default_theme/colorMath";
+  import { mergePresent, resolveThemePreference } from "../../helpers/default_theme/palettes";
+  import { luminance, parseColor } from "../../helpers/default_theme/colorMath";
   import chooseAdvertText from "../../helpers/chooseAdvertText";
   import ensureProtocol from "../../helpers/ensureProtocol";
   import formatTime from "../../helpers/formatTime";
@@ -40,6 +40,10 @@
   export let agentClient;
   export let embedMode = "audio";
   export let theme = "light";
+  export let systemDark = false;
+  export let lightTheme = {};
+  export let darkTheme = {};
+  export let videoTheme = {};
   export let radius = 8;
   export let content = [];
   export let contentIndex = 0;
@@ -135,25 +139,46 @@
 
   $: isAdvert = !!activeAdvert && playbackState !== "stopped";
 
-  // Ad creatives can override the slot's colours for their duration, as today.
-  $: adOverrides = isAdvert ? explicitOverrides({
-    textColor: activeAdvert.textColor,
-    backgroundColor: activeAdvert.backgroundColor,
-    iconColor: activeAdvert.iconColor,
-  }) : {};
+  $: resolvedAdvertTheme = resolveThemePreference(activeAdvert?.theme, systemDark);
+  $: playerPalette = theme === "dark" ? darkTheme : lightTheme;
+  $: advertPalette = resolvedAdvertTheme === "dark" ? activeAdvert?.darkTheme : activeAdvert?.lightTheme;
+  $: selectedTheme = isAdvert ? resolvedAdvertTheme : theme;
 
-  $: overrides = {
-    ...explicitOverrides({
-      textColor, backgroundColor, iconColor, highlightColor, wordHighlightColor,
-      videoTextColor, videoIconColor, agentColor, agentAvatar, accentColor, accentTextColor,
-    }),
-    ...adOverrides,
+  // Deprecated flat props remain available to direct component consumers.
+  // Player.svelte has already folded its public flat aliases into the named
+  // palettes, so it intentionally does not pass them here.
+  $: legacyOverrides = Object.fromEntries(Object.entries({
+    textColor, backgroundColor, iconColor, highlightColor, wordHighlightColor,
+    videoTextColor, videoIconColor, agentColor, accentColor, accentTextColor,
+  }).filter(([, value]) => value !== undefined && value !== null));
+  $: advertLegacyPalette = {
+    textColor: activeAdvert?.textColor,
+    backgroundColor: activeAdvert?.backgroundColor,
+    iconColor: activeAdvert?.iconColor,
   };
+  $: advertLegacyVideoTheme = {
+    textColor: activeAdvert?.videoTextColor,
+    backgroundColor: activeAdvert?.videoBackgroundColor,
+    iconColor: activeAdvert?.videoIconColor,
+  };
+  $: selectedPalette = isAdvert
+    ? mergePresent(legacyOverrides, advertLegacyPalette, advertPalette)
+    : playerPalette;
+  $: selectedVideoTheme = isAdvert
+    ? mergePresent(advertLegacyVideoTheme, activeAdvert?.videoTheme)
+    : videoTheme;
 
-  $: tokens = deriveTokens({ theme, radius, overrides, pageDark, pageBackground });
+  $: tokens = deriveTokens({
+    theme: selectedTheme,
+    radius,
+    palette: selectedPalette,
+    videoTheme: selectedVideoTheme,
+    overrides: isAdvert ? {} : legacyOverrides,
+    agentAvatar,
+    pageDark,
+    pageBackground,
+  });
 
-  // Painted from the validated token, so an unparseable publisher colour can
-  // never leave the surface transparent while the tokens assume a preset.
   $: displayBackground = tokens.background;
 
   $: contentItem = content[contentIndex] || {};
@@ -290,9 +315,7 @@
 
   $: showCaption = !!disclosureText || logoIconEnabled;
   $: pageDark = luminance(pageBackground) < 0.35;
-  // The caption row sits on the page, not the surface, so its colours clamp
-  // against the page background.
-  $: captionColor = clampContrast(tokens.muted, pageBackground, 4.5);
+  $: captionColor = tokens.secondary;
   $: attributionHref = typeof window === "undefined" ? "https://beyondwords.io" :
     `https://beyondwords.io/?utm_source=${encodeURIComponent(window.location.origin)}&utm_medium=player&utm_campaign=${analyticsId || ""}`;
 
@@ -473,10 +496,16 @@
   $: if (host) {
     if (videoIsBehind) {
       host.style.setProperty("--beyondwords-media-radius", mediaRadius);
+      host.style.setProperty("--beyondwords-video-background", tokens.videoBackground);
     } else {
       host.style.removeProperty("--beyondwords-media-radius");
+      host.style.removeProperty("--beyondwords-video-background");
     }
   }
+  onDestroy(() => {
+    host?.style.removeProperty("--beyondwords-media-radius");
+    host?.style.removeProperty("--beyondwords-video-background");
+  });
 
   const handleRootKeydown = (event) => {
     if (event.key !== "Escape") { return; }
@@ -649,7 +678,7 @@
       {versionLabel} />
 
     {#if showPersistentChip}
-      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.muted}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
+      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.link}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
         {persistentText}
         <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}">{translate("advertisementAbbreviation")}</span>
       </a>
@@ -767,7 +796,7 @@
 </div>
 
 {#if !isWidget && showCaption && !agentOnly}
-  <DefaultCaption {attributionHref} color={captionColor} {disclosureLink} {disclosureText} hoverColor={tokens.text} {logoIconEnabled} />
+  <DefaultCaption {attributionHref} color={captionColor} linkColor={tokens.link} {disclosureLink} {disclosureText} hoverColor={tokens.text} {logoIconEnabled} />
 {/if}
 </div>
 

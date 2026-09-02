@@ -12,6 +12,14 @@ const playerPropsToIgnore = new Set([
   "apiPayload",
   "apiRequestUrl",
   "apiProps",
+  "projectTheme",
+  "apiLightTheme",
+  "apiDarkTheme",
+  "apiVideoTheme",
+  "resolvedLightTheme",
+  "resolvedDarkTheme",
+  "resolvedVideoTheme",
+  "resolvedThemePreference",
 ]);
 
 export default playerPropsToIgnore;

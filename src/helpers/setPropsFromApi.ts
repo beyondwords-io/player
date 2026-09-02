@@ -1,6 +1,7 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
 import resolveTheme from "./resolveTheme";
+import { normalizeThemePreference, palettesFromApi } from "./default_theme/palettes";
 import newEvent from "./newEvent";
 import rewriteMediaUrl from "./rewriteMediaUrl";
 
@@ -141,9 +142,10 @@ const handleContent = (player) => {
 
 const setProps = (player, data) => {
   const settings = data.settings;
-  const theme = resolveTheme(settings.theme);
-  const themeColors = settings[`${theme}_theme`];
-  const videoColors = settings["video_theme"];
+  const apiPalettes = palettesFromApi(settings);
+  const selectedTheme = resolveTheme(settings.theme);
+  const themeColors = selectedTheme === "dark" ? apiPalettes.darkTheme : apiPalettes.lightTheme;
+  const videoColors = apiPalettes.videoTheme;
 
   resetSomeProps(player);
   setContentProp(player, data);
@@ -163,17 +165,28 @@ const setProps = (player, data) => {
   set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);
   set(player, "widgetStyle", settings.widget_style);
   set(player, "widgetPosition", settings.widget_position);
-  set(player, "textColor", themeColors.text_color);
-  set(player, "backgroundColor", themeColors.background_color);
-  set(player, "iconColor", themeColors.icon_color);
-  set(player, "highlightColor", themeColors.highlight_color);
-  set(player, "videoTextColor", videoColors.text_color);
-  set(player, "videoBackgroundColor", videoColors.background_color);
-  set(player, "videoIconColor", videoColors.icon_color);
+  set(player, "projectTheme", normalizeThemePreference(settings.theme));
+  set(player, "apiLightTheme", apiPalettes.lightTheme);
+  set(player, "apiDarkTheme", apiPalettes.darkTheme);
+  set(player, "apiVideoTheme", apiPalettes.videoTheme);
+  // Public aliases make the effective management contract visible to tooling
+  // and let resetSetting restore API palettes without another request.
+  player.apiProps.theme = normalizeThemePreference(settings.theme);
+  player.apiProps.lightTheme = apiPalettes.lightTheme;
+  player.apiProps.darkTheme = apiPalettes.darkTheme;
+  player.apiProps.videoTheme = apiPalettes.videoTheme;
+  // Flat props remain populated for legacy player styles and integrations.
+  set(player, "textColor", themeColors.textColor);
+  set(player, "backgroundColor", themeColors.backgroundColor);
+  set(player, "iconColor", themeColors.iconColor);
+  set(player, "highlightColor", themeColors.highlightColor);
+  set(player, "videoTextColor", videoColors.textColor);
+  set(player, "videoBackgroundColor", videoColors.backgroundColor);
+  set(player, "videoIconColor", videoColors.iconColor);
   set(player, "logoIconEnabled", settings.logo_icon_enabled);
   set(player, "logoImagePosition", data.video_settings.logo_image_position);
   set(player, "wordHighlightsEnabled", settings.word_highlights_enabled);
-  set(player, "wordHighlightColor", themeColors.word_highlight_color);
+  set(player, "wordHighlightColor", themeColors.wordHighlightColor);
   set(player, "highlightSections", settings.segment_highlights_enabled ? "all" : "none");
   set(player, "clickableSections", settings.segment_playback_enabled ? "all" : "none");
   set(player, "segmentWidgetSections", "none");
@@ -186,11 +199,11 @@ const setProps = (player, data) => {
   set(player, "contentLanguage", data.language);
 
   set(player, "radius", settings.radius);
-  set(player, "accentColor", settings.accent_color);
-  set(player, "accentTextColor", settings.accent_text_color);
+  set(player, "accentColor", themeColors.accentColor);
+  set(player, "accentTextColor", themeColors.accentTextColor);
   set(player, "disclosureText", settings.disclosure_text);
   set(player, "disclosureLink", settings.disclosure_link);
-  set(player, "agentColor", settings.agent_color);
+  set(player, "agentColor", themeColors.agentColor);
   set(player, "agentAvatar", settings.agent_avatar_url);
   set(player, "agentPlaceholder", settings.agent_placeholder);
   set(player, "shortcuts", settings.agent_shortcuts);
@@ -302,9 +315,11 @@ const setAdvertsProp = (player, data) => {
 
   set(player, "adverts", advertsArray.map((item) => {
     const isVast = item.type === "vast";
-    const theme = resolveTheme(item.theme);
-    const themeColors = item[`${theme}_theme`];
-    const videoColors = item["video_theme"];
+    const palettes = palettesFromApi(item);
+    const theme = normalizeThemePreference(item.theme);
+    const resolvedTheme = resolveTheme(theme);
+    const themeColors = resolvedTheme === "dark" ? palettes.darkTheme : palettes.lightTheme;
+    const videoColors = palettes.videoTheme;
 
     return {
       id: item.id,
@@ -313,12 +328,16 @@ const setAdvertsProp = (player, data) => {
       vastUrl: isVast ? item.vast_url : null,
       clickThroughUrl: !isVast ? item.click_through_url : null,
       imageUrl: item.image_url,
-      textColor: themeColors?.text_color,
-      backgroundColor: themeColors?.background_color,
-      iconColor: themeColors?.icon_color,
-      videoTextColor: videoColors?.text_color,
-      videoBackgroundColor: videoColors?.background_color,
-      videoIconColor: videoColors?.icon_color,
+      theme,
+      lightTheme: palettes.lightTheme,
+      darkTheme: palettes.darkTheme,
+      videoTheme: palettes.videoTheme,
+      textColor: themeColors.textColor,
+      backgroundColor: themeColors.backgroundColor,
+      iconColor: themeColors.iconColor,
+      videoTextColor: videoColors.textColor,
+      videoBackgroundColor: videoColors.backgroundColor,
+      videoIconColor: videoColors.iconColor,
       audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
         id: audio.id,
         url: localOrRemoteUrl(rewriteMediaUrl(audio.url, mediaCustomUrl), audio.base64_file, audio.content_type),

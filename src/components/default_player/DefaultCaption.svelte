@@ -3,6 +3,7 @@
 
   export let attributionHref: string;
   export let color: string;
+  export let linkColor: string = color;
   export let disclosureLink: string | undefined = undefined;
   export let disclosureText: string | undefined = undefined;
   export let hoverColor: string;
@@ -12,7 +13,7 @@
 <div class="caption outside">
   <span class="caption-left">
     {#if disclosureText && disclosureLink}
-      <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {color}; border-bottom-color: {color}; outline-color: {color}; --hover-color: {hoverColor}">{disclosureText}</a>
+      <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {linkColor}; border-bottom-color: {linkColor}; outline-color: {linkColor}; --hover-color: {hoverColor}">{disclosureText}</a>
     {:else if disclosureText}
       <span class="caption-text" style="color: {color}">{disclosureText}</span>
     {/if}

@@ -16,14 +16,14 @@
       <button
         type="button"
         class="chip"
-        style="--bg: {tokens.bubbleBackground}; --hover-bg: {tokens.pressed}; color: {tokens.text}; outline-color: {tokens.text}"
+        style="--bg: {tokens.background}; --hover-bg: {tokens.pressed}; color: {tokens.text}; outline-color: {tokens.text}"
         on:click={() => onSelect(question)}
         on:mouseup={blurElement}
       >{question}</button>
     {/each}
   </div>
 {:else if open && questions.length > 0}
-  <div class="shortcuts" style="background: {tokens.bubbleBackground}; border-radius: {tokens.radius.bar}; box-shadow: {tokens.widgetShadow}">
+  <div class="shortcuts" style="background: {tokens.background}; border-radius: {tokens.radius.bar}; box-shadow: {tokens.widgetShadow}">
     <span class="eyebrow" style="color: {tokens.muted}">{translate("shortcuts")}</span>
     {#each questions as question (question)}
       <button type="button" class="shortcut-row" style="--hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => onSelect(question)}>
