@@ -1,4 +1,5 @@
 import setPropsFromApi, { identifiersArray, fetchData } from "../../src/helpers/setPropsFromApi";
+import { PLAYER_COLOR_PRESETS, VIDEO_COLOR_PRESET } from "../../src/helpers/default_theme/palettes";
 
 const mocks = vi.hoisted(() => ({ fetchJson: vi.fn() }));
 vi.mock("../../src/helpers/fetchJson", () => ({ default: mocks.fetchJson }));
@@ -120,6 +121,7 @@ describe("setPropsFromApi", () => {
         theme: "light",
         player_style: "large",
         light_theme: { text_color: "#111111", background_color: "#ffffff", icon_color: "#222222", highlight_color: "#ffff00", word_highlight_color: "#00ffff" },
+        dark_theme: { text_color: "#eeeeee", background_color: "#111111", icon_color: "#dddddd" },
         video_theme: { text_color: "#ffffff", background_color: "#000000", icon_color: "#ffffff" },
       },
       video_settings: { logo_image_position: "top-left" },
@@ -147,6 +149,22 @@ describe("setPropsFromApi", () => {
       expect(player.apiProps.backgroundColor).toEqual("#ffffff");
       expect(player.apiProps.contentLanguage).toEqual("fr");
       expect(player.backgroundColor).toEqual("#ffffff");
+      expect(player.projectTheme).toEqual("light");
+      expect(player.apiLightTheme).toEqual({
+        ...PLAYER_COLOR_PRESETS.light,
+        textColor: "#111111",
+        backgroundColor: "#ffffff",
+        iconColor: "#222222",
+        highlightColor: "#ffff00",
+        wordHighlightColor: "#00ffff",
+      });
+      expect(player.apiDarkTheme).toEqual({
+        ...PLAYER_COLOR_PRESETS.dark,
+        textColor: "#eeeeee",
+        backgroundColor: "#111111",
+        iconColor: "#dddddd",
+      });
+      expect(player.apiVideoTheme).toEqual(VIDEO_COLOR_PRESET);
     });
 
     it("records what the API asked for even when an override wins", async () => {
@@ -305,6 +323,80 @@ describe("setPropsFromApi", () => {
         agentVoiceSecondsLimit: 60,
       });
       expect(player).not.toHaveProperty("resolvedAccessTier");
+    });
+
+    it("keeps nested literal values exact and gives them precedence over legacy top-level colours", async () => {
+      mocks.fetchJson.mockResolvedValueOnce({
+        ...payload,
+        settings: {
+          ...payload.settings,
+          agent_color: "legacy-agent",
+          accent_color: "legacy-accent",
+          accent_text_color: "legacy-accent-text",
+          light_theme: {
+            ...payload.settings.light_theme,
+            text_color: "#111",
+            secondary_text_color: "invalid secondary",
+            subtle_color: "",
+            link_color: "low-contrast-link",
+            agent_color: "linear-gradient(1deg, red, red)",
+            accent_color: "nested-accent",
+            accent_text_color: "nested-accent-text",
+          },
+          video_theme: {
+            ...payload.settings.video_theme,
+            background_color: "video-background",
+            subtle_color: "video-subtle",
+          },
+        },
+      });
+
+      const player = mockPlayer();
+      await setPropsFromApi(player);
+
+      expect(player.apiLightTheme).toMatchObject({
+        textColor: "#111",
+        secondaryTextColor: "invalid secondary",
+        subtleColor: "",
+        linkColor: "low-contrast-link",
+        agentColor: "linear-gradient(1deg, red, red)",
+        accentColor: "nested-accent",
+        accentTextColor: "nested-accent-text",
+      });
+      expect(player.apiDarkTheme).toMatchObject({
+        agentColor: "legacy-agent",
+        accentColor: "legacy-accent",
+        accentTextColor: "legacy-accent-text",
+      });
+      expect(player.apiVideoTheme).toMatchObject({ backgroundColor: "video-background", subtleColor: "video-subtle" });
+    });
+
+    it("maps complete Light and Dark palettes for adverts", async () => {
+      mocks.fetchJson.mockResolvedValueOnce({
+        ...payload,
+        ads: [{
+          id: "ad-1",
+          type: "audio",
+          placement: "pre-roll",
+          theme: "auto",
+          click_through_url: "https://example.com",
+          light_theme: { text_color: "ad-light" },
+          dark_theme: { text_color: "ad-dark" },
+          video_theme: { background_color: "ad-video" },
+          audio: [],
+          video: [],
+        }],
+      });
+
+      const player = mockPlayer();
+      await setPropsFromApi(player);
+
+      expect(player.adverts[0]).toMatchObject({
+        theme: "auto",
+        lightTheme: { ...PLAYER_COLOR_PRESETS.light, textColor: "ad-light" },
+        darkTheme: { ...PLAYER_COLOR_PRESETS.dark, textColor: "ad-dark" },
+        videoTheme: { ...VIDEO_COLOR_PRESET, backgroundColor: "ad-video" },
+      });
     });
   });
 });

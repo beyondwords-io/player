@@ -200,7 +200,7 @@
         <button
           type="button"
           class="slash"
-          style="border-color: {tokens.divider}; --bg: {shortcutsOpen ? tokens.pressed : tokens.bubbleBackground}; --hover-bg: {tokens.pressed}; color: {tokens.muted}; outline-color: {tokens.text}"
+          style="border-color: {tokens.divider}; --bg: {shortcutsOpen ? tokens.pressed : tokens.background}; --hover-bg: {tokens.pressed}; color: {tokens.muted}; outline-color: {tokens.text}"
           aria-label={translate("shortcuts")}
           aria-expanded={shortcutsOpen}
           on:click={() => shortcutsOpen = !shortcutsOpen}

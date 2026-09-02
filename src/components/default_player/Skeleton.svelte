@@ -3,17 +3,19 @@
   // where the styles need to start loading.
   import("../../helpers/loadTheStyles.ts");
   import deriveTokens from "../../helpers/default_theme/deriveTokens";
-  import explicitOverrides from "../../helpers/default_theme/explicitOverrides";
 
   // Boot skeleton: same geometry as the loaded bar, no spinner. It takes the
   // theme so a dark or custom player doesn't flash a light bar before load.
   export let showChatBlock = true;
   export let theme = "light";
   export let radius = 8;
+  export let palette = {};
   export let backgroundColor = undefined;
   export let textColor = undefined;
 
-  $: tokens = deriveTokens({ theme, radius, overrides: explicitOverrides({ backgroundColor, textColor }) });
+  $: overrides = Object.fromEntries(Object.entries({ backgroundColor, textColor })
+    .filter(([, value]) => value !== undefined && value !== null));
+  $: tokens = deriveTokens({ theme, radius, palette, overrides });
 </script>
 
 <div class="skeleton-bar animating" style="background: {tokens.background}; border-radius: {tokens.radius.bar}">

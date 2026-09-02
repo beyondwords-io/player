@@ -105,6 +105,38 @@ test("default player mixed-media playlist behaviour", async ({ page }) => {
   await expect(widget.locator(".video-frame")).toHaveCount(1);
 });
 
+test("default player runtime theme behaviour uses literal palettes and live Auto", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.evaluate((audio) => {
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      theme: "auto",
+      lightTheme: { backgroundColor: "rgb(241, 242, 243)", textColor: "#111" },
+      darkTheme: { backgroundColor: "rgb(31, 32, 33)", textColor: "#eee" },
+      content: [{ title: "Article", audio }],
+    });
+  }, audio);
+
+  const surface = page.locator(".default-player .surface");
+  await expect(surface).toHaveCSS("background-color", "rgb(241, 242, 243)");
+
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(surface).toHaveCSS("background-color", "rgb(31, 32, 33)");
+
+  await page.evaluate(() => BeyondWords.Player.instances()[0].theme = "light");
+  await expect(surface).toHaveCSS("background-color", "rgb(241, 242, 243)");
+
+  await page.evaluate(() => {
+    const player = BeyondWords.Player.instances()[0];
+    player.theme = undefined;
+    player.projectTheme = "dark";
+    player.darkTheme.backgroundColor = "rgb(41, 42, 43)";
+  });
+  await expect(surface).toHaveCSS("background-color", "rgb(41, 42, 43)");
+});
+
 test("media preference changes do not replace sources after playback starts", async ({ page }) => {
   const sources = await page.evaluate(async ({ audio, video }) => {
     window.disableMediaLoad = false;

@@ -2,7 +2,6 @@
   import formatTime from "../../helpers/formatTime";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
-  import { toAlphaString } from "../../helpers/default_theme/colorMath";
   import NowPlayingMarker from "../svg_icons/default_player/NowPlayingMarker.svelte";
 
   export let content = [];
@@ -13,8 +12,8 @@
 
   let panel;
 
-  $: activeRow = toAlphaString(tokens.text, 0.04);
-  $: hoverRow = toAlphaString(tokens.text, 0.03);
+  $: activeRow = tokens.pressed;
+  $: hoverRow = tokens.hover;
 
   const durationFor = (item) => (
     formatTime((summary ? item.summarization?.duration : item.duration) || 0)
@@ -65,7 +64,7 @@
         </span>
 
         <span class="row-title" style="color: {tokens.text}">{item.title || ""}</span>
-        <span class="duration" style="color: {i === contentIndex ? tokens.text : tokens.muted}">{durationFor(item)}</span>
+        <span class="duration" style="color: {tokens.muted}">{durationFor(item)}</span>
       </button>
     </li>
   {/each}

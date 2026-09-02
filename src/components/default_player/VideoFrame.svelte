@@ -43,8 +43,6 @@
   $: controlsVisible = !resting && (isHovering || !isPlaying || chatOpen);
   $: progress = duration > 0 ? Math.min(1, currentTime / duration) : 0;
 
-  const whiteTrack = "rgba(255, 255, 255, 0.3)";
-
   const handlePlayPause = (event) => {
     event.preventDefault();
     const name = isPlaying ? "Pause" : "Play";
@@ -78,7 +76,7 @@
   };
 </script>
 
-<div class="video-frame" style="--aspect-ratio: {aspectRatio}; border-radius: {chatOpen ? `${tokens.radius.bar} ${tokens.radius.bar} 0 0` : tokens.radius.bar}">
+<div class="video-frame" style="--aspect-ratio: {aspectRatio}; --video-icon: {tokens.videoIcon}; --video-subtle: {tokens.videoSubtle}; border-radius: {chatOpen ? `${tokens.radius.bar} ${tokens.radius.bar} 0 0` : tokens.radius.bar}">
   <Hoverable bind:isHovering idleDelay={1500}>
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="frame-box" role="none" on:mousedown={handleFrameMouseDown}>
@@ -91,7 +89,7 @@
 
         {#if showClose}
           <button type="button" class="video-close" aria-label={translate("closeWidget")} on:click={onClose} on:mouseup={blurElement}>
-            <Close size={11} color="#ffffff" />
+            <Close size={11} color={tokens.videoIcon} />
           </button>
         {/if}
       {/if}
@@ -99,7 +97,7 @@
       <div class="controls" class:visible={controlsVisible} class:vertical>
         {#if vertical}
           <span class="v-title" style="color: {tokens.videoText}">{title}</span>
-          <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={whiteTrack} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
+          <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={tokens.videoSubtle} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
           <div class="v-row">
             <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
               <button type="button" class="overlay-button" aria-label={isPlaying ? translate("pauseAudio") : translate("playAudio")} on:click={handlePlayPause} on:mouseup={blurElement}>
@@ -125,7 +123,7 @@
               <span class="title" style="color: {tokens.videoText}">{title}</span>
               <span class="time" style="color: {tokens.videoText}">{formatTime(currentTime)} / {formatTime(duration)}</span>
             </div>
-            <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={whiteTrack} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
+            <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={tokens.videoSubtle} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
           </div>
 
           <button type="button" class="overlay-button" aria-label={translate("maximizeVideo")} on:click={handleMaximize} on:mouseup={blurElement}>
@@ -133,12 +131,12 @@
           </button>
 
           {#if showChat}
-            <div class="v-divider"></div>
+            <div class="v-divider" style="background: {tokens.videoSubtle}"></div>
             <button type="button" class="overlay-chat" aria-label={translate("chatAboutThisVideo")} aria-expanded={chatOpen} on:click={onToggleChat} on:mouseup={blurElement}>
               <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
               <span class="chat-label" style="color: {tokens.videoText}">{translate("chat")}</span>
               <span class="chat-caret" class:flipped={chatOpen}>
-                <CaretDown size={14} color="#dbdbdb" />
+                <CaretDown size={14} color={tokens.videoIcon} />
               </span>
             </button>
           {/if}
@@ -186,7 +184,7 @@
     right: 0;
     bottom: 0;
     height: 3px;
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--video-subtle);
     opacity: 0;
     transition: opacity 200ms ease-out;
   }
@@ -218,7 +216,7 @@
   }
 
   .video-close:focus-visible {
-    outline: 2px solid #fff;
+    outline: 2px solid var(--video-icon);
     outline-offset: 2px;
   }
 
@@ -306,7 +304,7 @@
   }
 
   .overlay-button:focus-visible {
-    outline: 2px solid #fff;
+    outline: 2px solid var(--video-icon);
     outline-offset: 2px;
   }
 
@@ -354,7 +352,7 @@
     width: 1px;
     height: 28px;
     flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.25);
+    background: var(--video-subtle);
   }
 
   .overlay-chat {
@@ -371,7 +369,7 @@
   }
 
   .overlay-chat:focus-visible {
-    outline: 2px solid #fff;
+    outline: 2px solid var(--video-icon);
     outline-offset: 2px;
   }
 

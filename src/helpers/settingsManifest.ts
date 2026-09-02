@@ -1,4 +1,5 @@
 import playerStyles from "./playerStyles";
+import { PLAYER_COLOR_PRESETS, VIDEO_COLOR_PRESET } from "./default_theme/palettes";
 
 // Every player setting, described once, so the control panel is a loop over
 // data rather than a hand-maintained list of inputs that drifts from the props.
@@ -62,7 +63,11 @@ const settingsManifest = [
   { key: "video", group: "Style", control: "select", options: bool, default: false, appliesTo: "default", refetch: true, needs: "content with a video variant" },
   { key: "videoSizes", group: "Style", control: "select", default: [], refetch: true, ...csv,
     options: ({ videoSizes }) => ["", ...videoSizes], format: (value) => value?.[0] || "auto (first match)", parse: (raw) => (raw ? [raw] : []) },
-  { key: "theme", group: "Style", control: "select", options: ["light", "dark", "custom"], default: "light", appliesTo: "default" },
+  { key: "theme", group: "Style", control: "select", options: [null, "light", "dark", "auto", "custom"], default: "light", cleared: null, appliesTo: "default",
+    parse: (raw) => raw || null, format: (value) => value || "project theme" },
+  { key: "lightTheme", group: "Style", control: "json", default: PLAYER_COLOR_PRESETS.light, cleared: {}, api: "light_theme", appliesTo: "default" },
+  { key: "darkTheme", group: "Style", control: "json", default: PLAYER_COLOR_PRESETS.dark, cleared: {}, api: "dark_theme", appliesTo: "default" },
+  { key: "videoTheme", group: "Style", control: "json", default: VIDEO_COLOR_PRESET, cleared: {}, api: "video_theme", appliesTo: "default" },
   { key: "radius", group: "Style", ...number(8), api: "radius", appliesTo: "default" },
   { key: "textColor", group: "Style", control: "text", default: "#111", api: "text_color" },
   { key: "backgroundColor", group: "Style", control: "text", default: "#f5f5f5", api: "background_color" },

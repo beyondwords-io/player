@@ -64,7 +64,7 @@
                     href={citation.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style="--bg: {tokens.bubbleBackground}; --hover-bg: {tokens.hover}; --border: {tokens.citationBorder}; --hover-border: {tokens.citation}; color: {tokens.citation}; outline-color: {tokens.text}"
+                    style="--bg: {tokens.background}; --hover-bg: {tokens.hover}; --border: {tokens.citationBorder}; --hover-border: {tokens.citation}; color: {tokens.citation}; outline-color: {tokens.text}"
                   >
                     {citation.title}
                     <ArrowUpRight size={11} color={tokens.citation} />

@@ -14,6 +14,9 @@ the player
 
 Please refer to our **[official documentation](https://docs.beyondwords.io/docs-and-guides/distribution/player/overview)** for more information.
 
+The in-repository contract for the default player's literal Light, Dark, and
+Video palettes is documented in [Default player colour palettes](doc/color-palettes.md).
+
 ## Development setup
 
 We recommend you use nodenv for managing node versions. There is a `.nodenv`

@@ -47,18 +47,18 @@
   {:else if isAdvert}
     <div class="title-row">
       {#if advertHref && advertText}
-        <a class="advert-link" href={advertHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.text}; outline-color: {tokens.text}">{advertText}</a>
+        <a class="advert-link" href={advertHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; outline-color: {tokens.text}">{advertText}</a>
       {:else}
         <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
       {/if}
-      <span class="time" style="color: {tokens.text}" role="status" aria-live="polite">{translate("timeLeft").replace("{time}", formatTime(Math.max(0, duration - currentTime)))}</span>
+      <span class="time" style="color: {tokens.muted}" role="status" aria-live="polite">{translate("timeLeft").replace("{time}", formatTime(Math.max(0, duration - currentTime)))}</span>
       <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}" role="img" aria-label={translate("advertisement")}>{translate("advertisementAbbreviation")}</span>
     </div>
     <ProgressTrack {progress} {duration} readonly={true} radius={tokens.radius.track} trackColor={tokens.track} fillColor={tokens.text} focusColor={tokens.text} {onEvent} />
   {:else if offline}
     <div class="title-row">
       {#if playingTitle}
-        <span class="title playing" style="color: {tokens.text}; opacity: 0.4">{playingTitle}</span>
+        <span class="title playing" style="color: {tokens.muted}; opacity: 0.4">{playingTitle}</span>
       {/if}
       <span class="offline-note" style="color: {tokens.muted}">
         <WifiSlash size={12} color={tokens.muted} />
@@ -69,7 +69,7 @@
   {:else if playingTitle}
     <div class="title-row">
       <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
-      <span class="time" style="color: {tokens.text}">{timeLabel}</span>
+      <span class="time" style="color: {tokens.muted}">{timeLabel}</span>
     </div>
     <ProgressTrack {progress} {duration} {buffering} radius={tokens.radius.track} trackColor={tokens.track} fillColor={tokens.text} focusColor={tokens.text} {onEvent} />
   {:else}
@@ -77,7 +77,7 @@
       <div class="progress-grow">
         <ProgressTrack {progress} {duration} {buffering} thickness={6} radius={tokens.radius.track} trackColor={tokens.track} fillColor={tokens.text} focusColor={tokens.text} {onEvent} />
       </div>
-      <span class="time" style="color: {tokens.text}">{timeLabel}</span>
+      <span class="time" style="color: {tokens.muted}">{timeLabel}</span>
     </div>
   {/if}
 </div>
