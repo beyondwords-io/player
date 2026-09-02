@@ -796,7 +796,15 @@
 </div>
 
 {#if !isWidget && showCaption && !agentOnly}
-  <DefaultCaption {attributionHref} color={captionColor} linkColor={tokens.link} {disclosureLink} {disclosureText} hoverColor={tokens.text} {logoIconEnabled} />
+  <DefaultCaption
+    {attributionHref}
+    backgroundColor={selectedTheme === "dark" ? displayBackground : "transparent"}
+    color={captionColor}
+    linkColor={tokens.link}
+    {disclosureLink}
+    {disclosureText}
+    hoverColor={tokens.text}
+    {logoIconEnabled} />
 {/if}
 </div>
 
