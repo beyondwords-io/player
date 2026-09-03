@@ -21,6 +21,7 @@
 
   $: clampedProgress = Math.max(0, Math.min(progress, 1));
   $: seconds = clampedProgress * duration;
+  $: fillVisible = Math.floor(seconds) > 0;
   $: outOf = readFullTime ? `${translate("outOfTotalTime")} ${formatTime(duration)}` : "";
   $: ariaText = `${formatTime(seconds)} ${outOf}`;
 
@@ -87,7 +88,7 @@
   aria-valuemax={Math.floor(duration)}
   aria-readonly={readonly || undefined}
 >
-  {#if clampedProgress > 0}
+  {#if fillVisible}
     <div class="fill" style="width: {clampedProgress * 100}%; background: {fillColor}; opacity: {fillOpacity}; border-radius: {radius}"></div>
   {/if}
 </div>

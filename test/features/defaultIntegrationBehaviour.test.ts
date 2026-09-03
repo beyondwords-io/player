@@ -300,6 +300,10 @@ test("default player does not paint a zero-width progress fill", async ({ page }
   await expect(track).toHaveAttribute("aria-valuenow", "0");
   await expect(track.locator(".fill")).toHaveCount(0);
 
+  await page.evaluate(() => BeyondWords.Player.instances()[0].currentTime = 0.5);
+  await expect(track).toHaveAttribute("aria-valuenow", "0");
+  await expect(track.locator(".fill")).toHaveCount(0);
+
   await page.evaluate(() => BeyondWords.Player.instances()[0].currentTime = 30);
   await expect(track.locator(".fill")).toHaveCount(1);
   await expect(track.locator(".fill")).toHaveAttribute("style", /width: 50%/);
