@@ -44,7 +44,7 @@ const playerColorFields = [
   { key: "backgroundColor", label: "Background", description: "Player surface and cut-outs within filled icons" },
   { key: "textColor", label: "Primary text", description: "Main copy, progress fill, and focus outlines" },
   { key: "secondaryTextColor", label: "Secondary text", description: "Metadata, captions, placeholders, and disabled copy" },
-  { key: "iconColor", label: "Icons", description: "Active controls, including play, voice, submit, transport, and utilities" },
+  { key: "iconColor", label: "Icons", description: "Standalone controls, including play, voice, submit, transport, and utilities" },
   { key: "subtleColor", label: "Subtle", description: "Quiet control surfaces, progress tracks, dividers, skeletons, citation borders, and quiet borders" },
   { key: "linkColor", label: "Links and citations", description: "Calls to action, citations, and underlines" },
   { key: "highlightColor", label: "Section highlight", description: "The active section highlight" },
