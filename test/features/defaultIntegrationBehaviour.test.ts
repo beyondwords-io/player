@@ -167,6 +167,26 @@ test("default player runtime theme behaviour uses literal palettes and live Auto
   await expect(surface).toHaveCSS("background-color", "rgb(41, 42, 43)");
 });
 
+test("default player tier lock uses the icon palette role", async ({ page }) => {
+  await page.evaluate((audio) => {
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      segmentLimit: 0,
+      lightTheme: {
+        iconColor: "rgb(0, 128, 0)",
+        secondaryTextColor: "rgb(255, 165, 0)",
+      },
+      content: [{ title: "Article", audio }],
+    });
+  }, audio);
+
+  const lockPaths = page.locator(".default-player .tier-lock path");
+  await expect(lockPaths).toHaveCount(2);
+  await expect(lockPaths.first()).toHaveAttribute("stroke", "rgb(0, 128, 0)");
+});
+
 test("media preference changes do not replace sources after playback starts", async ({ page }) => {
   const sources = await page.evaluate(async ({ audio, video }) => {
     window.disableMediaLoad = false;

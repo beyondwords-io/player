@@ -83,7 +83,7 @@
 
 {#if showTierLock}
   <span class="tier-lock" aria-hidden="true">
-    <LockSimple size={16} color={tokens.muted} />
+    <LockSimple size={16} color={tokens.icon} />
   </span>
 {/if}
 
