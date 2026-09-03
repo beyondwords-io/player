@@ -229,9 +229,11 @@
       : new MockAgentClient();
   };
 
-  // Per-page context for the agent's prompt, read at session start so the
-  // loaded content is in by then. Keys match the /player payload's naming.
+  // MCP routing plus per-page prompt context, read at session start so the
+  // resolved access tier and loaded content are both available by then.
   const agentDynamicVariables = () => ({
+    bw_channel: "player",
+    bw_access_tier: apiPayload?.access_tier?.slug,
     project_id: projectId,
     content_id: contentItem?.id,
     source_id: contentItem?.sourceId,
