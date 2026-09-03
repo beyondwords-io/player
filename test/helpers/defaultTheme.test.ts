@@ -200,10 +200,14 @@ describe("deriveTokens", () => {
     });
   });
 
-  it("keeps hover and pressed as 5% and 10% internal effects", () => {
-    const tokens = deriveTokens({ palette: { textColor: "#111" } });
-    expect(tokens.hover).toEqual("rgba(17, 17, 17, 0.05)");
-    expect(tokens.pressed).toEqual("rgba(17, 17, 17, 0.1)");
+  it("keeps hover and pressed neutral when literal colors change", () => {
+    const light = deriveTokens({ theme: "light", palette: { textColor: "red", iconColor: "blue" } });
+    const dark = deriveTokens({ theme: "dark", palette: { textColor: "red", iconColor: "blue" } });
+
+    expect(light.hover).toEqual("rgba(0, 0, 0, 0.05)");
+    expect(light.pressed).toEqual("rgba(0, 0, 0, 0.1)");
+    expect(dark.hover).toEqual("rgba(255, 255, 255, 0.05)");
+    expect(dark.pressed).toEqual("rgba(255, 255, 255, 0.1)");
   });
 
   it("uses every literal video role including background", () => {

@@ -223,7 +223,7 @@
       {/if}
 
       {#if voiceAvailable && !locked && kind === "none"}
-        <button type="button" class="voice" style="background: {tokens.hover}; --hover-bg: {tokens.pressed}; outline-color: {tokens.text}" aria-label={translate("startVoiceConversation")} on:click={startCall} on:mouseup={blurElement}>
+        <button type="button" class="voice" style="background: {tokens.subtle}; --hover-bg: {tokens.pressed}; outline-color: {tokens.text}" aria-label={translate("startVoiceConversation")} on:click={startCall} on:mouseup={blurElement}>
           <VoiceMode size={20} color={tokens.icon} />
         </button>
       {/if}
