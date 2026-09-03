@@ -727,7 +727,7 @@
         {#if chatLabelVisible}
           <span class="chat-label" style="color: {chatDisabled ? tokens.muted : tokens.text}">{translate("chat")}</span>
           {#if chatDisabled}
-            <LockSimple size={13} color={tokens.muted} />
+            <LockSimple size={13} color={tokens.icon} />
           {:else}
             <span class="chat-caret" class:flipped={chatOpen}>
               <CaretDown size={14} color={tokens.text} />

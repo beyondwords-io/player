@@ -150,7 +150,7 @@
 
   {#if budgetSpent || lockedAsked}
     <div class="composer spent" style="border-top-color: {tokens.divider}">
-      <LockSimple size={15} color={tokens.muted} />
+      <LockSimple size={15} color={tokens.icon} />
       <span class="spent-copy" style="color: {tokens.muted}">
         {#if lockedAsked}
           <!-- The CTA above the composer already says it; no need to repeat. -->
