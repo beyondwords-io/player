@@ -98,36 +98,31 @@ describe("ChatThread", () => {
     component.$destroy();
   });
 
-  it("renders blank-line-separated text as consistently spaced blocks", () => {
+  it("caps excessive blank lines without changing the agent's line structure", () => {
     const target = document.createElement("div");
     const component = new ChatThread({
       target,
       props: {
         tokens,
-        thread: [reply("  Introduction  \n\n\n  First line\nstill the same block  \n \n  Closing question  ")],
+        thread: [reply("Introduction\n\n\n\nFirst line\nstill the same paragraph\n \nClosing question")],
       },
     });
 
     const answer = target.querySelector(".answer");
-    const blocks = Array.from(target.querySelectorAll(".answer-block"));
-    expect(answer?.classList.contains("formatted")).toEqual(true);
-    expect(blocks.map((block) => block.textContent)).toEqual([
-      "Introduction",
-      "First line\nstill the same block",
-      "Closing question",
-    ]);
+    expect(answer?.textContent).toEqual(
+      "Introduction\n\nFirst line\nstill the same paragraph\n \nClosing question",
+    );
     component.$destroy();
   });
 
-  it("does not apply block formatting while a reply is streaming", () => {
+  it("does not normalize spacing while a reply is streaming", () => {
     const target = document.createElement("div");
     const component = new ChatThread({
       target,
-      props: { tokens, thread: [reply("First paragraph\n\nSecond paragraph", { streaming: true })] },
+      props: { tokens, thread: [reply("First paragraph\n\n\n\nSecond paragraph", { streaming: true })] },
     });
 
-    expect(target.querySelector(".answer")?.classList.contains("formatted")).toEqual(false);
-    expect(target.querySelectorAll(".answer-block")).toHaveLength(0);
+    expect(target.querySelector(".answer")?.textContent).toContain("First paragraph\n\n\n\nSecond paragraph");
     expect(target.querySelector(".cursor")).not.toBeNull();
     component.$destroy();
   });
