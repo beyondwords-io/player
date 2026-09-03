@@ -79,6 +79,7 @@ describe("ChatPanel", () => {
     });
 
     expect(target.querySelector(".voice path").getAttribute("stroke")).toEqual("red");
+    expect(target.querySelector(".voice").style.background).toEqual(tokens.subtle);
     expect(target.querySelector(".send").style.background).toEqual("red");
     expect(target.querySelector(".send path").getAttribute("stroke")).toEqual("white");
     component.$destroy();

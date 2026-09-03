@@ -1,4 +1,4 @@
-import { contrastRatio, firstColorStop, parseColor, toAlphaString } from "./colorMath";
+import { contrastRatio, firstColorStop, parseColor } from "./colorMath";
 import {
   completePlayerTheme,
   completeVideoTheme,
@@ -49,10 +49,6 @@ const parseAgentColor = (value: unknown) => {
   return { from: firstColorStop(css) || css, to: undefined, css };
 };
 
-const overlay = (color: string, alpha: number) => (
-  parseColor(color) ? toAlphaString(color, alpha) : `color-mix(in srgb, ${color} ${alpha * 100}%, transparent)`
-);
-
 const scaleRadius = (radius: unknown) => {
   const base = Math.max(0, Math.min(16, Number.isFinite(Number(radius)) ? Number(radius) : 8));
 
@@ -99,6 +95,8 @@ const deriveTokens = ({
     iconColor: overrides.videoIconColor,
     subtleColor: overrides.videoSubtleColor,
   });
+  const hover = selectedTheme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)";
+  const pressed = selectedTheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
 
   const agent = parseAgentColor(player.agentColor);
   const avatarUrl = agentAvatar ?? overrides.agentAvatar;
@@ -125,8 +123,8 @@ const deriveTokens = ({
     videoSubtle: video.subtleColor,
 
     // Interaction treatments stay internal effects; visible roles are literal.
-    hover: overlay(player.textColor, 0.05),
-    pressed: overlay(player.textColor, 0.1),
+    hover,
+    pressed,
     divider: player.subtleColor,
     track: player.subtleColor,
     muted: player.secondaryTextColor,
