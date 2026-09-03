@@ -97,4 +97,38 @@ describe("ChatThread", () => {
     expect(target.querySelector(".answer")?.textContent).not.toContain("https://");
     component.$destroy();
   });
+
+  it("renders blank-line-separated text as consistently spaced blocks", () => {
+    const target = document.createElement("div");
+    const component = new ChatThread({
+      target,
+      props: {
+        tokens,
+        thread: [reply("  Introduction  \n\n\n  First line\nstill the same block  \n \n  Closing question  ")],
+      },
+    });
+
+    const answer = target.querySelector(".answer");
+    const blocks = Array.from(target.querySelectorAll(".answer-block"));
+    expect(answer?.classList.contains("formatted")).toEqual(true);
+    expect(blocks.map((block) => block.textContent)).toEqual([
+      "Introduction",
+      "First line\nstill the same block",
+      "Closing question",
+    ]);
+    component.$destroy();
+  });
+
+  it("does not apply block formatting while a reply is streaming", () => {
+    const target = document.createElement("div");
+    const component = new ChatThread({
+      target,
+      props: { tokens, thread: [reply("First paragraph\n\nSecond paragraph", { streaming: true })] },
+    });
+
+    expect(target.querySelector(".answer")?.classList.contains("formatted")).toEqual(false);
+    expect(target.querySelectorAll(".answer-block")).toHaveLength(0);
+    expect(target.querySelector(".cursor")).not.toBeNull();
+    component.$destroy();
+  });
 });

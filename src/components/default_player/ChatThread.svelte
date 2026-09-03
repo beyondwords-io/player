@@ -17,6 +17,11 @@
   const displayCitations = (message: AgentReplyMessage) => (
     mergeAgentCitations(message.citations, message.streaming ? [] : agentCitationsFromText(message.text))
   );
+
+  const answerBlocks = (text: string) => agentTextWithoutLinks(text)
+    .split(/\n[ \t]*\n+/)
+    .map((block) => block.trim())
+    .filter(Boolean);
 </script>
 
 {#if thread.length > 0}
@@ -50,7 +55,7 @@
         <div class="agent-row">
           <Orb size={20} orb={tokens.orb} avatarUrl={tokens.avatarUrl} generating={message.streaming} />
           <div class="answer-col">
-            <span class="answer" style="color: {tokens.text}">
+            <span class="answer" class:formatted={!message.typing && !message.streaming} style="color: {tokens.text}">
               {#if message.typing}
                 <!-- Decorative: the finished answer is what gets announced. -->
                 <span class="typing" aria-hidden="true">
@@ -61,7 +66,9 @@
               {:else if message.streaming}
                 {message.text}<span class="cursor animating" style="background: {tokens.sendBackground}"></span>
               {:else}
-                {agentTextWithoutLinks(message.text)}
+                {#each answerBlocks(message.text) as block, blockIndex (blockIndex)}
+                  <span class="answer-block">{block}</span>
+                {/each}
               {/if}
             </span>
             {#if displayCitations(message).length > 0}
@@ -132,6 +139,18 @@
     font-size: 13px;
     line-height: 1.5;
     white-space: pre-line;
+  }
+
+  .answer.formatted {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    white-space: normal;
+  }
+
+  .answer-block {
+    display: block;
+    white-space: pre-wrap;
   }
 
   .typing {
