@@ -125,6 +125,9 @@ test("default player playlist rows stay inside the player surface", async ({ pag
   const rowCount = await rows.count();
 
   expect(rowCount).toEqual(3);
+  await expect(rows.locator(".index")).toHaveCount(0);
+  await expect(rows.locator(".play-glyph")).toHaveCount(2);
+  await expect(rows.locator(".play-glyph").first()).toBeVisible();
   for (let index = 0; index < rowCount; index += 1) {
     const box = await rows.nth(index).boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(surface.x);

@@ -56,7 +56,6 @@
           {#if i === contentIndex}
             <NowPlayingMarker size={16} color={tokens.icon} />
           {:else}
-            <span class="index" style="color: {tokens.muted}">{i + 1}</span>
             <svg class="play-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
               <path fill={tokens.icon} d="M8.5 6.82 Q7.4 6.2 7.4 7.5 L7.4 16.5 Q7.4 17.8 8.5 17.18 L16.9 12.78 Q18.3 12 16.9 11.22Z" />
             </svg>
@@ -114,25 +113,9 @@
     flex-shrink: 0;
   }
 
-  .index {
-    font-size: 11px;
-  }
-
-  .play-glyph {
-    display: none;
-  }
-
   @media (hover: hover) and (pointer: fine) {
     .row:hover {
       background: var(--hover-bg);
-    }
-
-    .row:hover .index {
-      display: none;
-    }
-
-    .row:hover .play-glyph {
-      display: block;
     }
   }
 
