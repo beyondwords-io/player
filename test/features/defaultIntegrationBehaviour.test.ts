@@ -187,6 +187,73 @@ test("default player tier lock uses the icon palette role", async ({ page }) => 
   await expect(lockPaths.first()).toHaveAttribute("stroke", "rgb(0, 128, 0)");
 });
 
+test("default player progress and status icons use the icon palette role", async ({ page }) => {
+  await page.evaluate((audio) => {
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      embedMode: "audio-agent",
+      playbackState: "playing",
+      currentTime: 30,
+      duration: 60,
+      agentQuestionsLimit: 0,
+      agentQuestionsRemaining: 0,
+      agentVoice: false,
+      agentVoiceSecondsLimit: 0,
+      agentVoiceSecondsRemaining: 0,
+      lightTheme: {
+        textColor: "rgb(200, 0, 0)",
+        secondaryTextColor: "rgb(255, 165, 0)",
+        iconColor: "rgb(0, 128, 0)",
+      },
+      content: [{ title: "Article", audio }],
+    });
+  }, audio);
+
+  const player = page.locator(".default-player");
+  await expect(player.locator(".progress-track .fill")).toHaveCSS("background-color", "rgb(0, 128, 0)");
+  await expect(player.locator(".chat-button > svg path").first()).toHaveAttribute("stroke", "rgb(0, 128, 0)");
+
+  await player.locator(".chat-button").click();
+  await player.locator("input").fill("What happened?");
+  await player.locator("button[aria-label='Send']").click();
+  await expect(player.locator(".locked-answer svg path").first()).toHaveAttribute("stroke", "rgb(0, 128, 0)");
+  await expect(player.locator(".composer.spent > svg path").first()).toHaveAttribute("stroke", "rgb(0, 128, 0)");
+
+  await page.evaluate(() => window.dispatchEvent(new Event("offline")));
+  await expect(player.locator(".offline-note svg path").first()).toHaveAttribute("stroke", "rgb(0, 128, 0)");
+  await expect(player.locator(".progress-track .fill")).toHaveCSS("background-color", "rgb(0, 128, 0)");
+});
+
+test("default player video progress uses the video icon palette role", async ({ page }) => {
+  await page.evaluate(({ audio, video }) => {
+    const player = new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      video: true,
+      videoTheme: {
+        textColor: "rgb(200, 0, 0)",
+        iconColor: "rgb(0, 128, 0)",
+      },
+      content: [{ title: "Video", audio, video }],
+    });
+
+    Object.assign(player, {
+      loadedMedia: { ...video[0], format: "video" },
+      playbackState: "paused",
+      currentTime: 30,
+      duration: 60,
+    });
+  }, { audio, video });
+
+  const frame = page.locator(".default-player .video-frame");
+  await expect(frame.locator(".title")).toHaveCSS("color", "rgb(200, 0, 0)");
+  await expect(frame.locator(".progress-track .fill")).toHaveCSS("background-color", "rgb(0, 128, 0)");
+  await expect(frame.locator(".progress-track")).toHaveCSS("outline-color", "rgb(0, 128, 0)");
+});
+
 test("media preference changes do not replace sources after playback starts", async ({ page }) => {
   const sources = await page.evaluate(async ({ audio, video }) => {
     window.disableMediaLoad = false;

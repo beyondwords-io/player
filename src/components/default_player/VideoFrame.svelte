@@ -84,7 +84,7 @@
 
       {#if isWidget}
         <div class="resting-progress" class:visible={resting}>
-          <div class="resting-fill" style="width: {progress * 100}%; background: {tokens.videoText}"></div>
+          <div class="resting-fill" style="width: {progress * 100}%; background: {tokens.videoIcon}"></div>
         </div>
 
         {#if showClose}
@@ -97,7 +97,7 @@
       <div class="controls" class:visible={controlsVisible} class:vertical>
         {#if vertical}
           <span class="v-title" style="color: {tokens.videoText}">{title}</span>
-          <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={tokens.videoSubtle} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
+          <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={tokens.videoSubtle} fillColor={tokens.videoIcon} focusColor={tokens.videoIcon} {onEvent} />
           <div class="v-row">
             <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
               <button type="button" class="overlay-button" aria-label={isPlaying ? translate("pauseAudio") : translate("playAudio")} on:click={handlePlayPause} on:mouseup={blurElement}>
@@ -123,7 +123,7 @@
               <span class="title" style="color: {tokens.videoText}">{title}</span>
               <span class="time" style="color: {tokens.videoText}">{formatTime(currentTime)} / {formatTime(duration)}</span>
             </div>
-            <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={tokens.videoSubtle} fillColor={tokens.videoText} focusColor={tokens.videoText} {onEvent} />
+            <ProgressTrack {progress} {duration} radius={tokens.radius.track} trackColor={tokens.videoSubtle} fillColor={tokens.videoIcon} focusColor={tokens.videoIcon} {onEvent} />
           </div>
 
           <button type="button" class="overlay-button" aria-label={translate("maximizeVideo")} on:click={handleMaximize} on:mouseup={blurElement}>

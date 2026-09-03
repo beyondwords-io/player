@@ -31,7 +31,7 @@
           <Orb size={20} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={true} />
           <div class="answer-col">
             <span class="locked-answer">
-              <LockSimple size={15} color={tokens.muted} />
+              <LockSimple size={15} color={tokens.icon} />
               {#if ctaText && ctaUrl}
                 <a class="subscribe" href={ctaUrl} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}">{ctaText}</a>
               {:else if ctaText}
