@@ -19,7 +19,8 @@
   let track;
   let readFullTime = true;
 
-  $: seconds = Math.max(0, Math.min(progress, 1)) * duration;
+  $: clampedProgress = Math.max(0, Math.min(progress, 1));
+  $: seconds = clampedProgress * duration;
   $: outOf = readFullTime ? `${translate("outOfTotalTime")} ${formatTime(duration)}` : "";
   $: ariaText = `${formatTime(seconds)} ${outOf}`;
 
@@ -86,7 +87,9 @@
   aria-valuemax={Math.floor(duration)}
   aria-readonly={readonly || undefined}
 >
-  <div class="fill" style="width: {Math.max(0, Math.min(progress, 1)) * 100}%; background: {fillColor}; opacity: {fillOpacity}; border-radius: {radius}"></div>
+  {#if clampedProgress > 0}
+    <div class="fill" style="width: {clampedProgress * 100}%; background: {fillColor}; opacity: {fillOpacity}; border-radius: {radius}"></div>
+  {/if}
 </div>
 
 <style>
