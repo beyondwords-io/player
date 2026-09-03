@@ -7,7 +7,9 @@ import { PLAYER_COLOR_PRESETS, VIDEO_COLOR_PRESET } from "./default_theme/palett
 //
 //   key        the prop name, which is also the label
 //   group      panel section, in the order the groups are declared below
-//   control    select | text | number | json
+//   control    select | text | number | json | palette
+//   label      a friendlier label when the prop name is too implementation-specific
+//   fields     labelled object fields rendered by a palette control
 //   options    array, or a function of { content, adverts, introsOutros, videoSizes }
 //   format     value -> the string shown in the control
 //   parse      the control's string -> the value to set (undefined means "cleared")
@@ -38,6 +40,27 @@ const number = (dflt) => ({
   parse: (raw) => (raw === "" ? undefined : Number(raw)),
 });
 
+const playerColorFields = [
+  { key: "backgroundColor", label: "Background", description: "Player surface and send-button icon" },
+  { key: "textColor", label: "Primary text", description: "Main copy, progress fill, focus outlines, and send-button background" },
+  { key: "secondaryTextColor", label: "Secondary text", description: "Metadata, captions, placeholders, and disabled copy" },
+  { key: "iconColor", label: "Icons", description: "Transport and utility controls" },
+  { key: "subtleColor", label: "Subtle", description: "Progress tracks, dividers, skeletons, citation borders, and quiet borders" },
+  { key: "linkColor", label: "Links and citations", description: "Calls to action, citations, and underlines" },
+  { key: "highlightColor", label: "Section highlight", description: "The active section highlight" },
+  { key: "wordHighlightColor", label: "Word highlight", description: "The current-word highlight" },
+  { key: "agentColor", label: "Agent", description: "A CSS color or background gradient for the agent orb" },
+  { key: "accentColor", label: "User bubble", description: "User-message background only" },
+  { key: "accentTextColor", label: "User bubble text", description: "User-message text only" },
+];
+
+const videoColorFields = [
+  { key: "backgroundColor", label: "Background", description: "Video surface" },
+  { key: "textColor", label: "Text", description: "Video text" },
+  { key: "iconColor", label: "Icons", description: "Video controls" },
+  { key: "subtleColor", label: "Subtle", description: "Video tracks and quiet controls" },
+];
+
 const indexOptions = (key) => ({ [key]: items }) => [-1, ...(items || []).map((_item, index) => index)];
 const indexLabel = (key) => (value, ctx) => {
   const item = ctx?.[key]?.[value];
@@ -63,17 +86,23 @@ const settingsManifest = [
   { key: "video", group: "Style", control: "select", options: bool, default: false, appliesTo: "default", refetch: true, needs: "content with a video variant" },
   { key: "videoSizes", group: "Style", control: "select", default: [], refetch: true, ...csv,
     options: ({ videoSizes }) => ["", ...videoSizes], format: (value) => value?.[0] || "auto (first match)", parse: (raw) => (raw ? [raw] : []) },
-  { key: "theme", group: "Style", control: "select", options: [null, "light", "dark", "auto", "custom"], default: "light", cleared: null, appliesTo: "default",
-    parse: (raw) => raw || null, format: (value) => value || "project theme" },
-  { key: "lightTheme", group: "Style", control: "json", default: PLAYER_COLOR_PRESETS.light, cleared: {}, api: "light_theme", appliesTo: "default" },
-  { key: "darkTheme", group: "Style", control: "json", default: PLAYER_COLOR_PRESETS.dark, cleared: {}, api: "dark_theme", appliesTo: "default" },
-  { key: "videoTheme", group: "Style", control: "json", default: VIDEO_COLOR_PRESET, cleared: {}, api: "video_theme", appliesTo: "default" },
+  { key: "theme", label: "Theme", group: "Colors", control: "select", options: [null, "light", "dark", "auto", "custom"], default: "light", cleared: null, appliesTo: "default",
+    parse: (raw) => raw || null, format: (value) => value === "custom" ? "custom (deprecated alias for light)" : value || "project theme" },
+  { key: "lightTheme", label: "Light palette", group: "Colors", control: "palette", fields: playerColorFields,
+    default: PLAYER_COLOR_PRESETS.light, cleared: {}, api: "light_theme", appliesTo: "default",
+    presets: { "built-in Light": PLAYER_COLOR_PRESETS.light } },
+  { key: "darkTheme", label: "Dark palette", group: "Colors", control: "palette", fields: playerColorFields,
+    default: PLAYER_COLOR_PRESETS.dark, cleared: {}, api: "dark_theme", appliesTo: "default",
+    presets: { "built-in Dark": PLAYER_COLOR_PRESETS.dark } },
+  { key: "videoTheme", label: "Video palette", group: "Colors", control: "palette", fields: videoColorFields,
+    default: VIDEO_COLOR_PRESET, cleared: {}, api: "video_theme", appliesTo: "default",
+    presets: { "built-in Video": VIDEO_COLOR_PRESET }, needs: "video content" },
   { key: "radius", group: "Style", ...number(8), api: "radius", appliesTo: "default" },
-  { key: "textColor", group: "Style", control: "text", default: "#111", api: "text_color" },
-  { key: "backgroundColor", group: "Style", control: "text", default: "#f5f5f5", api: "background_color" },
-  { key: "iconColor", group: "Style", control: "text", default: "rgba(0, 0, 0, 0.8)", api: "icon_color" },
-  { key: "accentColor", group: "Style", control: "text", default: undefined, api: "accent_color", appliesTo: "default", needs: "the chat panel" },
-  { key: "accentTextColor", group: "Style", control: "text", default: undefined, api: "accent_text_color", appliesTo: "default", needs: "the chat panel" },
+  { key: "textColor", group: "Style", control: "text", default: "#111", api: "text_color", advanced: true, needs: "legacy players; use the palette editors for the default player" },
+  { key: "backgroundColor", group: "Style", control: "text", default: "#f5f5f5", api: "background_color", advanced: true, needs: "legacy players; use the palette editors for the default player" },
+  { key: "iconColor", group: "Style", control: "text", default: "rgba(0, 0, 0, 0.8)", api: "icon_color", advanced: true, needs: "legacy players; use the palette editors for the default player" },
+  { key: "accentColor", group: "Style", control: "text", default: undefined, api: "accent_color", appliesTo: "default", advanced: true, needs: "the deprecated flat SDK override; use the palette editors" },
+  { key: "accentTextColor", group: "Style", control: "text", default: undefined, api: "accent_text_color", appliesTo: "default", advanced: true, needs: "the deprecated flat SDK override; use the palette editors" },
   { key: "logoIconEnabled", group: "Style", control: "select", options: bool, default: true, api: "logo_icon_enabled" },
   { key: "videoTextColor", group: "Style", control: "text", default: "white", api: "video_theme.text_color", advanced: true, needs: "video" },
   { key: "videoBackgroundColor", group: "Style", control: "text", default: "black", api: "video_theme.background_color", advanced: true, needs: "video" },
@@ -136,7 +165,7 @@ const settingsManifest = [
     } },
   { key: "agentCtaText", group: "Agent", control: "text", default: undefined, cleared: null, api: "access_tier.player_agent.cta_text", appliesTo: "default", needs: "a locked or spent agent; falls back to accessCtaText" },
   { key: "agentCtaUrl", group: "Agent", control: "text", default: undefined, cleared: null, api: "access_tier.player_agent.cta_url", appliesTo: "default", needs: "falls back to accessCtaUrl" },
-  { key: "agentColor", group: "Agent", control: "text", default: undefined, cleared: null, api: "agent_color", appliesTo: "default" },
+  { key: "agentColor", group: "Agent", control: "text", default: undefined, cleared: null, api: "agent_color", appliesTo: "default", advanced: true, needs: "the deprecated flat SDK override; use the palette editors" },
   { key: "agentAvatar", group: "Agent", control: "text", default: undefined, cleared: null, api: "agent_avatar_url", appliesTo: "default" },
 
   { key: "playlistStyle", group: "Playlist", control: "select", options: ["auto-5-4", "auto", "show", "show-3", "show-999", "hide"], default: "auto-5-4", needs: "playlist content" },
@@ -151,10 +180,10 @@ const settingsManifest = [
   { key: "showCloseWidget", group: "Widget", control: "select", options: bool, default: true },
   { key: "widgetTarget", group: "Widget", control: "text", default: undefined, cleared: null, advanced: true },
 
-  { key: "highlightColor", group: "Highlighting", control: "text", default: "#eee", api: "highlight_color" },
+  { key: "highlightColor", group: "Highlighting", control: "text", default: "#eee", api: "highlight_color", advanced: true, needs: "legacy players; use the palette editors for the default player" },
   { key: "wordHighlightsEnabled", group: "Highlighting", control: "select", options: bool, default: false, api: "word_highlights_enabled", refetch: true,
     needs: "word timings, which are only requested when this is on at fetch time" },
-  { key: "wordHighlightColor", group: "Highlighting", control: "text", default: undefined, cleared: null, api: "word_highlight_color" },
+  { key: "wordHighlightColor", group: "Highlighting", control: "text", default: undefined, cleared: null, api: "word_highlight_color", advanced: true, needs: "legacy players; use the palette editors for the default player" },
   { key: "highlightSections", group: "Highlighting", control: "select", options: sections, default: "all", api: "segment_highlights_enabled", needs: "segments in the page" },
   { key: "clickableSections", group: "Highlighting", control: "select", options: sections, default: "all", api: "segment_playback_enabled", needs: "segments in the page" },
   { key: "segmentWidgetSections", group: "Highlighting", control: "select", options: sections, default: "body", advanced: true },

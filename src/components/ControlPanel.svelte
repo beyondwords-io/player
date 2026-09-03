@@ -245,6 +245,10 @@
       <br/>
       <strong>{group}</strong>
 
+      {#if group === "Colors"}
+        <div class="note">Choose the active theme, then edit any CSS color or gradient below. Changes apply immediately; reset palette restores the API or built-in values.</div>
+      {/if}
+
       {#each settings as setting (setting.key)}
         <SettingControl
           {setting}
