@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { AgentMessage } from "../../helpers/agentContracts";
-  import { agentTextParts, linkHostsFromUrls } from "../../helpers/agentLinks";
+  import { agentTextParts } from "../../helpers/agentLinks";
   import type { DefaultPlayerTokens } from "../../helpers/defaultPlayerTokens";
   import ArrowUpRight from "../svg_icons/default_player/ArrowUpRight.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
@@ -12,12 +12,6 @@
   export let thread: AgentMessage[] = [];
   export let threadElement: HTMLDivElement | undefined = undefined;
   export let tokens: DefaultPlayerTokens;
-  export let linkHosts: string[] = [];
-
-  $: citationHosts = linkHostsFromUrls(thread.flatMap((message) => (
-    message.role === "agent" ? message.citations.map(({ url }) => url) : []
-  )));
-  $: allowedLinkHosts = Array.from(new Set([...linkHosts, ...citationHosts]));
 </script>
 
 {#if thread.length > 0}
@@ -62,7 +56,7 @@
               {:else if message.streaming}
                 {message.text}<span class="cursor animating" style="background: {tokens.sendBackground}"></span>
               {:else}
-                {#each agentTextParts(message.text, allowedLinkHosts) as part, j (j)}
+                {#each agentTextParts(message.text) as part, j (j)}
                   {#if part.kind === "link"}
                     <a
                       class="answer-link"

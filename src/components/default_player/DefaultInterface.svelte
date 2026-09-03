@@ -21,7 +21,6 @@
   import { resolveFixedWidgetGeometry } from "../../helpers/defaultWidgetGeometry";
   import { mediaQueryMatches, subscribeMediaQuery } from "../../helpers/mediaQuery";
   import { contentVariantHasSection } from "../../helpers/contentVariants";
-  import { linkHostsFromUrls } from "../../helpers/agentLinks";
   import CaretDown from "../svg_icons/default_player/CaretDown.svelte";
   import SkipButton from "./SkipButton.svelte";
   import SpeedButton from "./SpeedButton.svelte";
@@ -183,7 +182,6 @@
   $: displayBackground = tokens.background;
 
   $: contentItem = content[contentIndex] || {};
-  $: agentLinkHosts = linkHostsFromUrls(content.map(({ sourceUrl }) => sourceUrl));
   $: isPlaying = playbackState === "playing";
   $: isStopped = playbackState === "stopped";
   $: isPlaylist = content.length > 1;
@@ -615,7 +613,6 @@
         <ChatPanel
           {tokens}
           {agentClient}
-          linkHosts={agentLinkHosts}
           {agentPlaceholder}
           {agentVoice}
           {agentQuestionsLimit}
@@ -640,7 +637,6 @@
     <ChatPanel
       {tokens}
       {agentClient}
-      linkHosts={agentLinkHosts}
       {agentPlaceholder}
       {agentVoice}
       {agentQuestionsLimit}
@@ -779,7 +775,6 @@
       <ChatPanel
         {tokens}
         {agentClient}
-        linkHosts={agentLinkHosts}
         {agentPlaceholder}
         {agentVoice}
         {agentQuestionsLimit}

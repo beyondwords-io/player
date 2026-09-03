@@ -16,7 +16,6 @@
 
   export let tokens: DefaultPlayerTokens;
   export let agentClient: AgentClient;
-  export let linkHosts: string[] = [];
   export let agentPlaceholder: string | undefined = undefined;
   export let agentVoice = true;
   export let agentQuestionsLimit: AgentLimit = null;
@@ -146,7 +145,7 @@
 
 <div class="chat-panel">
   <ChatShortcuts empty={true} open={thread.length === 0 && shortcuts.length > 0 && (locked || textAvailable)} questions={shortcuts} {tokens} onSelect={send} />
-  <ChatThread {thread} {announced} {ctaText} {ctaUrl} {tokens} {linkHosts} bind:threadElement />
+  <ChatThread {thread} {announced} {ctaText} {ctaUrl} {tokens} bind:threadElement />
   <ChatShortcuts open={shortcutsOpen} questions={shortcutRows} {tokens} onSelect={send} />
 
   {#if budgetSpent || lockedAsked}

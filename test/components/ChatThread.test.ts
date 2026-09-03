@@ -18,13 +18,12 @@ const reply = (text: string, overrides = {}) => ({
 });
 
 describe("ChatThread", () => {
-  it("renders finalized links for the publisher's approved source host", () => {
+  it("renders finalized links for any HTTPS source host", () => {
     const target = document.createElement("div");
     const component = new ChatThread({
       target,
       props: {
         tokens,
-        linkHosts: ["cityam.com"],
         thread: [reply("The link is `https://www.cityam.com/latest-story/`.")],
       },
     });
@@ -38,13 +37,12 @@ describe("ChatThread", () => {
     component.$destroy();
   });
 
-  it("does not link an unknown host or text that is still streaming", () => {
+  it("links an external host once finalized but not while it is streaming", () => {
     const target = document.createElement("div");
     const component = new ChatThread({
       target,
       props: {
         tokens,
-        linkHosts: ["cityam.com"],
         thread: [
           reply("Unknown https://example.com/story"),
           reply("Streaming https://cityam.com/story", { streaming: true }),
@@ -52,7 +50,8 @@ describe("ChatThread", () => {
       },
     });
 
-    expect(target.querySelector(".answer-link")).toBeNull();
+    expect(target.querySelectorAll(".answer-link")).toHaveLength(1);
+    expect(target.querySelector<HTMLAnchorElement>(".answer-link")?.href).toEqual("https://example.com/story");
     expect(target.querySelector(".cursor")).not.toBeNull();
     component.$destroy();
   });
