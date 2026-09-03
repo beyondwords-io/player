@@ -94,7 +94,7 @@
         </span>
 
         {#if item.selected}
-          <Check size={14} color={tokens.text} />
+          <Check size={14} color={tokens.icon} />
         {/if}
       </button>
     {/each}

@@ -140,11 +140,11 @@ const deriveTokens = ({
     hasAvatar: !!avatarUrl,
     avatarUrl,
 
-    // The accent pair belongs only to user messages. Send controls deliberately
-    // use the primary/background pair from the consolidated role mapping.
+    // The accent pair belongs only to user messages. Filled controls use the
+    // icon role for their visible shape and the surface role for their cut-out.
     bubbleBackground: player.accentColor,
     bubbleText: player.accentTextColor,
-    sendBackground: player.textColor,
+    sendBackground: player.iconColor,
     sendIcon: player.backgroundColor,
     citation: player.linkColor,
     citationBorder: player.subtleColor,

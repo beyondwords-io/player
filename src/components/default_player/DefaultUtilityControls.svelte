@@ -96,7 +96,7 @@
     on:click={onClose}
     on:mouseup={blurElement}
   >
-    <Close size={14} color={tokens.muted} />
+    <Close size={14} color={tokens.icon} />
   </button>
 {/if}
 

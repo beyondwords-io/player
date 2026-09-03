@@ -195,7 +195,7 @@ describe("deriveTokens", () => {
       orb: "agent-paint",
       bubbleBackground: "user-bubble",
       bubbleText: "user-copy",
-      sendBackground: "#111",
+      sendBackground: "same-as-background",
       sendIcon: "invalid-background",
     });
   });
