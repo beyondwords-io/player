@@ -4,7 +4,7 @@ type AgentTextPart =
   | { kind: "text"; text: string }
   | { kind: "link"; text: string; href: string };
 
-const LINK_PATTERN = /\[([^\]\n]+)\]\((https:\/\/[^\s)]+)\)|(https:\/\/[^\s<]+)/gi;
+const LINK_PATTERN = /\[([^\]\n]+)\]\((https:\/\/[^\s)]+)\)|`(https:\/\/[^`\s<]+)`|(https:\/\/[^\s<`]+)/gi;
 const SIMPLE_TRAILING_PUNCTUATION = /[.,!?;:]$/;
 const CLOSING_BRACKETS: Record<string, string> = { ")": "(", "]": "[", "}": "{" };
 
@@ -78,7 +78,7 @@ const agentTextParts = (text: string, allowedHosts: string[] = []): AgentTextPar
     appendText(parts, text.slice(index, start));
 
     const markdownLabel = match[1];
-    const raw = match[2] || match[3];
+    const raw = match[2] || match[3] || match[4];
     const { url, trailing } = trimTrailingPunctuation(raw);
     const href = allowedHttpsUrl(url, hosts);
 
