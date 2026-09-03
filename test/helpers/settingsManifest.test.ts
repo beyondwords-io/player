@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import BeyondWords from "../../src/index";
+import { PLAYER_COLOR_KEYS, VIDEO_COLOR_KEYS } from "../../src/helpers/default_theme/palettes";
 import settingsManifest, { findSetting, optionsFor, optionValue, optionLabel, parseOption, selectedOption } from "../../src/helpers/settingsManifest";
 
 // The manifest is what the control panel renders, so anything that drifts from
@@ -36,6 +37,24 @@ describe("settingsManifest", () => {
   it("describes each setting exactly once", () => {
     const keys = settingsManifest.map(({ key }) => key);
     expect(keys).toEqual([...new Set(keys)]);
+  });
+
+  it("exposes every literal color as a labelled palette field", () => {
+    const light = findSetting("lightTheme");
+    const dark = findSetting("darkTheme");
+    const video = findSetting("videoTheme");
+
+    expect(light.control).toEqual("palette");
+    expect(dark.control).toEqual("palette");
+    expect(video.control).toEqual("palette");
+    expect(light.fields.map(({ key }) => key)).toEqual(PLAYER_COLOR_KEYS);
+    expect(dark.fields.map(({ key }) => key)).toEqual(PLAYER_COLOR_KEYS);
+    expect(video.fields.map(({ key }) => key)).toEqual(VIDEO_COLOR_KEYS);
+
+    for (const field of [...light.fields, ...dark.fields, ...video.fields]) {
+      expect(field.label, `${field.key} has no tester-friendly label`).toBeTruthy();
+      expect(field.description, `${field.key} has no usage description`).toBeTruthy();
+    }
   });
 
   it("covers every documented setting in Player.svelte", () => {
