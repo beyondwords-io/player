@@ -1,6 +1,7 @@
 import { tick } from "svelte";
 import ChatPanel from "../../src/components/default_player/ChatPanel.svelte";
 import MockAgentClient from "../../src/helpers/agentClient";
+import deriveTokens from "../../src/helpers/default_theme/deriveTokens";
 
 describe("ChatPanel", () => {
   it("renders subsequent agent state notifications", async () => {
@@ -59,6 +60,27 @@ describe("ChatPanel", () => {
 
     expect(target.querySelector(".voice")).toBeNull();
     expect(target.querySelector(".composer.spent")).not.toBeNull();
+    component.$destroy();
+  });
+
+  it("uses the icon color for voice and submit controls", () => {
+    const target = document.createElement("div");
+    const tokens = deriveTokens({ palette: {
+      backgroundColor: "white",
+      textColor: "blue",
+      iconColor: "red",
+    } });
+    const component = new ChatPanel({
+      target,
+      props: {
+        tokens,
+        agentClient: new MockAgentClient(),
+      },
+    });
+
+    expect(target.querySelector(".voice path").getAttribute("stroke")).toEqual("red");
+    expect(target.querySelector(".send").style.background).toEqual("red");
+    expect(target.querySelector(".send path").getAttribute("stroke")).toEqual("white");
     component.$destroy();
   });
 });

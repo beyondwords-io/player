@@ -54,11 +54,11 @@
       >
         <span class="marker-slot">
           {#if i === contentIndex}
-            <NowPlayingMarker size={16} color={tokens.text} />
+            <NowPlayingMarker size={16} color={tokens.icon} />
           {:else}
             <span class="index" style="color: {tokens.muted}">{i + 1}</span>
             <svg class="play-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
-              <path fill={tokens.text} d="M8.5 6.82 Q7.4 6.2 7.4 7.5 L7.4 16.5 Q7.4 17.8 8.5 17.18 L16.9 12.78 Q18.3 12 16.9 11.22Z" />
+              <path fill={tokens.icon} d="M8.5 6.82 Q7.4 6.2 7.4 7.5 L7.4 16.5 Q7.4 17.8 8.5 17.18 L16.9 12.78 Q18.3 12 16.9 11.22Z" />
             </svg>
           {/if}
         </span>
