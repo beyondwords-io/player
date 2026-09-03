@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { AgentMessage } from "../../helpers/agentContracts";
+  import { agentTextParts, linkHostsFromUrls } from "../../helpers/agentLinks";
   import type { DefaultPlayerTokens } from "../../helpers/defaultPlayerTokens";
   import ArrowUpRight from "../svg_icons/default_player/ArrowUpRight.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
@@ -11,6 +12,12 @@
   export let thread: AgentMessage[] = [];
   export let threadElement: HTMLDivElement | undefined = undefined;
   export let tokens: DefaultPlayerTokens;
+  export let linkHosts: string[] = [];
+
+  $: citationHosts = linkHostsFromUrls(thread.flatMap((message) => (
+    message.role === "agent" ? message.citations.map(({ url }) => url) : []
+  )));
+  $: allowedLinkHosts = Array.from(new Set([...linkHosts, ...citationHosts]));
 </script>
 
 {#if thread.length > 0}
@@ -52,13 +59,27 @@
                   <span class="animating" style="background: {tokens.muted}"></span>
                   <span class="animating" style="background: {tokens.muted}"></span>
                 </span>
+              {:else if message.streaming}
+                {message.text}<span class="cursor animating" style="background: {tokens.sendBackground}"></span>
               {:else}
-                {message.text}{#if message.streaming}<span class="cursor animating" style="background: {tokens.sendBackground}"></span>{/if}
+                {#each agentTextParts(message.text, allowedLinkHosts) as part, j (j)}
+                  {#if part.kind === "link"}
+                    <a
+                      class="answer-link"
+                      href={part.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}"
+                    >{part.text}</a>
+                  {:else}
+                    {part.text}
+                  {/if}
+                {/each}
               {/if}
             </span>
             {#if message.citations.length > 0}
               <span class="citations">
-                {#each message.citations as citation (citation.title)}
+                {#each message.citations as citation (citation.url)}
                   <a
                     class="citation"
                     href={citation.url}
@@ -203,6 +224,7 @@
   }
 
   .citation:focus-visible,
+  .answer-link:focus-visible,
   .subscribe:focus-visible {
     outline-width: 2px;
     outline-style: solid;
@@ -247,5 +269,12 @@
     border-bottom-width: 1px;
     border-bottom-style: dotted;
     cursor: pointer;
+  }
+
+  .answer-link {
+    text-decoration: none;
+    border-bottom-width: 1px;
+    border-bottom-style: dotted;
+    overflow-wrap: anywhere;
   }
 </style>

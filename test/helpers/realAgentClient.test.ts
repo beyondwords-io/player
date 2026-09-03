@@ -25,6 +25,8 @@ const fakeSdk = () => {
           emitMessage: (message, role, eventId = 1) => config.onMessage?.({ message, role, source: role === "agent" ? "ai" : "user", event_id: eventId }),
           emitPart: (type, text, eventId = 1) => config.onAgentChatResponsePart?.({ type, text, event_id: eventId }),
           emitCorrection: (corrected, eventId = 1, original = "x") => config.onAgentResponseCorrection?.({ original_agent_response: original, corrected_agent_response: corrected, event_id: eventId }),
+          emitMCPToolCall: (payload) => config.onMCPToolCall?.(payload),
+          emitAgentToolResponse: (payload) => config.onAgentToolResponse?.(payload),
           emitDisconnect: (details = { reason: "agent" }) => config.onDisconnect?.(details),
         };
 
@@ -179,6 +181,61 @@ describe("realAgentClient", () => {
     expect(client.state.thread).toHaveLength(2);
     expect(client.state.thread[1]).toMatchObject({ text: "Here are the top stories.", streaming: false });
     expect(client.state.announced).toEqual("Here are the top stories.");
+  });
+
+  it("turns successful MCP article results into citations for the matching answer", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What are today's top stories?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    conversation.emitMCPToolCall({
+      state: "success",
+      result: [{
+        type: "text",
+        text: JSON.stringify({ articles: [
+          { title: "First story", sourceUrl: "https://news.example/first" },
+          { title: "Second story", sourceUrl: "https://news.example/second" },
+        ] }),
+      }],
+    });
+    conversation.emitPart("start", "", 12);
+    conversation.emitPart("delta", "The Second story has the latest details.", 12);
+    conversation.emitPart("stop", "", 12);
+
+    expect(client.state.thread[1]).toMatchObject({
+      citations: [{ title: "Second story", url: "https://news.example/second" }],
+      streaming: false,
+    });
+  });
+
+  it("accepts the full ElevenLabs tool payload and deduplicates repeated events", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("Send the article");
+    await settle();
+    const conversation = calls.conversations[0];
+    const event = {
+      event_id: 14,
+      is_error: false,
+      full_tool_result: JSON.stringify({
+        content: [{
+          type: "text",
+          text: JSON.stringify({ title: "The article", sourceUrl: "https://news.example/article" }),
+        }],
+      }),
+    };
+
+    conversation.emitPart("start", "", 14);
+    conversation.emitAgentToolResponse(event);
+    conversation.emitAgentToolResponse(event);
+    conversation.emitPart("delta", "Here is the article.", 14);
+    conversation.emitPart("stop", "", 14);
+
+    expect(client.state.thread[1].citations).toEqual([
+      { title: "The article", url: "https://news.example/article" },
+    ]);
   });
 
   it("drops an unanswered bubble when the reader asks again mid-turn", async () => {
