@@ -5,6 +5,8 @@ const SIMPLE_TRAILING_PUNCTUATION = /[.,!?;:]$/;
 const CLOSING_BRACKETS: Record<string, string> = { ")": "(", "]": "[", "}": "{" };
 const QUOTED_TITLE_PATTERN = /["“]([^"”\n]{2,240})["”]/g;
 const LINK_CLAUSE_PATTERN = /\s*(?:you can (?:find|read) it at|you can find it here|read it at|the link is|link|source)\s*:?\s*(?=[.,!?;:]?(?:\s|$))/gi;
+const REMOVED_LINK_MARKER = "\uE000";
+const GENERIC_LINK_TEXT = /^(?:and|at|or|link|source|url|here(?: it is|'s the link)?|you can (?:find|read) it (?:at|here)|read (?:it|more) (?:at|here)|the (?:link|url)(?: is)?|(?:find|read) it here)$/i;
 
 const safeHttpsUrl = (raw: unknown): URL | null => {
   if (typeof raw !== "string") { return null; }
@@ -58,12 +60,16 @@ const agentTextWithoutLinks = (text: string): string => {
     if (markdownLabel) { return markdownLabel; }
 
     const raw = markdownUrl || codeUrl || bareUrl;
-    return trimTrailingPunctuation(raw).trailing;
+    return REMOVED_LINK_MARKER + trimTrailingPunctuation(raw).trailing;
   });
 
   if (!removedLink) { return text; }
 
   return withoutLinks
+    // Remove an entire URL-only line, without collapsing intentional blank
+    // lines elsewhere in the response.
+    .replace(/^\s*\uE000[.,!?;:]*[ \t]*(?:\n|$)/gm, "")
+    .replaceAll(REMOVED_LINK_MARKER, "")
     .replace(LINK_CLAUSE_PATTERN, "")
     // An agent will often introduce a bare URL with "and" or "at". Once the
     // URL moves to a pill, remove the connector if it is left at the line end.
@@ -93,6 +99,33 @@ const listItemTitle = (text: string): string | null => {
     .replace(/\.$/, "") || null;
 };
 
+const plainLineTitle = (text: string): string | null => {
+  if (text.includes("https://")) { return null; }
+
+  const title = text
+    .trim()
+    .replace(/^(?:\d+[.)]|[-*•])\s+/, "")
+    .replace(/\s*(?:[-–—:|]|\band)\s*$/i, "")
+    .trim()
+    .replace(/\.$/, "");
+
+  if (!title || title.length > 240 || GENERIC_LINK_TEXT.test(title)) { return null; }
+  return title;
+};
+
+const nearbyLineTitle = (prefix: string): string | null => {
+  const lines = prefix.split("\n");
+  const currentLine = lines.pop() || "";
+  const previousLine = lines.reverse().find((line) => line.trim()) || "";
+
+  return nearestQuotedTitle(currentLine)
+    || listItemTitle(currentLine)
+    || plainLineTitle(currentLine)
+    || nearestQuotedTitle(previousLine)
+    || listItemTitle(previousLine)
+    || plainLineTitle(previousLine);
+};
+
 const agentCitationsFromText = (text: string): AgentCitation[] => {
   const citations: AgentCitation[] = [];
 
@@ -105,9 +138,8 @@ const agentCitationsFromText = (text: string): AgentCitation[] => {
 
     const hostname = new URL(href).hostname.replace(/^www\./, "");
     const prefix = text.slice(0, match.index ?? 0);
-    const linePrefix = prefix.slice(prefix.lastIndexOf("\n") + 1);
     citations.push({
-      title: markdownLabel || nearestQuotedTitle(linePrefix) || listItemTitle(linePrefix) || hostname,
+      title: markdownLabel || nearbyLineTitle(prefix) || hostname,
       url: href,
     });
   }
