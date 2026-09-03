@@ -8,8 +8,6 @@ const LINK_PATTERN = /\[([^\]\n]+)\]\((https:\/\/[^\s)]+)\)|`(https:\/\/[^`\s<]+
 const SIMPLE_TRAILING_PUNCTUATION = /[.,!?;:]$/;
 const CLOSING_BRACKETS: Record<string, string> = { ")": "(", "]": "[", "}": "{" };
 
-const normalizeHost = (host: string): string => host.trim().toLowerCase().replace(/^www\./, "");
-
 const safeHttpsUrl = (raw: unknown): URL | null => {
   if (typeof raw !== "string") { return null; }
 
@@ -57,20 +55,14 @@ const appendText = (parts: AgentTextPart[], text: string): void => {
   }
 };
 
-const allowedHttpsUrl = (raw: string, hosts: Set<string>): string | null => {
+const allowedHttpsUrl = (raw: string): string | null => {
   const url = safeHttpsUrl(raw);
-  if (!url || !hosts.has(normalizeHost(url.hostname))) { return null; }
+  if (!url) { return null; }
   return url.href;
 };
 
-const linkHostsFromUrls = (urls: unknown[]): string[] => Array.from(new Set(urls.flatMap((raw) => {
-  const url = safeHttpsUrl(raw);
-  return url ? [normalizeHost(url.hostname)] : [];
-})));
-
-const agentTextParts = (text: string, allowedHosts: string[] = []): AgentTextPart[] => {
+const agentTextParts = (text: string): AgentTextPart[] => {
   const parts: AgentTextPart[] = [];
-  const hosts = new Set(allowedHosts.map(normalizeHost));
   let index = 0;
 
   for (const match of text.matchAll(LINK_PATTERN)) {
@@ -80,7 +72,7 @@ const agentTextParts = (text: string, allowedHosts: string[] = []): AgentTextPar
     const markdownLabel = match[1];
     const raw = match[2] || match[3] || match[4];
     const { url, trailing } = trimTrailingPunctuation(raw);
-    const href = allowedHttpsUrl(url, hosts);
+    const href = allowedHttpsUrl(url);
 
     if (href) {
       parts.push({ kind: "link", text: markdownLabel || url, href });
@@ -162,7 +154,6 @@ export {
   agentCitationsFromToolResult,
   agentTextParts,
   citationsForAgentText,
-  linkHostsFromUrls,
   mergeAgentCitations,
 };
 export type { AgentTextPart };

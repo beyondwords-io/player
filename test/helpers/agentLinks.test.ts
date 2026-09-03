@@ -2,14 +2,12 @@ import {
   agentCitationsFromToolResult,
   agentTextParts,
   citationsForAgentText,
-  linkHostsFromUrls,
 } from "../../src/helpers/agentLinks";
 
 describe("agentLinks", () => {
   it("links approved HTTPS URLs and leaves their punctuation outside", () => {
     expect(agentTextParts(
       "Read https://www.cityam.com/latest-story/.",
-      ["cityam.com"],
     )).toEqual([
       { kind: "text", text: "Read " },
       { kind: "link", text: "https://www.cityam.com/latest-story/", href: "https://www.cityam.com/latest-story/" },
@@ -17,10 +15,9 @@ describe("agentLinks", () => {
     ]);
   });
 
-  it("renders approved Markdown labels and normalizes www hosts", () => {
+  it("renders Markdown labels for any HTTPS host", () => {
     expect(agentTextParts(
       "Read [the latest story](https://cityam.com/latest-story).",
-      ["www.cityam.com"],
     )).toEqual([
       { kind: "text", text: "Read " },
       { kind: "link", text: "the latest story", href: "https://cityam.com/latest-story" },
@@ -31,18 +28,20 @@ describe("agentLinks", () => {
   it("turns ElevenLabs inline-code URLs into clean links", () => {
     expect(agentTextParts(
       "The link is: `https://www.cityam.com/latest-story/`",
-      ["cityam.com"],
     )).toEqual([
       { kind: "text", text: "The link is: " },
       { kind: "link", text: "https://www.cityam.com/latest-story/", href: "https://www.cityam.com/latest-story/" },
     ]);
   });
 
-  it("keeps unknown and non-HTTPS URLs as text", () => {
+  it("links every valid HTTPS host and keeps non-HTTPS URLs as text", () => {
     expect(agentTextParts(
       "Unknown https://example.com/story and http://cityam.com/story.",
-      ["cityam.com"],
-    )).toEqual([{ kind: "text", text: "Unknown https://example.com/story and http://cityam.com/story." }]);
+    )).toEqual([
+      { kind: "text", text: "Unknown " },
+      { kind: "link", text: "https://example.com/story", href: "https://example.com/story" },
+      { kind: "text", text: " and http://cityam.com/story." },
+    ]);
   });
 
   it("extracts and deduplicates article citations from nested MCP results", () => {
@@ -82,12 +81,4 @@ describe("agentLinks", () => {
     expect(citationsForAgentText("Here is the article you asked for.", [candidate])).toEqual([candidate]);
   });
 
-  it("derives unique approved hosts only from HTTPS source URLs", () => {
-    expect(linkHostsFromUrls([
-      "https://www.cityam.com/one",
-      "https://cityam.com/two",
-      "http://unsafe.example/story",
-      undefined,
-    ])).toEqual(["cityam.com"]);
-  });
 });
