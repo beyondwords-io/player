@@ -1,6 +1,7 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
 import resolveTheme from "./resolveTheme";
+import { normalizeThemePreference, palettesFromApi } from "./default_theme/palettes";
 import newEvent from "./newEvent";
 import rewriteMediaUrl from "./rewriteMediaUrl";
 
@@ -69,6 +70,14 @@ const setPropsFromApi = async (player) => {
   }
 
   const data = await fetchData(client, identifiers).catch(() => {});
+
+  // Kept for tooling (see the control panel): the response verbatim, the URL it
+  // came from, and every value the API tried to set. Also set when no content
+  // came back, so a 404 or an empty response is still inspectable.
+  player.apiPayload = data;
+  player.apiRequestUrl = client.lastRequestUrl;
+  player.apiProps = {};
+
   if (!data?.content) { handleNoContent(player); return; }
 
   // The player allows you to override props from the API by adding them in the script tag.
@@ -106,6 +115,15 @@ const handleNoContent = (player) => {
   resetSomeProps(player);
   setContentProp(player);
   setAdvertsProp(player);
+  set(player, "agentId", undefined);
+  set(player, "agentName", undefined);
+  set(player, "agentSessionConfig", {});
+  set(player, "accessCtaText", undefined);
+  set(player, "accessCtaUrl", undefined);
+  set(player, "agentCtaText", undefined);
+  set(player, "agentCtaUrl", undefined);
+  set(player, "agentQuestionsLimit", null);
+  set(player, "agentVoiceSecondsLimit", null);
 
   player.onEvent?.(newEvent({
     type: "NoContentAvailable",
@@ -123,49 +141,91 @@ const handleContent = (player) => {
 };
 
 const setProps = (player, data) => {
-  const theme = resolveTheme(data.settings.theme);
-  const themeColors = data.settings[`${theme}_theme`];
-  const videoColors = data.settings["video_theme"];
+  const settings = data.settings;
+  const apiPalettes = palettesFromApi(settings);
+  const selectedTheme = resolveTheme(settings.theme);
+  const themeColors = selectedTheme === "dark" ? apiPalettes.darkTheme : apiPalettes.lightTheme;
+  const videoColors = apiPalettes.videoTheme;
 
   resetSomeProps(player);
   setContentProp(player, data);
   setAdvertsProp(player, data);
-  setAccessTierProp(player, data);
 
   const content = player.content[player.contentIndex];
 
-  set(player, "playerStyle", data.settings.player_style);
-  set(player, "playerTitle", data.playlist?.title || data.settings.player_title);
-  set(player, "callToAction", data.settings.call_to_action === "Listen to this article" ? null : data.settings.call_to_action);
-  set(player, "skipButtonStyle", data.settings.skip_button_style);
-  set(player, "downloadFormats", data.settings.download_button_enabled ? ["mp3"] : []);
-  set(player, "introsOutros", rewriteIntrosOutrosUrls(data.settings.intros_outros, player.mediaCustomUrl));
-  set(player, "outroPlaybackMode", data.settings.outro_playback_mode);
-  set(player, "persistentAdImage", data.settings.persistent_ad_image);
+  set(player, "playerStyle", settings.player_style);
+  set(player, "playerTitle", data.playlist?.title || settings.player_title);
+  set(player, "titleEnabled", settings.title_enabled);
+  set(player, "callToAction", settings.call_to_action === "Listen to this article" ? null : settings.call_to_action);
+  set(player, "skipButtonStyle", settings.skip_button_style);
+  set(player, "downloadFormats", settings.download_button_enabled ? ["mp3"] : []);
+  set(player, "introsOutros", rewriteIntrosOutrosUrls(settings.intros_outros, player.mediaCustomUrl));
+  set(player, "outroPlaybackMode", settings.outro_playback_mode);
+  set(player, "persistentAdImage", settings.persistent_ad_image);
   set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);
-  set(player, "widgetStyle", data.settings.widget_style);
-  set(player, "widgetPosition", data.settings.widget_position);
-  set(player, "textColor", themeColors.text_color);
-  set(player, "backgroundColor", themeColors.background_color);
-  set(player, "iconColor", themeColors.icon_color);
-  set(player, "highlightColor", themeColors.highlight_color);
-  set(player, "videoTextColor", videoColors.text_color);
-  set(player, "videoBackgroundColor", videoColors.background_color);
-  set(player, "videoIconColor", videoColors.icon_color);
-  set(player, "logoIconEnabled", data.settings.logo_icon_enabled);
+  set(player, "widgetStyle", settings.widget_style);
+  set(player, "widgetPosition", settings.widget_position);
+  set(player, "projectTheme", normalizeThemePreference(settings.theme));
+  set(player, "apiLightTheme", apiPalettes.lightTheme);
+  set(player, "apiDarkTheme", apiPalettes.darkTheme);
+  set(player, "apiVideoTheme", apiPalettes.videoTheme);
+  // Public aliases make the effective management contract visible to tooling
+  // and let resetSetting restore API palettes without another request.
+  player.apiProps.theme = normalizeThemePreference(settings.theme);
+  player.apiProps.lightTheme = apiPalettes.lightTheme;
+  player.apiProps.darkTheme = apiPalettes.darkTheme;
+  player.apiProps.videoTheme = apiPalettes.videoTheme;
+  // Flat props remain populated for legacy player styles and integrations.
+  set(player, "textColor", themeColors.textColor);
+  set(player, "backgroundColor", themeColors.backgroundColor);
+  set(player, "iconColor", themeColors.iconColor);
+  set(player, "highlightColor", themeColors.highlightColor);
+  set(player, "videoTextColor", videoColors.textColor);
+  set(player, "videoBackgroundColor", videoColors.backgroundColor);
+  set(player, "videoIconColor", videoColors.iconColor);
+  set(player, "logoIconEnabled", settings.logo_icon_enabled);
   set(player, "logoImagePosition", data.video_settings.logo_image_position);
-  set(player, "wordHighlightsEnabled", data.settings.word_highlights_enabled);
-  set(player, "wordHighlightColor", themeColors.word_highlight_color);
-  set(player, "highlightSections", data.settings.segment_highlights_enabled ? "all" : "none");
-  set(player, "clickableSections", data.settings.segment_playback_enabled ? "all" : "none");
+  set(player, "wordHighlightsEnabled", settings.word_highlights_enabled);
+  set(player, "wordHighlightColor", themeColors.wordHighlightColor);
+  set(player, "highlightSections", settings.segment_highlights_enabled ? "all" : "none");
+  set(player, "clickableSections", settings.segment_playback_enabled ? "all" : "none");
   set(player, "segmentWidgetSections", "none");
-  set(player, "analyticsConsent", analyticsConsent(data.settings));
-  set(player, "analyticsCustomUrl", data.settings.analytics_custom_url);
-  set(player, "analyticsTag", data.settings.analytics_tag);
-  set(player, "analyticsUrl", data.settings.analytics_url);
-  set(player, "analyticsId", data.settings.analytics_id);
-  set(player, "segmentLimit", data.settings.segment_limit);
+  set(player, "analyticsConsent", analyticsConsent(settings));
+  set(player, "analyticsCustomUrl", settings.analytics_custom_url);
+  set(player, "analyticsTag", settings.analytics_tag);
+  set(player, "analyticsUrl", settings.analytics_url);
+  set(player, "analyticsId", settings.analytics_id);
+  set(player, "segmentLimit", data.access_tier?.segment_limit);
   set(player, "contentLanguage", data.language);
+
+  set(player, "radius", settings.radius);
+  set(player, "accentColor", themeColors.accentColor);
+  set(player, "accentTextColor", themeColors.accentTextColor);
+  set(player, "disclosureText", settings.disclosure_text);
+  set(player, "disclosureLink", settings.disclosure_link);
+  set(player, "agentColor", themeColors.agentColor);
+  set(player, "agentAvatar", settings.agent_avatar_url);
+  set(player, "agentPlaceholder", settings.agent_placeholder);
+  set(player, "shortcuts", settings.agent_shortcuts);
+  set(player, "infoText", settings.info_text);
+  set(player, "agentVoice", settings.agent_voice_enabled);
+  set(player, "variants", settings.variants);
+  set(player, "embedMode", settings.embed_mode);
+  set(player, "widgetEmbedMode", settings.widget_embed_mode);
+
+  const accessTier = data.access_tier;
+  const playerAgent = accessTier?.player_agent;
+  set(player, "accessCtaText", accessTier?.cta_text);
+  set(player, "accessCtaUrl", accessTier?.cta_url);
+  set(player, "agentCtaText", playerAgent?.cta_text);
+  set(player, "agentCtaUrl", playerAgent?.cta_url);
+  set(player, "agentQuestionsLimit", playerAgent?.questions_limit);
+  set(player, "agentVoiceSecondsLimit", playerAgent?.seconds_limit);
+
+  // Key always present; the id only when the project's agent is enabled.
+  set(player, "agentId", data.conversational_agent?.elevenlabs_agent_id ?? undefined);
+  set(player, "agentName", data.conversational_agent?.name);
+  set(player, "agentSessionConfig", agentSessionConfig(data.conversational_agent));
 };
 
 const resetSomeProps = (player) => {
@@ -255,9 +315,11 @@ const setAdvertsProp = (player, data) => {
 
   set(player, "adverts", advertsArray.map((item) => {
     const isVast = item.type === "vast";
-    const theme = resolveTheme(item.theme);
-    const themeColors = item[`${theme}_theme`];
-    const videoColors = item["video_theme"];
+    const palettes = palettesFromApi(item);
+    const theme = normalizeThemePreference(item.theme);
+    const resolvedTheme = resolveTheme(theme);
+    const themeColors = resolvedTheme === "dark" ? palettes.darkTheme : palettes.lightTheme;
+    const videoColors = palettes.videoTheme;
 
     return {
       id: item.id,
@@ -266,12 +328,16 @@ const setAdvertsProp = (player, data) => {
       vastUrl: isVast ? item.vast_url : null,
       clickThroughUrl: !isVast ? item.click_through_url : null,
       imageUrl: item.image_url,
-      textColor: themeColors?.text_color,
-      backgroundColor: themeColors?.background_color,
-      iconColor: themeColors?.icon_color,
-      videoTextColor: videoColors?.text_color,
-      videoBackgroundColor: videoColors?.background_color,
-      videoIconColor: videoColors?.icon_color,
+      theme,
+      lightTheme: palettes.lightTheme,
+      darkTheme: palettes.darkTheme,
+      videoTheme: palettes.videoTheme,
+      textColor: themeColors.textColor,
+      backgroundColor: themeColors.backgroundColor,
+      iconColor: themeColors.iconColor,
+      videoTextColor: videoColors.textColor,
+      videoBackgroundColor: videoColors.backgroundColor,
+      videoIconColor: videoColors.iconColor,
       audio: isVast ? [] : (item.audio || item.media).map((audio) => ({
         id: audio.id,
         url: localOrRemoteUrl(rewriteMediaUrl(audio.url, mediaCustomUrl), audio.base64_file, audio.content_type),
@@ -289,10 +355,17 @@ const setAdvertsProp = (player, data) => {
   }));
 };
 
-const setAccessTierProp = (player, data) => {
-  if (typeof player.accessTier === "undefined") { return; }
+const agentSessionConfig = (agent) => {
+  if (!agent) { return {}; }
 
-  player.setAccessTier(data.settings.access_tier, false);
+  return {
+    firstMessage: agent.first_message,
+    model: agent.model,
+    systemPrompt: agent.system_prompt,
+    language: agent.language?.code,
+    voiceId: agent.voice?.voice_id,
+    voiceModelId: agent.voice?.model_id,
+  };
 };
 
 const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {
@@ -306,6 +379,21 @@ const rewriteIntrosOutrosUrls = (introsOutros, mediaCustomUrl) => {
 };
 
 const set = (player, propName, value) => {
+  // Record what the API asked for, even when an override stops it being
+  // applied, so tooling can show both values and restore the API's one.
+  if (player.apiProps) { player.apiProps[propName] = value; }
+
+  // `video: true` historically aliases to playerStyle: "video", but in the
+  // default style it is a boolean preference. When no playerStyle was supplied
+  // explicitly, let the API disambiguate while retaining the legacy fallback
+  // for every non-default API style.
+  const videoPlayerStyleAlias = player.videoPlayerStyleAlias;
+  const playerStyleWasOverridden = typeof player.initialProps?.playerStyle !== "undefined";
+  if (propName === "playerStyle" && videoPlayerStyleAlias && !playerStyleWasOverridden) {
+    player[propName] = value === "default" ? value : videoPlayerStyleAlias;
+    return;
+  }
+
   const overridden = typeof player.initialProps?.[propName] !== "undefined";
   if (!overridden) { player[propName] = value; }
 };

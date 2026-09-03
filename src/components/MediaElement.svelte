@@ -11,6 +11,7 @@
   import blurElement from "../helpers/blurElement";
   import isIosSafari from "../helpers/isIosSafari";
   import findSegmentIndex from "../helpers/findSegmentIndex";
+  import { withinSegmentLimit } from "../helpers/contentVariants";
   import findLoadedMedia from "../helpers/findLoadedMedia";
   import chooseSegmentElement from "../helpers/chooseSegmentElement";
 
@@ -148,7 +149,7 @@
       initiatedBy: "media",
     }));
 
-    if (!activeIntroOrOutro && !activeAdvert && segmentLimit === 0) {
+    if (!activeIntroOrOutro && !activeAdvert && !withinSegmentLimit(segments, 0, summary, segmentLimit)) {
       handleSegmentLimitReached();
     }
   };
@@ -229,7 +230,7 @@
       initiatedBy: "media",
     }));
 
-    if (!activeIntroOrOutro && !activeAdvert && typeof segmentLimit === "number" && segmentIndex >= segmentLimit) {
+    if (!activeIntroOrOutro && !activeAdvert && !withinSegmentLimit(segments, segmentIndex, summary, segmentLimit)) {
       handleSegmentLimitReached();
     }
   };
@@ -394,7 +395,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    background: black;
+    background: var(--beyondwords-video-background, black);
     overflow: hidden;
     min-width: 300px;
   }
@@ -404,7 +405,7 @@
   }
 
   .media-element:not(.headless) {
-    border-radius: 8px;
+    border-radius: var(--beyondwords-media-radius, 8px);
   }
 
   .inner {
@@ -419,6 +420,12 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+
+  /* A composited video isn't reliably clipped by an ancestor's radius, so it
+     carries the same corners itself. */
+  .media-element:not(.headless) .inner video {
+    border-radius: var(--beyondwords-media-radius, 8px);
   }
 
   .behind-static {
@@ -478,7 +485,7 @@
   :global(.beyondwords-player.maximized .external-widget) {
     display: flex;
     align-items: center;
-    background: black;
+    background: var(--beyondwords-video-background, black);
   }
 
   :global(.beyondwords-player.maximized) .media-element {

@@ -1,8 +1,10 @@
 <!-- svelte-ignore unused-export-let -->
 <script>
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import MediaElement from "./MediaElement.svelte";
   import UserInterface from "./UserInterface.svelte";
+  import DefaultInterface from "./default_player/DefaultInterface.svelte";
+  import DefaultSkeleton from "./default_player/Skeleton.svelte";
   import ExternalWidget from "./ExternalWidget.svelte";
   import ControlPanel from "./ControlPanel.svelte";
   import MediaSession from "./MediaSession.svelte";
@@ -13,11 +15,24 @@
   import SegmentClickables from "../helpers/segmentClickables";
   import SegmentHighlights from "../helpers/segmentHighlights";
   import identifiersEvent from "../helpers/identifiersEvent";
+  import newEvent from "../helpers/newEvent";
+  import MockAgentClient from "../helpers/agentClient";
+  import RealAgentClient from "../helpers/realAgentClient";
   import sectionEnabled from "../helpers/sectionEnabled";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
   import { isDigitalAdExchange} from "../helpers/vastUrlParams";
   import { setLocale } from "../helpers/translate";
+  import { resolveDefaultWidgetGeometry } from "../helpers/defaultWidgetGeometry";
+  import { subscribeMediaQuery } from "../helpers/mediaQuery";
+  import deriveTokens from "../helpers/default_theme/deriveTokens";
+  import {
+    completePlayerTheme,
+    completeVideoTheme,
+    normalizeThemePreference,
+    resolveThemePreference,
+  } from "../helpers/default_theme/palettes";
+  import AgentAllowanceState from "../helpers/agentAllowanceState";
 
   // Please document all settings and keep in-sync with the developer docs:
   // https://github.com/beyondwords-core/docs/blob/main/docs-and-guides/distribution/player/sdk/javascript/player-settings.mdx
@@ -37,6 +52,7 @@
   export let playerStyle = "standard";
   export let videoSizes = [];
   export let playerTitle = undefined;
+  export let titleEnabled = true;
   export let callToAction = undefined;
   export let playerLanguage = undefined;
   export let skipButtonStyle = "auto";
@@ -72,7 +88,7 @@
   export let iconColor = "rgba(0, 0, 0, 0.8)";
   export let highlightColor = "#eee";
   export let videoTextColor = "white";
-  export let videoBackgroundColor = "black"; // TODO: how to implement with easing gradient?
+  export let videoBackgroundColor = "black";
   export let videoIconColor = "white";
   export let logoIconEnabled = true;
   export let highlightSections = "all";
@@ -96,12 +112,75 @@
   export let onError = () => {};
   export let transitions = [];
   export let controlPanel = undefined;
+
+  // Settings for the "default" player style. The /player API supplies the
+  // project baseline; script-tag and preview values remain overrides.
+  export let video = false;
+  export let embedMode = "audio";
+  export let widgetEmbedMode = "auto";
+  export let accessCtaText = undefined;
+  export let accessCtaUrl = undefined;
+
+  // The agent can be sold separately, so it has its own pair. Unset, they
+  // inherit the ones above.
+  export let agentCtaText = undefined;
+  export let agentCtaUrl = undefined;
+
+  // A public ElevenLabs agent id connects the live agent in place of the
+  // scripted mock. Served as conversational_agent.elevenlabs_agent_id by
+  // /player; a token endpoint replaces it when agent auth lands.
+  export let agentId = undefined;
+  // Undefined means "follow the project". Assign light/dark/auto to override
+  // it at runtime; assign null/undefined to restore the project preference.
+  // The deprecated custom value is accepted as an alias for light.
+  export let theme = undefined;
+  export let lightTheme = {};
+  export let darkTheme = {};
+  export let videoTheme = {};
+  export let radius = 8;
+  export let agentColor = undefined;
+  export let agentAvatar = undefined;
+  export let accentColor = undefined;
+  export let accentTextColor = undefined;
+  export let agentQuestionsLimit = null;
+  export let agentVoiceSecondsLimit = null;
+  export let agentVoice = true;
+  export let agentPlaceholder = undefined;
+  export let agentName = undefined;
+  export let agentSessionConfig = {};
+  export let shortcuts = [];
+  export let infoText = undefined;
+  export let disclosureText = undefined;
+  export let disclosureLink = undefined;
+  export let variants = [];
   export const addEventListener = (...args) => controller.addEventListener(...args);
   export const removeEventListener = (...args) => controller.removeEventListener(...args);
 
   // These are set automatically.
   export let initialProps = {};
+  export let videoPlayerStyleAlias = undefined;
+
+  // The last /player response, the URL it came from, and every value it tried
+  // to set (including ones an override rejected). For tooling only: ignored
+  // props, so they never reach events or analytics.
+  export let apiPayload = undefined;
+  export let apiRequestUrl = undefined;
+  export let apiProps = undefined;
+
+  // API-owned colour state is intentionally separate from public SDK
+  // overrides. Refetching content can update the project without erasing a
+  // runtime theme or palette assignment.
+  export let projectTheme = "light";
+  export let apiLightTheme = {};
+  export let apiDarkTheme = {};
+  export let apiVideoTheme = {};
+  export let resolvedLightTheme = {};
+  export let resolvedDarkTheme = {};
+  export let resolvedVideoTheme = {};
+  export let resolvedThemePreference = "light";
+
   export let showMediaSession = false;
+  export let segmentLimitReached = false;
   export let metadataLoaded = false;
   export let isFullScreen = false;
   export let mediaElement = undefined;
@@ -126,6 +205,96 @@
   export let segmentHighlights = new SegmentHighlights();
   export const onEvent = e => controller.processEvent({ emittedFrom, ...e });
 
+  // The inline player and its widget are two views of one conversation. Keep
+  // the client above both interfaces so scrolling between them cannot fork the
+  // thread or leave a hidden voice session running.
+  //
+  // An agent id (from /player or the script tag) selects the live client; it
+  // can arrive after mount, so swapping ends whatever the old client had open.
+  let agentClient = new MockAgentClient();
+  let pausedForAgentCall = false;
+
+  $: syncAgentClient(agentId, agentSessionConfig);
+
+  const syncAgentClient = (id, sessionConfig) => {
+    const wantedId = typeof id === "string" && id.trim().length > 0 ? id.trim() : null;
+    const currentId = agentClient instanceof RealAgentClient ? agentClient.agentId : null;
+    const wantedConfigKey = JSON.stringify(sessionConfig || {});
+    const currentConfigKey = agentClient instanceof RealAgentClient ? agentClient.sessionConfigKey : "{}";
+    if (wantedId === currentId && wantedConfigKey === currentConfigKey) { return; }
+
+    agentClient.endSession();
+    agentClient = wantedId
+      ? new RealAgentClient({ agentId: wantedId, sessionConfig, dynamicVariables: agentDynamicVariables })
+      : new MockAgentClient();
+  };
+
+  // MCP routing plus per-page prompt context, read at session start so the
+  // resolved access tier and loaded content are both available by then.
+  const agentDynamicVariables = () => ({
+    bw_channel: "player",
+    bw_access_tier: apiPayload?.access_tier?.slug,
+    project_id: projectId,
+    content_id: contentItem?.id,
+    source_id: contentItem?.sourceId,
+    title: contentItem?.title,
+  });
+
+  $: agentCallLive = $agentClient.kind === "voice";
+  $: agentVoiceSessionLive = agentCallLive && $agentClient.status !== "connecting";
+  $: syncAgentCallPlayback(agentCallLive, playbackState);
+
+  const agentAllowance = new AgentAllowanceState({
+    onVoiceExhausted: () => agentClient.endSession("budget"),
+  });
+
+  let normalizedAgentQuestionsLimit = null;
+  let agentQuestionsRemaining = null;
+  let normalizedAgentVoiceSecondsLimit = null;
+  let agentVoiceSecondsRemaining = null;
+  const unsubscribeAgentAllowance = agentAllowance.subscribe((allowance) => {
+    normalizedAgentQuestionsLimit = allowance.questionsLimit;
+    agentQuestionsRemaining = allowance.questionsRemaining;
+    normalizedAgentVoiceSecondsLimit = allowance.voiceSecondsLimit;
+    agentVoiceSecondsRemaining = allowance.voiceSecondsRemaining;
+  });
+  $: agentAllowance.configure({
+    identity: JSON.stringify([
+      projectId, contentId, playlistId, sourceId, sourceUrl, accessTier, apiPayload?.access_tier?.slug,
+      agentQuestionsLimit, agentVoiceSecondsLimit,
+    ]),
+    questionsLimit: agentQuestionsLimit,
+    voiceSecondsLimit: agentVoiceSecondsLimit,
+  });
+  $: agentAllowance.setVoiceLive(agentVoiceSessionLive);
+
+  const useAgentQuestion = () => agentAllowance.useQuestion();
+
+  const syncAgentCallPlayback = (live, state) => {
+    // The transport stays visible beside Chat. If it is pressed during a call,
+    // immediately restore the call's pause instead of letting both audio
+    // streams play together.
+    if (live && state === "playing") {
+      pausedForAgentCall = true;
+
+      onEvent(newEvent({
+        type: "PressedPause",
+        description: "The pause button was pressed.",
+        initiatedBy: "user",
+      }));
+    }
+
+    if (!live && pausedForAgentCall) {
+      pausedForAgentCall = false;
+
+      onEvent(newEvent({
+        type: "PressedPlay",
+        description: "The play button was pressed.",
+        initiatedBy: "user",
+      }));
+    }
+  };
+
   let accessTierRevision = 0;
   export let accessTier = undefined;
   export const getAccessTier = () => accessTier;
@@ -133,6 +302,79 @@
     accessTier = value; 
     if (emitIdentifiersEvent) accessTierRevision++;
   };
+
+  // Mirrors the default widget's mobile dock, so the sliding video follows it.
+  let dockedViewport = false;
+  onMount(() => {
+    return subscribeMediaQuery("(max-width: 640px)", (matches) => dockedViewport = matches);
+  });
+
+  // Theme auto is live rather than a one-off choice made while deserializing
+  // /player. The same resolved mode is shared by the inline and widget views.
+  let systemDark = false;
+  onMount(() => subscribeMediaQuery("(prefers-color-scheme: dark)", (matches) => systemDark = matches));
+
+  const legacyColorDefaults = {
+    textColor: "#111",
+    backgroundColor: "#f5f5f5",
+    iconColor: "rgba(0, 0, 0, 0.8)",
+    highlightColor: "#eee",
+    wordHighlightColor: undefined,
+    agentColor: undefined,
+    accentColor: undefined,
+    accentTextColor: undefined,
+    videoTextColor: "white",
+    videoBackgroundColor: "black",
+    videoIconColor: "white",
+  };
+
+  // Exact historical defaults such as #111 and #eee still count when they
+  // were explicitly supplied. API-populated flat props do not masquerade as
+  // SDK overrides, while later direct assignments do.
+  const flatSdkValue = (key, value) => {
+    if (Object.prototype.hasOwnProperty.call(initialProps, key)) { return value; }
+    if (apiProps && Object.prototype.hasOwnProperty.call(apiProps, key)) {
+      return value === apiProps[key] ? undefined : value;
+    }
+    return value === legacyColorDefaults[key] ? undefined : value;
+  };
+
+  $: legacyPaletteOverrides = {
+    textColor: flatSdkValue("textColor", textColor),
+    backgroundColor: flatSdkValue("backgroundColor", backgroundColor),
+    iconColor: flatSdkValue("iconColor", iconColor),
+    highlightColor: flatSdkValue("highlightColor", highlightColor),
+    wordHighlightColor: flatSdkValue("wordHighlightColor", wordHighlightColor),
+    agentColor: flatSdkValue("agentColor", agentColor),
+    accentColor: flatSdkValue("accentColor", accentColor),
+    accentTextColor: flatSdkValue("accentTextColor", accentTextColor),
+  };
+  $: legacyVideoOverrides = {
+    textColor: flatSdkValue("videoTextColor", videoTextColor),
+    backgroundColor: flatSdkValue("videoBackgroundColor", videoBackgroundColor),
+    iconColor: flatSdkValue("videoIconColor", videoIconColor),
+  };
+  $: resolvedLightTheme = completePlayerTheme("light", apiLightTheme, legacyPaletteOverrides, lightTheme);
+  $: resolvedDarkTheme = completePlayerTheme("dark", apiDarkTheme, legacyPaletteOverrides, darkTheme);
+  $: resolvedVideoTheme = completeVideoTheme(apiVideoTheme, legacyVideoOverrides, videoTheme);
+  $: resolvedThemePreference = normalizeThemePreference(theme ?? projectTheme);
+  $: resolvedTheme = resolveThemePreference(resolvedThemePreference, systemDark);
+  $: activePlayerTheme = resolvedTheme === "dark" ? resolvedDarkTheme : resolvedLightTheme;
+
+  // Hides the default-style boot skeleton once the API reports no content.
+  let noContentAvailable = false;
+  onMount(() => addEventListener("NoContentAvailable", () => noContentAvailable = true));
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, noContentAvailable = false;
+
+  // A tier's limit stops playback and rewinds to zero, so by the time anything
+  // renders the time no longer says the preview ran out. Remember the event.
+  onMount(() => addEventListener("SegmentLimitReached", () => segmentLimitReached = true));
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, contentIndex, summary, segmentLimitReached = false;
+
+  // Offering one variant is a statement about what this embed plays, not just
+  // about what the Version menu shows, so select it. Declared before the
+  // identifiers statement below so the first request already asks for it.
+  $: if (variants.length === 1) { summary = variants[0] === "summary"; }
 
   $: setLocale(playerLanguage);
 
@@ -149,7 +391,7 @@
   $: hasDaxAdverts = adverts.some(ad => isDigitalAdExchange(ad.vastUrl));
   $: setDaxListenerId = hasDaxAdverts && advertConsent === "personalized";
 
-  $: interfaceStyle = isFullScreen ? "video" : playerStyle;
+  $: interfaceStyle = isFullScreen && playerStyle !== "default" ? "video" : playerStyle;
   $: showWidget = showBottomWidget || widgetTarget;
 
   $: isScreen = interfaceStyle === "screen";
@@ -158,18 +400,49 @@
   $: maxImageSize = isScreen ? 120 : isLarge ? 80 : 0;
 
   $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
-  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(widgetStyle) && content.length > 0;
+  // The widget is the same bar recomposed, so the default style always carries
+  // into it. "none" and the closed-by-user sentinel still switch it off.
+  $: widgetIsOff = widgetStyle === "none" || widgetStyle === "closed-by-user";
+  $: inheritedWidgetStyle = !widgetStyle || widgetStyle === "auto" ? playerStyle : widgetStyle;
+  $: effectiveWidgetStyle = widgetIsOff ? widgetStyle
+    : playerStyle === "default" ? "default"
+    : inheritedWidgetStyle;
+
+  // The widget's agent surfaces can be configured separately; auto inherits.
+  $: effectiveWidgetEmbedMode = !widgetEmbedMode || widgetEmbedMode === "auto" ? embedMode : widgetEmbedMode;
+
+  $: showWidgetInterface = showUserInterface && showWidget && knownPlayerStyle(effectiveWidgetStyle) && content.length > 0;
 
   $: widgetTarget = findByQuery(widgetTarget, "widget");
   $: controlPanel = findByQuery(controlPanel, "control panel");
 
-  $: videoBehindWidget = showWidget && widgetStyle === "video" && !isFullScreen;
-  $: videoBehindStatic = interfaceStyle === "video" && !videoBehindWidget;
+  $: widgetShowsVideo = effectiveWidgetStyle === "video"
+    || (effectiveWidgetStyle === "default" && video === true && hasVideoContent);
+  $: videoBehindWidget = showWidget && widgetShowsVideo && !isFullScreen;
+  $: videoBehindStatic = (interfaceStyle === "video" || (interfaceStyle === "default" && isVideo)) && !videoBehindWidget;
 
-  $: showClose = showCloseWidget && widgetStyle !== "small" && !isAdvert;
+  // The sliding video and the default widget bar must land on the same rect,
+  // so the geometry the default style implies is resolved once, here, and both
+  // components are told the same thing. Legacy styles pass through unchanged.
+  $: widgetIsDefault = effectiveWidgetStyle === "default";
+  $: ({
+    position: resolvedWidgetPosition,
+    width: resolvedWidgetWidth,
+    margin: resolvedWidgetMargin,
+  } = resolveDefaultWidgetGeometry({
+    docked: dockedViewport,
+    isDefault: widgetIsDefault,
+    margin: widgetMargin,
+    position: widgetPosition,
+    width: widgetWidth,
+  }));
+
+  $: showClose = showCloseWidget && effectiveWidgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
 
-  $: videoMightBeShown = playerStyle === "video" || widgetStyle === "video";
+  $: currentVideoContent = summary ? contentItem?.summarization?.video : contentItem?.video;
+  $: hasVideoContent = (currentVideoContent || []).length > 0;
+  $: videoMightBeShown = playerStyle === "video" || effectiveWidgetStyle === "video" || ((playerStyle === "default" || effectiveWidgetStyle === "default") && video === true);
   $: videoRoot = videoBehindWidget ? widgetTarget : null; // null will be shown inline (static)
   $: aspectRatio = isVideo && loadedMedia.videoSize ? (loadedMedia.videoSize.width / loadedMedia.videoSize.height) : (16 / 9);
 
@@ -194,12 +467,24 @@
   $: segmentContainers.update(widgetSegment, segmentWidgetSections, segmentWidgetPosition, playerStyle);
   $: segmentClickables.update(hoveredSegment, clickableSections);
 
-  $: wordHighlightsActive = wordHighlightsEnabled && !!wordHighlightColor;
+  // In-article highlighting is part of the default style's colour contract, so
+  // an unconfigured project gets the theme's lime rather than the legacy props.
+  $: defaultTokens = playerStyle === "default"
+    ? deriveTokens({ theme: resolvedTheme, palette: activePlayerTheme, videoTheme: resolvedVideoTheme })
+    : undefined;
+
+  $: activeHighlightColor = defaultTokens?.highlight || highlightColor;
+  $: activeWordHighlightColor = defaultTokens?.wordHighlight || wordHighlightColor;
+
+  $: wordHighlightsActive = wordHighlightsEnabled && !!activeWordHighlightColor;
   $: currentActiveMarker = isAdvert || activeIntroOrOutro ? null : currentSegment?.marker;
-  $: segmentHighlights.update("current", currentSegment, { sections: [highlightSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
-  $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: highlightColor, wordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
+  $: segmentHighlights.update("current", currentSegment, { sections: [highlightSections], background: activeHighlightColor, wordHighlightColor: activeWordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
+  $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: activeHighlightColor, wordHighlightColor: activeWordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
   onDestroy(() => {
+    unsubscribeAgentAllowance();
+    agentAllowance.destroy();
+    agentClient.endSession();
     segmentContainers.reset();
     segmentClickables.reset();
     segmentHighlights.reset("current");
@@ -208,59 +493,225 @@
 </script>
 
 <ExternalWidget prepend root={videoRoot}>
-  {#key playerLanguage}
+{#key playerLanguage}
     <MediaElement
-      bind:this={mediaElement}
-      {onEvent}
-      {videoSizes}
-      {content}
-      {contentIndex}
-      {segmentLimit}
-      {summary}
-      {activeIntroOrOutro}
-      {preloadAdvert}
-      {activeAdvert}
-      {advertConsent}
-      {maxImageSize}
-      {projectId}
-      {playlistId}
-      contentId={contentItem?.id}
-      {contentLanguage}
-      {platform}
-      {vendorIdentifier}
-      {bundleIdentifier}
-      bind:playbackState
-      bind:duration
-      bind:currentTime
-      bind:playbackRate
-      bind:prevPercentage
-      bind:metadataLoaded
-      {showUserInterface}
-      {videoBehindWidget}
-      {videoBehindStatic}
-      {videoMightBeShown}
-      {aspectRatio}
-      {isFullScreen}
-      {widgetPosition}
-      {widgetWidth}
-      {widgetMargin}
-      {widgetTarget} />
-  {/key}
+    bind:this={mediaElement}
+    {onEvent}
+    {videoSizes}
+    {content}
+    {contentIndex}
+    {segmentLimit}
+    {summary}
+    {activeIntroOrOutro}
+    {preloadAdvert}
+    {activeAdvert}
+    {advertConsent}
+    {maxImageSize}
+    {projectId}
+    {playlistId}
+    contentId={contentItem?.id}
+    {contentLanguage}
+    {platform}
+    {vendorIdentifier}
+    {bundleIdentifier}
+    bind:playbackState
+    bind:duration
+    bind:currentTime
+    bind:playbackRate
+    bind:prevPercentage
+    bind:metadataLoaded
+    {showUserInterface}
+    {videoBehindWidget}
+    {videoBehindStatic}
+    {videoMightBeShown}
+    {aspectRatio}
+    {isFullScreen}
+    widgetPosition={resolvedWidgetPosition}
+    widgetWidth={resolvedWidgetWidth}
+    widgetMargin={resolvedWidgetMargin}
+    {widgetTarget} />
+{/key}
 </ExternalWidget>
 
-{#if showStaticInterface}
+{#if showStaticInterface && interfaceStyle === "default"}
   {#key playerLanguage}
-    <UserInterface
-      bind:this={userInterface}
+  <DefaultInterface
+    bind:this={userInterface}
+    {onEvent}
+    {agentClient}
+    {embedMode}
+    {analyticsId}
+    theme={resolvedTheme}
+    {systemDark}
+    lightTheme={resolvedLightTheme}
+    darkTheme={resolvedDarkTheme}
+    videoTheme={resolvedVideoTheme}
+    {radius}
+    {content}
+    {contentIndex}
+    bind:summary
+    {duration}
+    {currentTime}
+    {playbackState}
+    {playbackRate}
+    {playbackRates}
+    {skipButtonStyle}
+    {playlistStyle}
+    {playlistToggle}
+    {downloadFormats}
+    {playerTitle}
+    {titleEnabled}
+    {callToAction}
+    {variants}
+    {agentAvatar}
+    agentQuestionsLimit={normalizedAgentQuestionsLimit}
+    agentVoiceSecondsLimit={normalizedAgentVoiceSecondsLimit}
+    {agentQuestionsRemaining}
+    {agentVoiceSecondsRemaining}
+    onAgentQuestion={useAgentQuestion}
+    {agentVoice}
+    {agentPlaceholder}
+    {agentName}
+    {shortcuts}
+    {infoText}
+    {disclosureText}
+    {disclosureLink}
+    {logoIconEnabled}
+    videoIsBehind={videoBehindStatic}
+    {aspectRatio}
+    {activeAdvert}
+    {persistentAdvert}
+    {metadataLoaded}
+    {segmentLimit}
+    {segmentLimitReached}
+    {accessCtaText}
+    {accessCtaUrl}
+    {agentCtaText}
+    {agentCtaUrl} />
+  {/key}
+{:else if showStaticInterface}
+  {#key playerLanguage}
+  <UserInterface
+    bind:this={userInterface}
+    {onEvent}
+    playerStyle={interfaceStyle}
+    {callToAction}
+    {skipButtonStyle}
+    {playlistStyle}
+    {playlistToggle}
+    {downloadFormats}
+    {durationFormat}
+    {playerTitle}
+    {content}
+    {contentIndex}
+    {summary}
+    {duration}
+    {currentTime}
+    {playbackState}
+    {playbackRate}
+    {playbackRates}
+    {activeAdvert}
+    {activeIntroOrOutro}
+    {persistentAdvert}
+    {companionAdvert}
+    {analyticsId}
+    {textColor}
+    {backgroundColor}
+    {iconColor}
+    {videoTextColor}
+    {videoBackgroundColor}
+    {videoIconColor}
+    {logoIconEnabled}
+    {logoImagePosition}
+    {maxImageSize}
+    {isFullScreen}
+    {aspectRatio}
+    {videoPosterImage}
+    videoIsBehind={videoBehindStatic} />
+  {/key}
+{:else if showUserInterface && interfaceStyle === "default" && content.length === 0 && projectId !== undefined && !noContentAvailable}
+  <DefaultSkeleton showChatBlock={embedMode !== "audio"} theme={resolvedTheme} {radius} palette={activePlayerTheme} />
+{/if}
+
+{#if showWidgetInterface && effectiveWidgetStyle === "default"}
+  <ExternalWidget root={widgetTarget}>
+    {#key playerLanguage}
+    <DefaultInterface
+      bind:this={widgetInterface}
       {onEvent}
-      playerStyle={interfaceStyle}
+      {agentClient}
+      embedMode={effectiveWidgetEmbedMode}
+      {analyticsId}
+      theme={resolvedTheme}
+      {systemDark}
+      lightTheme={resolvedLightTheme}
+      darkTheme={resolvedDarkTheme}
+      videoTheme={resolvedVideoTheme}
+      {radius}
+      isWidget={true}
+      videoIsBehind={videoBehindWidget}
+      {aspectRatio}
+      fixedPosition={!widgetTarget && resolvedWidgetPosition}
+      fixedWidth={resolvedWidgetWidth}
+      fixedMargin={resolvedWidgetMargin}
+      {showClose}
+      {content}
+      {contentIndex}
+      bind:summary
+      {duration}
+      {currentTime}
+      {playbackState}
+      {playbackRate}
+      {playbackRates}
+      {skipButtonStyle}
+      {downloadFormats}
+      {playerTitle}
+    {titleEnabled}
+      {callToAction}
+      {variants}
+      {agentAvatar}
+      agentQuestionsLimit={normalizedAgentQuestionsLimit}
+      agentVoiceSecondsLimit={normalizedAgentVoiceSecondsLimit}
+      {agentQuestionsRemaining}
+      {agentVoiceSecondsRemaining}
+      onAgentQuestion={useAgentQuestion}
+      {agentVoice}
+      {agentPlaceholder}
+      {agentName}
+      {shortcuts}
+      {infoText}
+      {disclosureText}
+      {disclosureLink}
+      {logoIconEnabled}
+      {activeAdvert}
+      {persistentAdvert}
+      {metadataLoaded}
+      {segmentLimit}
+      {segmentLimitReached}
+      {accessCtaText}
+      {accessCtaUrl}
+      {agentCtaText}
+      {agentCtaUrl} />
+    {/key}
+  </ExternalWidget>
+{:else if showWidgetInterface}
+  <ExternalWidget root={widgetTarget}>
+    {#key playerLanguage}
+    <UserInterface
+      bind:this={widgetInterface}
+      {onEvent}
+      playerStyle={effectiveWidgetStyle}
       {callToAction}
       {skipButtonStyle}
-      {playlistStyle}
-      {playlistToggle}
+      playlistStyle="hide"
+      playlistToggle="hide"
       {downloadFormats}
       {durationFormat}
       {playerTitle}
+      fixedPosition={!widgetTarget && widgetPosition}
+      fixedWidth={widgetWidth}
+      fixedMargin={widgetMargin}
+      {showClose}
       {content}
       {contentIndex}
       {summary}
@@ -283,56 +734,9 @@
       {logoIconEnabled}
       {logoImagePosition}
       {maxImageSize}
-      {isFullScreen}
       {aspectRatio}
       {videoPosterImage}
-      videoIsBehind={videoBehindStatic} />
-  {/key}
-{/if}
-
-{#if showWidgetInterface}
-  <ExternalWidget root={widgetTarget}>
-    {#key playerLanguage}
-      <UserInterface
-        bind:this={widgetInterface}
-        {onEvent}
-        playerStyle={widgetStyle}
-        {callToAction}
-        {skipButtonStyle}
-        playlistStyle="hide"
-        playlistToggle="hide"
-        {downloadFormats}
-        {durationFormat}
-        {playerTitle}
-        fixedPosition={!widgetTarget && widgetPosition}
-        fixedWidth={widgetWidth}
-        fixedMargin={widgetMargin}
-        {showClose}
-        {content}
-        {contentIndex}
-        {summary}
-        {duration}
-        {currentTime}
-        {playbackState}
-        {playbackRate}
-        {playbackRates}
-        {activeAdvert}
-        {activeIntroOrOutro}
-        {persistentAdvert}
-        {companionAdvert}
-        {analyticsId}
-        {textColor}
-        {backgroundColor}
-        {iconColor}
-        {videoTextColor}
-        {videoBackgroundColor}
-        {videoIconColor}
-        {logoIconEnabled}
-        {logoImagePosition}
-        {maxImageSize}
-        {aspectRatio}
-        {videoPosterImage}
-        videoIsBehind={videoBehindWidget} />
+      videoIsBehind={videoBehindWidget} />
     {/key}
   </ExternalWidget>
 {/if}
@@ -340,86 +744,37 @@
 {#each segmentWidgets as root (root)}
   <ExternalWidget {root}>
     {#key playerLanguage}
-      <UserInterface
-        onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
-        playerStyle="small"
-        fixedWidth={0}
-        logoIconEnabled={false}
-        {content}
-        {contentIndex}
-        {summary}
-        {duration}
-        currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
-        playbackState={showRealTimeInWidget ? playbackState : "paused"}
-        {activeAdvert}
-        {activeIntroOrOutro}
-        {persistentAdvert}
-        {companionAdvert}
-        {analyticsId}
-        {textColor}
-        {backgroundColor}
-        {iconColor}
-        {videoTextColor}
-        {videoBackgroundColor}
-        {videoIconColor} />
+    <UserInterface
+      onEvent={e => onEvent({...e, emittedFrom: "segment-widget", widgetSegment, widgetIsCurrent })}
+      playerStyle="small"
+      fixedWidth={0}
+      logoIconEnabled={false}
+      {content}
+      {contentIndex}
+      {summary}
+      {duration}
+      currentTime={showRealTimeInWidget ? currentTime : widgetSegment.startTime}
+      playbackState={showRealTimeInWidget ? playbackState : "paused"}
+      {activeAdvert}
+      {activeIntroOrOutro}
+      {persistentAdvert}
+      {companionAdvert}
+      {analyticsId}
+      {textColor}
+      {backgroundColor}
+      {iconColor}
+      {videoTextColor}
+      {videoBackgroundColor}
+      {videoIconColor} />
     {/key}
   </ExternalWidget>
 {/each}
 
 {#if controlPanel}
   <ExternalWidget root={controlPanel}>
-    <ControlPanel
-      bind:controlPanel
-      bind:projectId
-      bind:contentId
-      bind:playlistId
-      bind:sourceId
-      bind:sourceUrl
-      bind:summary
-      bind:showUserInterface
-      bind:playerStyle
-      bind:playerTitle
-      bind:callToAction
-      bind:skipButtonStyle
-      bind:playlistStyle
-      bind:playlistToggle
-      bind:mediaSession
-      {content}
-      bind:contentIndex
-      {introsOutros}
-      bind:introsOutrosIndex
-      {adverts}
-      bind:advertIndex
-      bind:persistentAdImage
-      bind:persistentIndex
-      bind:duration
-      bind:currentTime
-      bind:playbackState
-      bind:playbackRate
-      bind:widgetStyle
-      bind:widgetPosition
-      bind:widgetWidth
-      bind:widgetMargin
-      bind:widgetTarget
-      bind:textColor
-      bind:backgroundColor
-      bind:iconColor
-      bind:highlightColor
-      bind:wordHighlightsEnabled
-      bind:wordHighlightColor
-      bind:videoTextColor
-      bind:videoIconColor
-      bind:logoIconEnabled
-      bind:highlightSections
-      bind:clickableSections
-      bind:segmentWidgetSections
-      bind:segmentWidgetPosition
-      bind:currentSegment
-      bind:hoveredSegment
-      bind:advertConsent
-      bind:analyticsConsent
-      bind:analyticsCustomUrl
-      bind:analyticsTag />
+    <!-- Reads the player's own props and writes them back as overrides, so it
+         needs the controller rather than a binding per setting. -->
+    <ControlPanel bind:controlPanel {controller} />
   </ExternalWidget>
 {/if}
 

@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "target": "ES2022",
+    "types": ["vite/client", "vitest/globals"]
+  },
+  "include": [
+    "src/helpers/agentAccessPolicy.ts",
+    "src/helpers/agentAllowanceState.ts",
+    "src/helpers/agentClient.ts",
+    "src/helpers/agentContracts.ts",
+    "src/helpers/agentLimits.ts",
+    "src/helpers/defaultPlayerLayout.ts",
+    "src/helpers/defaultWidgetGeometry.ts",
+    "src/helpers/mediaQuery.ts",
+    "src/helpers/realAgentClient.ts",
+    "src/helpers/throwError.ts",
+    "src/helpers/translate.ts",
+    "src/helpers/validateTranslations.ts",
+    "test/helpers/agentAccessPolicy.test.ts",
+    "test/helpers/agentAllowanceState.test.ts",
+    "test/helpers/defaultPlayerLayout.test.ts",
+    "test/helpers/defaultWidgetGeometry.test.ts",
+    "test/helpers/mediaQuery.test.ts"
+  ]
+}
