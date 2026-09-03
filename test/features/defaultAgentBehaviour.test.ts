@@ -341,7 +341,11 @@ test("default player live agent behaviour", async ({ page }) => {
 
   // With one, opening the panel still connects nothing; the first typed send
   // starts a text session carrying the id and the page's context.
-  await openPanel(page, { embedMode: "audio-agent", agentId: "agent_wired123" });
+  await openPanel(page, {
+    embedMode: "audio-agent",
+    agentId: "agent_wired123",
+    apiPayload: { access_tier: { slug: "subscribed" } },
+  });
   expect(await page.evaluate(() => window.__sdkLog), "opening the panel is free").toEqual([]);
 
   const wiredInput = page.locator(".default-player .composer input").first();
@@ -352,7 +356,11 @@ test("default player live agent behaviour", async ({ page }) => {
 
   const log = await page.evaluate(() => window.__sdkLog);
   expect(log[0]).toMatchObject({ event: "start", agentId: "agent_wired123", textOnly: true });
-  expect(log[0].dynamicVariables).toMatchObject({ title: "An article" });
+  expect(log[0].dynamicVariables).toMatchObject({
+    bw_channel: "player",
+    bw_access_tier: "subscribed",
+    title: "An article",
+  });
   expect(log[1]).toMatchObject({ event: "message", text: "What happened?" });
 
   const answered = await panelState(page);
