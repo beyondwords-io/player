@@ -78,8 +78,10 @@ describe("ChatThread", () => {
     const target = document.createElement("div");
     const text = [
       "Here are two articles:",
-      "1. First article title https://news.example/first",
-      "2. Second article title https://news.example/second",
+      "1. First article title",
+      "https://news.example/first",
+      "2. Second article title",
+      "https://news.example/second",
     ].join("\n");
     const component = new ChatThread({
       target,

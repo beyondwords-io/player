@@ -60,6 +60,28 @@ describe("agentLinks", () => {
     expect(agentTextWithoutLinks(text)).not.toContain("https://");
   });
 
+  it("pairs URL-only lines with the article title above and removes the vacated lines", () => {
+    const text = [
+      "Here are two articles:",
+      "",
+      "Bank of England’s Pill warns against ‘wait and see’ interest rates approach",
+      "https://www.cityam.com/bank-of-england/",
+      "Nike becomes London City Lionesses sponsor in world record deal",
+      "https://www.cityam.com/nike-lionesses/",
+    ].join("\n");
+
+    expect(agentCitationsFromText(text)).toEqual([
+      { title: "Bank of England’s Pill warns against ‘wait and see’ interest rates approach", url: "https://www.cityam.com/bank-of-england/" },
+      { title: "Nike becomes London City Lionesses sponsor in world record deal", url: "https://www.cityam.com/nike-lionesses/" },
+    ]);
+    expect(agentTextWithoutLinks(text)).toEqual([
+      "Here are two articles:",
+      "",
+      "Bank of England’s Pill warns against ‘wait and see’ interest rates approach",
+      "Nike becomes London City Lionesses sponsor in world record deal",
+    ].join("\n"));
+  });
+
   it("uses a Markdown label or hostname when there is no quoted title", () => {
     expect(agentCitationsFromText(
       "Read [the full investigation](https://news.example/investigation) or https://another.example/story.",
