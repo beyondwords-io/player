@@ -16,7 +16,7 @@
       <button
         type="button"
         class="chip"
-        style="--bg: {tokens.background}; --hover-bg: {tokens.pressed}; color: {tokens.text}; outline-color: {tokens.text}"
+        style="--bg: {tokens.subtle}; --hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; color: {tokens.text}; outline-color: {tokens.text}"
         on:click={() => onSelect(question)}
         on:mouseup={blurElement}
       >{question}</button>
@@ -71,7 +71,13 @@
 
   @media (hover: hover) and (pointer: fine) {
     .shortcut-row:hover { background: var(--hover-bg); }
-    .chip:hover { background: var(--hover-bg); }
+    .chip:hover {
+      background: linear-gradient(var(--hover-bg), var(--hover-bg)), var(--bg);
+    }
+  }
+
+  .chip:active {
+    background: linear-gradient(var(--pressed-bg), var(--pressed-bg)), var(--bg);
   }
 
   .shortcut-row .question { font-size: 13px; }
