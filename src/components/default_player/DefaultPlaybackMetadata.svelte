@@ -52,7 +52,7 @@
         <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
       {/if}
       <span class="time" style="color: {tokens.muted}" role="status" aria-live="polite">{translate("timeLeft").replace("{time}", formatTime(Math.max(0, duration - currentTime)))}</span>
-      <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}" role="img" aria-label={translate("advertisement")}>{translate("advertisementAbbreviation")}</span>
+      <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.subtle}" role="img" aria-label={translate("advertisement")}>{translate("advertisementAbbreviation")}</span>
     </div>
     <ProgressTrack {progress} {duration} readonly={true} radius={tokens.radius.track} trackColor={tokens.track} fillColor={tokens.icon} focusColor={tokens.text} {onEvent} />
   {:else if offline}

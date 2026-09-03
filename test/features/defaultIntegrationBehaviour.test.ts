@@ -311,6 +311,43 @@ test("default player video progress uses the video icon palette role", async ({ 
   await expect(frame.locator(".progress-track")).toHaveCSS("outline-color", "rgb(0, 128, 0)");
 });
 
+test("default player advert badges use the subtle outline role", async ({ page }) => {
+  await page.evaluate((audio) => {
+    const palette = {
+      secondaryTextColor: "rgb(255, 165, 0)",
+      subtleColor: "rgb(0, 80, 200)",
+      linkColor: "rgb(180, 0, 180)",
+    };
+    const advert = {
+      clickThroughUrl: "https://example.com",
+      audio,
+      theme: "light",
+      lightTheme: palette,
+    };
+
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      playbackState: "playing",
+      currentTime: 5,
+      duration: 30,
+      lightTheme: palette,
+      adverts: [advert],
+      advertIndex: 0,
+      content: [{ title: "Article", audio }],
+    });
+  }, audio);
+
+  const badge = page.locator(".default-player .ad-badge");
+  await expect(badge).toHaveCSS("color", "rgb(255, 165, 0)");
+  await expect(badge).toHaveCSS("border-color", "rgb(0, 80, 200)");
+
+  await page.evaluate(() => BeyondWords.Player.instances()[0].advertIndex = -1);
+  const persistentBadge = page.locator(".default-player .persistent-chip .ad-badge");
+  await expect(persistentBadge).toHaveCSS("border-color", "rgb(0, 80, 200)");
+});
+
 test("media preference changes do not replace sources after playback starts", async ({ page }) => {
   const sources = await page.evaluate(async ({ audio, video }) => {
     window.disableMediaLoad = false;

@@ -680,7 +680,7 @@
     {#if showPersistentChip}
       <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.link}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
         {persistentText}
-        <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.underline}">{translate("advertisementAbbreviation")}</span>
+        <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.subtle}">{translate("advertisementAbbreviation")}</span>
       </a>
     {/if}
 
