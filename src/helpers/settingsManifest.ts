@@ -50,8 +50,8 @@ const playerColorFields = [
   { key: "highlightColor", label: "Section highlight", description: "The active section highlight" },
   { key: "wordHighlightColor", label: "Word highlight", description: "The current-word highlight" },
   { key: "agentColor", label: "Agent", description: "A CSS color or background gradient for the agent orb" },
-  { key: "accentColor", label: "User bubble", description: "User-message background only" },
-  { key: "accentTextColor", label: "User bubble text", description: "User-message text only" },
+  { key: "accentColor", label: "User bubble", description: "User-message and shortcut bubble backgrounds" },
+  { key: "accentTextColor", label: "User bubble text", description: "User-message and shortcut text" },
 ];
 
 const videoColorFields = [
