@@ -283,7 +283,7 @@ test("default player progress and status icons use the icon palette role", async
   await expect(player.locator(".progress-track .fill")).toHaveCSS("background-color", "rgb(0, 128, 0)");
 });
 
-test("default player does not paint a zero-width progress fill", async ({ page }) => {
+test("default player clips its fill to the progress track shape", async ({ page }) => {
   await page.evaluate((audio) => {
     new BeyondWords.Player({
       target: ".beyondwords-player",
@@ -302,7 +302,9 @@ test("default player does not paint a zero-width progress fill", async ({ page }
 
   await page.evaluate(() => BeyondWords.Player.instances()[0].currentTime = 0.5);
   await expect(track).toHaveAttribute("aria-valuenow", "0");
-  await expect(track.locator(".fill")).toHaveCount(0);
+  await expect(track).toHaveCSS("overflow", "hidden");
+  await expect(track.locator(".fill")).toHaveCSS("border-radius", "0px");
+  await expect(track.locator(".fill")).toHaveAttribute("style", /width: 0\.8333/);
 
   await page.evaluate(() => BeyondWords.Player.instances()[0].currentTime = 30);
   await expect(track.locator(".fill")).toHaveCount(1);
