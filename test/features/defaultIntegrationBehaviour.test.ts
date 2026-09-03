@@ -105,6 +105,33 @@ test("default player mixed-media playlist behaviour", async ({ page }) => {
   await expect(widget.locator(".video-frame")).toHaveCount(1);
 });
 
+test("default player playlist rows stay inside the player surface", async ({ page }) => {
+  await page.evaluate((audio) => {
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      playlistStyle: "show",
+      content: [
+        { title: "First item", audio },
+        { title: "Second item", audio },
+        { title: "Third item", audio },
+      ],
+    });
+  }, audio);
+
+  const surface = await page.locator(".default-player .surface").boundingBox();
+  const rows = page.locator(".default-player .queue .row");
+  const rowCount = await rows.count();
+
+  expect(rowCount).toEqual(3);
+  for (let index = 0; index < rowCount; index += 1) {
+    const box = await rows.nth(index).boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(surface.x);
+    expect(box.x + box.width).toBeLessThanOrEqual(surface.x + surface.width);
+  }
+});
+
 test("default player runtime theme behaviour uses literal palettes and live Auto", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.evaluate((audio) => {

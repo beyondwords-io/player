@@ -87,6 +87,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    box-sizing: border-box;
     height: 40px;
     flex-shrink: 0;
     padding: 0 8px;
