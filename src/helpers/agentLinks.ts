@@ -1,12 +1,10 @@
 import type { AgentCitation } from "./agentContracts";
 
-type AgentTextPart =
-  | { kind: "text"; text: string }
-  | { kind: "link"; text: string; href: string };
-
 const LINK_PATTERN = /\[([^\]\n]+)\]\((https:\/\/[^\s)]+)\)|`(https:\/\/[^`\s<]+)`|(https:\/\/[^\s<`]+)/gi;
 const SIMPLE_TRAILING_PUNCTUATION = /[.,!?;:]$/;
 const CLOSING_BRACKETS: Record<string, string> = { ")": "(", "]": "[", "}": "{" };
+const QUOTED_TITLE_PATTERN = /["“]([^"”\n]{2,240})["”]/g;
+const LINK_CLAUSE_PATTERN = /\s*(?:you can (?:find|read) it at|you can find it here|read it at|the link is|link|source)\s*:?\s*(?=[.,!?;:]?(?:\s|$))/gi;
 
 const safeHttpsUrl = (raw: unknown): URL | null => {
   if (typeof raw !== "string") { return null; }
@@ -44,48 +42,50 @@ const trimTrailingPunctuation = (raw: string): { url: string; trailing: string }
   return { url, trailing };
 };
 
-const appendText = (parts: AgentTextPart[], text: string): void => {
-  if (!text) { return; }
-
-  const previous = parts[parts.length - 1];
-  if (previous?.kind === "text") {
-    previous.text += text;
-  } else {
-    parts.push({ kind: "text", text });
-  }
-};
-
 const allowedHttpsUrl = (raw: string): string | null => {
   const url = safeHttpsUrl(raw);
   if (!url) { return null; }
   return url.href;
 };
 
-const agentTextParts = (text: string): AgentTextPart[] => {
-  const parts: AgentTextPart[] = [];
-  let index = 0;
+const agentTextWithoutLinks = (text: string): string => text
+  // Keep a human Markdown label in the sentence; bare and code-wrapped URLs
+  // move to the citation row instead of dominating the answer copy.
+  .replace(LINK_PATTERN, (_match, markdownLabel) => markdownLabel || "")
+  .replace(LINK_CLAUSE_PATTERN, "")
+  .replace(/\s+([.,!?;:])/g, "$1")
+  .replace(/([.!?])(["”])\./g, "$1$2")
+  .trim();
 
-  for (const match of text.matchAll(LINK_PATTERN)) {
-    const start = match.index ?? 0;
-    appendText(parts, text.slice(index, start));
+const nearestQuotedTitle = (text: string): string | null => {
+  let title: string | null = null;
 
-    const markdownLabel = match[1];
-    const raw = match[2] || match[3] || match[4];
-    const { url, trailing } = trimTrailingPunctuation(raw);
-    const href = allowedHttpsUrl(url);
-
-    if (href) {
-      parts.push({ kind: "link", text: markdownLabel || url, href });
-      appendText(parts, trailing);
-    } else {
-      appendText(parts, match[0]);
-    }
-
-    index = start + match[0].length;
+  for (const match of text.matchAll(QUOTED_TITLE_PATTERN)) {
+    title = match[1].trim().replace(/\.$/, "");
   }
 
-  appendText(parts, text.slice(index));
-  return parts;
+  return title;
+};
+
+const agentCitationsFromText = (text: string): AgentCitation[] => {
+  const citations: AgentCitation[] = [];
+
+  for (const match of text.matchAll(LINK_PATTERN)) {
+    const markdownLabel = match[1]?.trim();
+    const raw = match[2] || match[3] || match[4];
+    const { url } = trimTrailingPunctuation(raw);
+    const href = allowedHttpsUrl(url);
+    if (!href) { continue; }
+
+    const hostname = new URL(href).hostname.replace(/^www\./, "");
+    const prefix = text.slice(0, match.index ?? 0);
+    citations.push({
+      title: markdownLabel || nearestQuotedTitle(prefix) || hostname,
+      url: href,
+    });
+  }
+
+  return mergeAgentCitations(citations);
 };
 
 const mergeAgentCitations = (...groups: AgentCitation[][]): AgentCitation[] => {
@@ -151,9 +151,9 @@ const citationsForAgentText = (text: string, candidates: AgentCitation[]): Agent
 };
 
 export {
+  agentCitationsFromText,
   agentCitationsFromToolResult,
-  agentTextParts,
+  agentTextWithoutLinks,
   citationsForAgentText,
   mergeAgentCitations,
 };
-export type { AgentTextPart };

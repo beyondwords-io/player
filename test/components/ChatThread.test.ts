@@ -18,22 +18,22 @@ const reply = (text: string, overrides = {}) => ({
 });
 
 describe("ChatThread", () => {
-  it("renders finalized links for any HTTPS source host", () => {
+  it("promotes a finalized HTTPS link into a citation pill", () => {
     const target = document.createElement("div");
     const component = new ChatThread({
       target,
       props: {
         tokens,
-        thread: [reply("The link is `https://www.cityam.com/latest-story/`.")],
+        thread: [reply('The newest article is titled "A City story." You can find it at `https://www.cityam.com/latest-story/`.')],
       },
     });
 
-    const link = target.querySelector<HTMLAnchorElement>(".answer-link");
-    expect(link?.textContent).toEqual("https://www.cityam.com/latest-story/");
-    expect(link?.href).toEqual("https://www.cityam.com/latest-story/");
-    expect(link?.target).toEqual("_blank");
-    expect(link?.rel).toEqual("noopener noreferrer");
-    expect(target.querySelector(".answer")?.textContent).toEqual("The link is https://www.cityam.com/latest-story/.");
+    const citation = target.querySelector<HTMLAnchorElement>(".citation");
+    expect(target.querySelector(".answer")?.textContent).toEqual('The newest article is titled "A City story."');
+    expect(citation?.textContent).toContain("A City story");
+    expect(citation?.href).toEqual("https://www.cityam.com/latest-story/");
+    expect(citation?.target).toEqual("_blank");
+    expect(citation?.rel).toEqual("noopener noreferrer");
     component.$destroy();
   });
 
@@ -50,8 +50,7 @@ describe("ChatThread", () => {
       },
     });
 
-    expect(target.querySelectorAll(".answer-link")).toHaveLength(1);
-    expect(target.querySelector<HTMLAnchorElement>(".answer-link")?.href).toEqual("https://example.com/story");
+    expect(target.querySelectorAll(".citation")).toHaveLength(1);
     expect(target.querySelector(".cursor")).not.toBeNull();
     component.$destroy();
   });
@@ -69,8 +68,8 @@ describe("ChatThread", () => {
       },
     });
 
-    expect(target.querySelector<HTMLAnchorElement>(".answer-link")?.href).toEqual(url);
     expect(target.querySelector<HTMLAnchorElement>(".citation")?.href).toEqual(url);
+    expect(target.querySelectorAll(".citation")).toHaveLength(1);
     expect(target.querySelector(".citation")?.textContent).toContain("An article");
     component.$destroy();
   });

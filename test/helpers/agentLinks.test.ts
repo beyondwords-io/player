@@ -1,46 +1,38 @@
 import {
+  agentCitationsFromText,
   agentCitationsFromToolResult,
-  agentTextParts,
+  agentTextWithoutLinks,
   citationsForAgentText,
 } from "../../src/helpers/agentLinks";
 
 describe("agentLinks", () => {
-  it("links approved HTTPS URLs and leaves their punctuation outside", () => {
-    expect(agentTextParts(
-      "Read https://www.cityam.com/latest-story/.",
-    )).toEqual([
-      { kind: "text", text: "Read " },
-      { kind: "link", text: "https://www.cityam.com/latest-story/", href: "https://www.cityam.com/latest-story/" },
-      { kind: "text", text: "." },
-    ]);
+  it("removes a long bare URL and its introductory clause from answer copy", () => {
+    expect(agentTextWithoutLinks(
+      'The newest article is titled "Victoria Beckham owed £350,000 by Harvey Nichols." You can find it at https://www.cityam.com/victoria-beckham/.',
+    )).toEqual('The newest article is titled "Victoria Beckham owed £350,000 by Harvey Nichols."');
   });
 
-  it("renders Markdown labels for any HTTPS host", () => {
-    expect(agentTextParts(
+  it("keeps Markdown link labels in the answer copy", () => {
+    expect(agentTextWithoutLinks(
       "Read [the latest story](https://cityam.com/latest-story).",
-    )).toEqual([
-      { kind: "text", text: "Read " },
-      { kind: "link", text: "the latest story", href: "https://cityam.com/latest-story" },
-      { kind: "text", text: "." },
-    ]);
+    )).toEqual("Read the latest story.");
   });
 
-  it("turns ElevenLabs inline-code URLs into clean links", () => {
-    expect(agentTextParts(
-      "The link is: `https://www.cityam.com/latest-story/`",
-    )).toEqual([
-      { kind: "text", text: "The link is: " },
-      { kind: "link", text: "https://www.cityam.com/latest-story/", href: "https://www.cityam.com/latest-story/" },
-    ]);
+  it("promotes an inline URL to a citation using the nearest quoted title", () => {
+    expect(agentCitationsFromText(
+      'The newest article is titled "Victoria Beckham owed £350,000 by Harvey Nichols." You can find it at https://www.cityam.com/victoria-beckham/.',
+    )).toEqual([{
+      title: "Victoria Beckham owed £350,000 by Harvey Nichols",
+      url: "https://www.cityam.com/victoria-beckham/",
+    }]);
   });
 
-  it("links every valid HTTPS host and keeps non-HTTPS URLs as text", () => {
-    expect(agentTextParts(
-      "Unknown https://example.com/story and http://cityam.com/story.",
+  it("uses a Markdown label or hostname when there is no quoted title", () => {
+    expect(agentCitationsFromText(
+      "Read [the full investigation](https://news.example/investigation) or https://another.example/story.",
     )).toEqual([
-      { kind: "text", text: "Unknown " },
-      { kind: "link", text: "https://example.com/story", href: "https://example.com/story" },
-      { kind: "text", text: " and http://cityam.com/story." },
+      { title: "the full investigation", url: "https://news.example/investigation" },
+      { title: "another.example", url: "https://another.example/story" },
     ]);
   });
 

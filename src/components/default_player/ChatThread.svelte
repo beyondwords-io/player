@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { AgentMessage } from "../../helpers/agentContracts";
-  import { agentTextParts } from "../../helpers/agentLinks";
+  import type { AgentReplyMessage } from "../../helpers/agentContracts";
+  import { agentCitationsFromText, agentTextWithoutLinks, mergeAgentCitations } from "../../helpers/agentLinks";
   import type { DefaultPlayerTokens } from "../../helpers/defaultPlayerTokens";
   import ArrowUpRight from "../svg_icons/default_player/ArrowUpRight.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
@@ -12,6 +13,10 @@
   export let thread: AgentMessage[] = [];
   export let threadElement: HTMLDivElement | undefined = undefined;
   export let tokens: DefaultPlayerTokens;
+
+  const displayCitations = (message: AgentReplyMessage) => (
+    mergeAgentCitations(message.citations, message.streaming ? [] : agentCitationsFromText(message.text))
+  );
 </script>
 
 {#if thread.length > 0}
@@ -56,24 +61,12 @@
               {:else if message.streaming}
                 {message.text}<span class="cursor animating" style="background: {tokens.sendBackground}"></span>
               {:else}
-                {#each agentTextParts(message.text) as part, j (j)}
-                  {#if part.kind === "link"}
-                    <a
-                      class="answer-link"
-                      href={part.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style="color: {tokens.link}; border-bottom-color: {tokens.underline}; outline-color: {tokens.text}"
-                    >{part.text}</a>
-                  {:else}
-                    {part.text}
-                  {/if}
-                {/each}
+                {agentTextWithoutLinks(message.text)}
               {/if}
             </span>
-            {#if message.citations.length > 0}
+            {#if displayCitations(message).length > 0}
               <span class="citations">
-                {#each message.citations as citation (citation.url)}
+                {#each displayCitations(message) as citation (citation.url)}
                   <a
                     class="citation"
                     href={citation.url}
@@ -218,7 +211,6 @@
   }
 
   .citation:focus-visible,
-  .answer-link:focus-visible,
   .subscribe:focus-visible {
     outline-width: 2px;
     outline-style: solid;
@@ -265,10 +257,4 @@
     cursor: pointer;
   }
 
-  .answer-link {
-    text-decoration: none;
-    border-bottom-width: 1px;
-    border-bottom-style: dotted;
-    overflow-wrap: anywhere;
-  }
 </style>
