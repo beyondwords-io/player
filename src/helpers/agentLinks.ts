@@ -48,14 +48,30 @@ const allowedHttpsUrl = (raw: string): string | null => {
   return url.href;
 };
 
-const agentTextWithoutLinks = (text: string): string => text
+const agentTextWithoutLinks = (text: string): string => {
+  let removedLink = false;
+
   // Keep a human Markdown label in the sentence; bare and code-wrapped URLs
   // move to the citation row instead of dominating the answer copy.
-  .replace(LINK_PATTERN, (_match, markdownLabel) => markdownLabel || "")
-  .replace(LINK_CLAUSE_PATTERN, "")
-  .replace(/\s+([.,!?;:])/g, "$1")
-  .replace(/([.!?])(["”])\./g, "$1$2")
-  .trim();
+  const withoutLinks = text.replace(LINK_PATTERN, (_match, markdownLabel, markdownUrl, codeUrl, bareUrl) => {
+    removedLink = true;
+    if (markdownLabel) { return markdownLabel; }
+
+    const raw = markdownUrl || codeUrl || bareUrl;
+    return trimTrailingPunctuation(raw).trailing;
+  });
+
+  if (!removedLink) { return text; }
+
+  return withoutLinks
+    .replace(LINK_CLAUSE_PATTERN, "")
+    // An agent will often introduce a bare URL with "and" or "at". Once the
+    // URL moves to a pill, remove the connector if it is left at the line end.
+    .replace(/\s+(?:and|at)\s*(?=[.,!?;:]?(?:\n|$))/gim, "")
+    .replace(/\s+([.,!?;:])/g, "$1")
+    .replace(/([.!?])(["”])\./g, "$1$2")
+    .trim();
+};
 
 const nearestQuotedTitle = (text: string): string | null => {
   let title: string | null = null;
@@ -65,6 +81,16 @@ const nearestQuotedTitle = (text: string): string | null => {
   }
 
   return title;
+};
+
+const listItemTitle = (text: string): string | null => {
+  const match = text.trim().match(/^(?:\d+[.)]|[-*•])\s+(.+)$/);
+  if (!match) { return null; }
+
+  return match[1]
+    .replace(/\s*(?:[-–—:|]|\band)\s*$/i, "")
+    .trim()
+    .replace(/\.$/, "") || null;
 };
 
 const agentCitationsFromText = (text: string): AgentCitation[] => {
@@ -79,8 +105,9 @@ const agentCitationsFromText = (text: string): AgentCitation[] => {
 
     const hostname = new URL(href).hostname.replace(/^www\./, "");
     const prefix = text.slice(0, match.index ?? 0);
+    const linePrefix = prefix.slice(prefix.lastIndexOf("\n") + 1);
     citations.push({
-      title: markdownLabel || nearestQuotedTitle(prefix) || hostname,
+      title: markdownLabel || nearestQuotedTitle(linePrefix) || listItemTitle(linePrefix) || hostname,
       url: href,
     });
   }
