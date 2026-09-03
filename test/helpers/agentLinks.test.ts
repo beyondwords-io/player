@@ -27,6 +27,39 @@ describe("agentLinks", () => {
     }]);
   });
 
+  it("removes a dangling connector when a single article URL becomes a pill", () => {
+    const text = 'The newest article is titled "Victoria Beckham owed £350,000 by Harvey Nichols" and https://www.cityam.com/victoria-beckham-owed-350000-by-harvey-nichols/.';
+
+    expect(agentTextWithoutLinks(text)).toEqual(
+      'The newest article is titled "Victoria Beckham owed £350,000 by Harvey Nichols".',
+    );
+    expect(agentCitationsFromText(text)).toEqual([{
+      title: "Victoria Beckham owed £350,000 by Harvey Nichols",
+      url: "https://www.cityam.com/victoria-beckham-owed-350000-by-harvey-nichols/",
+    }]);
+  });
+
+  it("uses each numbered article title for its corresponding citation", () => {
+    const text = [
+      "Here are five of the latest articles from City AM:",
+      "",
+      "1. Victoria Beckham owed £350,000 by Harvey Nichols https://www.cityam.com/victoria-beckham/",
+      "2. Bank of England’s Pill warns against ‘wait and see’ interest rates approach https://www.cityam.com/bank-of-england/",
+      "3. Nike becomes London City Lionesses sponsor as well as kit partner in world record deal https://www.cityam.com/nike-lionesses/",
+      "4. Revolut takes step closer to US bank launch after clearing key regulatory hurdle https://www.cityam.com/revolut-us-bank/",
+      "5. Reform UK chiefs ask to meet gilt holders amid bond rout https://www.cityam.com/reform-uk/",
+    ].join("\n");
+
+    expect(agentCitationsFromText(text)).toEqual([
+      { title: "Victoria Beckham owed £350,000 by Harvey Nichols", url: "https://www.cityam.com/victoria-beckham/" },
+      { title: "Bank of England’s Pill warns against ‘wait and see’ interest rates approach", url: "https://www.cityam.com/bank-of-england/" },
+      { title: "Nike becomes London City Lionesses sponsor as well as kit partner in world record deal", url: "https://www.cityam.com/nike-lionesses/" },
+      { title: "Revolut takes step closer to US bank launch after clearing key regulatory hurdle", url: "https://www.cityam.com/revolut-us-bank/" },
+      { title: "Reform UK chiefs ask to meet gilt holders amid bond rout", url: "https://www.cityam.com/reform-uk/" },
+    ]);
+    expect(agentTextWithoutLinks(text)).not.toContain("https://");
+  });
+
   it("uses a Markdown label or hostname when there is no quoted title", () => {
     expect(agentCitationsFromText(
       "Read [the full investigation](https://news.example/investigation) or https://another.example/story.",

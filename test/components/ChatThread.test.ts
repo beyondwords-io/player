@@ -73,4 +73,26 @@ describe("ChatThread", () => {
     expect(target.querySelector(".citation")?.textContent).toContain("An article");
     component.$destroy();
   });
+
+  it("labels citation pills from numbered article titles", () => {
+    const target = document.createElement("div");
+    const text = [
+      "Here are two articles:",
+      "1. First article title https://news.example/first",
+      "2. Second article title https://news.example/second",
+    ].join("\n");
+    const component = new ChatThread({
+      target,
+      props: { tokens, thread: [reply(text)] },
+    });
+
+    const citations = Array.from(target.querySelectorAll(".citation"));
+    expect(citations).toHaveLength(2);
+    expect(citations.map((citation) => citation.textContent?.trim())).toEqual([
+      "First article title",
+      "Second article title",
+    ]);
+    expect(target.querySelector(".answer")?.textContent).not.toContain("https://");
+    component.$destroy();
+  });
 });
