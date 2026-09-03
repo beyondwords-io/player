@@ -627,7 +627,7 @@
     {/if}
   {:else if agentOnly}
     <div class="agent-header">
-      <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} />
+      <Orb size={24} orb={tokens.orb} avatarUrl={tokens.avatarUrl} />
       <span class="agent-prompt" style="color: {tokens.text}">{agentPrompt}</span>
     </div>
     <div class="hairline" style="background: {tokens.divider}"></div>
@@ -723,7 +723,7 @@
         on:click={toggleChat}
         on:mouseup={blurElement}
       >
-        <Orb size={22} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={chatDisabled} generating={callLive && !chatOpen} />
+        <Orb size={22} orb={tokens.orb} avatarUrl={tokens.avatarUrl} dimmed={chatDisabled} generating={callLive && !chatOpen} />
         {#if chatLabelVisible}
           <span class="chat-label" style="color: {chatDisabled ? tokens.muted : tokens.text}">{translate("chat")}</span>
           {#if chatDisabled}
@@ -798,7 +798,6 @@
 {#if !isWidget && showCaption && !agentOnly}
   <DefaultCaption
     {attributionHref}
-    backgroundColor={selectedTheme === "dark" ? displayBackground : "transparent"}
     color={captionColor}
     linkColor={tokens.link}
     {disclosureLink}

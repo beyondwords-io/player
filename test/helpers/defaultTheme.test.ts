@@ -198,6 +198,7 @@ describe("deriveTokens", () => {
       sendBackground: "same-as-background",
       sendIcon: "invalid-background",
     });
+    expect(tokens).not.toHaveProperty("orbRing");
   });
 
   it("keeps hover and pressed neutral when literal colors change", () => {

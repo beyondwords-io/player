@@ -3,7 +3,6 @@
   // generating - and holds still under reduced motion.
   export let size = 22;
   export let orb = "linear-gradient(100deg, #943bfc, #e23ad0)";
-  export let ring = "none";
   export let avatarUrl = undefined;
   export let generating = false;
   export let dimmed = false;
@@ -14,7 +13,7 @@
   class:generating
   class:dimmed
   class:animating={!dimmed}
-  style="width: {size}px; height: {size}px; background: {avatarUrl ? "none" : orb}; box-shadow: {ring}"
+  style="width: {size}px; height: {size}px; background: {avatarUrl ? "none" : orb}"
 >
   {#if avatarUrl}
     <img src={avatarUrl} alt="" />

@@ -1,4 +1,3 @@
-import { contrastRatio, firstColorStop, parseColor } from "./colorMath";
 import {
   completePlayerTheme,
   completeVideoTheme,
@@ -6,8 +5,6 @@ import {
   type PlayerThemeName,
   type VideoColorTheme,
 } from "./palettes";
-
-const ORB_NEAR_BACKGROUND_RATIO = 1.6;
 
 const splitTopLevelCommas = (value: string) => {
   const parts = [];
@@ -32,21 +29,16 @@ const splitTopLevelCommas = (value: string) => {
 const parseAgentColor = (value: unknown) => {
   if (Array.isArray(value)) {
     const parts = value.map(String).map((part) => part.trim()).filter(Boolean);
-    const from = parts[0];
-    return { from, to: parts[1], css: parts[1] ? `linear-gradient(100deg, ${from}, ${parts[1]})` : from };
+    return { css: parts[1] ? `linear-gradient(100deg, ${parts[0]}, ${parts[1]})` : parts[0] };
   }
 
   const css = String(value ?? "");
   const legacyParts = splitTopLevelCommas(css);
   if (legacyParts.length > 1) {
-    return {
-      from: legacyParts[0],
-      to: legacyParts[1],
-      css: `linear-gradient(100deg, ${legacyParts[0]}, ${legacyParts[1]})`,
-    };
+    return { css: `linear-gradient(100deg, ${legacyParts[0]}, ${legacyParts[1]})` };
   }
 
-  return { from: firstColorStop(css) || css, to: undefined, css };
+  return { css };
 };
 
 const scaleRadius = (radius: unknown) => {
@@ -100,12 +92,6 @@ const deriveTokens = ({
 
   const agent = parseAgentColor(player.agentColor);
   const avatarUrl = agentAvatar ?? overrides.agentAvatar;
-  const measurableBackground = parseColor(player.backgroundColor)
-    ? player.backgroundColor
-    : firstColorStop(player.backgroundColor);
-  const orbNearBackground = !!agent.from && !!measurableBackground
-    && !!parseColor(agent.from) && !!parseColor(measurableBackground)
-    && contrastRatio(agent.from, measurableBackground) < ORB_NEAR_BACKGROUND_RATIO;
 
   return {
     isDark: selectedTheme === "dark",
@@ -133,8 +119,6 @@ const deriveTokens = ({
     underline: player.linkColor,
 
     orb: agent.css,
-    orbSolid: agent.from,
-    orbRing: orbNearBackground ? "0 0 0 1px rgba(255, 255, 255, 0.4)" : "none",
     hasAvatar: !!avatarUrl,
     avatarUrl,
 

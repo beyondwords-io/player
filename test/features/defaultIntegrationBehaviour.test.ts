@@ -167,6 +167,63 @@ test("default player runtime theme behaviour uses literal palettes and live Auto
   await expect(surface).toHaveCSS("background-color", "rgb(41, 42, 43)");
 });
 
+test("default player caption stays transparent in Dark mode", async ({ page }) => {
+  await page.evaluate((audio) => {
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      theme: "dark",
+      darkTheme: {
+        backgroundColor: "rgb(120, 0, 0)",
+        secondaryTextColor: "rgb(0, 80, 200)",
+      },
+      content: [{ title: "Article", audio }],
+    });
+  }, audio);
+
+  const player = page.locator(".default-player");
+  await expect(player.locator(".surface")).toHaveCSS("background-color", "rgb(120, 0, 0)");
+  await expect(player.locator(".caption")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(player.locator(".caption a")).toHaveCSS("color", "rgb(0, 80, 200)");
+});
+
+test("default player agent orbs do not derive rings from backgrounds", async ({ page }) => {
+  await page.evaluate(({ audio, video }) => {
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      embedMode: "audio-agent",
+      lightTheme: {
+        backgroundColor: "rgb(20, 20, 20)",
+        agentColor: "rgb(20, 20, 20)",
+      },
+      content: [{ title: "Audio", audio }],
+    });
+
+    const videoTarget = document.createElement("div");
+    videoTarget.id = "ringless-video";
+    document.body.appendChild(videoTarget);
+    const videoPlayer = new BeyondWords.Player({
+      target: videoTarget,
+      playerStyle: "default",
+      widgetStyle: "none",
+      embedMode: "audio-agent",
+      video: true,
+      lightTheme: {
+        backgroundColor: "rgb(20, 20, 20)",
+        agentColor: "rgb(20, 20, 20)",
+      },
+      content: [{ title: "Video", audio, video }],
+    });
+    videoPlayer.loadedMedia = { ...video[0], format: "video" };
+  }, { audio, video });
+
+  await expect(page.locator(".beyondwords-player .bar .orb")).toHaveCSS("box-shadow", "none");
+  await expect(page.locator("#ringless-video .video-frame .orb")).toHaveCSS("box-shadow", "none");
+});
+
 test("default player tier lock uses the icon palette role", async ({ page }) => {
   await page.evaluate((audio) => {
     new BeyondWords.Player({
