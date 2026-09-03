@@ -730,7 +730,7 @@
             <LockSimple size={13} color={tokens.muted} />
           {:else}
             <span class="chat-caret" class:flipped={chatOpen}>
-              <CaretDown size={14} color={tokens.icon} />
+              <CaretDown size={14} color={tokens.text} />
             </span>
           {/if}
         {/if}
