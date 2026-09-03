@@ -16,6 +16,9 @@
   $: options = optionsFor(setting, ctx);
   $: selected = selectedOption(setting, value, ctx);
   $: palette = value && typeof value === "object" ? value : {};
+  $: paletteFieldValues = Object.fromEntries((setting.fields || []).map(({ key }) => (
+    [key, palette[key] ?? setting.default?.[key] ?? ""]
+  )));
   // A setting that knows how to render itself wins over raw JSON.
   $: text = setting.format ? setting.format(value, ctx) : asText(value);
   $: resetHint = setting.control === "palette"
@@ -33,12 +36,13 @@
     if (name in setting.presets) { onChange(setting.presets[name]); }
   };
 
-  const paletteFieldValue = (key) => palette[key] ?? setting.default?.[key] ?? "";
-
   // Keep the raw string exactly as typed. A half-entered gradient or invalid
   // CSS value is useful when testing the literal-color contract, so the panel
   // must not validate, trim, normalize, or replace it.
-  const changePaletteField = (key, raw) => onChange({ ...palette, [key]: raw });
+  const changePaletteField = (key, raw) => {
+    palette = { ...palette, [key]: raw };
+    onChange(palette);
+  };
 
   const change = (raw) => {
     if (setting.parse) { return onChange(setting.parse(raw)); }
@@ -78,13 +82,13 @@
           </span>
           <span class="field-value">
             <span class="swatch" aria-hidden="true">
-              <span class="swatch-paint" style="background: {paletteFieldValue(field.key)}"></span>
+              <span class="swatch-paint" style="background: {paletteFieldValues[field.key]}"></span>
             </span>
             <input
               tabindex={-1}
               type="text"
               aria-label="{setting.label || setting.key}: {field.label}"
-              value={paletteFieldValue(field.key)}
+              value={paletteFieldValues[field.key]}
               on:input={(event) => changePaletteField(field.key, event.currentTarget.value)}>
           </span>
         </label>

@@ -57,6 +57,21 @@ describe("SettingControl palette editor", () => {
     expect(onChange).toHaveBeenCalledWith({ ...PLAYER_COLOR_PRESETS.light, agentColor: raw });
   });
 
+  it("updates the swatch on the same input event", async () => {
+    component = new SettingControl({
+      target,
+      props: { setting, value: PLAYER_COLOR_PRESETS.light },
+    });
+    const input = target.querySelector('input[aria-label="Light palette: Primary text"]');
+    const paint = input.closest(".field-value").querySelector(".swatch-paint");
+
+    input.value = "red";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    await tick();
+
+    expect(paint.style.background).toEqual("red");
+  });
+
   it("resets the complete palette instead of one field", () => {
     const onReset = vi.fn();
     component = new SettingControl({

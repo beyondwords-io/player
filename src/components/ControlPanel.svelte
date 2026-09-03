@@ -1,6 +1,6 @@
 <script>
   import("../helpers/loadTheStyles.ts");
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy, tick } from "svelte";
   import settingsManifest, { groupOrder, findSetting } from "../helpers/settingsManifest";
   import { setSetting, resetSetting, resetAllSettings, reapplySettings, overriddenSettings } from "../helpers/settingOverrides";
   import { settingsUrl } from "../helpers/settingUrl";
@@ -97,13 +97,20 @@
     });
   };
 
-  const change = (key, value) => {
+  const change = async (key, value) => {
     setSetting(player, key, value);
+
+    // Palette getters expose their fully resolved value. That value is
+    // recomputed by the player's reactive statements, so reading it in the
+    // same call stack returns the previous palette and leaves the swatch one
+    // edit behind. Let the player settle before taking the panel snapshot.
+    await tick();
     refreshNow();
   };
 
-  const reset = (key) => {
+  const reset = async (key) => {
     resetSetting(player, key);
+    await tick();
     refreshNow();
   };
 
