@@ -138,8 +138,9 @@ const deriveTokens = ({
     hasAvatar: !!avatarUrl,
     avatarUrl,
 
-    // The accent pair belongs only to user messages. Filled controls use the
-    // icon role for their visible shape and the surface role for their cut-out.
+    // The accent pair gives user messages and suggested user-message shortcuts
+    // one conversational treatment. Filled controls use the icon role for
+    // their visible shape and the surface role for their cut-out.
     bubbleBackground: player.accentColor,
     bubbleText: player.accentTextColor,
     sendBackground: player.iconColor,

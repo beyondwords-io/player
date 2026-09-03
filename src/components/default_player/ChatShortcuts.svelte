@@ -16,7 +16,7 @@
       <button
         type="button"
         class="chip"
-        style="--bg: {tokens.subtle}; --hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; color: {tokens.text}; outline-color: {tokens.text}"
+        style="--bg: {tokens.bubbleBackground}; --hover-bg: {tokens.hover}; --pressed-bg: {tokens.pressed}; color: {tokens.bubbleText}; outline-color: {tokens.text}"
         on:click={() => onSelect(question)}
         on:mouseup={blurElement}
       >{question}</button>
