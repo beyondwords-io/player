@@ -2,7 +2,6 @@
   import translate from "../../helpers/translate";
 
   export let attributionHref: string;
-  export let backgroundColor = "transparent";
   export let color: string;
   export let linkColor: string = color;
   export let disclosureLink: string | undefined = undefined;
@@ -11,7 +10,7 @@
   export let logoIconEnabled = true;
 </script>
 
-<div class="caption outside" style="background: {backgroundColor}">
+<div class="caption outside">
   <span class="caption-left">
     {#if disclosureText && disclosureLink}
       <a class="caption-link" href={disclosureLink} target="_blank" rel="noopener noreferrer" style="color: {linkColor}; border-bottom-color: {linkColor}; outline-color: {linkColor}; --hover-color: {hoverColor}">{disclosureText}</a>
@@ -32,6 +31,7 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
+    background: transparent;
   }
 
   .caption.outside { padding: 6px 8px 0; }

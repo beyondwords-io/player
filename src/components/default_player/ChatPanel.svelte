@@ -168,7 +168,7 @@
     </div>
   {:else if status === "connecting"}
     <div class="composer strip" style="border-top-color: {tokens.divider}">
-      <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} generating={true} />
+      <Orb size={24} orb={tokens.orb} avatarUrl={tokens.avatarUrl} generating={true} />
       <span class="strip-label" style="color: {tokens.text}">{translate("connecting")}</span>
       <span class="strip-grow"></span>
       <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => agentClient.cancelConnect()} on:mouseup={blurElement}>{translate("cancel")}</button>
@@ -176,7 +176,7 @@
   {:else}
     {#if inCall}
       <div class="composer strip" style="border-top-color: {tokens.divider}">
-        <Orb size={24} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} generating={status === "talking"} />
+        <Orb size={24} orb={tokens.orb} avatarUrl={tokens.avatarUrl} generating={status === "talking"} />
         {#if status === "talking" && agentClient.canInterrupt}
           <!-- The whole label is the interrupt: speak over it, or tap. -->
           <button type="button" class="strip-interrupt" style="color: {tokens.text}; outline-color: {tokens.text}" on:click={stop} on:mouseup={blurElement}>

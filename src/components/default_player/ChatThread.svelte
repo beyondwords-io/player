@@ -28,7 +28,7 @@
         </div>
       {:else if message.role === "locked"}
         <div class="agent-row">
-          <Orb size={20} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} dimmed={true} />
+          <Orb size={20} orb={tokens.orb} avatarUrl={tokens.avatarUrl} dimmed={true} />
           <div class="answer-col">
             <span class="locked-answer">
               <LockSimple size={15} color={tokens.icon} />
@@ -42,7 +42,7 @@
         </div>
       {:else}
         <div class="agent-row">
-          <Orb size={20} orb={tokens.orb} ring={tokens.orbRing} avatarUrl={tokens.avatarUrl} generating={message.streaming} />
+          <Orb size={20} orb={tokens.orb} avatarUrl={tokens.avatarUrl} generating={message.streaming} />
           <div class="answer-col">
             <span class="answer" style="color: {tokens.text}">
               {#if message.typing}
