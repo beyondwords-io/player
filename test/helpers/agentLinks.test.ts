@@ -28,6 +28,16 @@ describe("agentLinks", () => {
     ]);
   });
 
+  it("turns ElevenLabs inline-code URLs into clean links", () => {
+    expect(agentTextParts(
+      "The link is: `https://www.cityam.com/latest-story/`",
+      ["cityam.com"],
+    )).toEqual([
+      { kind: "text", text: "The link is: " },
+      { kind: "link", text: "https://www.cityam.com/latest-story/", href: "https://www.cityam.com/latest-story/" },
+    ]);
+  });
+
   it("keeps unknown and non-HTTPS URLs as text", () => {
     expect(agentTextParts(
       "Unknown https://example.com/story and http://cityam.com/story.",

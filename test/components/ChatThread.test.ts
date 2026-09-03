@@ -25,7 +25,7 @@ describe("ChatThread", () => {
       props: {
         tokens,
         linkHosts: ["cityam.com"],
-        thread: [reply("The link is https://www.cityam.com/latest-story/.")],
+        thread: [reply("The link is `https://www.cityam.com/latest-story/`.")],
       },
     });
 
