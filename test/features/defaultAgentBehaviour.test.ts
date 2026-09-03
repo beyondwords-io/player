@@ -307,6 +307,13 @@ test("default player live agent behaviour", async ({ page }) => {
               window.__sdkLog.push({ event: "message", text });
 
               setTimeout(() => {
+                config.onMCPToolCall?.({
+                  state: "success",
+                  result: [{
+                    type: "text",
+                    text: JSON.stringify({ title: "A live answer", sourceUrl: "https://publisher.example/a-live-answer" }),
+                  }],
+                });
                 config.onAgentChatResponsePart?.({ type: "start", text: "", event_id: 1 });
                 config.onAgentChatResponsePart?.({ type: "delta", text: "A live ", event_id: 1 });
                 config.onAgentChatResponsePart?.({ type: "delta", text: "answer.", event_id: 1 });
@@ -350,6 +357,7 @@ test("default player live agent behaviour", async ({ page }) => {
 
   const answered = await panelState(page);
   expect(answered.thread, "the reply streamed in from response parts").toEqual(["What happened?", "A live answer."]);
+  expect(await page.locator(".default-player .citation").getAttribute("href"), "the MCP article became a citation").toEqual("https://publisher.example/a-live-answer");
 
   // A voice call runs on the SDK's status and mode: connecting, listening,
   // talking - and the strip never promises a tap the SDK cannot deliver.

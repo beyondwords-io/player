@@ -2,6 +2,7 @@ import translate from "./translate";
 import { writable } from "svelte/store";
 import type { Subscriber, Writable } from "svelte/store";
 import type {
+  AgentCitation,
   AgentClient,
   AgentEndReason,
   AgentReplyMessage,
@@ -9,6 +10,11 @@ import type {
   AgentSessionOptions,
   AgentState,
 } from "./agentContracts";
+import {
+  agentCitationsFromToolResult,
+  citationsForAgentText,
+  mergeAgentCitations,
+} from "./agentLinks";
 
 // The live agent client: the same store shape and methods as MockAgentClient
 // (see that file for the session model), backed by the ElevenLabs Agents SDK.
@@ -77,6 +83,7 @@ class RealAgentClient implements AgentClient {
   #ignoreNextAgentTurn = false;
   #ignoreNextUncorrelatedWholeMessage = false;
   #unanswered: string[] = [];
+  #pendingCitations: AgentCitation[] = [];
   #greetingOverrideSent = false;
   #greetingOverrideRejected = false;
 
@@ -280,6 +287,8 @@ class RealAgentClient implements AgentClient {
       onModeChange: guarded(({ mode }) => this.#handleModeChange(mode)),
       onMessage: guarded(({ message, role, source, event_id: eventId }) => this.#handleMessage(message, role || source, eventId)),
       onAgentChatResponsePart: guarded((part) => this.#handleResponsePart(part)),
+      onMCPToolCall: guarded((event) => this.#handleMCPToolCall(event)),
+      onAgentToolResponse: guarded((event) => this.#handleAgentToolResponse(event)),
       onAgentResponseCorrection: guarded((event) => this.#handleCorrection(event)),
       onDisconnect: guarded((details) => this.#handleDisconnected(details)),
       onError: (message, context) => console.warn(`BeyondWords.Player agent error: ${message}`, context),
@@ -358,6 +367,7 @@ class RealAgentClient implements AgentClient {
       if (recent.some((row) => row.role === "reader" && row.text === message)) { return; }
 
       this.state.thread = [...this.state.thread, { role: "reader", text: message }];
+      this.#pendingCitations = [];
       this.#notify();
       this.#armSilenceTimer();
       return;
@@ -424,6 +434,8 @@ class RealAgentClient implements AgentClient {
       this.#finalizeReply(pending);
     } else if (!pending) {
       const reply: AgentReplyMessage = { role: "agent", text: message, citations: [], streaming: false, typing: false, spoken: this.state.kind === "voice", eventId, sessionEpoch: this.#epoch };
+      this.#applyPendingCitations(reply);
+      reply.citations = citationsForAgentText(reply.text, reply.citationCandidates || []);
       this.state.thread = [...this.state.thread, reply];
       this.state.announced = message;
     } else {
@@ -460,6 +472,7 @@ class RealAgentClient implements AgentClient {
       pending.eventId = eventId;
       pending.fromParts = true;
       pending.sessionEpoch = this.#epoch;
+      this.#applyPendingCitations(pending);
 
       return;
     }
@@ -496,13 +509,9 @@ class RealAgentClient implements AgentClient {
   #handleCorrection({ corrected_agent_response: corrected, original_agent_response: original, event_id: eventId }) {
     if (typeof corrected !== "string") { return; }
 
-    const replies = this.state.thread.filter((row: { role?: string; sessionEpoch?: number }) => row.role === "agent" && row.sessionEpoch === this.#epoch) as {
-      eventId?: number;
-      interrupted?: boolean;
-      sessionEpoch?: number;
-      streaming?: boolean;
-      text?: string;
-    }[];
+    const replies = this.state.thread.filter((row): row is AgentReplyMessage => (
+      row.role === "agent" && row.sessionEpoch === this.#epoch
+    ));
     const reply = (eventId === undefined || eventId === null
       ? null
       : [...replies].reverse().find((row) => row.eventId === eventId))
@@ -513,7 +522,42 @@ class RealAgentClient implements AgentClient {
 
     const announcedReply = [...replies].reverse().find((row) => !row.streaming && row.text === this.state.announced);
     reply.text = corrected;
+    reply.citations = citationsForAgentText(corrected, reply.citationCandidates || []);
     if (announcedReply === reply) { this.state.announced = corrected; }
+    this.#notify();
+  }
+
+  #handleMCPToolCall(event) {
+    if (event?.state !== "success") { return; }
+    this.#handleToolCitations(event.result);
+  }
+
+  #handleAgentToolResponse(event) {
+    if (event?.is_error || typeof event?.full_tool_result !== "string") { return; }
+    this.#handleToolCitations(event.full_tool_result, event.event_id);
+  }
+
+  #handleToolCitations(result, eventId = undefined) {
+    const citations = agentCitationsFromToolResult(result);
+    if (citations.length === 0) { return; }
+
+    const replies = this.state.thread.filter((row): row is AgentReplyMessage => (
+      row.role === "agent" && row.sessionEpoch === this.#epoch
+    ));
+    const matching = eventId === undefined || eventId === null
+      ? null
+      : [...replies].reverse().find((reply) => reply.eventId === eventId);
+    const reply = matching || this.#streamingReply();
+
+    if (!reply) {
+      this.#pendingCitations = mergeAgentCitations(this.#pendingCitations, citations);
+      return;
+    }
+
+    reply.citationCandidates = mergeAgentCitations(reply.citationCandidates || [], citations);
+    if (!reply.streaming) {
+      reply.citations = citationsForAgentText(reply.text, reply.citationCandidates);
+    }
     this.#notify();
   }
 
@@ -586,9 +630,11 @@ class RealAgentClient implements AgentClient {
   #finalizeReply(reply: AgentReplyMessage | null, { interrupted = false }: { interrupted?: boolean } = {}): void {
     if (!reply) { return; }
 
+    this.#applyPendingCitations(reply);
     reply.streaming = false;
     reply.typing = false;
     reply.interrupted = interrupted;
+    reply.citations = interrupted ? [] : citationsForAgentText(reply.text, reply.citationCandidates || []);
     if (!interrupted || reply.text) { this.state.announced = reply.text; }
     if (reply.text) { this.#unanswered = []; }
     this.#partTurnId = null;
@@ -603,6 +649,7 @@ class RealAgentClient implements AgentClient {
     this.#interruptedTurnIds.clear();
     this.#ignoreNextAgentTurn = false;
     this.#ignoreNextUncorrelatedWholeMessage = false;
+    this.#pendingCitations = [];
     this.#disarmSilenceTimer();
 
     const ending = this.#conversation?.endSession?.();
@@ -612,6 +659,12 @@ class RealAgentClient implements AgentClient {
     this.state.kind = "none";
     this.state.status = "idle";
     this.state.muted = false;
+  }
+
+  #applyPendingCitations(reply: AgentReplyMessage) {
+    if (this.#pendingCitations.length === 0) { return; }
+    reply.citationCandidates = mergeAgentCitations(reply.citationCandidates || [], this.#pendingCitations);
+    this.#pendingCitations = [];
   }
 
   #flushQueued() {

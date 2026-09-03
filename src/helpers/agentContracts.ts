@@ -18,6 +18,7 @@ interface AgentReplyMessage {
   role: "agent";
   text: string;
   citations: AgentCitation[];
+  citationCandidates?: AgentCitation[];
   streaming: boolean;
   typing: boolean;
   spoken: boolean;
