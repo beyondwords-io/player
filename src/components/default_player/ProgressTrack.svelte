@@ -21,7 +21,7 @@
 
   $: clampedProgress = Math.max(0, Math.min(progress, 1));
   $: seconds = clampedProgress * duration;
-  $: fillVisible = Math.floor(seconds) > 0;
+  $: fillVisible = clampedProgress > 0;
   $: outOf = readFullTime ? `${translate("outOfTotalTime")} ${formatTime(duration)}` : "";
   $: ariaText = `${formatTime(seconds)} ${outOf}`;
 
@@ -89,7 +89,7 @@
   aria-readonly={readonly || undefined}
 >
   {#if fillVisible}
-    <div class="fill" style="width: {clampedProgress * 100}%; background: {fillColor}; opacity: {fillOpacity}; border-radius: {radius}"></div>
+    <div class="fill" style="width: {clampedProgress * 100}%; background: {fillColor}; opacity: {fillOpacity}"></div>
   {/if}
 </div>
 
@@ -104,6 +104,7 @@
     position: relative;
     height: 3px;
     cursor: pointer;
+    overflow: hidden;
   }
 
   .progress-track::before {
