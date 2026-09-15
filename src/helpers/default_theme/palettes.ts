@@ -139,23 +139,15 @@ const videoThemeFromApi = (value: Record<string, unknown> | undefined): Partial<
   return result;
 };
 
-// Shared deserialization for /player settings and adverts. It mirrors the
-// player_settings contract: old top-level agent/accent values fill both
-// palettes only when their nested equivalent is absent.
+// Shared deserialization for /player settings and adverts.
 const asRecord = (value: unknown): Record<string, unknown> | undefined => (
   value && typeof value === "object" ? value as Record<string, unknown> : undefined
 );
 
 const palettesFromApi = (settings: Record<string, unknown> = {}) => {
-  const legacy = {
-    agentColor: settings.agent_color as string | undefined,
-    accentColor: settings.accent_color as string | undefined,
-    accentTextColor: settings.accent_text_color as string | undefined,
-  };
-
   return {
-    lightTheme: completePlayerTheme("light", legacy, playerThemeFromApi(asRecord(settings.light_theme))),
-    darkTheme: completePlayerTheme("dark", legacy, playerThemeFromApi(asRecord(settings.dark_theme))),
+    lightTheme: completePlayerTheme("light", playerThemeFromApi(asRecord(settings.light_theme))),
+    darkTheme: completePlayerTheme("dark", playerThemeFromApi(asRecord(settings.dark_theme))),
     videoTheme: completeVideoTheme(videoThemeFromApi(asRecord(settings.video_theme))),
   };
 };

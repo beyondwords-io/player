@@ -5,7 +5,7 @@
   import deriveTokens from "../../helpers/default_theme/deriveTokens";
 
   // Boot skeleton: same geometry as the loaded bar, no spinner. It takes the
-  // theme so a dark or custom player doesn't flash a light bar before load.
+  // theme so a dark player doesn't flash a light bar before load.
   export let showChatBlock = true;
   export let theme = "light";
   export let radius = 8;

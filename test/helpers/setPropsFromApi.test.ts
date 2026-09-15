@@ -212,11 +212,14 @@ describe("setPropsFromApi", () => {
         settings: {
           ...payload.settings,
           radius: 12,
-          accent_color: "#123456",
-          accent_text_color: "#ffffff",
+          light_theme: {
+            ...payload.settings.light_theme,
+            accent_color: "#123456",
+            accent_text_color: "#ffffff",
+            agent_color: "#111111,#222222",
+          },
           disclosure_text: "AI generated",
           disclosure_link: "https://example.com/disclosure",
-          agent_color: "#111111,#222222",
           agent_avatar_url: "https://example.com/avatar.png",
           agent_placeholder: "Ask us anything",
           agent_shortcuts: ["What happened?", "Why now?"],
@@ -325,14 +328,11 @@ describe("setPropsFromApi", () => {
       expect(player).not.toHaveProperty("resolvedAccessTier");
     });
 
-    it("keeps nested literal values exact and gives them precedence over legacy top-level colours", async () => {
+    it("keeps nested literal values exact", async () => {
       mocks.fetchJson.mockResolvedValueOnce({
         ...payload,
         settings: {
           ...payload.settings,
-          agent_color: "legacy-agent",
-          accent_color: "legacy-accent",
-          accent_text_color: "legacy-accent-text",
           light_theme: {
             ...payload.settings.light_theme,
             text_color: "#111",
@@ -342,6 +342,12 @@ describe("setPropsFromApi", () => {
             agent_color: "linear-gradient(1deg, red, red)",
             accent_color: "nested-accent",
             accent_text_color: "nested-accent-text",
+          },
+          dark_theme: {
+            ...payload.settings.dark_theme,
+            agent_color: "dark-agent",
+            accent_color: "dark-accent",
+            accent_text_color: "dark-accent-text",
           },
           video_theme: {
             ...payload.settings.video_theme,
@@ -364,9 +370,9 @@ describe("setPropsFromApi", () => {
         accentTextColor: "nested-accent-text",
       });
       expect(player.apiDarkTheme).toMatchObject({
-        agentColor: "legacy-agent",
-        accentColor: "legacy-accent",
-        accentTextColor: "legacy-accent-text",
+        agentColor: "dark-agent",
+        accentColor: "dark-accent",
+        accentTextColor: "dark-accent-text",
       });
       expect(player.apiVideoTheme).toMatchObject({ backgroundColor: "video-background", subtleColor: "video-subtle" });
     });

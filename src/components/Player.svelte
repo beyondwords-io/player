@@ -132,7 +132,6 @@
   export let agentId = undefined;
   // Undefined means "follow the project". Assign light/dark/auto to override
   // it at runtime; assign null/undefined to restore the project preference.
-  // The deprecated custom value is accepted as an alias for light.
   export let theme = undefined;
   export let lightTheme = {};
   export let darkTheme = {};

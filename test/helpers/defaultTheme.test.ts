@@ -80,16 +80,18 @@ describe("literal palette contract", () => {
     });
   });
 
-  it("materializes older API responses and applies legacy agent/accent fields to both palettes", () => {
+  it("materializes partial API palettes from their nested values", () => {
     const palettes = palettesFromApi({
-      agent_color: "#111,#eee",
-      accent_color: "low-contrast",
-      accent_text_color: "also-low-contrast",
-      light_theme: { text_color: "#111", agent_color: "nested-wins" },
+      light_theme: {
+        text_color: "#111",
+        agent_color: "nested-agent",
+        accent_color: "low-contrast",
+      },
+      dark_theme: { agent_color: "#111,#eee", accent_text_color: "also-low-contrast" },
       video_theme: { background_color: "video-invalid" },
     });
 
-    expect(palettes.lightTheme).toMatchObject({ textColor: "#111", agentColor: "nested-wins", accentColor: "low-contrast" });
+    expect(palettes.lightTheme).toMatchObject({ textColor: "#111", agentColor: "nested-agent", accentColor: "low-contrast" });
     expect(palettes.darkTheme).toMatchObject({ textColor: "#fafafa", agentColor: "#111,#eee", accentTextColor: "also-low-contrast" });
     expect(palettes.videoTheme).toMatchObject({ backgroundColor: "video-invalid", subtleColor: VIDEO_COLOR_PRESET.subtleColor });
   });
@@ -125,10 +127,11 @@ describe("literal palette contract", () => {
     expect(result).toEqual({ lightTheme: light, darkTheme: dark, videoTheme: video });
   });
 
-  it("supports Light, Dark, Auto, and the deprecated custom alias", () => {
+  it("supports Light, Dark, and Auto", () => {
+    expect(normalizeThemePreference("light")).toEqual("light");
+    expect(normalizeThemePreference("dark")).toEqual("dark");
     expect(resolveThemePreference("auto", false)).toEqual("light");
     expect(resolveThemePreference("auto", true)).toEqual("dark");
-    expect(normalizeThemePreference("custom")).toEqual("light");
   });
 
   it("keeps the approved text roles accessible in both presets", () => {
