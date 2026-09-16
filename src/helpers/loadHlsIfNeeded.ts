@@ -13,7 +13,8 @@ const useHlsLibrary = (source, video) => {
   if (!isHlsSource) { return false; }
 
   const nativeSupport = video?.canPlayType("application/vnd.apple.mpegurl");
-  const supportIsBuggy = navigator?.userAgent?.toLowerCase?.()?.includes("android");
+  // Chromium reports native HLS support but fails on our blob manifests.
+  const supportIsBuggy = /android|chrome\/|chromium\//i.test(navigator?.userAgent || "");
   if (nativeSupport && !supportIsBuggy) { return false; }
 
   // Hls will be null the first time through this code but we call this function
