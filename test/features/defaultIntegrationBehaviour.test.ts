@@ -135,6 +135,33 @@ test("default player playlist rows stay inside the player surface", async ({ pag
   }
 });
 
+test("default player applies playlist visibility and row settings", async ({ page }) => {
+  await page.evaluate((audio) => {
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      playlistStyle: "auto-2-2",
+      playlistToggle: "hide",
+      content: [
+        { title: "First item", audio },
+        { title: "Second item", audio },
+        { title: "Third item", audio },
+      ],
+    });
+  }, audio);
+
+  const player = page.locator(".default-player");
+  const queue = player.locator(".queue");
+  await expect(queue).toBeVisible();
+  await expect(player.getByRole("button", { name: "Toggle playlist" })).toHaveCount(0);
+  await expect(queue).toHaveCSS("overflow-y", "auto");
+  await expect.poll(async () => queue.evaluate((element) => ({
+    clientHeight: element.clientHeight,
+    scrollHeight: element.scrollHeight,
+  }))).toEqual({ clientHeight: 94, scrollHeight: 134 });
+});
+
 test("default player runtime theme behaviour uses literal palettes and live Auto", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.evaluate((audio) => {
