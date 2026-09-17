@@ -237,7 +237,7 @@ class RealAgentClient implements AgentClient {
     this.#resetToIdle();
 
     if (wasVoice && reason !== "switched") {
-      this.state.thread = [...this.state.thread, { role: "divider", text: "Chat ended" }];
+      this.state.thread = [...this.state.thread, { role: "divider", text: translate("chatEnded") }];
     }
 
     this.#notify();
@@ -337,7 +337,7 @@ class RealAgentClient implements AgentClient {
 
     if (status === "connected") {
       if (this.#conversationRows() > 0) {
-        this.state.thread = [...this.state.thread, { role: "divider", text: "New voice chat — nothing carries over" }];
+        this.state.thread = [...this.state.thread, { role: "divider", text: translate("newVoiceChat") }];
       }
 
       this.state.status = "listening";
@@ -575,7 +575,7 @@ class RealAgentClient implements AgentClient {
     this.#resetToIdle();
 
     if (wasVoice) {
-      this.state.thread = [...this.state.thread, { role: "divider", text: "Chat ended" }];
+      this.state.thread = [...this.state.thread, { role: "divider", text: translate("chatEnded") }];
     }
 
     this.#notify();
