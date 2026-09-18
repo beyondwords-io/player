@@ -1,0 +1,8 @@
+#!/bin/bash
+
+npx tsc --project ./tsconfig.json &&
+  npx svelte-check \
+    --workspace src/components/default_player \
+    --no-tsconfig \
+    --config ../../../svelte.config.js \
+    --threshold error

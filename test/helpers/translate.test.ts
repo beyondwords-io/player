@@ -31,6 +31,13 @@ describe("translate", () => {
     expect(translate("minutesSingularOrPlural")).toEqual("{n} Min");
   });
 
+  it("falls back to English for keys a selected locale does not have yet", () => {
+    setLocale("de");
+
+    expect(translate("listenAgain")).toEqual("Listen again");
+    expect(translate("askAgent").replace("{name}", "Maya")).toEqual("Ask Maya");
+  });
+
   it("prefers exact locale variants when available", () => {
     setLocale("zh-TW");
     expect(translate("listenToThisArticle")).toEqual("聽這篇文章");
