@@ -30,6 +30,7 @@ jobs:
     - run: ./bin/test_behaviour --native
     - run: ./bin/lint
     - run: ./bin/build
+    - run: npx playwright test test/features/connector*.test.ts --project desktop-chrome
 
     - uses: actions/upload-artifact@v7
       if: always()

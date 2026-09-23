@@ -16,6 +16,10 @@
     ".": {
       "import": "./dist/es.js",
       "require": "./dist/umd.js"
+    },
+    "./connector": {
+      "types": "./dist/types/connector/index.d.ts",
+      "import": "./dist/connector.mjs"
     }
   },
   "devDependencies": {

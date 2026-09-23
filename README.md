@@ -17,6 +17,11 @@ Please refer to our **[official documentation](https://docs.beyondwords.io/docs-
 The in-repository contract for the default player's literal Light, Dark, and
 Video palettes is documented in [Default player colour palettes](doc/color-palettes.md).
 
+The standalone **Connector widget** has its own script and module entry point;
+it does not load the player. See [Embedding a Connector widget](doc/connector-widget.md)
+for the embed snippet, runtime API, and local demo. The new entry points will be
+available on the CDN/npm after the next release; they are not published yet.
+
 ## Development setup
 
 We recommend you use nodenv for managing node versions. There is a `.nodenv`

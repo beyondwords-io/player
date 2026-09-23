@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmitOnError": true,
+    "rootDir": "src",
+    "outDir": "dist/types",
+    "types": ["vite/client"]
+  },
+  "include": ["src/connector/index.ts"],
+  "exclude": ["test", "harness"]
+}
