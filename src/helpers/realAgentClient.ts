@@ -16,8 +16,8 @@ import {
   mergeAgentCitations,
 } from "./agentLinks";
 
-// The live agent client: the same store shape and methods as MockAgentClient
-// (see that file for the session model), backed by the ElevenLabs Agents SDK.
+// The live agent client for the default player's Chat/Talk surfaces, backed by
+// the ElevenLabs Agents SDK.
 // The player selects this client when the project serves an agent id
 // (conversational_agent.elevenlabs_agent_id in /player, or the agentId prop).
 //
@@ -111,6 +111,11 @@ class RealAgentClient implements AgentClient {
   // Switching kinds ends the live conversation first: text and voice are
   // separate conversations on the platform too, so nothing carries over.
   async startSession({ textOnly = false }: AgentSessionOptions = {}): Promise<void> {
+    if (!this.agentId) {
+      console.warn("BeyondWords.Player cannot start an agent session without an agentId.");
+      return;
+    }
+
     const kind = textOnly ? "text" : "voice";
     if (this.state.kind === kind) { return; }
 
@@ -161,6 +166,11 @@ class RealAgentClient implements AgentClient {
   // spoken. Sending over a reply starts a new turn; the server interrupts the
   // agent for us, we just close the on-screen reveal.
   sendUserMessage(text: string): void {
+    if (!this.agentId) {
+      console.warn("BeyondWords.Player cannot send an agent message without an agentId.");
+      return;
+    }
+
     if (this.state.kind === "none") { this.startSession({ textOnly: true }); }
 
     // A reply that has text stays, cut short; one that never got any goes -

@@ -31,11 +31,11 @@ describe("translate", () => {
     expect(translate("minutesSingularOrPlural")).toEqual("{n} Min");
   });
 
-  it("falls back to English for keys a selected locale does not have yet", () => {
+  it("translates the default player copy for the selected locale", () => {
     setLocale("de");
 
-    expect(translate("listenAgain")).toEqual("Listen again");
-    expect(translate("askAgent").replace("{name}", "Maya")).toEqual("Ask Maya");
+    expect(translate("listenAgain")).toEqual("Hören Sie noch einmal zu");
+    expect(translate("askAgent").replace("{name}", "Maya")).toEqual("Fragen Sie Maya");
   });
 
   it("prefers exact locale variants when available", () => {

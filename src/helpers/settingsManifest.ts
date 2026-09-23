@@ -145,7 +145,7 @@ const settingsManifest = [
 
   { key: "embedMode", group: "Agent", control: "select", options: ["audio", "audio-agent", "agent"], default: "audio", api: "embed_mode", appliesTo: "default" },
   { key: "agentId", group: "Agent", control: "text", default: undefined, cleared: null, api: "conversational_agent.elevenlabs_agent_id", appliesTo: "default",
-    needs: "a public ElevenLabs agent id; connects the live agent in place of the scripted mock" },
+    needs: "a public ElevenLabs agent id for the live agent connection" },
   { key: "agentSessionConfig", group: "Agent", readOnly: true, default: {}, api: "conversational_agent" },
   { key: "agentQuestionsLimit", group: "Agent", ...number(null), api: "access_tier.player_agent.questions_limit", appliesTo: "default", needs: "null is unlimited; zero disables text questions" },
   { key: "agentVoiceSecondsLimit", group: "Agent", ...number(null), api: "access_tier.player_agent.seconds_limit", appliesTo: "default", needs: "null is unlimited; zero disables voice" },

@@ -16,7 +16,6 @@
   import SegmentHighlights from "../helpers/segmentHighlights";
   import identifiersEvent from "../helpers/identifiersEvent";
   import newEvent from "../helpers/newEvent";
-  import MockAgentClient from "../helpers/agentClient";
   import RealAgentClient from "../helpers/realAgentClient";
   import sectionEnabled from "../helpers/sectionEnabled";
   import { findByQuery }  from "../helpers/resolveTarget";
@@ -126,9 +125,8 @@
   export let agentCtaText = undefined;
   export let agentCtaUrl = undefined;
 
-  // A public ElevenLabs agent id connects the live agent in place of the
-  // scripted mock. Served as conversational_agent.elevenlabs_agent_id by
-  // /player; a token endpoint replaces it when agent auth lands.
+  // Served as conversational_agent.elevenlabs_agent_id by /player; a token
+  // endpoint replaces the public id when agent auth lands.
   export let agentId = undefined;
   // Undefined means "follow the project". Assign light/dark/auto to override
   // it at runtime; assign null/undefined to restore the project preference.
@@ -208,24 +206,26 @@
   // the client above both interfaces so scrolling between them cannot fork the
   // thread or leave a hidden voice session running.
   //
-  // An agent id (from /player or the script tag) selects the live client; it
-  // can arrive after mount, so swapping ends whatever the old client had open.
-  let agentClient = new MockAgentClient();
+  // An agent id can arrive after mount, so swapping the live client ends
+  // whatever the old client had open.
+  let agentClient = new RealAgentClient();
   let pausedForAgentCall = false;
 
   $: syncAgentClient(agentId, agentSessionConfig);
 
   const syncAgentClient = (id, sessionConfig) => {
     const wantedId = typeof id === "string" && id.trim().length > 0 ? id.trim() : null;
-    const currentId = agentClient instanceof RealAgentClient ? agentClient.agentId : null;
+    const currentId = agentClient.agentId?.trim() || null;
     const wantedConfigKey = JSON.stringify(sessionConfig || {});
-    const currentConfigKey = agentClient instanceof RealAgentClient ? agentClient.sessionConfigKey : "{}";
+    const currentConfigKey = agentClient.sessionConfigKey;
     if (wantedId === currentId && wantedConfigKey === currentConfigKey) { return; }
 
     agentClient.endSession();
-    agentClient = wantedId
-      ? new RealAgentClient({ agentId: wantedId, sessionConfig, dynamicVariables: agentDynamicVariables })
-      : new MockAgentClient();
+    agentClient = new RealAgentClient({
+      agentId: wantedId || undefined,
+      sessionConfig,
+      dynamicVariables: agentDynamicVariables,
+    });
   };
 
   // MCP routing plus per-page prompt context, read at session start so the

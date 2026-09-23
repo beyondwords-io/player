@@ -25,10 +25,7 @@ export const setLocale = (locale: string | null | undefined): void => {
 
 const translate = (key: string, { locale }: { locale?: string | null } = {}): string => {
   const translations = translationsForBrowserPreference(locale);
-  // Feature copy can ship before every locale has caught up. Fall back one
-  // key at a time so a partially translated locale remains usable instead of
-  // throwing as soon as a newer control is rendered.
-  const translation = translations[key] || languages.en[key];
+  const translation = translations[key];
 
   if (typeof translation !== "string") {
     throwError([

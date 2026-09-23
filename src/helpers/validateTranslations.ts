@@ -10,7 +10,7 @@ type TranslationMap = Record<string, TranslationRecord>;
 const validateTranslations = (locales: TranslationMap, languages: TranslationMap): void => {
   validateAtLeastOneDefault(locales, languages);
   validateAtMostOneDefault(locales);
-  validateTranslationKeys(locales);
+  validateTranslationKeys({ ...languages, ...locales });
 };
 
 const validateAtLeastOneDefault = (locales: TranslationMap, languages: TranslationMap): void => {

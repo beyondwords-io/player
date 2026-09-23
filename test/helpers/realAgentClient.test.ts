@@ -1,5 +1,5 @@
 import RealAgentClient from "../../src/helpers/realAgentClient";
-import MockAgentClient from "../../src/helpers/agentClient";
+import MockAgentClient from "./mockAgentClient";
 
 // A fake with the SDK's exact surface: startSession resolves to a
 // conversation, and the tests fire the callbacks the way the platform would.
@@ -68,6 +68,19 @@ describe("realAgentClient", () => {
     expect(real.state).toEqual(mock.state);
     expect(real.canInterrupt).toEqual(false);
     expect(mock.canInterrupt).toEqual(true);
+  });
+
+  it("does not load the SDK or create placeholder replies without an agent id", async () => {
+    const loadSdk = vi.fn();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const client = new RealAgentClient({ loadSdk });
+
+    client.sendUserMessage("Anyone there?");
+    await client.startSession();
+
+    expect(loadSdk).not.toHaveBeenCalled();
+    expect(client.state).toMatchObject({ kind: "none", status: "idle", thread: [] });
+    expect(warn).toHaveBeenCalledTimes(2);
   });
 
   it("starts a text session on the first typed send and flushes the message once connected", async () => {

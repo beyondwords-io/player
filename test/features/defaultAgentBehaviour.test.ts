@@ -7,6 +7,46 @@ test("default player agent behaviour", async ({ page }) => {
   await page.goto("http://localhost:8000");
   await waitForStylesToLoad(page);
 
+  // Production always uses the ElevenLabs-backed client. Stub its loader seam
+  // here so the UI behaviour stays deterministic without shipping a mock.
+  await page.evaluate(() => {
+    let eventId = 0;
+    window.__elevenLabsClientStub = {
+      Conversation: {
+        startSession: async (config) => {
+          if (!config.textOnly) {
+            setTimeout(() => config.onStatusChange?.({ status: "connected" }), 20);
+            if (window.__agentAutoUtterance !== false) {
+              const id = ++eventId;
+              setTimeout(() => config.onMessage?.({ message: "What changed since last week's story?", role: "user", source: "user", event_id: id }), 300);
+              setTimeout(() => config.onModeChange?.({ mode: "speaking" }), 350);
+              setTimeout(() => config.onAgentChatResponsePart?.({ type: "start", text: "", event_id: id }), 375);
+              setTimeout(() => config.onAgentChatResponsePart?.({ type: "delta", text: "Quite ", event_id: id }), 450);
+              setTimeout(() => config.onAgentChatResponsePart?.({ type: "delta", text: "a lot.", event_id: id }), 750);
+              setTimeout(() => {
+                config.onAgentChatResponsePart?.({ type: "stop", text: "", event_id: id });
+                config.onModeChange?.({ mode: "listening" });
+              }, 900);
+            }
+          }
+
+          return {
+            sendUserMessage: () => {
+              const id = ++eventId;
+              setTimeout(() => config.onAgentChatResponsePart?.({ type: "start", text: "", event_id: id }), 100);
+              setTimeout(() => config.onAgentChatResponsePart?.({ type: "delta", text: "A test ", event_id: id }), 200);
+              setTimeout(() => config.onAgentChatResponsePart?.({ type: "delta", text: "answer.", event_id: id }), 800);
+              setTimeout(() => config.onAgentChatResponsePart?.({ type: "stop", text: "", event_id: id }), 1_200);
+            },
+            sendUserActivity: () => {},
+            setMicMuted: () => {},
+            endSession: async () => {},
+          };
+        },
+      },
+    };
+  });
+
   const shortcuts = ["What are today's headlines?", "Catch me up on this story", "What's new in my topics?"];
   const cta = { agentCtaText: "Subscribe to ask questions", agentCtaUrl: "https://example.com/agent" };
 
@@ -137,9 +177,12 @@ test("default player agent behaviour", async ({ page }) => {
 
   // Voice is a call, not dictation: a session starts on the first user act,
   // never on opening the panel; the two kinds are separate conversations; and
-  // collapsing the panel neither hangs up nor loses the thread. Timers are
-  // real here, so animation stays on and waits are generous.
-  await page.evaluate(() => { window.disableAnimation = false; window.__agentSilenceTimeoutMs = undefined; });
+  // collapsing the panel neither hangs up nor loses the thread.
+  await page.evaluate(() => {
+    window.disableAnimation = false;
+    window.__agentSilenceTimeoutMs = undefined;
+    window.__agentAutoUtterance = true;
+  });
 
   // Cancel abandons before anything starts: no session, no divider, no rows.
   await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
@@ -155,8 +198,8 @@ test("default player agent behaviour", async ({ page }) => {
   expect((await panelState(page)).thread, "and nothing is marked in the thread").toEqual([]);
 
   // The full loop: connect, listen, the utterance lands as a message (no
-  // word-by-word transcript), the spoken reply can be interrupted by a tap,
-  // and the call returns to listening with no button between turns.
+  // word-by-word transcript), the spoken reply arrives, and the call returns
+  // to listening with no local interrupt control the SDK cannot support.
   await page.locator(".default-player .voice").click();
   await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 3000 });
 
@@ -166,11 +209,10 @@ test("default player agent behaviour", async ({ page }) => {
 
   const midCall = await panelState(page);
   expect(midCall.thread[0], "the utterance lands whole").toEqual("What changed since last week's story?");
+  expect(await page.locator(".default-player .strip-interrupt").count(), "live calls have no fake tap-to-interrupt control").toEqual(0);
 
-  await page.locator(".default-player .strip-interrupt").click();
-  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 2000 });
-
-  expect(await page.evaluate(() => !document.querySelector(".default-player .cursor")), "the tap interrupted the reply").toEqual(true);
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 3000 });
+  expect(await page.evaluate(() => !document.querySelector(".default-player .cursor")), "the reply finished cleanly").toEqual(true);
 
   // Typing mid-call needs no mode: the composer sits under the call row, the
   // typed ask stays in the same conversation, and the waveform is gone - there
@@ -187,7 +229,7 @@ test("default player agent behaviour", async ({ page }) => {
     [...document.querySelectorAll(".default-player .thread > div")].some((row) => row.textContent.includes("Who is involved?"))
   ), null, { timeout: 2000 });
 
-  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 15000 });
+  await page.waitForFunction(() => document.querySelector(".default-player .strip")?.textContent?.includes("Listening"), null, { timeout: 3000 });
 
   // Collapse never hangs up: the bar says a call is running, reopening finds
   // the thread and the strip, and End marks where the call stopped.
@@ -221,13 +263,16 @@ test("default player agent behaviour", async ({ page }) => {
   // entry to hand it to.
   await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
   await page.locator(".default-player .empty-chips button").first().click();
-  await page.waitForFunction(() => !document.querySelector(".default-player .cursor") && document.querySelectorAll(".default-player .thread > div").length >= 2, null, { timeout: 15000 });
+  await page.waitForFunction(() => !document.querySelector(".default-player .cursor") && document.querySelectorAll(".default-player .thread > div").length >= 2, null, { timeout: 3000 });
 
   expect(await page.locator(".default-player .voice").count(), "a text conversation removes the voice entry").toEqual(0);
 
   // Article audio pauses for the length of the call - not per exchange - and
   // ~30s of silence hangs up by itself (shortened through the test seam).
-  await page.evaluate(() => { window.__agentSilenceTimeoutMs = 900; });
+  await page.evaluate(() => {
+    window.__agentSilenceTimeoutMs = 900;
+    window.__agentAutoUtterance = false;
+  });
   await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts, playbackState: "playing", duration: 60, currentTime: 5 });
 
   await page.locator(".default-player .voice").click();
@@ -239,11 +284,14 @@ test("default player agent behaviour", async ({ page }) => {
 
   expect((await panelState(page)).thread.at(-1), "silence ended the call").toEqual("Chat ended");
   expect(await playback(page), "and the article resumes at call end").toEqual("playing");
-  await page.evaluate(() => { window.__agentSilenceTimeoutMs = undefined; window.disableAnimation = true; });
+  await page.evaluate(() => {
+    window.__agentSilenceTimeoutMs = undefined;
+    window.__agentAutoUtterance = true;
+    window.disableAnimation = true;
+  });
 
   // The answer is revealed as it arrives, not animated from a string the panel
   // already has: dots while the agent composes, then the text behind a caret.
-  // Kept last, since it is the one case that needs animation left on.
   await page.evaluate(() => { window.disableAnimation = false; });
   await openPanel(page, { embedMode: "agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
   await page.locator(".default-player .empty-chips button").first().click();
@@ -254,7 +302,7 @@ test("default player agent behaviour", async ({ page }) => {
   await page.waitForSelector(".default-player .cursor", { timeout: 3000 });
   const midway = await answerLength(page);
 
-  await page.waitForFunction(() => !document.querySelector(".default-player .cursor"), null, { timeout: 15000 });
+  await page.waitForFunction(() => !document.querySelector(".default-player .cursor"), null, { timeout: 3000 });
   const finished = await answerLength(page);
 
   expect(midway, "the first deltas are on screen before the last").toBeGreaterThan(0);
@@ -263,8 +311,7 @@ test("default player agent behaviour", async ({ page }) => {
 
   // Every animation in the player is a keyframe animation, and StyleReset's
   // all: initial is !important, which beats one. So each animated element has to
-  // carry the class that exempts it, or the motion is silently dead - which is
-  // how the orb spent weeks not breathing while its CSS said 3.4s.
+  // carry the class that exempts it.
   expect(await moves(page, ".default-player .orb", "transform"), "the orb breathes").toBeGreaterThan(1);
 
   // The caret has to be sampled while an answer is still arriving.
@@ -282,7 +329,7 @@ test("default player agent behaviour", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
 });
 
-test("default player translation behaviour uses established copy and falls back for new agent copy", async ({ page }) => {
+test("default player translation behaviour localizes the agent copy", async ({ page }) => {
   await page.goto("http://localhost:8000");
   await waitForStylesToLoad(page);
 
@@ -308,18 +355,17 @@ test("default player translation behaviour uses established copy and falls back 
   await expect(root.locator(".play-pause")).toHaveAttribute("aria-label", "Lire l'audio");
 
   const chat = root.locator(".chat-button");
-  await expect(chat).toHaveAttribute("aria-label", "Chat about this article");
+  await expect(chat).toHaveAttribute("aria-label", "Discutez de cet article");
   await chat.click();
 
   await expect(root.locator(".composer input")).toHaveAttribute(
     "placeholder",
-    "Ask about this article, or anything we've covered…"
+    "Renseignez-vous sur cet article ou sur tout ce que nous avons couvert…"
   );
-  await expect(root.locator(".slash")).toHaveAttribute("aria-label", "Shortcuts");
+  await expect(root.locator(".slash")).toHaveAttribute("aria-label", "Raccourcis");
 });
 
-// The live client: an agentId selects it in place of the scripted mock, and it
-// drives the same panel through the ElevenLabs SDK's callbacks. The SDK is
+// The live client drives the panel through the ElevenLabs SDK's callbacks. The SDK is
 // stubbed at its loader seam, so this exercises everything but the network.
 test("default player live agent behaviour", async ({ page }) => {
   await page.goto("http://localhost:8000");
@@ -365,8 +411,9 @@ test("default player live agent behaviour", async ({ page }) => {
     };
   });
 
-  // Without an agentId the stub is never touched: the mock still answers.
-  await openPanel(page, { embedMode: "audio-agent" });
+  // Without an agentId the player does not invent a local conversation or
+  // touch the SDK.
+  await openPanel(page, { embedMode: "audio-agent", agentId: undefined });
   const input = page.locator(".default-player .composer input").first();
   await input.click();
   await input.type("Anyone there?");
@@ -374,6 +421,7 @@ test("default player live agent behaviour", async ({ page }) => {
   await page.waitForTimeout(400);
 
   expect(await page.evaluate(() => window.__sdkLog), "no agentId, no SDK").toEqual([]);
+  expect((await panelState(page)).thread, "no agentId, no placeholder answer").toEqual([]);
 
   // With one, opening the panel still connects nothing; the first typed send
   // starts a text session carrying the id and the page's context.
@@ -474,6 +522,7 @@ const openPanel = async (page, params) => {
 
     Object.assign(player, {
       playerStyle: "default",
+      agentId: "agent_test",
       content: [{ title: "An article", audio }],
       ...params,
     });
