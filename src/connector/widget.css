@@ -15,7 +15,7 @@ a {
   gap: 7px;
   min-height: 38px;
   max-width: 100%;
-  padding: 0 14px 0 11px;
+  padding: 8px 14px 8px 11px;
   border-radius: 9px;
   background: var(--connector-background);
   color: var(--connector-text);

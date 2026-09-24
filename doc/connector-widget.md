@@ -11,7 +11,7 @@ Buttons have a 38px minimum height, increased to 44px on coarse-pointer devices
 such as touch screens, with 17px decorative icons. Labels use 500-weight, 13.5px
 text and cap-height trimming where the browser supports `text-box`; other
 browsers retain normal flex centering. Longer labels wrap and can increase the
-button height.
+button height, retaining 8px of padding above and below the label.
 
 **Release status:** these files are built locally on the S-9077 branch. They are
 not on npm or the CDN yet. Publishing still uses the repository's normal release

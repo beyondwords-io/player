@@ -57,8 +57,8 @@ test("connector widget accessibility, themes, and isolated rendering", async ({ 
   const publisherStyles = await page.addStyleTag({ content: "a { padding: 70px !important; color: red !important; font-size: 60px !important; } svg { width: 100px !important; }" });
   await expect(light.first()).toHaveCSS("padding-left", "11px");
   await expect(light.first()).toHaveCSS("padding-right", "14px");
-  await expect(light.first()).toHaveCSS("padding-top", "0px");
-  await expect(light.first()).toHaveCSS("padding-bottom", "0px");
+  await expect(light.first()).toHaveCSS("padding-top", "8px");
+  await expect(light.first()).toHaveCSS("padding-bottom", "8px");
   await expect(light.first()).toHaveCSS("font-size", "13.5px");
   await expect(light.first().locator("svg")).toHaveCSS("width", "17px");
   await expect(light.first()).toHaveCSS("color", "rgb(33, 33, 33)");
@@ -117,7 +117,30 @@ test("connector widget wraps long labels on narrow pages without shrinking the l
   await expect(live.locator("svg")).toHaveCSS("width", "17px");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
   expect(await live.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  // Both the live long label and the three-line placement example need breathing
+  // room around the text, even when cap-height trimming reduces its layout box.
+  for (const link of [live, page.locator("#narrow-widget").getByRole("link")]) {
+    const spacing = await link.evaluate((element) => {
+      const button = element.getBoundingClientRect();
+      const label = element.querySelector(".label")!;
+      const labelBox = label.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(label);
+      const text = range.getBoundingClientRect();
+      return {
+        top: labelBox.top - button.top,
+        bottom: button.bottom - labelBox.bottom,
+        textTop: text.top - button.top,
+        textBottom: button.bottom - text.bottom,
+      };
+    });
+    expect(spacing.top).toBeGreaterThanOrEqual(8);
+    expect(spacing.bottom).toBeGreaterThanOrEqual(8);
+    expect(spacing.textTop).toBeGreaterThan(0);
+    expect(spacing.textBottom).toBeGreaterThan(0);
+  }
   await page.locator("#live-stage").screenshot({ path: testInfo.outputPath("connector-narrow.png") });
+  await page.locator(".narrow-example").screenshot({ path: testInfo.outputPath("connector-wrapped-placement.png") });
 });
 
 test("connector preview loads without player, audio, or agent modules", async ({ page }) => {
