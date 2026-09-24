@@ -13,12 +13,27 @@ test.beforeEach(async ({ page }) => {
 test("connector widget accessibility, themes, and isolated rendering", async ({ page, isMobile }, testInfo) => {
   const light = page.locator("#light-variants").getByRole("link");
   const dark = page.locator("#dark-variants").getByRole("link");
+  const minHeight = await page.evaluate(() => matchMedia("(pointer: coarse)").matches ? 44 : 38);
   await expect(light).toHaveCount(3);
   await expect(dark).toHaveCount(3);
   for (const link of await page.locator("[data-connector-widget]").getByRole("link").all()) {
     const bounds = await link.boundingBox();
-    expect(bounds!.height).toBeGreaterThanOrEqual(44);
+    expect(bounds!.height).toBeGreaterThanOrEqual(minHeight);
+    await expect(link).toHaveCSS("min-height", `${minHeight}px`);
     await expect(link.locator("svg")).toHaveAttribute("aria-hidden", "true");
+    await expect(link.locator("svg")).toHaveAttribute("focusable", "false");
+    await expect(link.locator("svg")).toHaveCSS("width", "17px");
+    await expect(link.locator("svg")).toHaveCSS("height", "17px");
+  }
+  expect((await light.first().boundingBox())!.height).toBe(minHeight);
+  await expect(light.first()).toHaveCSS("gap", "7px");
+  await expect(light.first()).toHaveCSS("border-radius", "9px");
+  await expect(light.first()).toHaveCSS("font-weight", "500");
+  await expect(light.first()).toHaveCSS("line-height", "20px");
+  await expect(light.first()).toHaveCSS("touch-action", "manipulation");
+  if (await page.evaluate(() => CSS.supports("text-box", "trim-both cap alphabetic"))) {
+    await expect(light.first().locator(".label")).toHaveCSS("text-box-trim", "trim-both");
+    await expect(light.first().locator(".label")).toHaveCSS("text-box-edge", "cap alphabetic");
   }
   await expect(light.first()).toHaveCSS("background-color", "rgb(245, 245, 245)");
   await expect(light.first()).toHaveCSS("color", "rgb(33, 33, 33)");
@@ -40,9 +55,12 @@ test("connector widget accessibility, themes, and isolated rendering", async ({ 
 
   // Typical hostile publisher styles must not change the embedded buttons.
   const publisherStyles = await page.addStyleTag({ content: "a { padding: 70px !important; color: red !important; font-size: 60px !important; } svg { width: 100px !important; }" });
-  await expect(light.first()).toHaveCSS("padding-left", "14px");
-  await expect(light.first()).toHaveCSS("font-size", "13px");
-  await expect(light.first().locator("svg")).toHaveCSS("width", "18px");
+  await expect(light.first()).toHaveCSS("padding-left", "11px");
+  await expect(light.first()).toHaveCSS("padding-right", "14px");
+  await expect(light.first()).toHaveCSS("padding-top", "0px");
+  await expect(light.first()).toHaveCSS("padding-bottom", "0px");
+  await expect(light.first()).toHaveCSS("font-size", "13.5px");
+  await expect(light.first().locator("svg")).toHaveCSS("width", "17px");
   await expect(light.first()).toHaveCSS("color", "rgb(33, 33, 33)");
   await publisherStyles.evaluate((element) => element.remove());
   await page.screenshot({ path: testInfo.outputPath("connector-preview.png"), fullPage: true });
@@ -96,7 +114,7 @@ test("connector widget wraps long labels on narrow pages without shrinking the l
   const bounds = await live.boundingBox();
   expect(bounds!.width).toBeLessThanOrEqual(180);
   expect(bounds!.height).toBeGreaterThan(44);
-  await expect(live.locator("svg")).toHaveCSS("width", "18px");
+  await expect(live.locator("svg")).toHaveCSS("width", "17px");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
   expect(await live.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
   await page.locator("#live-stage").screenshot({ path: testInfo.outputPath("connector-narrow.png") });

@@ -33,6 +33,7 @@ describe("standalone connector widget", () => {
     expect(link(widget).textContent).toBe("Add to AI assistant");
     expect(link(widget).getAttribute("href")).toBe("https://publisher.example/connect");
     expect(link(widget).querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
+    expect(link(widget).querySelector("svg")?.getAttribute("focusable")).toBe("false");
     expect(link(widget).dataset.theme).toBe("light");
   });
 
@@ -43,6 +44,8 @@ describe("standalone connector widget", () => {
     const widget = mount({ provider });
     expect(link(widget).textContent).toBe(text);
     expect(link(widget).querySelector("svg")?.getAttribute("viewBox")).toBe(provider === "claude" ? "0 0 32 32" : "0 0 320 320");
+    expect(link(widget).querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
+    expect(link(widget).querySelector("svg")?.getAttribute("focusable")).toBe("false");
   });
 
   it("keeps connectUrl verbatim and independent of provider, including custom domains and paths", () => {
