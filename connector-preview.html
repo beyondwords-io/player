@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>Connector widgets · BeyondWords</title>
+  </head>
+  <body>
+    <div class="page">
+      <header class="page-header">
+        <a class="wordmark" href="/">BeyondWords<span> / Connector</span></a>
+        <span class="preview-badge">UI preview</span>
+      </header>
+
+      <main>
+        <div class="intro">
+          <p class="eyebrow">EMBEDDABLE WIDGETS</p>
+          <h1>Your content.<br />Their AI assistant.</h1>
+          <p class="lede">A small invitation to connect. Standalone buttons for an article,
+            a subscription page, or wherever your readers are.</p>
+        </div>
+
+        <section aria-labelledby="variants-title">
+          <div class="section-heading">
+            <h2 id="variants-title">Three ways to invite readers</h2>
+            <span>Light &amp; dark</span>
+          </div>
+          <div class="theme-grid">
+            <div class="theme-card" id="light-variants">
+              <h3>Light</h3>
+              <div class="variant-list">
+                <div class="variant-row"><span>Let readers choose</span><div id="light-generic"></div></div>
+                <div class="variant-row"><span>Claude</span><div id="light-claude"></div></div>
+                <div class="variant-row"><span>ChatGPT</span><div id="light-chatgpt"></div></div>
+              </div>
+            </div>
+            <div class="theme-card dark-card" id="dark-variants">
+              <h3>Dark</h3>
+              <div class="variant-list">
+                <div class="variant-row"><span>Let readers choose</span><div id="dark-generic"></div></div>
+                <div class="variant-row"><span>Claude</span><div id="dark-claude"></div></div>
+                <div class="variant-row"><span>ChatGPT</span><div id="dark-chatgpt"></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="playground" aria-labelledby="playground-title">
+          <div class="section-heading">
+            <h2 id="playground-title">Make it yours</h2>
+            <span>Changes apply live</span>
+          </div>
+          <div class="playground-grid">
+            <form class="controls" id="controls" novalidate>
+              <div class="field-pair">
+                <div class="field">
+                  <label for="provider">Button</label>
+                  <select id="provider"><option value="">AI assistant</option><option value="claude">Claude</option><option value="chatgpt">ChatGPT</option></select>
+                </div>
+                <div class="field">
+                  <label for="theme">Theme</label>
+                  <select id="theme"><option value="auto">Auto (system)</option><option value="light">Light</option><option value="dark">Dark</option></select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="label">Label <span>optional</span></label>
+                <input id="label" type="text" placeholder="Add to AI assistant" />
+                <button class="text-button" id="try-long-label" type="button">Try a longer label ↗</button>
+              </div>
+              <div class="field">
+                <label for="connect-url">Destination URL</label>
+                <input id="connect-url" type="url" value="https://example.com/connect" aria-describedby="url-hint url-error" spellcheck="false" />
+                <p class="field-hint" id="url-hint">Any full HTTP(S) webpage URL. The button never changes it.</p>
+                <p class="field-error" id="url-error" hidden></p>
+              </div>
+              <div class="field">
+                <div class="range-heading"><label for="preview-width">Available width</label><output id="width-value" for="preview-width">320px</output></div>
+                <input id="preview-width" type="range" min="140" max="480" step="10" value="320" />
+              </div>
+              <button type="reset" class="reset-button">Reset controls</button>
+            </form>
+            <div class="preview-pane">
+              <div class="live-stage" id="live-stage">
+                <div class="stage-heading"><span>LIVE PREVIEW</span><span id="resolved-theme">Auto</span></div>
+                <div class="stage-center"><div class="width-guide" id="width-guide"><div id="live-widget"></div></div></div>
+                <p class="stage-caption">Click the button or focus it with Tab, then press Enter.</p>
+              </div>
+              <div class="destination-panel">
+                <span class="eyebrow">LINK DESTINATION</span>
+                <code id="destination">https://example.com/connect</code>
+                <p id="click-result">Preview clicks stay on this page.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="context-section" aria-labelledby="context-title">
+          <div class="section-heading"><h2 id="context-title">At home on a publisher’s page</h2><span>Example placements</span></div>
+          <div class="context-grid">
+            <article class="article-example">
+              <p class="eyebrow">AFTER AN ARTICLE</p>
+              <h3>Keep the conversation going.</h3>
+              <p>Explore our reporting with the AI assistant you already use.</p>
+              <div id="article-widget"></div>
+            </article>
+            <article class="narrow-example">
+              <div><p class="eyebrow">NARROW SPACE · 180PX</p><h3>A longer invitation</h3><p>The label wraps. The logo stays intact.</p></div>
+              <div class="narrow-mount" id="narrow-widget"></div>
+            </article>
+          </div>
+        </section>
+      </main>
+      <footer><span>Design review · S-9077</span><a href="/connector-embed.html">Test the standalone script →</a><span>Connection pages come next.</span></footer>
+    </div>
+    <p id="click-feedback" role="status" aria-live="polite" hidden></p>
+    <script type="module" src="/harness/connector-preview.ts"></script>
+  </body>
+</html>

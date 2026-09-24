@@ -18,6 +18,9 @@
     "types": ["vite/client", "vitest/globals"]
   },
   "include": [
+    "src/connector/**/*.ts",
+    "harness/connector-preview.ts",
+    "test/connector/**/*.test.ts",
     "src/helpers/agentAccessPolicy.ts",
     "src/helpers/agentAllowanceState.ts",
     "src/helpers/agentClient.ts",

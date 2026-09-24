@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Standalone Connector embed · BeyondWords</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; color: #212121; background: #fff; }
+      * { box-sizing: border-box; }
+      body { max-width: 820px; padding: 40px 24px; margin: 0 auto; }
+      h1 { font-size: clamp(26px, 5vw, 36px); letter-spacing: -1px; font-weight: 600; }
+      h2 { font-size: 18px; font-weight: 500; margin-top: 36px; }
+      p { font-size: 14px; line-height: 1.7; color: #626262; }
+      a { color: #212121; text-underline-offset: 3px; }
+      a:focus-visible, pre:focus-visible { outline: 2px solid #212121; outline-offset: 3px; }
+      .examples { display: flex; flex-wrap: wrap; gap: 16px; padding: 24px; border: 1px solid #dedede; border-radius: 12px; }
+      pre { padding: 20px; border: 1px solid #dedede; border-radius: 12px; background: #fafafa; overflow-x: auto; font-size: 12px; line-height: 1.8; }
+      code { overflow-wrap: anywhere; }
+      #load-error { padding: 16px; border: 1px solid #b42318; border-radius: 8px; color: #b42318; }
+    </style>
+  </head>
+  <body>
+    <header><a href="/connector-preview.html">← Back to widget design preview</a></header>
+    <main>
+      <h1>A real standalone embed.</h1>
+      <p>This page loads <code>/dist/connector.js</code> as a normal script. No player,
+        agent SDK, separate stylesheet, or font download is needed.</p>
+      <p>The buttons are real links, not intercepted preview clicks. For this local example,
+        they open the widget design preview. Supply your own connection-page URL when embedding.</p>
+
+      <section class="examples" aria-label="Standalone widget examples">
+        <div id="connector-generic"></div>
+        <div id="connector-claude"></div>
+        <div id="connector-chatgpt"></div>
+      </section>
+      <p id="load-error" role="alert" hidden>Build the standalone files with <code>./bin/build_connector</code>, then reload this page.</p>
+
+      <h2>Embed code</h2>
+      <p>Place the mounting element before the scripts. Replace both URLs with your
+        hosted widget script and your connection page.</p>
+      <pre tabindex="0"><code>&lt;div id="connector"&gt;&lt;/div&gt;
+&lt;script src="/dist/connector.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  const connector = new BeyondWords.Connector({
+    target: "#connector",
+    connectUrl: "https://publisher.example/connect/claude",
+    provider: "claude",
+    theme: "auto"
+  });
+&lt;/script&gt;</code></pre>
+      <h2>Update or remove it</h2>
+      <pre tabindex="0"><code>connector.update({ theme: "dark", label: "Explore our reporting" });
+connector.destroy();</code></pre>
+    </main>
+    <script src="/dist/connector.js"></script>
+    <script>
+      if (window.BeyondWords && window.BeyondWords.Connector) {
+        const connectUrl = new URL("/connector-preview.html", window.location.href).href;
+        for (const provider of [undefined, "claude", "chatgpt"]) {
+          new BeyondWords.Connector({
+            target: `#connector-${provider || "generic"}`,
+            connectUrl,
+            provider,
+            theme: "auto"
+          });
+        }
+      } else {
+        document.getElementById("load-error").hidden = false;
+      }
+    </script>
+  </body>
+</html>
