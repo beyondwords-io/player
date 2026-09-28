@@ -79,6 +79,8 @@ const settingsManifest = [
   { key: "sourceUrl", group: "Content", control: "text", default: undefined, cleared: null, loader: true, refetch: true },
   { key: "previewToken", group: "Content", control: "text", default: undefined, cleared: null, loader: true, refetch: true, needs: "unpublished content" },
   { key: "playerApiUrl", group: "Content", control: "text", default: "https://api.beyondwords.io/v1/projects/{id}/player", cleared: null, loader: true, refetch: true },
+  { key: "authApiUrl", group: "Content", control: "text", default: "https://auth.beyondwords.io", cleared: null, advanced: true,
+    needs: "the BeyondWords auth service that decides what this reader may access" },
   { key: "playlist", group: "Content", control: "json", default: [], cleared: [], loader: true, advanced: true, refetch: true, needs: "an array of identifier objects" },
   { key: "content", group: "Content", readOnly: true, default: [] },
 
