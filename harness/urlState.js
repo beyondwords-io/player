@@ -6,6 +6,14 @@
 
 const identifierKeys = ["projectId", "contentId", "playlistId", "sourceId", "sourceUrl", "previewToken", "playerApiUrl"];
 
+// Project and playlist ids are numbers in the API; the other identifiers stay
+// strings. Mirrors parseIdentifier in src/helpers/settingUrl.ts.
+const numericIdentifierKeys = ["projectId", "playlistId"];
+
+const parseIdentifier = (key, raw) => (
+  numericIdentifierKeys.includes(key) && /^\d+$/.test(raw) ? Number(raw) : raw
+);
+
 // Params this page used to take at the top level, kept working as settings.
 const legacyKeys = ["playerStyle", "widgetStyle", "embedMode", "widgetEmbedMode", "theme"];
 
@@ -25,7 +33,7 @@ const decodeUrlState = (search) => {
 
   identifierKeys.forEach((key) => {
     const value = params.get(key);
-    if (value) { identifiers[key] = value; }
+    if (value) { identifiers[key] = parseIdentifier(key, value); }
   });
 
   legacyKeys.forEach((key) => {
@@ -48,4 +56,4 @@ const decodeUrlState = (search) => {
 };
 
 export default decodeUrlState;
-export { decodeUrlState, decodeSettingValue, identifierKeys };
+export { decodeUrlState, decodeSettingValue, identifierKeys, parseIdentifier };

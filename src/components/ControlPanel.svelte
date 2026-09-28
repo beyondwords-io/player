@@ -3,7 +3,7 @@
   import { onMount, onDestroy, tick } from "svelte";
   import settingsManifest, { groupOrder, findSetting } from "../helpers/settingsManifest";
   import { setSetting, resetSetting, resetAllSettings, reapplySettings, overriddenSettings } from "../helpers/settingOverrides";
-  import { settingsUrl } from "../helpers/settingUrl";
+  import { settingsUrl, parseIdentifier } from "../helpers/settingUrl";
   import SettingControl from "./control_panel/SettingControl.svelte";
   import Inspector from "./control_panel/Inspector.svelte";
   import EventLog from "./control_panel/EventLog.svelte";
@@ -124,7 +124,7 @@
   const fetchContent = () => {
     loaderKeys.forEach((key) => {
       const value = `${loader[key] ?? ""}`.trim();
-      setSetting(player, key, value === "" ? undefined : value);
+      setSetting(player, key, value === "" ? undefined : parseIdentifier(key, value));
     });
 
     events = [];
