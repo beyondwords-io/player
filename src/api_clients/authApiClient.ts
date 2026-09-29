@@ -17,7 +17,7 @@ type AgentSession = {
 
 class AuthApiClient {
   baseUrl: string;
-  projectId: string;
+  projectId: string | number;
   lastRequestUrl: string | undefined;
 
   constructor({
@@ -25,7 +25,7 @@ class AuthApiClient {
     projectId,
   }: {
     authApiUrl: string;
-    projectId: string;
+    projectId: string | number;
   }) {
     this.baseUrl = authApiUrl;
     this.projectId = projectId;
@@ -33,7 +33,8 @@ class AuthApiClient {
 
   async agentSession(mode: AgentSessionMode): Promise<AgentSession> {
     const session = await this.#postJson("agent/session", {
-      project_id: this.projectId,
+      // SDK integrations can supply a string, but auth requires a JSON number.
+      project_id: Number(this.projectId),
       mode,
     });
 

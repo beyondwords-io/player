@@ -1,31 +1,48 @@
 import AuthApiClient from "../../src/api_clients/authApiClient";
 
-const mocks = vi.hoisted(() => ({ postJson: vi.fn() }));
-vi.mock("../../src/helpers/fetchJson", () => ({ default: vi.fn(), postJson: mocks.postJson }));
+const fetchMock = vi.fn();
+
+const respondWith = (json) => {
+  fetchMock.mockResolvedValueOnce({ status: 200, json: async () => json });
+};
 
 describe("AuthApiClient", () => {
-  beforeEach(() => mocks.postJson.mockReset());
+  beforeEach(() => {
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+  });
+  afterEach(() => vi.unstubAllGlobals());
 
-  it("posts the project id and mode to the agent session endpoint", async () => {
+  it.each([2476, "2476"])("posts project id %j as a JSON number for text sessions", async (projectId) => {
     const json = { connection_type: "websocket", signed_url: "wss://api.elevenlabs.io/v1/convai/conversation?conversation_signature=sig", expires_at: 1790597571 };
-    mocks.postJson.mockResolvedValue(json);
-    const client = new AuthApiClient({ authApiUrl: "https://auth.example.com", projectId: "2476" });
+    respondWith(json);
+    const client = new AuthApiClient({ authApiUrl: "https://auth.example.com", projectId });
 
     const result = await client.agentSession("text");
 
     expect(result).toEqual(json);
-    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: "2476", mode: "text" });
+    expect(fetchMock).toHaveBeenCalledWith("https://auth.example.com/agent/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ project_id: 2476, mode: "text" }),
+    });
     expect(client.lastRequestUrl).toEqual("https://auth.example.com/agent/session");
+    expect(client.projectId).toBe(projectId);
   });
 
-  it("supports voice sessions", async () => {
-    mocks.postJson.mockResolvedValue({ connection_type: "webrtc", conversation_token: "eyJ.token", expires_at: 1790606290 });
-    const client = new AuthApiClient({ authApiUrl: "https://auth.example.com", projectId: "2476" });
+  it.each([2476, "2476"])("posts project id %j as a JSON number for voice sessions", async (projectId) => {
+    respondWith({ connection_type: "webrtc", conversation_token: "eyJ.token", expires_at: 1790606290 });
+    const client = new AuthApiClient({ authApiUrl: "https://auth.example.com", projectId });
 
     const result = await client.agentSession("voice");
 
-    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: "2476", mode: "voice" });
+    expect(fetchMock).toHaveBeenCalledWith("https://auth.example.com/agent/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ project_id: 2476, mode: "voice" }),
+    });
     expect(result).toMatchObject({ connection_type: "webrtc", conversation_token: "eyJ.token" });
+    expect(client.projectId).toBe(projectId);
   });
 
   it("rejects a response that carries no credential for its connection type", async () => {
@@ -38,7 +55,7 @@ describe("AuthApiClient", () => {
       { connection_type: "websocket", signed_url: "", expires_at: 1 },
       null,
     ]) {
-      mocks.postJson.mockResolvedValueOnce(json);
+      respondWith(json);
       await expect(client.agentSession("text"), JSON.stringify(json)).rejects.toThrow(/returned no session credential/);
     }
   });
