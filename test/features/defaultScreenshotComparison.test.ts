@@ -10,6 +10,9 @@ test("default player screenshot comparison", async ({ page }) => {
   await defaultPlayerPermutations(async (params) => {
     await expect(async () => {
       await page.evaluate(async (params) => {
+        // Captions are transparent and use literal palette colours. Test each
+        // preset on its matching host page, not dark caption text on white.
+        document.body.style.backgroundColor = params.theme === "dark" ? "#212121" : "#ffffff";
         const player = BeyondWords.Player.instances()[0];
         Object.entries(params).forEach(([k, v]) => player[k] = v);
 

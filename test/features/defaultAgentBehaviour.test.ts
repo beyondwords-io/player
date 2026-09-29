@@ -15,7 +15,7 @@ test("default player agent behaviour", async ({ page }) => {
     window.__elevenLabsClientStub = {
       Conversation: {
         startSession: async (config) => {
-          if (!config.textOnly) {
+          if (!config.textOnly && window.__agentAutoConnect !== false) {
             setTimeout(() => config.onStatusChange?.({ status: "connected" }), 20);
             if (window.__agentAutoUtterance !== false) {
               const id = ++eventId;
@@ -186,6 +186,7 @@ test("default player agent behaviour", async ({ page }) => {
   });
 
   // Cancel abandons before anything starts: no session, no divider, no rows.
+  await page.evaluate(() => { window.__agentAutoConnect = false; });
   await openPanel(page, { embedMode: "audio-agent", agentQuestionsLimit: null, agentVoiceSecondsLimit: null, shortcuts });
   await page.locator(".default-player .voice").click();
 
@@ -197,6 +198,7 @@ test("default player agent behaviour", async ({ page }) => {
 
   expect(await page.locator(".default-player .strip").count(), "Cancel returns the composer").toEqual(0);
   expect((await panelState(page)).thread, "and nothing is marked in the thread").toEqual([]);
+  await page.evaluate(() => { window.__agentAutoConnect = true; });
 
   // The full loop: connect, listen, the utterance lands as a message (no
   // word-by-word transcript), the spoken reply arrives, and the call returns
@@ -583,7 +585,11 @@ const panelState = async (page) => await page.evaluate(() => {
   return {
     chips: [...root.querySelectorAll(".empty-chips button")].map((chip) => chip.textContent.trim()),
     canType: !!root.querySelector(".composer:not(.spent) input"),
-    thread: [...root.querySelectorAll(".thread > div")].map((row) => row.textContent.trim()),
+    thread: [...root.querySelectorAll(".thread > div")].map((row) => {
+      const copy = row.cloneNode(true);
+      copy.querySelectorAll(".citation").forEach((citation) => citation.remove());
+      return copy.textContent.trim();
+    }),
     ctaHref: root.querySelector(".thread .locked-answer a, .composer.spent a")?.getAttribute("href") || null,
   };
 });

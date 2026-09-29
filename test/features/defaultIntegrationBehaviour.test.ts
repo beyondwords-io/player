@@ -16,6 +16,21 @@ test.beforeEach(async ({ page }) => {
 
 test("default player cross-surface agent behaviour", async ({ page }) => {
   await page.evaluate((audio) => {
+    window.__elevenLabsClientStub = {
+      Conversation: {
+        startSession: async (config) => {
+          if (!config.textOnly) {
+            setTimeout(() => config.onStatusChange?.({ status: "connected" }), 20);
+          }
+          return {
+            sendUserMessage: () => {},
+            sendUserActivity: () => {},
+            setMicMuted: () => {},
+            endSession: async () => {},
+          };
+        },
+      },
+    };
     const widget = document.createElement("div");
     widget.id = "agent-widget";
     document.body.appendChild(widget);
@@ -26,6 +41,7 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
       widgetStyle: "default",
       widgetTarget: "#agent-widget",
       embedMode: "audio-agent",
+      agentId: "agent_test",
       playbackState: "playing",
       content: [{ title: "Article", audio }],
     });
@@ -53,6 +69,7 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
       target: ".beyondwords-player",
       playerStyle: "default",
       embedMode: "audio-agent",
+      agentId: "agent_test",
       playbackState: "playing",
       content: [{ title: "Article", audio }],
     });
@@ -296,6 +313,9 @@ test("default player progress and status icons use the icon palette role", async
   }, audio);
 
   const player = page.locator(".default-player");
+  // Content initialization resets playback time. Seek after it has settled
+  // so the test actually renders a non-empty progress fill.
+  await page.evaluate(() => BeyondWords.Player.instances()[0].currentTime = 30);
   await expect(player.locator(".progress-track .fill")).toHaveCSS("background-color", "rgb(0, 128, 0)");
   await expect(player.locator(".chat-button > svg path").first()).toHaveAttribute("stroke", "rgb(0, 128, 0)");
 
@@ -384,15 +404,21 @@ test("default player advert badges use the subtle outline role", async ({ page }
       target: ".beyondwords-player",
       playerStyle: "default",
       widgetStyle: "none",
-      playbackState: "playing",
-      currentTime: 5,
-      duration: 30,
       lightTheme: palette,
       adverts: [advert],
-      advertIndex: 0,
       content: [{ title: "Article", audio }],
     });
   }, audio);
+
+  // Start the advert after content initialization, just as playback does.
+  // Initializing directly in an advert also initializes the content index,
+  // which clears the previous advert used by the persistent chip.
+  await page.evaluate(() => Object.assign(BeyondWords.Player.instances()[0], {
+    playbackState: "playing",
+    currentTime: 5,
+    duration: 30,
+    advertIndex: 0,
+  }));
 
   const badge = page.locator(".default-player .ad-badge");
   await expect(badge).toHaveCSS("color", "rgb(255, 165, 0)");
