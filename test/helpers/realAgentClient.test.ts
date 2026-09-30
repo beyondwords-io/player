@@ -40,11 +40,27 @@ const fakeSdk = () => {
   return { sdk, calls };
 };
 
+// A fake AuthApiClient with the auth service's two answers: a signed websocket
+// url for text, a WebRTC token for voice. Each call returns a distinct
+// credential, as the real one does.
+const fakeAuthClient = (calls = { modes: [] }) => ({
+  agentSession: async (mode) => {
+    calls.modes.push(mode);
+    const n = calls.modes.length;
+
+    return mode === "voice"
+      ? { connection_type: "webrtc", conversation_token: `token_${n}`, expires_at: 1790597571 }
+      : { connection_type: "websocket", signed_url: `wss://api.elevenlabs.io/v1/convai/conversation?conversation_signature=sig_${n}`, expires_at: 1790597571 };
+  },
+});
+
 const newClient = (overrides = {}) => {
   const { sdk, calls } = fakeSdk();
+  calls.modes = [];
 
   const client = new RealAgentClient({
     agentId: "agent_123",
+    authClient: fakeAuthClient(calls),
     loadSdk: async () => sdk,
     dynamicVariables: () => ({ project_id: 54044, content_id: "content-uuid", title: "A story", source_id: undefined }),
     ...overrides,
@@ -97,9 +113,74 @@ describe("realAgentClient", () => {
     await settle();
 
     expect(calls.configs).toHaveLength(1);
-    expect(calls.configs[0]).toMatchObject({ agentId: "agent_123", textOnly: true });
+    expect(calls.modes, "a text credential was requested").toEqual(["text"]);
+    expect(calls.configs[0]).toMatchObject({ connectionType: "websocket", signedUrl: "wss://api.elevenlabs.io/v1/convai/conversation?conversation_signature=sig_1", textOnly: true });
+    expect(calls.configs[0].agentId, "the agent id never reaches the SDK").toBeUndefined();
     expect(calls.configs[0].dynamicVariables).toEqual({ project_id: 54044, content_id: "content-uuid", title: "A story" });
     expect(calls.conversations[0].sent).toEqual(["What happened?"]);
+  });
+
+  it("opens a voice call with the WebRTC token from the auth service", async () => {
+    const { client, calls } = newClient();
+
+    await client.startSession();
+
+    expect(calls.modes).toEqual(["voice"]);
+    expect(calls.configs[0]).toMatchObject({ connectionType: "webrtc", conversationToken: "token_1" });
+    expect(calls.configs[0].signedUrl).toBeUndefined();
+    expect(calls.configs[0].textOnly).toBeUndefined();
+  });
+
+  it("asks for a fresh credential on every session, since each is single-use", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("First?");
+    await settle();
+    client.endSession();
+    client.sendUserMessage("Second?");
+    await settle();
+
+    expect(calls.modes).toEqual(["text", "text"]);
+    expect(calls.configs.map((config) => config.signedUrl)).toEqual([
+      "wss://api.elevenlabs.io/v1/convai/conversation?conversation_signature=sig_1",
+      "wss://api.elevenlabs.io/v1/convai/conversation?conversation_signature=sig_2",
+    ]);
+  });
+
+  it("treats a refused auth request as a failed connect", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const authClient = { agentSession: async () => { throw new Error("Failed to fetch https://auth.example.com/agent/session"); } };
+
+    const text = newClient({ authClient });
+    text.client.sendUserMessage("What happened?");
+    await settle();
+
+    expect(text.calls.configs, "the SDK was never asked to connect").toHaveLength(0);
+    expect(text.client.state).toMatchObject({ kind: "none", status: "idle" });
+    expect(text.client.state.thread, "the question stays, the blank bubble goes").toMatchObject([{ role: "reader", text: "What happened?" }]);
+
+    const voice = newClient({ authClient });
+    await voice.client.startSession();
+
+    expect(voice.calls.configs).toHaveLength(0);
+    expect(voice.client.state).toMatchObject({ kind: "none", status: "idle" });
+    expect(warn).toHaveBeenCalledTimes(2);
+  });
+
+  it("never connects when the connect is cancelled while auth is still answering", async () => {
+    let resolveAuth;
+    const authClient = { agentSession: () => new Promise((resolve) => { resolveAuth = resolve; }) };
+    const { client, calls } = newClient({ authClient });
+
+    client.startSession();
+    await settle();
+    client.cancelConnect();
+
+    resolveAuth({ connection_type: "webrtc", conversation_token: "token_late" });
+    await settle();
+
+    expect(calls.configs).toHaveLength(0);
+    expect(client.state).toMatchObject({ kind: "none", status: "idle" });
   });
 
   it("passes the API-provided agent overrides supported by the SDK", async () => {
@@ -456,7 +537,7 @@ describe("realAgentClient", () => {
       },
     };
 
-    const client = new RealAgentClient({ agentId: "agent_123", loadSdk: async () => sdk });
+    const client = new RealAgentClient({ agentId: "agent_123", authClient: fakeAuthClient(), loadSdk: async () => sdk });
 
     client.startSession();
     await settle();
@@ -472,7 +553,7 @@ describe("realAgentClient", () => {
 
   it("recovers when the session cannot start", async () => {
     const failingSdk = { Conversation: { startSession: async () => { throw new Error("mic denied"); } } };
-    const client = new RealAgentClient({ agentId: "agent_123", loadSdk: async () => failingSdk });
+    const client = new RealAgentClient({ agentId: "agent_123", authClient: fakeAuthClient(), loadSdk: async () => failingSdk });
 
     client.startSession();
     await settle();
@@ -483,7 +564,7 @@ describe("realAgentClient", () => {
 
   it("keeps the question but drops the blank bubble when a text session fails", async () => {
     const failingSdk = { Conversation: { startSession: async () => { throw new Error("agent not found"); } } };
-    const client = new RealAgentClient({ agentId: "agent_missing", loadSdk: async () => failingSdk });
+    const client = new RealAgentClient({ agentId: "agent_missing", authClient: fakeAuthClient(), loadSdk: async () => failingSdk });
 
     client.sendUserMessage("What happened?");
     await settle();
@@ -638,6 +719,7 @@ describe("realAgentClient", () => {
 
     expect(calls.configs).toHaveLength(2);
     expect(calls.configs[1].overrides).toBeUndefined();
+    expect(calls.configs[1].signedUrl, "the retry used a fresh credential").not.toEqual(calls.configs[0].signedUrl);
     expect(calls.conversations[1].sent, "the question is replayed").toEqual(["What happened?"]);
 
     // The reader's bubble survived the reconnect, and the reply lands in it.

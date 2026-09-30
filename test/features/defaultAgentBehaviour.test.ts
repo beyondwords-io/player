@@ -4,6 +4,7 @@ import { test, expect } from "@playwright/test";
 // still takes the question and answers with the publisher's offer, and the
 // shortcuts list is the publisher's questions rather than invented commands.
 test("default player agent behaviour", async ({ page }) => {
+  await stubAuthService(page);
   await page.goto("http://localhost:8000");
   await waitForStylesToLoad(page);
 
@@ -368,6 +369,7 @@ test("default player translation behaviour localizes the agent copy", async ({ p
 // The live client drives the panel through the ElevenLabs SDK's callbacks. The SDK is
 // stubbed at its loader seam, so this exercises everything but the network.
 test("default player live agent behaviour", async ({ page }) => {
+  const authRequests = await stubAuthService(page);
   await page.goto("http://localhost:8000");
   await waitForStylesToLoad(page);
 
@@ -377,7 +379,15 @@ test("default player live agent behaviour", async ({ page }) => {
     window.__elevenLabsClientStub = {
       Conversation: {
         startSession: async (config) => {
-          window.__sdkLog.push({ event: "start", agentId: config.agentId, textOnly: !!config.textOnly, dynamicVariables: config.dynamicVariables });
+          window.__sdkLog.push({
+            event: "start",
+            agentId: config.agentId,
+            connectionType: config.connectionType,
+            signedUrl: config.signedUrl,
+            conversationToken: config.conversationToken,
+            textOnly: !!config.textOnly,
+            dynamicVariables: config.dynamicVariables,
+          });
           window.__conversationConfig = config;
 
           if (!config.textOnly) {
@@ -421,16 +431,21 @@ test("default player live agent behaviour", async ({ page }) => {
   await page.waitForTimeout(400);
 
   expect(await page.evaluate(() => window.__sdkLog), "no agentId, no SDK").toEqual([]);
+  expect(authRequests, "no agentId, no auth request").toEqual([]);
   expect((await panelState(page)).thread, "no agentId, no placeholder answer").toEqual([]);
 
   // With one, opening the panel still connects nothing; the first typed send
-  // starts a text session carrying the id and the page's context.
+  // asks the auth service for a text credential and starts a session carrying
+  // it and the page's context. The agent id itself never reaches the SDK.
+  // (No projectId here: setting one would fetch content from /player, so the
+  // auth body carries null in its place.)
   await openPanel(page, {
     embedMode: "audio-agent",
     agentId: "agent_wired123",
     apiPayload: { access_tier: { slug: "subscribed" } },
   });
   expect(await page.evaluate(() => window.__sdkLog), "opening the panel is free").toEqual([]);
+  expect(authRequests, "opening the panel asks auth for nothing").toEqual([]);
 
   const wiredInput = page.locator(".default-player .composer input").first();
   await wiredInput.click();
@@ -439,7 +454,9 @@ test("default player live agent behaviour", async ({ page }) => {
   await page.waitForTimeout(500);
 
   const log = await page.evaluate(() => window.__sdkLog);
-  expect(log[0]).toMatchObject({ event: "start", agentId: "agent_wired123", textOnly: true });
+  expect(authRequests).toEqual([{ project_id: null, mode: "text" }]);
+  expect(log[0]).toMatchObject({ event: "start", connectionType: "websocket", signedUrl: "wss://stub.example/convai?mode=text", textOnly: true });
+  expect(log[0].agentId).toBeUndefined();
   expect(log[0].dynamicVariables).toMatchObject({
     bw_channel: "player",
     bw_access_tier: "subscribed",
@@ -455,11 +472,14 @@ test("default player live agent behaviour", async ({ page }) => {
   // talking - and the strip never promises a tap the SDK cannot deliver.
   await openPanel(page, { embedMode: "audio-agent", agentId: "agent_wired123" });
   await page.evaluate(() => { window.__sdkLog = []; });
+  authRequests.length = 0;
 
   await page.locator(".default-player .composer .voice").click();
   await page.waitForTimeout(300);
 
   expect(await page.evaluate(() => window.__sdkLog.map((entry) => entry.event)), "the waveform opened a voice session").toEqual(["start"]);
+  expect(authRequests, "a call asks for a voice credential").toEqual([{ project_id: null, mode: "voice" }]);
+  expect(await page.evaluate(() => window.__sdkLog[0])).toMatchObject({ connectionType: "webrtc", conversationToken: "stub-token-voice" });
   expect(await stripText(page), "and the call is live").toContain("Listening");
 
   await page.evaluate(() => window.__conversationConfig.onMessage({ message: "What changed this week?", role: "user", source: "user" }));
@@ -511,6 +531,25 @@ const answerLength = async (page) => await page.evaluate(() => {
   const answer = [...document.querySelectorAll(".default-player .thread > div")].at(-1);
   return (answer?.querySelector(".answer-col")?.textContent || "").trim().length;
 });
+
+// The auth service that issues session credentials, answered here so the
+// tests never leave the page. Returns the bodies it was asked for, in order.
+const stubAuthService = async (page) => {
+  const requests = [];
+
+  await page.route("**/agent/session", async (route) => {
+    const body = route.request().postDataJSON();
+    requests.push(body);
+
+    const json = body.mode === "voice"
+      ? { connection_type: "webrtc", conversation_token: "stub-token-voice", expires_at: 1790597571 }
+      : { connection_type: "websocket", signed_url: "wss://stub.example/convai?mode=text", expires_at: 1790597571 };
+
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(json) });
+  });
+
+  return requests;
+};
 
 // Mounts the player and opens the chat panel, whichever surface holds it.
 const openPanel = async (page, params) => {

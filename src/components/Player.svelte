@@ -32,10 +32,12 @@
     resolveThemePreference,
   } from "../helpers/default_theme/palettes";
   import AgentAllowanceState from "../helpers/agentAllowanceState";
+  import AuthApiClient from "../api_clients/authApiClient";
 
   // Please document all settings and keep in-sync with the developer docs:
   // https://github.com/beyondwords-core/docs/blob/main/docs-and-guides/distribution/player/sdk/javascript/player-settings.mdx
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
+  export let authApiUrl = "https://auth.beyondwords.io";
   export let projectId = undefined;
   export let contentId = undefined;
   export let playlistId = undefined;
@@ -125,8 +127,9 @@
   export let agentCtaText = undefined;
   export let agentCtaUrl = undefined;
 
-  // Served as conversational_agent.elevenlabs_agent_id by /player; a token
-  // endpoint replaces the public id when agent auth lands.
+  // Served as conversational_agent.elevenlabs_agent_id by /player. It says the
+  // project has an agent; sessions themselves are opened with a credential
+  // from the auth service (authApiUrl), never with this id.
   export let agentId = undefined;
   // Undefined means "follow the project". Assign light/dark/auto to override
   // it at runtime; assign null/undefined to restore the project preference.
@@ -206,23 +209,27 @@
   // the client above both interfaces so scrolling between them cannot fork the
   // thread or leave a hidden voice session running.
   //
-  // An agent id can arrive after mount, so swapping the live client ends
-  // whatever the old client had open.
+  // An agent id can arrive after mount, and so can the project the auth
+  // service is asked about, so swapping the live client ends whatever the old
+  // client had open.
   let agentClient = new RealAgentClient();
   let pausedForAgentCall = false;
 
-  $: syncAgentClient(agentId, agentSessionConfig);
+  $: syncAgentClient(agentId, agentSessionConfig, authApiUrl, projectId);
 
-  const syncAgentClient = (id, sessionConfig) => {
+  const syncAgentClient = (id, sessionConfig, authApiUrl, projectId) => {
     const wantedId = typeof id === "string" && id.trim().length > 0 ? id.trim() : null;
     const currentId = agentClient.agentId?.trim() || null;
     const wantedConfigKey = JSON.stringify(sessionConfig || {});
     const currentConfigKey = agentClient.sessionConfigKey;
-    if (wantedId === currentId && wantedConfigKey === currentConfigKey) { return; }
+    const wantedAuthKey = JSON.stringify([authApiUrl, projectId]);
+    const currentAuthKey = JSON.stringify([agentClient.authClient?.baseUrl, agentClient.authClient?.projectId]);
+    if (wantedId === currentId && wantedConfigKey === currentConfigKey && wantedAuthKey === currentAuthKey) { return; }
 
     agentClient.endSession();
     agentClient = new RealAgentClient({
       agentId: wantedId || undefined,
+      authClient: new AuthApiClient({ authApiUrl, projectId }),
       sessionConfig,
       dynamicVariables: agentDynamicVariables,
     });

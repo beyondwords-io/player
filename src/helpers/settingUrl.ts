@@ -19,6 +19,16 @@ const encodeSettingValue = (value) => {
   }
 };
 
+// Project and playlist ids are numbers in the API, but the panel's inputs and
+// the URL only give strings. Everything else (content uuids, source ids, the
+// preview token) stays a string, however numeric it may look.
+// harness/urlState.js applies the same rule.
+const numericIdentifierKeys = ["projectId", "playlistId"];
+
+const parseIdentifier = (key: string, raw: string) => (
+  numericIdentifierKeys.includes(key) && /^\d+$/.test(raw) ? Number(raw) : raw
+);
+
 const settingsUrl = ({ identifiers = {}, settings = {}, extra = {} } = {}) => {
   const params = new URLSearchParams();
 
@@ -42,4 +52,4 @@ const settingsUrl = ({ identifiers = {}, settings = {}, extra = {} } = {}) => {
 };
 
 export default settingsUrl;
-export { settingsUrl };
+export { settingsUrl, parseIdentifier, numericIdentifierKeys };
