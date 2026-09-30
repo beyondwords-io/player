@@ -17,7 +17,7 @@ type AgentSession = {
 
 class AuthApiClient {
   baseUrl: string;
-  projectId: string;
+  projectId: number;
   lastRequestUrl: string | undefined;
 
   constructor({
@@ -25,7 +25,7 @@ class AuthApiClient {
     projectId,
   }: {
     authApiUrl: string;
-    projectId: string;
+    projectId: number;
   }) {
     this.baseUrl = authApiUrl;
     this.projectId = projectId;
