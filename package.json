@@ -8,7 +8,8 @@
   "bugs": "https://github.com/beyondwords-io/player/issues",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "doc/third-party-notices.md"
   ],
   "module": "./dist/es.js",
   "main": "./dist/umd.js",

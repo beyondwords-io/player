@@ -23,7 +23,7 @@
 
         <section aria-labelledby="variants-title">
           <div class="section-heading">
-            <h2 id="variants-title">Three ways to invite readers</h2>
+            <h2 id="variants-title">Let readers choose, or suggest an assistant</h2>
             <span>Light &amp; dark</span>
           </div>
           <div class="theme-grid">
@@ -33,6 +33,7 @@
                 <div class="variant-row"><span>Let readers choose</span><div id="light-generic"></div></div>
                 <div class="variant-row"><span>Claude</span><div id="light-claude"></div></div>
                 <div class="variant-row"><span>ChatGPT</span><div id="light-chatgpt"></div></div>
+                <div class="variant-row"><span>Grok</span><div id="light-grok"></div></div>
               </div>
             </div>
             <div class="theme-card dark-card" id="dark-variants">
@@ -41,6 +42,7 @@
                 <div class="variant-row"><span>Let readers choose</span><div id="dark-generic"></div></div>
                 <div class="variant-row"><span>Claude</span><div id="dark-claude"></div></div>
                 <div class="variant-row"><span>ChatGPT</span><div id="dark-chatgpt"></div></div>
+                <div class="variant-row"><span>Grok</span><div id="dark-grok"></div></div>
               </div>
             </div>
           </div>
@@ -56,7 +58,7 @@
               <div class="field-pair">
                 <div class="field">
                   <label for="provider">Button</label>
-                  <select id="provider"><option value="">AI assistant</option><option value="claude">Claude</option><option value="chatgpt">ChatGPT</option></select>
+                  <select id="provider"><option value="">AI assistant</option><option value="claude">Claude</option><option value="chatgpt">ChatGPT</option><option value="grok">Grok</option></select>
                 </div>
                 <div class="field">
                   <label for="theme">Theme</label>
@@ -111,7 +113,7 @@
           </div>
         </section>
       </main>
-      <footer><span>Design review · S-9077</span><a href="/connector-embed.html">Test the standalone script →</a><span>Connection pages come next.</span></footer>
+      <footer><span>Design review · S-9077</span><a href="/connector-embed.html">Test the script and SVG embeds →</a></footer>
     </div>
     <p id="click-feedback" role="status" aria-live="polite" hidden></p>
     <script type="module" src="/harness/connector-preview.ts"></script>

@@ -14,8 +14,8 @@ test("connector widget accessibility, themes, and isolated rendering", async ({ 
   const light = page.locator("#light-variants").getByRole("link");
   const dark = page.locator("#dark-variants").getByRole("link");
   const minHeight = await page.evaluate(() => matchMedia("(pointer: coarse)").matches ? 44 : 38);
-  await expect(light).toHaveCount(3);
-  await expect(dark).toHaveCount(3);
+  await expect(light).toHaveCount(4);
+  await expect(dark).toHaveCount(4);
   for (const link of await page.locator("[data-connector-widget]").getByRole("link").all()) {
     const bounds = await link.boundingBox();
     expect(bounds!.height).toBeGreaterThanOrEqual(minHeight);
@@ -87,6 +87,9 @@ test("connector widget controls keep destination separate from provider and supp
   await expect(live).toHaveAttribute("href", customUrl);
   await page.getByLabel("Button", { exact: true }).selectOption("chatgpt");
   await expect(live).toHaveText("Add to ChatGPT");
+  await expect(live).toHaveAttribute("href", customUrl);
+  await page.getByLabel("Button", { exact: true }).selectOption("grok");
+  await expect(live).toHaveText("Add to Grok");
   await expect(live).toHaveAttribute("href", customUrl);
   await page.getByLabel("Label optional").fill("Read with your assistant");
   await expect(live).toHaveText("Read with your assistant");

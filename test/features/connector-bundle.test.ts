@@ -45,6 +45,7 @@ test("connector build contains only the standalone dependency graph and fits the
     const sourceMap = JSON.parse(readFileSync(resolve(root, "dist", `${filename}.map`), "utf8"));
     const allowedSources = [
       "src/connector/index.ts", "src/connector/browser.ts", "src/connector/icons.ts", "src/connector/widget.css",
+      "src/connector/providers.ts", "src/connector/grokIcon.ts",
       "src/helpers/mediaQuery.ts", "src/helpers/default_theme/palettes.ts",
     ];
     for (const source of sourceMap.sources) {
@@ -71,7 +72,7 @@ test("connector module package export works without a browser and includes usabl
   ], { cwd: root, encoding: "utf8" });
 });
 
-test("connector plain-script example loads one self-contained asset with all three variants", async ({ page }, testInfo) => {
+test("connector plain-script example loads one self-contained asset with all four variants", async ({ page }, testInfo) => {
   const resources: string[] = [];
   page.on("request", (request) => {
     if (["script", "stylesheet", "font", "fetch", "xhr", "media"].includes(request.resourceType())) { resources.push(request.url()); }
@@ -80,14 +81,41 @@ test("connector plain-script example loads one self-contained asset with all thr
     contentType: "text/html", body: readFileSync(resolve(root, "connector-embed.html"), "utf8"),
   }));
   await page.goto(exampleUrl);
-  await expect(page.getByRole("link", { name: "Add to AI assistant", exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Add to Claude", exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Add to ChatGPT", exact: true })).toBeVisible();
+  const widgets = page.getByRole("region", { name: "Standalone widget examples" });
+  await expect(widgets.getByRole("link", { name: "Add to AI assistant", exact: true })).toBeVisible();
+  await expect(widgets.getByRole("link", { name: "Add to Claude", exact: true })).toBeVisible();
+  await expect(widgets.getByRole("link", { name: "Add to ChatGPT", exact: true })).toBeVisible();
+  await expect(widgets.getByRole("link", { name: "Add to Grok", exact: true })).toBeVisible();
   await expect(page.locator("#load-error")).toBeHidden();
   expect(resources).toEqual([scriptUrl]);
   expect(await page.evaluate(() => typeof (window as EmbedWindow).BeyondWords.Player)).toBe("undefined");
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath("standalone-embed.png"), fullPage: true });
+});
+
+test("all SVG badges are packaged and render without JavaScript", async ({ browser }, testInfo) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  try {
+    await page.route(`${origin}/dist/connector-badges/*.svg`, (route) => route.fulfill({
+      contentType: "image/svg+xml",
+      body: readFileSync(resolve(root, "dist/connector-badges", new URL(route.request().url()).pathname.split("/").at(-1)!)),
+    }));
+    const files = ["generic", "claude", "chatgpt", "grok"].flatMap(provider =>
+      ["light", "dark", "auto"].map(theme => `${provider}-${theme}.svg`));
+    await openPublisherPage(page, `<main>${files.map(file => `<a href="${origin}/connector-destination"><img alt="${file}" src="${origin}/dist/connector-badges/${file}"></a>`).join("<br>")}</main>`);
+    for (const file of files) {
+      const badge = page.getByRole("img", { name: file, exact: true });
+      await expect(badge).toBeVisible();
+      expect(await badge.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+    }
+    await page.screenshot({ path: testInfo.outputPath("svg-badges.png"), fullPage: true });
+    await page.route(`${origin}/connector-destination`, route => route.fulfill({ contentType: "text/html", body: "<h1>Connection page</h1>" }));
+    await page.getByRole("link", { name: "grok-auto.svg", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Connection page" })).toBeVisible();
+  } finally {
+    await context.close();
+  }
 });
 
 test("connector script performs real navigation to the supplied URL without rewriting it", async ({ page }) => {

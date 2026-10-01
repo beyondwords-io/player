@@ -38,12 +38,13 @@ describe("standalone connector widget", () => {
   });
 
   it.each([
-    ["claude", "Add to Claude"],
-    ["chatgpt", "Add to ChatGPT"],
-  ] as const)("uses the %s brand and default label", (provider, text) => {
+    ["claude", "Add to Claude", "0 0 32 32"],
+    ["chatgpt", "Add to ChatGPT", "0 0 320 320"],
+    ["grok", "Add to Grok", "0 0 24 24"],
+  ] as const)("uses the %s brand and default label", (provider, text, viewBox) => {
     const widget = mount({ provider });
     expect(link(widget).textContent).toBe(text);
-    expect(link(widget).querySelector("svg")?.getAttribute("viewBox")).toBe(provider === "claude" ? "0 0 32 32" : "0 0 320 320");
+    expect(link(widget).querySelector("svg")?.getAttribute("viewBox")).toBe(viewBox);
     expect(link(widget).querySelector("svg")?.getAttribute("aria-hidden")).toBe("true");
     expect(link(widget).querySelector("svg")?.getAttribute("focusable")).toBe("false");
   });
@@ -54,6 +55,8 @@ describe("standalone connector widget", () => {
     widget.update({ provider: "claude" });
     expect(link(widget).getAttribute("href")).toBe(url);
     widget.update({ provider: "chatgpt", theme: "dark" });
+    expect(link(widget).getAttribute("href")).toBe(url);
+    widget.update({ provider: "grok" });
     expect(link(widget).getAttribute("href")).toBe(url);
     widget.update({ connectUrl: "http://localhost:3000/my-own-page" });
     expect(link(widget).getAttribute("href")).toBe("http://localhost:3000/my-own-page");
@@ -82,6 +85,12 @@ describe("standalone connector widget", () => {
     expect(link(widget).textContent).toBe("Add to AI assistant");
     expect(link(widget).dataset.theme).toBe("light");
     expect(link(widget).getAttribute("href")).toBe("https://publisher.example/connect");
+  });
+
+  it("rejects providers that have no supported artwork without altering the existing widget", () => {
+    const widget = mount();
+    expect(() => widget.update({ provider: "gemini" as never })).toThrow("Unknown connector provider");
+    expect(link(widget).textContent).toBe("Add to AI assistant");
   });
 
   it("rejects a missing mounting target", () => {

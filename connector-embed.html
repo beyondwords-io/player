@@ -14,6 +14,7 @@
       a { color: #212121; text-underline-offset: 3px; }
       a:focus-visible, pre:focus-visible { outline: 2px solid #212121; outline-offset: 3px; }
       .examples { display: flex; flex-wrap: wrap; gap: 16px; padding: 24px; border: 1px solid #dedede; border-radius: 12px; }
+      .examples > a { display: inline-flex; align-items: center; min-height: 44px; }
       pre { padding: 20px; border: 1px solid #dedede; border-radius: 12px; background: #fafafa; overflow-x: auto; font-size: 12px; line-height: 1.8; }
       code { overflow-wrap: anywhere; }
       #load-error { padding: 16px; border: 1px solid #b42318; border-radius: 8px; color: #b42318; }
@@ -32,6 +33,7 @@
         <div id="connector-generic"></div>
         <div id="connector-claude"></div>
         <div id="connector-chatgpt"></div>
+        <div id="connector-grok"></div>
       </section>
       <p id="load-error" role="alert" hidden>Build the standalone files with <code>./bin/build_connector</code>, then reload this page.</p>
 
@@ -51,12 +53,21 @@
       <h2>Update or remove it</h2>
       <pre tabindex="0"><code>connector.update({ theme: "dark", label: "Explore our reporting" });
 connector.destroy();</code></pre>
+      <h2>SVG badges: no JavaScript</h2>
+      <p>Wrap a badge image in your own link. These built SVGs contain no scripts, fonts or external requests.
+        Light and Dark are fixed; Auto follows the reader’s system theme. Use the script widget for a custom label.</p>
+      <section class="examples" aria-label="SVG badge examples">
+        <a href="/connector-preview.html"><img src="/dist/connector-badges/generic-auto.svg" alt="Add to AI assistant" width="178" height="38" /></a>
+        <a href="/connector-preview.html"><img src="/dist/connector-badges/claude-auto.svg" alt="Add to Claude" width="145" height="38" /></a>
+        <a href="/connector-preview.html"><img src="/dist/connector-badges/chatgpt-auto.svg" alt="Add to ChatGPT" width="157" height="38" /></a>
+        <a href="/connector-preview.html"><img src="/dist/connector-badges/grok-auto.svg" alt="Add to Grok" width="130" height="38" /></a>
+      </section>
     </main>
     <script src="/dist/connector.js"></script>
     <script>
       if (window.BeyondWords && window.BeyondWords.Connector) {
         const connectUrl = new URL("/connector-preview.html", window.location.href).href;
-        for (const provider of [undefined, "claude", "chatgpt"]) {
+        for (const provider of [undefined, "claude", "chatgpt", "grok"]) {
           new BeyondWords.Connector({
             target: `#connector-${provider || "generic"}`,
             connectUrl,

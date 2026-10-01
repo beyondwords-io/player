@@ -1,7 +1,7 @@
 # Standalone Connector widget
 
 A lightweight link that invites readers to add a publisher's content to an AI
-assistant. It uses the approved generic, Claude, or ChatGPT design without
+assistant. It uses the approved generic, Claude, ChatGPT, or Grok design without
 loading the BeyondWords player, Svelte, ElevenLabs, analytics, or an API client.
 Styles and vector icons are bundled into the script; no extra CSS or font
 download is needed. If the embedding page already loads Inter, the widget uses
@@ -77,8 +77,8 @@ The function API `createConnectorWidget(options)` is also exported.
 | --- | --- | --- |
 | `target` | Mounting HTMLElement or a selector matching one. Existing children are preserved. | Required |
 | `connectUrl` | Complete `http://` or `https://` webpage URL, used as supplied. | Required |
-| `provider` | `"claude"` or `"chatgpt"`. Omit for the generic AI-assistant design. Affects branding only. | Generic |
-| `label` | Plain-text replacement label. An empty string restores the provider default. | “Add to AI assistant”, “Add to Claude”, or “Add to ChatGPT” |
+| `provider` | `"claude"`, `"chatgpt"`, or `"grok"`. Omit for the generic AI-assistant design. Affects branding only. | Generic |
+| `label` | Plain-text replacement label. An empty string restores the provider default. | “Add to AI assistant”, “Add to Claude”, “Add to ChatGPT”, or “Add to Grok” |
 | `theme` | `"light"`, `"dark"`, or `"auto"`. Auto follows live system preferences. | `"auto"` |
 
 The widget opens `connectUrl` as a normal link in the current tab. It does not
@@ -86,6 +86,31 @@ append a provider path, derive a custom domain, perform redirects itself,
 contact Myna, or invoke an assistant's deep link. The embedding application
 supplies the complete URL, whether it is our hosted page or the publisher's own
 page. No project ID is required.
+
+## Static SVG badges
+
+The build also emits twelve self-contained badges under `dist/connector-badges/`:
+`generic`, `claude`, `chatgpt`, and `grok`, each in `light`, `dark`, and `auto`.
+They contain no scripts or external resources. Wrap an image in an ordinary link:
+
+```html
+<a href="https://publisher.example/connect/grok"
+   style="display:inline-flex;align-items:center;min-height:44px">
+  <img src="https://YOUR-ASSET-HOST/connector-badges/grok-auto.svg"
+       alt="Add to Grok" width="130" height="38">
+</a>
+```
+
+After release, the versioned asset path is
+`https://proxy.beyondwords.io/npm/@beyondwords/player@VERSION/dist/connector-badges/grok-auto.svg`.
+Badges are 38px high. Their widths are 178px (generic), 145px (Claude), 157px
+(ChatGPT), and 130px (Grok). Keep the surrounding link at least 44px high on touch
+screens and retain its keyboard-focus styling. The `alt` provides the link name.
+Auto follows the reader’s system theme where SVG media queries are supported,
+with Light as its fallback. Some email clients reject SVG; use an ordinary text
+link there. Custom wording and wrapped labels use the script widget instead.
+
+The Grok artwork and badges include the [Lobe Icons license](third-party-notices.md).
 
 ## Runtime updates and cleanup
 
@@ -123,7 +148,7 @@ the example can be moved to the publisher's own permitted script.
 - [Standalone embed demo](http://localhost:8000/connector-embed.html): ordinary script embed; clicks navigate normally to the local design preview.
 
 The standalone build emits `dist/connector.js`, `dist/connector.mjs`, their
-source maps, and declarations under `dist/types`. It does not clear existing
+source maps, declarations under `dist/types`, and SVGs under `dist/connector-badges`. It does not clear existing
 player build files. `./bin/build` also builds the connector after the player, so
 the normal npm release contains both, independently loadable bundles.
 
@@ -137,6 +162,25 @@ development-only import. They also check independent instances, repeat script
 loads, coexistence with the player, real link navigation, theme changes, and
 the absence of extra runtime network requests. CI runs these after `./bin/build`.
 
-Connection pages, dashboard snippet generation, more provider designs, and
-static SVG badge distribution are separate follow-up work. No backend changes
-are required for this package.
+Myna hosts the connection pages. Dashboard snippets should use an active custom
+domain directly (`https://CUSTOM-DOMAIN/connect[/PROVIDER]`), otherwise the shared
+project page (`https://MCP-HOST/v1/projects/PROJECT-ID/connect[/PROVIDER]`). These
+are webpage URLs, not the MCP transport URL itself. The widget does not resolve
+domains or enforce subscriber access; Myna and the assistant handle that flow.
+No backend changes are required for this package.
+
+## Release order
+
+1. Finish review and get green CI on this change and its player base branch.
+2. Publish a new player package version through the normal GitHub release workflow.
+   Never republish the existing version. Confirm the CDN serves `connector.js`,
+   `connector.mjs`, and all twelve `connector-badges/*.svg` files.
+3. Deploy the dashboard embed generator only after those assets are available.
+   Its generated snippets use the player package's `@latest` CDN path. A text
+   link does not need the package assets, but script widgets and SVG badges do.
+4. Check a real project on the target environment: hosted URL, active custom
+   domain, provider-specific pages, and subscriber sign-in from the assistant.
+   Completing account consent requires the account owner's approval.
+
+Standalone widgets do not depend on the in-player Connector layout or saved
+player settings. Those are separate follow-up work.

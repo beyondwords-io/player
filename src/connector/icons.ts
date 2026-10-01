@@ -1,8 +1,10 @@
-import type { ConnectorProvider } from "./index";
+import type { ConnectorProvider } from "./providers";
+import { grokIcon } from "./grokIcon";
 
 // Claude and ChatGPT artwork from Player Design System §3c; MCP from platform-ui's Icon.tsx.
 // Local vector paths keep this widget independent of provider CDNs and the player bundle.
-const icons = {
+export const connectorIcons = {
+  grok: grokIcon,
   generic: {
     viewBox: "0 0 24 24",
     fill: "currentColor",
@@ -21,7 +23,7 @@ const icons = {
 };
 
 export const createConnectorIcon = (document: Document, provider?: ConnectorProvider): SVGSVGElement => {
-  const icon = icons[provider ?? "generic"];
+  const icon = connectorIcons[provider ?? "generic"];
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", icon.viewBox);
   svg.setAttribute("aria-hidden", "true");

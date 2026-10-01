@@ -1,9 +1,10 @@
 import { PLAYER_COLOR_PRESETS } from "../helpers/default_theme/palettes";
 import { subscribeMediaQuery } from "../helpers/mediaQuery";
 import { createConnectorIcon } from "./icons";
+import { connectorLabels, type ConnectorProvider } from "./providers";
 import styles from "./widget.css?inline";
 
-export type ConnectorProvider = "claude" | "chatgpt";
+export type { ConnectorProvider } from "./providers";
 export type ConnectorTheme = "light" | "dark" | "auto";
 
 export interface ConnectorWidgetOptions {
@@ -27,7 +28,7 @@ export interface ConnectorWidget {
 }
 
 const validate = (options: Configuration): Configuration => {
-  if (options.provider !== undefined && !["claude", "chatgpt"].includes(options.provider)) {
+  if (options.provider !== undefined && !["claude", "chatgpt", "grok"].includes(options.provider)) {
     throw new Error("Unknown connector provider.");
   }
   if (options.theme !== undefined && !["light", "dark", "auto"].includes(options.theme)) {
@@ -47,12 +48,6 @@ const validate = (options: Configuration): Configuration => {
     throw new Error("connectUrl must be a complete HTTP(S) URL.");
   }
   return { ...options };
-};
-
-const defaultLabel = (provider?: ConnectorProvider): string => {
-  if (provider === "claude") { return "Add to Claude"; }
-  if (provider === "chatgpt") { return "Add to ChatGPT"; }
-  return "Add to AI assistant";
 };
 
 /** Mount a standalone widget without loading the player or changing global state. */
@@ -84,7 +79,7 @@ export const createConnectorWidget = (options: ConnectorWidgetOptions): Connecto
 
   const render = () => {
     // Set user-supplied content as text/attributes, never HTML. Keep the URL verbatim.
-    label.textContent = configuration.label?.trim() ? configuration.label : defaultLabel(configuration.provider);
+    label.textContent = configuration.label?.trim() ? configuration.label : connectorLabels[configuration.provider ?? "generic"];
     link.setAttribute("href", configuration.connectUrl);
     link.replaceChildren(createConnectorIcon(ownerDocument, configuration.provider), label);
   };

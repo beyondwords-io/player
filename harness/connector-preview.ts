@@ -3,6 +3,7 @@ import "@fontsource/inter/latin-500.css";
 import "@fontsource/inter/latin-600.css";
 import "./connector-preview.css";
 import { createConnectorWidget } from "../src/connector";
+import { connectorLabels } from "../src/connector/providers";
 import type { ConnectorProvider, ConnectorTheme, ConnectorWidget } from "../src/connector";
 import { subscribeMediaQuery } from "../src/helpers/mediaQuery";
 
@@ -37,7 +38,7 @@ const mount = (target: string, options: { provider?: ConnectorProvider; theme?: 
 };
 
 for (const theme of ["light", "dark"] as const) {
-  for (const provider of [undefined, "claude", "chatgpt"] as const) {
+  for (const provider of [undefined, "claude", "chatgpt", "grok"] as const) {
     mount(`#${theme}-${provider ?? "generic"}`, { provider, theme });
   }
 }
@@ -59,7 +60,7 @@ const update = () => {
     theme: theme.value as ConnectorTheme,
     label: label.value,
   });
-  label.placeholder = provider.value === "claude" ? "Add to Claude" : provider.value === "chatgpt" ? "Add to ChatGPT" : "Add to AI assistant";
+  label.placeholder = connectorLabels[(provider.value || "generic") as keyof typeof connectorLabels];
   find("width-guide").style.width = `${width.value}px`;
   find("width-value").textContent = `${width.value}px`;
   updateStage();

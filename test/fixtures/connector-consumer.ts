@@ -12,6 +12,7 @@ const options: ConnectorWidgetOptions = {
 const connector: ConnectorWidget = new Connector(options);
 const theme: ConnectorTheme = "dark";
 connector.update({ theme, label: "Our journalism" });
+connector.update({ provider: "grok" });
 connector.update({ provider: undefined });
 const host: HTMLElement = connector.element;
 createConnectorWidget({ target: host, connectUrl: options.connectUrl }).destroy();
