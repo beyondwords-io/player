@@ -75,7 +75,7 @@ const eventFromProps = (player, analyticsEventType) => {
     device_type: deviceType(player),
     media_type: activeAdvert ? "ad" : "content",
     media_variant: player.summary ? "summary" : "article",
-    access_tier: player.accessTier,
+    access_tier: player.apiPayload?.access_tier?.slug,
     project_id: player.projectId,
     content_id: contentItem?.id,
     source_id: contentItem?.sourceId,
@@ -123,7 +123,7 @@ const isNewLoad = (player) => {
   player.loadedContentHashes ||= new Set();
 
   const contentItem = player.content[player.contentIndex];
-  const contentHash = `${player.accessTier}:${contentItem?.id}`;
+  const contentHash = `${player.apiPayload?.access_tier?.slug}:${contentItem?.id}`;
 
   if (contentItem && !player.loadedContentHashes.has(contentHash)) {
     player.loadedContentHashes.add(contentHash);

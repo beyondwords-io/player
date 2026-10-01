@@ -17,7 +17,7 @@ class PlayerApiClient {
     accessTier,
   }: {
     playerApiUrl: string;
-    projectId: string;
+    projectId: number;
     summary?: boolean;
     mediaFormat?: string;
     videoSize?: string;
@@ -30,7 +30,7 @@ class PlayerApiClient {
     wordHighlightsEnabled?: boolean;
     accessTier?: string;
   }) {
-    this.baseUrl = playerApiUrl?.replace("{id}", projectId);
+    this.baseUrl = playerApiUrl?.replace("{id}", String(projectId));
     this.summary = summary;
     this.mediaFormat = mediaFormat;
     this.videoSize = videoSize;
@@ -83,7 +83,10 @@ class PlayerApiClient {
   }
 
   #fetchJson(path, params = this.params) {
-    return fetchJson(`${this.baseUrl}/${path}${this.#queryString(params)}`, { headers: this.headers });
+    // Kept so tooling can show exactly which request produced the response.
+    this.lastRequestUrl = `${this.baseUrl}/${path}${this.#queryString(params)}`;
+
+    return fetchJson(this.lastRequestUrl, { headers: this.headers });
   }
 
   #queryString(params) {

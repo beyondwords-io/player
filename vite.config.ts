@@ -7,6 +7,10 @@ import makeCssImportant from "./src/helpers/makeCssImportant";
 import prefixCssSelectors from "./src/helpers/prefixCssSelectors";
 
 export default defineConfig({
+  // The agent SDK is only reached through a dynamic import, so the dev
+  // server's scanner misses it; without this the first agent session
+  // triggers a mid-session optimize + full page reload.
+  optimizeDeps: { include: ["@elevenlabs/client"] },
   plugins: [
     fixRequireJsIssue(),
     svelte({ emitCss: true, compilerOptions: { accessors: true } }),
@@ -23,7 +27,7 @@ export default defineConfig({
     sourcemap: true,
     target: "es2015",
     rollupOptions: {
-      external: [/hls.light.min.js/, /loadTheStyles.ts/],
+      external: [/hls.light.min.js/, /loadTheStyles.ts/, /elevenLabsSdk.ts/, /@elevenlabs\/client/],
       output: {
         banner: `/*! version:"${version}" */`,
       },

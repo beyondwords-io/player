@@ -1,6 +1,8 @@
 import { name } from "../../package.json";
 
-const throwError = (message, context) => {
+type ErrorMessage = string | string[];
+
+const throwError = (message: ErrorMessage, context?: Record<string, unknown>): never => {
   message = [message].flat().join("\n");
 
   let error = `${name}:\n\n${message}`;
