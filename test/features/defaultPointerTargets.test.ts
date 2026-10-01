@@ -344,13 +344,16 @@ const surveyControls = async (page, params, width) => {
       const label = control.getAttribute("aria-label") || control.textContent.trim().slice(0, 24) || control.className.toString().slice(0, 24);
 
       // The centre and each corner, pulled in far enough to allow for rounding
-      // and border radius.
+      // and border radius. Thin progress tracks can be shorter than 6px, so
+      // the corner samples must stay inside their actual bounds.
+      const insetX = Math.min(3, box.width / 2);
+      const insetY = Math.min(3, box.height / 2);
       const points = [
         { at: "centre", x: box.x + box.width / 2, y: box.y + box.height / 2 },
-        { at: "top left", x: box.x + 3, y: box.y + 3 },
-        { at: "top right", x: box.right - 3, y: box.y + 3 },
-        { at: "bottom left", x: box.x + 3, y: box.bottom - 3 },
-        { at: "bottom right", x: box.right - 3, y: box.bottom - 3 },
+        { at: "top left", x: box.x + insetX, y: box.y + insetY },
+        { at: "top right", x: box.right - insetX, y: box.y + insetY },
+        { at: "bottom left", x: box.x + insetX, y: box.bottom - insetY },
+        { at: "bottom right", x: box.right - insetX, y: box.bottom - insetY },
       ];
 
       points.forEach(({ at, x, y }) => {

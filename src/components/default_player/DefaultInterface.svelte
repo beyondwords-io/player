@@ -211,11 +211,12 @@
   $: agentCtaHref = agentCtaUrl || accessCtaUrl;
 
   // The queue is an inline affordance - the widget stays the bar plus x.
-  $: queueAvailable = isPlaylist && !isWidget && playlistStyle.split("-")[0] !== "hide";
+  $: playlistVisibility = playlistStyle.split("-")[0];
+  $: queueAvailable = isPlaylist && !isWidget && playlistVisibility !== "hide";
   $: showQueueToggle = layout.queue;
   $: if (queueAvailable && playlistStyle !== appliedPlaylistStyle) {
     appliedPlaylistStyle = playlistStyle;
-    queueOpen = playlistStyle.split("-")[0] === "show";
+    queueOpen = playlistVisibility === "show" || playlistVisibility === "auto";
   }
 
   // Width folds, driven by the container. Rather than guess thresholds, the
@@ -766,7 +767,7 @@
 
   {#if queueOpen && queueAvailable}
     <div class="hairline" style="background: {tokens.divider}"></div>
-    <QueuePanel {content} {contentIndex} {summary} {tokens} {onEvent} />
+    <QueuePanel {content} {contentIndex} {summary} {tokens} {onEvent} style={playlistStyle} mobile={width < 380} />
   {/if}
 
   {#if chatOpen && showChat}

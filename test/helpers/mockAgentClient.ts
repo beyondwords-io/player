@@ -1,4 +1,4 @@
-import translate from "./translate";
+import translate from "../../src/helpers/translate";
 import { writable } from "svelte/store";
 import type { Subscriber, Writable } from "svelte/store";
 import type {
@@ -7,13 +7,12 @@ import type {
   AgentReplyMessage,
   AgentSessionOptions,
   AgentState,
-} from "./agentContracts";
+} from "../../src/helpers/agentContracts";
 
-// Agent client for the default player's Chat/Talk surfaces.
+// Test-only client for the default player's Chat/Talk surfaces.
 //
-// The real backend integration does not exist yet, so the player ships with a
-// deterministic mock - but the mock has the ElevenLabs Agents SDK's shape, so
-// wiring the real agent stays contained in this file:
+// It mirrors the ElevenLabs-backed client's public surface so component tests
+// can drive deterministic session state without loading the external SDK.
 //
 //   startSession({ textOnly })  <-  Conversation.startSession
 //   sendUserMessage(text)       <-  sendUserMessage (typed asks, incl. mid-call)

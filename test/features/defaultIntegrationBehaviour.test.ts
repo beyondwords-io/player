@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import stubAuthService from "../support/stubAuthService";
 
 const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
 const video = [{ id: 2, url: "http://example.com/a.mp4", contentType: "video/mp4", duration: 60, videoSize: { width: 1280, height: 720 } }];
@@ -15,7 +16,23 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("default player cross-surface agent behaviour", async ({ page }) => {
+  const authRequests = await stubAuthService(page);
   await page.evaluate((audio) => {
+    window.__elevenLabsClientStub = {
+      Conversation: {
+        startSession: async (config) => {
+          if (!config.textOnly) {
+            setTimeout(() => config.onStatusChange?.({ status: "connected" }), 20);
+          }
+          return {
+            sendUserMessage: () => {},
+            sendUserActivity: () => {},
+            setMicMuted: () => {},
+            endSession: async () => {},
+          };
+        },
+      },
+    };
     const widget = document.createElement("div");
     widget.id = "agent-widget";
     document.body.appendChild(widget);
@@ -26,6 +43,7 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
       widgetStyle: "default",
       widgetTarget: "#agent-widget",
       embedMode: "audio-agent",
+      agentId: "agent_test",
       playbackState: "playing",
       content: [{ title: "Article", audio }],
     });
@@ -38,6 +56,7 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
   await inline.locator("input").fill("What happened?");
   await inline.locator("button[aria-label='Send']").click();
   await expect(inline.locator(".reader-row")).toHaveCount(1);
+  await expect.poll(() => authRequests.map(request => request.mode)).toEqual(["text"]);
 
   await widget.locator(".chat-button").click();
   await expect(widget.locator(".reader-row")).toHaveCount(1);
@@ -53,6 +72,7 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
       target: ".beyondwords-player",
       playerStyle: "default",
       embedMode: "audio-agent",
+      agentId: "agent_test",
       playbackState: "playing",
       content: [{ title: "Article", audio }],
     });
@@ -66,6 +86,7 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
   await player.locator(".chat-button").click();
   await player.locator(".voice").click();
   await expect(player.locator(".strip-label")).toContainText("Listening");
+  expect(authRequests.map(request => request.mode)).toEqual(["text", "voice"]);
   await expect.poll(() => playback(page)).toBe("paused");
 
   await player.locator(".play-pause").click();
@@ -133,6 +154,33 @@ test("default player playlist rows stay inside the player surface", async ({ pag
     expect(box.x).toBeGreaterThanOrEqual(surface.x);
     expect(box.x + box.width).toBeLessThanOrEqual(surface.x + surface.width);
   }
+});
+
+test("default player applies playlist visibility and row settings", async ({ page }) => {
+  await page.evaluate((audio) => {
+    new BeyondWords.Player({
+      target: ".beyondwords-player",
+      playerStyle: "default",
+      widgetStyle: "none",
+      playlistStyle: "auto-2-2",
+      playlistToggle: "hide",
+      content: [
+        { title: "First item", audio },
+        { title: "Second item", audio },
+        { title: "Third item", audio },
+      ],
+    });
+  }, audio);
+
+  const player = page.locator(".default-player");
+  const queue = player.locator(".queue");
+  await expect(queue).toBeVisible();
+  await expect(player.getByRole("button", { name: "Toggle playlist" })).toHaveCount(0);
+  await expect(queue).toHaveCSS("overflow-y", "auto");
+  await expect.poll(async () => queue.evaluate((element) => ({
+    clientHeight: element.clientHeight,
+    scrollHeight: element.scrollHeight,
+  }))).toEqual({ clientHeight: 94, scrollHeight: 134 });
 });
 
 test("default player runtime theme behaviour uses literal palettes and live Auto", async ({ page }) => {
@@ -269,6 +317,9 @@ test("default player progress and status icons use the icon palette role", async
   }, audio);
 
   const player = page.locator(".default-player");
+  // Content initialization resets playback time. Seek after it has settled
+  // so the test actually renders a non-empty progress fill.
+  await page.evaluate(() => BeyondWords.Player.instances()[0].currentTime = 30);
   await expect(player.locator(".progress-track .fill")).toHaveCSS("background-color", "rgb(0, 128, 0)");
   await expect(player.locator(".chat-button > svg path").first()).toHaveAttribute("stroke", "rgb(0, 128, 0)");
 
@@ -357,15 +408,21 @@ test("default player advert badges use the subtle outline role", async ({ page }
       target: ".beyondwords-player",
       playerStyle: "default",
       widgetStyle: "none",
-      playbackState: "playing",
-      currentTime: 5,
-      duration: 30,
       lightTheme: palette,
       adverts: [advert],
-      advertIndex: 0,
       content: [{ title: "Article", audio }],
     });
   }, audio);
+
+  // Start the advert after content initialization, just as playback does.
+  // Initializing directly in an advert also initializes the content index,
+  // which clears the previous advert used by the persistent chip.
+  await page.evaluate(() => Object.assign(BeyondWords.Player.instances()[0], {
+    playbackState: "playing",
+    currentTime: 5,
+    duration: 30,
+    advertIndex: 0,
+  }));
 
   const badge = page.locator(".default-player .ad-badge");
   await expect(badge).toHaveCSS("color", "rgb(255, 165, 0)");

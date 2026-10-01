@@ -1,6 +1,8 @@
 import translate from "./translate";
 import { writable } from "svelte/store";
 import type { Subscriber, Writable } from "svelte/store";
+import type AuthApiClient from "../api_clients/authApiClient";
+import type { AgentSession } from "../api_clients/authApiClient";
 import type {
   AgentCitation,
   AgentClient,
@@ -16,8 +18,8 @@ import {
   mergeAgentCitations,
 } from "./agentLinks";
 
-// The live agent client: the same store shape and methods as MockAgentClient
-// (see that file for the session model), backed by the ElevenLabs Agents SDK.
+// The live agent client for the default player's Chat/Talk surfaces, backed by
+// the ElevenLabs Agents SDK.
 // The player selects this client when the project serves an agent id
 // (conversational_agent.elevenlabs_agent_id in /player, or the agentId prop).
 //
@@ -25,10 +27,10 @@ import {
 // startSession, and the behaviour suite can swap it for a stub through
 // window.__elevenLabsClientStub.
 //
-// Phase 1 talks to a public agent (startSession({ agentId })). Auth must
-// follow before this is generally available: a public id lets anyone start
-// conversations on the publisher's account, so a token endpoint replaces it
-// and becomes the enforcement point for per-tier access.
+// The agent is private, so every session starts with a credential from the
+// BeyondWords auth service (AuthApiClient.agentSession): a signed websocket
+// url for text, a WebRTC conversation token for voice. The agent id only says
+// that the project has an agent; it is never sent to the SDK.
 //
 // SDK -> thread mapping notes:
 // - Text replies stream through onAgentChatResponsePart (start/delta/stop,
@@ -55,6 +57,7 @@ interface ElevenLabsAgentSdk {
 
 interface RealAgentClientOptions {
   agentId?: string;
+  authClient?: AuthApiClient;
   sessionConfig?: AgentSessionConfig;
   dynamicVariables?: () => Record<string, unknown>;
   loadSdk?: () => Promise<ElevenLabsAgentSdk>;
@@ -63,6 +66,7 @@ interface RealAgentClientOptions {
 
 class RealAgentClient implements AgentClient {
   agentId: string | undefined;
+  authClient: AuthApiClient | undefined;
   agentSessionConfig: AgentSessionConfig;
   sessionConfigKey: string;
   dynamicVariables: (() => Record<string, unknown>) | undefined;
@@ -87,8 +91,9 @@ class RealAgentClient implements AgentClient {
   #greetingOverrideSent = false;
   #greetingOverrideRejected = false;
 
-  constructor({ agentId, sessionConfig, dynamicVariables, loadSdk, silenceTimeoutMs }: RealAgentClientOptions = {}) {
+  constructor({ agentId, authClient, sessionConfig, dynamicVariables, loadSdk, silenceTimeoutMs }: RealAgentClientOptions = {}) {
     this.agentId = agentId;
+    this.authClient = authClient;
     this.agentSessionConfig = sessionConfig || {};
     this.sessionConfigKey = JSON.stringify(this.agentSessionConfig);
     this.dynamicVariables = dynamicVariables;
@@ -111,6 +116,13 @@ class RealAgentClient implements AgentClient {
   // Switching kinds ends the live conversation first: text and voice are
   // separate conversations on the platform too, so nothing carries over.
   async startSession({ textOnly = false }: AgentSessionOptions = {}): Promise<void> {
+    if (!this.agentId) {
+      console.warn("BeyondWords.Player cannot start an agent session without an agentId.");
+      return;
+    }
+
+    if (!this.authClient) throw new Error("no auth client to start an agent session with");
+
     const kind = textOnly ? "text" : "voice";
     if (this.state.kind === kind) { return; }
 
@@ -130,10 +142,10 @@ class RealAgentClient implements AgentClient {
     this.#notify();
 
     try {
-      const { Conversation } = await this.loadSdk();
+      const [{ Conversation }, session] = await Promise.all([this.loadSdk(), this.authClient.agentSession(kind)]);
       if (epoch !== this.#epoch) { return; }
 
-      const conversation = await Conversation.startSession(this.#sessionConfig(epoch, textOnly));
+      const conversation = await Conversation.startSession(this.#sessionConfig(epoch, textOnly, session));
 
       // Ended or cancelled while connecting: the session opened, so close it.
       if (epoch !== this.#epoch) {
@@ -161,6 +173,11 @@ class RealAgentClient implements AgentClient {
   // spoken. Sending over a reply starts a new turn; the server interrupts the
   // agent for us, we just close the on-screen reveal.
   sendUserMessage(text: string): void {
+    if (!this.agentId) {
+      console.warn("BeyondWords.Player cannot send an agent message without an agentId.");
+      return;
+    }
+
     if (this.state.kind === "none") { this.startSession({ textOnly: true }); }
 
     // A reply that has text stays, cut short; one that never got any goes -
@@ -262,7 +279,7 @@ class RealAgentClient implements AgentClient {
 
   // private
 
-  #sessionConfig(epoch, textOnly) {
+  #sessionConfig(epoch, textOnly, session: AgentSession) {
     const guarded = (handler) => (payload) => {
       if (epoch !== this.#epoch) { return; }
       handler(payload);
@@ -279,7 +296,9 @@ class RealAgentClient implements AgentClient {
     const overrides = this.#overrides(textOnly);
 
     return {
-      agentId: this.agentId,
+      ...(session.connection_type === "webrtc"
+        ? { connectionType: "webrtc", conversationToken: session.conversation_token }
+        : { connectionType: "websocket", signedUrl: session.signed_url }),
       ...(textOnly ? { textOnly: true } : {}),
       ...(Object.keys(overrides).length ? { overrides } : {}),
       ...this.#dynamicVariablesConfig(),

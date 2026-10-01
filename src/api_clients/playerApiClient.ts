@@ -17,7 +17,7 @@ class PlayerApiClient {
     accessTier,
   }: {
     playerApiUrl: string;
-    projectId: string;
+    projectId: number;
     summary?: boolean;
     mediaFormat?: string;
     videoSize?: string;
@@ -30,7 +30,7 @@ class PlayerApiClient {
     wordHighlightsEnabled?: boolean;
     accessTier?: string;
   }) {
-    this.baseUrl = playerApiUrl?.replace("{id}", projectId);
+    this.baseUrl = playerApiUrl?.replace("{id}", String(projectId));
     this.summary = summary;
     this.mediaFormat = mediaFormat;
     this.videoSize = videoSize;

@@ -79,6 +79,8 @@ const settingsManifest = [
   { key: "sourceUrl", group: "Content", control: "text", default: undefined, cleared: null, loader: true, refetch: true },
   { key: "previewToken", group: "Content", control: "text", default: undefined, cleared: null, loader: true, refetch: true, needs: "unpublished content" },
   { key: "playerApiUrl", group: "Content", control: "text", default: "https://api.beyondwords.io/v1/projects/{id}/player", cleared: null, loader: true, refetch: true },
+  { key: "authApiUrl", group: "Content", control: "text", default: "https://auth.beyondwords.io", cleared: null, advanced: true,
+    needs: "the BeyondWords auth service that decides what this reader may access" },
   { key: "playlist", group: "Content", control: "json", default: [], cleared: [], loader: true, advanced: true, refetch: true, needs: "an array of identifier objects" },
   { key: "content", group: "Content", readOnly: true, default: [] },
 
@@ -145,7 +147,7 @@ const settingsManifest = [
 
   { key: "embedMode", group: "Agent", control: "select", options: ["audio", "audio-agent", "agent"], default: "audio", api: "embed_mode", appliesTo: "default" },
   { key: "agentId", group: "Agent", control: "text", default: undefined, cleared: null, api: "conversational_agent.elevenlabs_agent_id", appliesTo: "default",
-    needs: "a public ElevenLabs agent id; connects the live agent in place of the scripted mock" },
+    needs: "a public ElevenLabs agent id for the live agent connection" },
   { key: "agentSessionConfig", group: "Agent", readOnly: true, default: {}, api: "conversational_agent" },
   { key: "agentQuestionsLimit", group: "Agent", ...number(null), api: "access_tier.player_agent.questions_limit", appliesTo: "default", needs: "null is unlimited; zero disables text questions" },
   { key: "agentVoiceSecondsLimit", group: "Agent", ...number(null), api: "access_tier.player_agent.seconds_limit", appliesTo: "default", needs: "null is unlimited; zero disables voice" },

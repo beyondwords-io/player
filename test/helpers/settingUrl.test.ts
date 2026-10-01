@@ -1,4 +1,4 @@
-import { settingsUrl } from "../../src/helpers/settingUrl";
+import { settingsUrl, parseIdentifier } from "../../src/helpers/settingUrl";
 import { decodeUrlState } from "../../harness/urlState.js";
 
 // The panel writes these URLs and the harness page reads them. They are separate
@@ -33,9 +33,29 @@ describe("setting URLs", () => {
       "?projectId=54044&contentId=97e4a9df&advanced=true&set=theme:dark&set=radius:0&set=agentQuestionsLimit:0&set=agentVoiceSecondsLimit:0"
     );
 
-    expect(identifiers).toEqual({ projectId: "54044", contentId: "97e4a9df" });
+    expect(identifiers).toEqual({ projectId: 54044, contentId: "97e4a9df" });
     expect(settings).toEqual({ theme: "dark", radius: 0, agentQuestionsLimit: 0, agentVoiceSecondsLimit: 0 });
     expect(advanced).toEqual(true);
+  });
+
+  // The API takes project and playlist ids as numbers; a source id that
+  // happens to be digits is still the publisher's string.
+  it("types identifiers the same way from the URL and from the panel", () => {
+    const cases = [
+      ["projectId", "2476", 2476],
+      ["playlistId", "86791", 86791],
+      ["projectId", "abc", "abc"],
+      ["sourceId", "12345", "12345"],
+      ["contentId", "97e4a9df", "97e4a9df"],
+      ["previewToken", "0042", "0042"],
+    ];
+
+    cases.forEach(([key, raw, expected]) => {
+      expect(parseIdentifier(key, raw), `${key} in the panel`).toEqual(expected);
+      expect(decodeUrlState(`?${key}=${raw}`).identifiers[key], `${key} in the URL`).toEqual(expected);
+    });
+
+    expect(settingsUrl({ identifiers: { projectId: 2476, playlistId: 86791 } })).toEqual("projectId=2476&playlistId=86791");
   });
 
   it("still understands the params the page used to take", () => {

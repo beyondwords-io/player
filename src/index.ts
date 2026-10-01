@@ -17,7 +17,9 @@ export type {
 } from "./helpers/default_theme/palettes";
 
 const propertyDescriptor = (object, key) => {
-  let prototype = Object.getPrototypeOf(object);
+  // Svelte's development/HMR proxy owns its accessors; production components
+  // keep them on the prototype. Support both when wrapping public palettes.
+  let prototype = object;
   while (prototype) {
     const descriptor = Object.getOwnPropertyDescriptor(prototype, key);
     if (descriptor) { return descriptor; }

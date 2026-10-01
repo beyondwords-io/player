@@ -1,6 +1,6 @@
 import { tick } from "svelte";
 import ChatPanel from "../../src/components/default_player/ChatPanel.svelte";
-import MockAgentClient from "../../src/helpers/agentClient";
+import MockAgentClient from "../helpers/mockAgentClient";
 import deriveTokens from "../../src/helpers/default_theme/deriveTokens";
 
 describe("ChatPanel", () => {

@@ -9,11 +9,22 @@
   export let summary = false;
   export let tokens;
   export let onEvent = () => {};
+  export let style = "auto-5-4";
+  export let mobile = false;
 
   let panel;
 
   $: activeRow = tokens.pressed;
   $: hoverRow = tokens.hover;
+  $: parts = style.split("-");
+  $: desktopRows = positiveRows(parts[1], 5);
+  $: mobileRows = positiveRows(parts[2], desktopRows);
+  $: visibleRows = mobile ? mobileRows : desktopRows;
+
+  const positiveRows = (value, fallback) => {
+    const rows = Number.parseInt(value, 10);
+    return Number.isFinite(rows) && rows > 0 ? rows : fallback;
+  };
 
   const durationFor = (item) => (
     formatTime((summary ? item.summarization?.duration : item.duration) || 0)
@@ -41,7 +52,7 @@
   };
 </script>
 
-<ol class="queue" bind:this={panel}>
+<ol class="queue" bind:this={panel} style="--visible-rows: {visibleRows}">
   {#each content as item, i (i)}
     <li class="queue-item">
       <button
@@ -73,6 +84,9 @@
   .queue {
     display: flex;
     flex-direction: column;
+    max-height: calc(40px * var(--visible-rows));
+    overflow-x: hidden;
+    overflow-y: auto;
     padding: 6px 8px 8px;
     margin: 0;
     list-style: none;

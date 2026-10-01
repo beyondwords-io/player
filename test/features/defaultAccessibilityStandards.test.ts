@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import defaultPlayerPermutations from "../support/defaultPlayerPermutations.ts";
+import defaultPlayerPermutations, { defaultScreenshotName } from "../support/defaultPlayerPermutations.ts";
 import AxeBuilder from "@axe-core/playwright";
 
 test("default player accessibility standards", async ({ page }) => {
@@ -10,6 +10,9 @@ test("default player accessibility standards", async ({ page }) => {
 
   await defaultPlayerPermutations(async (params) => {
     await page.evaluate(async (params) => {
+      // Captions inherit the host page background; their literal dark preset
+      // is intended for a dark page. Light pages can set secondaryTextColor.
+      document.body.style.backgroundColor = params.theme === "dark" ? "#212121" : "#ffffff";
       const player = BeyondWords.Player.instances()[0];
       Object.entries(params).forEach(([k, v]) => player[k] = v);
 
@@ -22,12 +25,14 @@ test("default player accessibility standards", async ({ page }) => {
       .exclude(".animating")
       .analyze();
 
-    expect(results.violations).toEqual([]);
+    // Report every failing state rather than hiding later failures behind the
+    // first one. Soft assertions still fail the test when any violation exists.
+    expect.soft(results.violations, defaultScreenshotName(params)).toEqual([]);
     process.stdout.write(".");
   });
 
-  // The normal permutations leave the queue collapsed. Open it explicitly so
-  // axe also checks the list semantics of the interactive playlist rows.
+  // Also check explicitly opened queues, including the list semantics of the
+  // interactive playlist rows.
   await page.evaluate(() => {
     const player = BeyondWords.Player.instances()[0];
     const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 30 }];
