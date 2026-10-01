@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import stubAuthService from "../support/stubAuthService";
 
 const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
 const video = [{ id: 2, url: "http://example.com/a.mp4", contentType: "video/mp4", duration: 60, videoSize: { width: 1280, height: 720 } }];
@@ -15,6 +16,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("default player cross-surface agent behaviour", async ({ page }) => {
+  const authRequests = await stubAuthService(page);
   await page.evaluate((audio) => {
     window.__elevenLabsClientStub = {
       Conversation: {
@@ -54,6 +56,7 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
   await inline.locator("input").fill("What happened?");
   await inline.locator("button[aria-label='Send']").click();
   await expect(inline.locator(".reader-row")).toHaveCount(1);
+  await expect.poll(() => authRequests.map(request => request.mode)).toEqual(["text"]);
 
   await widget.locator(".chat-button").click();
   await expect(widget.locator(".reader-row")).toHaveCount(1);
@@ -83,6 +86,7 @@ test("default player cross-surface agent behaviour", async ({ page }) => {
   await player.locator(".chat-button").click();
   await player.locator(".voice").click();
   await expect(player.locator(".strip-label")).toContainText("Listening");
+  expect(authRequests.map(request => request.mode)).toEqual(["text", "voice"]);
   await expect.poll(() => playback(page)).toBe("paused");
 
   await player.locator(".play-pause").click();

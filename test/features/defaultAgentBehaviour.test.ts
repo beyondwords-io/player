@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import stubAuthService from "../support/stubAuthService";
 
 // The agent's interaction rules, which no screenshot can show: a locked agent
 // still takes the question and answers with the publisher's offer, and the
@@ -533,25 +534,6 @@ const answerLength = async (page) => await page.evaluate(() => {
   const answer = [...document.querySelectorAll(".default-player .thread > div")].at(-1);
   return (answer?.querySelector(".answer-col")?.textContent || "").trim().length;
 });
-
-// The auth service that issues session credentials, answered here so the
-// tests never leave the page. Returns the bodies it was asked for, in order.
-const stubAuthService = async (page) => {
-  const requests = [];
-
-  await page.route("**/agent/session", async (route) => {
-    const body = route.request().postDataJSON();
-    requests.push(body);
-
-    const json = body.mode === "voice"
-      ? { connection_type: "webrtc", conversation_token: "stub-token-voice", expires_at: 1790597571 }
-      : { connection_type: "websocket", signed_url: "wss://stub.example/convai?mode=text", expires_at: 1790597571 };
-
-    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(json) });
-  });
-
-  return requests;
-};
 
 // Mounts the player and opens the chat panel, whichever surface holds it.
 const openPanel = async (page, params) => {
