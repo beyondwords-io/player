@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-
-npx vite build --config vite.connector.config.ts
-npx vite build --config vite.connector.config.ts --mode browser
-npx tsc --project tsconfig.connector.json
