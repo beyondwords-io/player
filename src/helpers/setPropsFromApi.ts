@@ -3,6 +3,7 @@ import snakeCaseKeys from "./snakeCaseKeys";
 import resolveTheme from "./resolveTheme";
 import newEvent from "./newEvent";
 import rewriteMediaUrl from "./rewriteMediaUrl";
+import contentItemsFromApiResponse from "./contentItemsFromApiResponse";
 
 const appendContinuousPlaybackContentFromApi = async (player) => {
   const client = new PlayerApiClient({
@@ -77,6 +78,7 @@ const setPropsFromApi = async (player) => {
   // If player.backgroundColor is changed again later and a new API request is made, this
   // change will only persist if it was initially overridden in the script tag.
   setProps(player, data);
+  if (!player.content?.length) { handleNoContent(player); return; }
   handleContent(player);
 };
 
@@ -192,7 +194,7 @@ const setContentProp = (player, data) => {
 };
 
 const mapContentProp = (player, data) => {
-  const contentArray = data?.content || [];
+  const contentArray = contentItemsFromApiResponse(data?.content, player.summary);
   const { mediaCustomUrl } = player;
 
   return contentArray.map((item) => ({

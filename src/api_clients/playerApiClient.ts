@@ -31,6 +31,9 @@ class PlayerApiClient {
     accessTier?: string;
   }) {
     this.baseUrl = playerApiUrl?.replace("{id}", projectId);
+    // Summary filtering is applied when mapping the /player response (see
+    // contentItemsFromApiResponse). We do not send ?summary=true: that query
+    // param currently replaces article audio URLs with summary audio URLs.
     this.summary = summary;
     this.mediaFormat = mediaFormat;
     this.videoSize = videoSize;
@@ -67,7 +70,7 @@ class PlayerApiClient {
   }
 
   byPlaylistId(id) {
-    return this.#fetchJson(`by_playlist_id/${id}`, this.#paramsWithSummary());
+    return this.#fetchJson(`by_playlist_id/${id}`, this.params);
   }
 
   bySourceId(id) {
@@ -79,7 +82,7 @@ class PlayerApiClient {
   }
 
   byIdentifiers(array) {
-    return this.#fetchJson(`by_identifiers/${encodeURIComponent(JSON.stringify(array))}`, this.#paramsWithSummary());
+    return this.#fetchJson(`by_identifiers/${encodeURIComponent(JSON.stringify(array))}`, this.params);
   }
 
   #fetchJson(path, params = this.params) {
@@ -90,24 +93,12 @@ class PlayerApiClient {
     return params.size ? `?${params}` : "";
   }
 
-  #paramsWithSummary(params = this.params) {
-    if (this.summary) {
-      return new URLSearchParams([
-        ...Array.from(params.entries()),
-        ["summary", true],
-      ]);
-    } else {
-      return params;
-    }
-  }
-
   #paramsWithContinuousPlayback(params = this.params) {
     if (this.continuousPlaybackMode === "none") return params;
     return new URLSearchParams([
       ...Array.from(params.entries()),
       ...(this.mediaFormat ? [["media_format", this.mediaFormat]] : []),
       ...(this.videoSize ? [["video_size", this.videoSize]] : []),
-      ...(this.summary ? [["summary", true]] : []),
       ...(this.initialContentId ? [["initial_content_id", this.initialContentId]] : []),
       ...(this.initialSourceId ? [["initial_source_id", this.initialSourceId]] : []),
       ...(this.initialSourceUrl ? [["initial_source_url", this.initialSourceUrl]] : []),
