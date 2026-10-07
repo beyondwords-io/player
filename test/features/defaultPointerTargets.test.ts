@@ -100,7 +100,7 @@ test("default player pointer target accessibility", async ({ page }) => {
 // The video treatment has no bar: the same controls sit over the picture and
 // fade out, and the picture itself is the play/pause target. So the overlay has
 // to stop taking presses when it is invisible, and start again when it is not.
-test("default player video pointer target accessibility", async ({ page }) => {
+test("default player video pointer target accessibility", async ({ page, hasTouch }) => {
   await page.goto("http://localhost:8000");
 
   await waitForStylesToLoad(page);
@@ -128,11 +128,32 @@ test("default player video pointer target accessibility", async ({ page }) => {
 
   expect(await page.evaluate(() => window.__pressed), "a real click reaches the maximize button").toContain("PressedMaximize");
 
-  // Fullscreen fills the screen, so the seek track has a width to drag.
+  // Fullscreen fills the screen. The track shares a row with transport and
+  // Chat, so it need not occupy half of a phone's viewport; verify seeking
+  // and that each control stays inside the picture instead.
   const fullscreen = await enterFullScreen(page);
   expect(fullscreen.frame, "the frame fills the fullscreen viewport").toEqual(fullscreen.viewport);
-  expect(fullscreen.seekWidth, "the seek track has a width in fullscreen").toBeGreaterThan(fullscreen.viewport.width / 2);
+  expect(fullscreen.seekWidth, "the seek track has a width in fullscreen").toBeGreaterThan(0);
   expect(fullscreen.controlsWithinFrame, "the controls sit over the picture").toEqual(true);
+
+  const track = page.locator(".default-player .controls [role='slider']");
+  for (const ratio of [0.25, 0.75]) {
+    // Pausing keeps the overlay visible while testing a touch-only device.
+    await page.evaluate(() => {
+      BeyondWords.Player.instances()[0].playbackState = "paused";
+      window.__pressed = [];
+    });
+    const box = await track.boundingBox();
+    const position = { x: box.width * ratio, y: box.height / 2 };
+    if (hasTouch) { await track.tap({ position }); }
+    else { await track.click({ position }); }
+
+    // Pointer coordinates can round to a pixel on a narrow mobile track.
+    await expect.poll(() => page.evaluate(() => BeyondWords.Player.instances()[0].currentTime))
+      .toBeCloseTo(30 * ratio, 0);
+    expect(await page.evaluate(() => window.__pressed)).toContain("PressedProgressBar");
+    expect(await page.evaluate(() => BeyondWords.Player.instances()[0].isFullScreen)).toBe(true);
+  }
 });
 
 // The widget's geometry has three ways to go wrong that no screenshot covers:
@@ -290,7 +311,8 @@ const enterFullScreen = async (page) => await page.evaluate(async () => {
     viewport: { width: window.innerWidth, height: window.innerHeight },
     frame: { width: Math.round(frame.width), height: Math.round(frame.height) },
     seekWidth: track ? Math.round(track.getBoundingClientRect().width) : 0,
-    controlsWithinFrame: controls.top >= frame.top && controls.bottom <= frame.bottom + 1,
+    controlsWithinFrame: [controls, ...Array.from(document.querySelectorAll(".default-player .controls button, .default-player .controls [role='slider']"), el => el.getBoundingClientRect())]
+      .every(box => box.left >= frame.left - 1 && box.right <= frame.right + 1 && box.top >= frame.top - 1 && box.bottom <= frame.bottom + 1),
   };
 });
 

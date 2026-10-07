@@ -23,6 +23,8 @@ jobs:
 
     - run: ./bin/setup
     - run: ./bin/test_units
+    - name: Validate summary overrides and mobile player behaviour
+      run: npx playwright test test/features/summaryOverrides.test.ts test/features/defaultAccessTiers.test.ts test/features/defaultPointerTargets.test.ts --project desktop-chrome --project mobile-android
     - run: ./bin/test_screenshots --native --shard 1/3
     - run: ./bin/test_screenshots --native --shard 2/3
     - run: ./bin/test_screenshots --native --shard 3/3
