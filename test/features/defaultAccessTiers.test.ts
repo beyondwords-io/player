@@ -67,13 +67,6 @@ test("default player access tier behaviour", async ({ page }) => {
   const withoutCtaText = await playThrough(page, { segments, summary: false, segmentLimit: 0, times: [1], accessCtaText: undefined });
   expect(withoutCtaText.barAfterwards.label).toEqual("Listen to this article");
 
-  // A paid placement has to survive the tier it was sold against: the preview
-  // time reserved room for a word that no longer renders, and the advertiser
-  // chip was what got folded away to pay for it.
-  for (const limit of [undefined, 2]) {
-    expect(await chipAfterTheAd(page, limit), `advertiser chip survives segmentLimit ${limit}`).toEqual(true);
-  }
-
   // Offering one variant selects it, rather than silently playing the other.
   const chosen = await page.evaluate(async () => {
     BeyondWords.Player.destroyAll();
@@ -84,6 +77,31 @@ test("default player access tier behaviour", async ({ page }) => {
   });
 
   expect(chosen, "variants: [summary] plays the summary").toEqual({ summary: true, variants: ["summary"] });
+});
+
+test("default player advertiser chip responsive behaviour", async ({ page }) => {
+  await page.goto("http://localhost:8000");
+  await waitForStylesToLoad(page);
+
+  // The chip survives the ad at a wide embed, folds when the bar is narrow,
+  // and returns on expansion. A preview tier must not change that behavior.
+  for (const limit of [undefined, 2]) {
+    await finishAdvert(page, limit);
+    const chip = page.locator(".default-player .persistent-chip");
+
+    for (const width of [512, 320, 512]) {
+      await page.evaluate((width) => {
+        const target = BeyondWords.Player.instances()[0].target;
+        // max-width alone is capped by the viewport on mobile, so it never
+        // actually exercised the claimed 512px layout there.
+        target.style.width = `${width}px`;
+        target.style.maxWidth = "none";
+      }, width);
+      await expect.poll(() => page.locator(".default-player .bar").evaluate(bar => Math.round(bar.getBoundingClientRect().width))).toBe(width);
+      await expect(chip, `advertiser chip at ${width}px with segmentLimit ${limit}`).toHaveCount(width === 512 ? 1 : 0);
+      if (width === 512) { await expect(chip).toHaveAttribute("href", "https://example.com/roasters"); }
+    }
+  }
 });
 
 // Loads content, plays, and reports whether the segment limit cut it off.
@@ -140,9 +158,9 @@ const playThrough = async (page, params) => await page.evaluate(async (params) =
   };
 }, params);
 
-// Plays a pre-roll to its end the way the media element does, at the width the
-// harness itself embeds at, and reports whether the advertiser link is still there.
-const chipAfterTheAd = async (page, segmentLimit) => await page.evaluate(async (segmentLimit) => {
+// Finish a pre-roll through the media event so the persistent chip is backed
+// by a real advert transition, rather than manually setting persistentIndex.
+const finishAdvert = async (page, segmentLimit) => await page.evaluate(async (segmentLimit) => {
   const audio = [{ id: 1, url: "http://example.com/a.mp3", contentType: "audio/mpeg", duration: 60 }];
 
   BeyondWords.Player.destroyAll();
@@ -150,6 +168,7 @@ const chipAfterTheAd = async (page, segmentLimit) => await page.evaluate(async (
 
   Object.assign(player, {
     playerStyle: "default",
+    widgetStyle: "none",
     embedMode: "audio-agent",
     content: [{ title: "An article", audio, adsEnabled: true, segments: [
       { section: "title", marker: "t", startTime: 0, duration: 5 },
@@ -164,14 +183,10 @@ const chipAfterTheAd = async (page, segmentLimit) => await page.evaluate(async (
     segmentLimit,
   });
 
-  player.target.style.maxWidth = "512px";
   await new Promise((resolve) => setTimeout(resolve, 300));
 
   document.querySelector(".beyondwords-player audio, .beyondwords-player video").dispatchEvent(new Event("ended"));
   await new Promise((resolve) => setTimeout(resolve, 450));
-
-  const bar = document.querySelector(".default-player");
-  return [...bar.querySelectorAll("a")].some((link) => (link.getAttribute("href") || "").includes("roasters"));
 }, segmentLimit);
 
 const waitForStylesToLoad = async (page) => {

@@ -379,10 +379,12 @@
 
   $: setLocale(playerLanguage);
 
-  // Offering one variant is a statement about what this embed plays, not just
-  // about what the Version menu shows, so select it. Declared before the
-  // identifiers statement below so the first request already asks for it.
-  $: if (variants.length === 1) { summary = variants[0] === "summary"; }
+  // Explicit SDK summary settings (including the loadContentAs alias) take
+  // precedence over the dashboard's variants. Otherwise select the sole
+  // variant before identifiers are requested, when it is already known.
+  $: if (typeof initialProps.summary === "undefined" && variants.length === 1) {
+    summary = variants[0] === "summary";
+  }
 
   $: contentItem = content[contentIndex];
   $: activeIntroOrOutro = introsOutros[introsOutrosIndex];
