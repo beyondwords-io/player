@@ -74,7 +74,7 @@
         </span>
 
         <span class="row-title" style="color: {tokens.text}">{item.title || ""}</span>
-        <span class="duration" style="color: {tokens.muted}">{durationFor(item)}</span>
+        <span class="duration" style="--duration-color: {i === contentIndex ? tokens.text : tokens.muted}; --duration-hover-color: {tokens.text}">{durationFor(item)}</span>
       </button>
     </li>
   {/each}
@@ -131,6 +131,10 @@
     .row:hover {
       background: var(--hover-bg);
     }
+
+    .row:hover .duration {
+      color: var(--duration-hover-color);
+    }
   }
 
   .row-title {
@@ -144,6 +148,7 @@
   }
 
   .duration {
+    color: var(--duration-color);
     font-size: 11px;
     font-variant-numeric: tabular-nums;
   }
