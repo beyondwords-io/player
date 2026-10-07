@@ -1,7 +1,7 @@
 import throwError from "../helpers/throwError";
 
 const fetchJson = async (url, fetchOptions = {}) => {
-  const response = await fetch(url, fetchOptions).catch(() => {});
+  const response = await fetch(url, fetchOptions).catch(() => undefined);
   const json = await response?.json().catch(() => {});
 
   if (response?.status !== 200) {

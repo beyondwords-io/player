@@ -10,7 +10,9 @@ const chooseWidget = (Player) => {
   for (const player of Player.instances()) {
     if (!player.userInterface) { continue; }
 
-    const knownStyle = knownPlayerStyle(player.widgetStyle);
+    // The default player style carries into the widget, so a stored legacy
+    // value shouldn't stop it being elected.
+    const knownStyle = knownPlayerStyle(player.widgetStyle) || player.playerStyle === "default";
     if (!knownStyle) { continue; }
 
     const withinViewport = player.userInterface.isVisible;

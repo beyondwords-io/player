@@ -1,4 +1,4 @@
-const playerStyles = ["small", "standard", "large", "screen", "video"];
+const playerStyles = ["default", "small", "standard", "large", "screen", "video"];
 
 const knownPlayerStyle = (style) => playerStyles.indexOf(style) !== -1;
 
