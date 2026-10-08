@@ -1,4 +1,5 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
+import AuthApiClient from "../api_clients/authApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
 import resolveTheme from "./resolveTheme";
 import { normalizeThemePreference, palettesFromApi } from "./default_theme/palettes";
@@ -43,10 +44,37 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
   set(player, "playlistStyle", "hide");
 };
 
+const resolveAccessTier = async (player) => {
+  if (typeof player.authProvider === "string") {
+    try {
+      switch (player.authProvider) {
+        case "ghost": {
+          const client = new AuthApiClient({
+            authApiUrl: player.authApiUrl,
+            projectId: player.projectId,
+          });
+          const session_token = await fetch("/members/api/session")
+            .then((res) => res.text());
+          return client.verify({ session_token });
+        }
+        default:
+          console.warn(
+            `BeyondWords.Player: unknown auth provider: ${player.authProvider}`,
+          );
+      }
+    } catch (error) {
+      console.error(`BeyondWords.Player: error resolving access tier:`, error);
+    }
+  }
+
+  return player.accessTier;
+};
+
 const setPropsFromApi = async (player) => {
+  const accessTier = await resolveAccessTier(player);
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
-    accessTier: player.accessTier,
+    accessTier: accessTier,
     projectId: player.projectId,
     summary: player.summary,
     mediaFormat: player.playerStyle === "video" ? "video" : undefined,
