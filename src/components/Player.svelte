@@ -38,6 +38,7 @@
   // https://github.com/beyondwords-core/docs/blob/main/docs-and-guides/distribution/player/sdk/javascript/player-settings.mdx
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
   export let authApiUrl = "https://auth.beyondwords.io";
+  export let authProvider = undefined;
   export let projectId = undefined;
   export let contentId = undefined;
   export let playlistId = undefined;

@@ -48,6 +48,16 @@ class AuthApiClient {
     return session;
   }
 
+  async verify(payload: { session_token: string }): Promise<string> {
+    const response = await this.#postJson("verify", { project_id: this.projectId, ...payload });
+
+    if (typeof response?.token !== "string") {
+      throwError(`The auth service returned an invalid token for ${this.lastRequestUrl}`, { responseJson: response });
+    }
+
+    return response.token;
+  }
+
   #postJson(path: string, data: Record<string, unknown>) {
     // Kept so tooling can show exactly which request produced the response.
     this.lastRequestUrl = `${this.baseUrl}/${path}`;

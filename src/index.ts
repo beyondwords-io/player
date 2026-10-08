@@ -99,6 +99,7 @@ class Player extends PlayerComponent {
     renameProp("loadContentAs", "summary", props, value => value?.[0] === "summary");
     const initialVideo = props.video;
     const playerStyleWasProvided = typeof props.playerStyle !== "undefined";
+    const authProviderWasProvided = typeof props.authProvider !== "undefined";
 
     // For an explicitly selected default style, video stays a boolean prop.
     // Otherwise retain the legacy alias while the API decides whether this is
@@ -108,6 +109,11 @@ class Player extends PlayerComponent {
     }
 
     const initialProps = { showUserInterface, ...props };
+
+    if (authProviderWasProvided) {
+      delete initialProps.accessTier;
+    }
+
     let componentProps = initialProps;
 
     if (initialVideo && !playerStyleWasProvided) {
