@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { AgentMessage } from "../../helpers/agentContracts";
-  import type { AgentReplyMessage } from "../../helpers/agentContracts";
-  import { agentCitationsFromText, agentTextWithoutLinks, mergeAgentCitations } from "../../helpers/agentLinks";
+  import type { AgentCitation, AgentMessage, AgentReplyLayout, AgentReplyMessage } from "../../helpers/agentContracts";
+  import { formatAgentAnswer, layoutAgentReply } from "../../helpers/agentCitations";
   import type { DefaultPlayerTokens } from "../../helpers/defaultPlayerTokens";
   import ArrowUpRight from "../svg_icons/default_player/ArrowUpRight.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
@@ -14,14 +13,36 @@
   export let threadElement: HTMLDivElement | undefined = undefined;
   export let tokens: DefaultPlayerTokens;
 
-  const displayCitations = (message: AgentReplyMessage) => (
-    mergeAgentCitations(message.citations, message.streaming ? [] : agentCitationsFromText(message.text))
-  );
+  interface LaidOut {
+    text: string;
+    citations: AgentCitation[];
+    given: AgentReplyLayout | undefined;
+    layout: AgentReplyLayout;
+  }
 
-  const formattedAnswer = (text: string) => agentTextWithoutLinks(text)
-    // Preserve the agent's line structure, but cap runs of empty lines at one
-    // ordinary paragraph break.
-    .replace(/\n(?:[ \t]*\n){2,}/g, "\n\n");
+  // Rows are updated in place, so remember each one's layout against what it
+  // was made from rather than laying the reply out again on every update.
+  const laidOut = new WeakMap<AgentReplyMessage, LaidOut>();
+
+  // The client's layout when it matches the text on screen. Rows without one
+  // (the mock client, older callers) are laid out here from their text and
+  // the citations they carry.
+  const replyLayout = (message: AgentReplyMessage): AgentReplyLayout => {
+    const { text, citations, layout: given } = message;
+    const cached = laidOut.get(message);
+    if (cached && cached.text === text && cached.citations === citations && cached.given === given) { return cached.layout; }
+
+    const current = given && given.segments.map((segment) => segment.text).join("") === formatAgentAnswer(text);
+    const layout = current ? given : layoutAgentReply(text, { explicit: citations });
+
+    laidOut.set(message, { text, citations, given, layout });
+    return layout;
+  };
+
+  // A title can carry its standfirst on later lines; links name the headline.
+  const headline = (title: string) => title.split("\n").map((line) => line.trim()).find(Boolean) || title;
+
+  $: citationStyle = `--bg: ${tokens.background}; --hover-bg: ${tokens.hover}; --border: ${tokens.citationBorder}; --hover-border: ${tokens.citation}; color: ${tokens.citation}; outline-color: ${tokens.text}`;
 </script>
 
 {#if thread.length > 0}
@@ -52,6 +73,7 @@
           </div>
         </div>
       {:else}
+        {@const layout = message.streaming ? null : replyLayout(message)}
         <div class="agent-row">
           <Orb size={20} orb={tokens.orb} avatarUrl={tokens.avatarUrl} generating={message.streaming} />
           <div class="answer-col">
@@ -65,21 +87,30 @@
                 </span>
               {:else if message.streaming}
                 {message.text}<span class="cursor animating" style="background: {tokens.sendBackground}"></span>
-              {:else}
-                {formattedAnswer(message.text)}
+              {:else if layout}
+                <!-- No whitespace between a segment and its links: it would show in the answer. -->
+                {#each layout.segments as segment, index (index)}{segment.text}{#each segment.citations as citation (citation.url)}<a
+                  class="inline-citation"
+                  href={citation.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={headline(citation.title)}
+                  title={headline(citation.title)}
+                  style={citationStyle}
+                ><ArrowUpRight size={10} color={tokens.citation} /></a>{/each}{/each}
               {/if}
             </span>
-            {#if displayCitations(message).length > 0}
+            {#if layout && layout.trailing.length > 0}
               <span class="citations">
-                {#each displayCitations(message) as citation (citation.url)}
+                {#each layout.trailing as citation (citation.url)}
                   <a
                     class="citation"
                     href={citation.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style="--bg: {tokens.background}; --hover-bg: {tokens.hover}; --border: {tokens.citationBorder}; --hover-border: {tokens.citation}; color: {tokens.citation}; outline-color: {tokens.text}"
+                    style={citationStyle}
                   >
-                    {citation.title}
+                    {headline(citation.title)}
                     <ArrowUpRight size={11} color={tokens.citation} />
                   </a>
                 {/each}
@@ -208,14 +239,35 @@
     cursor: pointer;
   }
 
+  /* No text of its own, so the answer reads the same with it; sized to sit
+     in the line without opening it up. */
+  .inline-citation {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 18px;
+    height: 16px;
+    margin: 0 0 0 4px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    background: var(--bg, transparent);
+    vertical-align: middle;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
   @media (hover: hover) and (pointer: fine) {
-    .citation:hover {
+    .citation:hover,
+    .inline-citation:hover {
       background: var(--hover-bg);
       border-color: var(--hover-border);
     }
   }
 
   .citation:focus-visible,
+  .inline-citation:focus-visible,
   .subscribe:focus-visible {
     outline-width: 2px;
     outline-style: solid;

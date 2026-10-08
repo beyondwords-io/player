@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "player-citations",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "dev", "--host", "--port", "8001", "--strictPort"],
+      "port": 8001
+    }
+  ]
+}

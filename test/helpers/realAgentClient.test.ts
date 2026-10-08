@@ -1,5 +1,7 @@
 import RealAgentClient from "../../src/helpers/realAgentClient";
+import { formatAgentAnswer } from "../../src/helpers/agentCitations";
 import MockAgentClient from "./mockAgentClient";
+import session53997 from "../fixtures/agentSession53997.json";
 
 // A fake with the SDK's exact surface: startSession resolves to a
 // conversation, and the tests fire the callbacks the way the platform would.
@@ -22,8 +24,9 @@ const fakeSdk = () => {
 
           emitStatus: (status) => config.onStatusChange?.({ status }),
           emitMode: (mode) => config.onModeChange?.({ mode }),
-          emitMessage: (message, role, eventId = 1) => config.onMessage?.({ message, role, source: role === "agent" ? "ai" : "user", event_id: eventId }),
-          emitPart: (type, text, eventId = 1) => config.onAgentChatResponsePart?.({ type, text, event_id: eventId }),
+          // SDK 1.26+ passes a whole message's response_id on; 1.17 drops it.
+          emitMessage: (message, role, eventId = 1, responseId = undefined) => config.onMessage?.({ message, role, source: role === "agent" ? "ai" : "user", event_id: eventId, ...(responseId ? { response_id: responseId } : {}) }),
+          emitPart: (type, text, eventId = 1, responseId = undefined) => config.onAgentChatResponsePart?.({ type, text, event_id: eventId, ...(responseId ? { response_id: responseId } : {}) }),
           emitCorrection: (corrected, eventId = 1, original = "x") => config.onAgentResponseCorrection?.({ original_agent_response: original, corrected_agent_response: corrected, event_id: eventId }),
           emitMCPToolCall: (payload) => config.onMCPToolCall?.(payload),
           emitAgentToolResponse: (payload) => config.onAgentToolResponse?.(payload),
@@ -70,6 +73,65 @@ const newClient = (overrides = {}) => {
 };
 
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+// Replays raw platform frames through the stub SDK's callbacks exactly as
+// BaseConversation hands them on. SDK 1.17 (the one we ship) drops
+// agent_response's response_id from onMessage; 1.26+ passes it on.
+const replay = async (client, calls, frames, { sdk126 = false } = {}) => {
+  for (const frame of frames) {
+    if (frame.type === "user_message") {
+      client.sendUserMessage(frame.text);
+      await settle();
+      continue;
+    }
+
+    const { config } = calls.conversations.at(-1);
+
+    if (frame.type === "agent_response") {
+      const event = frame.agent_response_event;
+      config.onMessage?.({
+        source: "ai",
+        role: "agent",
+        message: event.agent_response,
+        event_id: event.event_id,
+        ...(sdk126 && event.response_id ? { response_id: event.response_id } : {}),
+      });
+    } else if (frame.type === "agent_chat_response_part") {
+      config.onAgentChatResponsePart?.(frame.text_response_part);
+    } else if (frame.type === "mcp_tool_call") {
+      config.onMCPToolCall?.(frame.mcp_tool_call);
+    } else if (frame.type === "agent_tool_response") {
+      config.onAgentToolResponse?.(frame.agent_tool_response);
+    } else {
+      throw new Error(`no replay for a ${frame.type} frame`);
+    }
+  }
+};
+
+// The live capture: "What are the headlines?" gets a bridge, get_latest and a
+// verbatim five-headline rundown; "Which consultations are open now?" gets a
+// bridge, search_articles and a paraphrase naming three stories it found and
+// two that turn 1 found.
+const [bridge1, answer1, bridge2, answer2] = session53997
+  .filter((frame) => frame.type === "agent_response")
+  .map((frame) => frame.agent_response_event);
+
+const [latestArticles, searchArticles] = session53997
+  .filter((frame) => frame.type === "mcp_tool_call" && frame.mcp_tool_call.state === "success")
+  .map((frame) => JSON.parse(frame.mcp_tool_call.result[0].text).articles);
+
+const articleUrl = (titlePart) => [...latestArticles, ...searchArticles].find(({ title }) => title.includes(titlePart)).sourceUrl;
+
+const mcpResult = (articles) => [{ type: "text", text: JSON.stringify({ articles }) }];
+
+// Each inline citation with the text it sits right after.
+const citedAfter = ({ layout }) => layout.segments.flatMap(({ text, citations }) => (
+  citations.map(({ url }) => [url, text.trimEnd()])
+));
+
+const inlineCitations = ({ layout }) => layout.segments.flatMap(({ citations }) => citations);
+
+const endingWith = (text) => expect.stringMatching(new RegExp(`${text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
 
 describe("realAgentClient", () => {
   it("has the same public surface as the mock client", () => {
@@ -330,6 +392,285 @@ describe("realAgentClient", () => {
     expect(client.state.thread[1].citations).toEqual([
       { title: "The article", url: "https://news.example/article" },
     ]);
+  });
+
+  it("replays a live session as one bridge and one answer per turn", async () => {
+    const { client, calls } = newClient();
+
+    await replay(client, calls, session53997);
+
+    const thread = client.state.thread;
+    expect(thread.map((row) => [row.role, row.text, row.bridge ?? false])).toEqual([
+      ["reader", "What are the headlines?", false],
+      ["agent", bridge1.agent_response, true],
+      ["agent", answer1.agent_response, false],
+      ["reader", "Which consultations are open now?", false],
+      ["agent", bridge2.agent_response, true],
+      ["agent", answer2.agent_response, false],
+    ]);
+
+    // Each bridge's own stream was recognised as the whole message already
+    // on screen, and every reply knows its generation.
+    expect(thread.map((row) => row.responseId)).toEqual([
+      undefined, bridge1.response_id, answer1.response_id, undefined, bridge2.response_id, answer2.response_id,
+    ]);
+
+    for (const bridge of [thread[1], thread[4]]) {
+      expect(bridge).toMatchObject({ streaming: false, typing: false, citations: [] });
+      expect(inlineCitations(bridge)).toEqual([]);
+      expect(bridge.layout.trailing).toEqual([]);
+    }
+
+    for (const answer of [thread[2], thread[5]]) {
+      expect(answer).toMatchObject({ streaming: false, typing: false });
+      expect(answer.layout.segments.map(({ text }) => text).join(""), "the segments are the displayed answer").toEqual(formatAgentAnswer(answer.text));
+      expect(answer.citations, "inline citations first, in display order").toEqual([...inlineCitations(answer), ...answer.layout.trailing]);
+    }
+
+    expect(client.state.announced).toEqual(answer2.agent_response);
+  });
+
+  it("cites each headline of a verbatim rundown right after it", async () => {
+    const { client, calls } = newClient();
+
+    await replay(client, calls, session53997.slice(0, 12));
+
+    const answer = client.state.thread[2];
+    expect(answer.citations.map(({ url }) => url)).toEqual(latestArticles.map(({ sourceUrl }) => sourceUrl));
+    expect(citedAfter(answer)).toEqual(latestArticles.map(({ sourceUrl, title }) => [sourceUrl, endingWith(title)]));
+    expect(answer.layout.trailing).toEqual([]);
+  });
+
+  it("cites a paraphrased answer's stories, including ones an earlier turn found", async () => {
+    const { client, calls } = newClient();
+
+    await replay(client, calls, session53997);
+
+    const answer = client.state.thread[5];
+    expect(citedAfter(answer)).toEqual([
+      [articleUrl("CP26/32"), endingWith("so it's open for just a few more days.")],
+      [articleUrl("CP26/30"), endingWith("also still open.")],
+      [articleUrl("CP26/20"), endingWith("so that one's shut.")],
+      // Turn 1's get_latest found these two.
+      [articleUrl("CP26/35"), endingWith("both published this month.")],
+      [articleUrl("CP26/34"), endingWith("both published this month.")],
+    ]);
+    expect(answer.layout.trailing, "nothing hangs off the closing question").toEqual([]);
+  });
+
+  it("replays the same session from SDK 1.26, which passes whole messages' response ids", async () => {
+    const { client, calls } = newClient();
+
+    await replay(client, calls, session53997, { sdk126: true });
+
+    // The bridges' own streams repeat replies already on screen by id: ignored.
+    expect(client.state.thread.map((row) => [row.role, row.text, row.bridge ?? false, row.responseId])).toEqual([
+      ["reader", "What are the headlines?", false, undefined],
+      ["agent", bridge1.agent_response, true, bridge1.response_id],
+      ["agent", answer1.agent_response, false, answer1.response_id],
+      ["reader", "Which consultations are open now?", false, undefined],
+      ["agent", bridge2.agent_response, true, bridge2.response_id],
+      ["agent", answer2.agent_response, false, answer2.response_id],
+    ]);
+    expect(client.state.thread[2].citations.map(({ url }) => url)).toEqual(latestArticles.map(({ sourceUrl }) => sourceUrl));
+  });
+
+  it("keeps every bridge of a multi-tool turn and pools each batch of results for the answer", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("Which consultations are open now?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    const equity = { title: "Equity market transparency changes", sourceUrl: "https://news.example/equity" };
+    const nurs = { title: "Minimum redemption terms for NURS funds", sourceUrl: "https://news.example/nurs" };
+    const reporting = { title: "Transaction reporting guidance", sourceUrl: "https://news.example/reporting" };
+
+    const stream = (text, responseId) => {
+      conversation.emitPart("start", "", 3, responseId);
+      conversation.emitPart("delta", text, 3, responseId);
+      conversation.emitPart("stop", "", 3, responseId);
+    };
+    const search = (articles) => {
+      conversation.emitMCPToolCall({ state: "loading", tool_name: "search_articles" });
+      return () => conversation.emitMCPToolCall({ state: "success", tool_name: "search_articles", result: mcpResult(articles) });
+    };
+
+    // The first bridge's whole message lands before its call and its own
+    // stream, as observed live...
+    const first = "I'll check the latest coverage on open consultations for you.";
+    conversation.emitMessage(first, "agent", 3);
+    let finish = search([]);
+    stream(first, "r1");
+    finish();
+
+    // ...and a later one's arrives before its own stream too, under the same
+    // event_id: it is a new reply, not the first bridge rewritten.
+    const second = "Let me broaden that search a bit.";
+    conversation.emitMessage(second, "agent", 3);
+    finish = search([equity]);
+    stream(second, "r2");
+    finish();
+
+    expect(client.state.thread.map((row) => row.text)).toEqual(["Which consultations are open now?", first, second]);
+
+    // A bridge can also stream first. This one names an article already
+    // found, and still cites nothing once its tool call starts.
+    const third = "Equity market transparency changes is one. Let me look for newer ones.";
+    stream(third, "r3");
+    conversation.emitMessage(third, "agent", 3);
+    finish = search([nurs, reporting]);
+    finish();
+
+    const answer = "Equity market transparency changes closes 16 October.\n\nMinimum redemption terms for NURS funds is the newest.";
+    stream(answer, "r4");
+    conversation.emitMessage(answer, "agent", 3);
+
+    const thread = client.state.thread;
+    expect(thread.map((row) => [row.text, row.bridge ?? false])).toEqual([
+      ["Which consultations are open now?", false],
+      [first, true],
+      [second, true],
+      [third, true],
+      [answer, false],
+    ]);
+    expect(thread.slice(1, 4).map((row) => row.citations)).toEqual([[], [], []]);
+    expect(thread[3].layout.segments.flatMap(({ citations }) => citations)).toEqual([]);
+
+    // Every batch reaches the answer, not just the last one.
+    expect(thread[4].citations).toHaveLength(2);
+    expect(thread[4].citations).toEqual(expect.arrayContaining([
+      { title: equity.title, url: equity.sourceUrl },
+      { title: nurs.title, url: nurs.sourceUrl },
+    ]));
+  });
+
+  it("follows a stream out of sight while it repeats the reply on screen", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What are the headlines?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    conversation.emitMessage("Here are the latest headlines:", "agent", 2);
+    conversation.emitPart("start", "", 2, "r1");
+    conversation.emitPart("delta", "## Here are the ", 2, "r1");
+    expect(client.state.thread).toHaveLength(2);
+
+    // The platform strips Markdown from whole messages, not from parts.
+    conversation.emitPart("delta", "**latest** headlines:", 2, "r1");
+    conversation.emitPart("stop", "", 2, "r1");
+
+    expect(client.state.thread).toHaveLength(2);
+    expect(client.state.thread[1]).toMatchObject({ text: "Here are the latest headlines:", streaming: false, responseId: "r1", fromParts: true });
+  });
+
+  it("shows a stream as its own reply once its words part from the reply on screen", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What's new?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    conversation.emitMessage("Let me look that up.", "agent", 4);
+    conversation.emitPart("start", "", 4, "r2");
+    conversation.emitPart("delta", "Let me ", 4, "r2");
+    expect(client.state.thread).toHaveLength(2);
+
+    conversation.emitPart("delta", "see what I can find.", 4, "r2");
+    expect(client.state.thread).toHaveLength(3);
+    expect(client.state.thread[2]).toMatchObject({ text: "Let me see what I can find.", streaming: true, typing: false, responseId: "r2", eventId: 4 });
+    expect(client.state.thread[2].layout, "a streaming reply has no layout yet").toBeUndefined();
+
+    conversation.emitPart("stop", "", 4, "r2");
+    conversation.emitMessage("Let me see what I can find.", "agent", 4);
+
+    expect(client.state.thread.map((row) => row.text)).toEqual(["What's new?", "Let me look that up.", "Let me see what I can find."]);
+    expect(client.state.thread[2]).toMatchObject({ streaming: false, responseId: "r2" });
+  });
+
+  it("cites articles an earlier turn's tools found", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What are today's top stories?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    conversation.emitMCPToolCall({ state: "success", result: mcpResult([
+      { title: "First story", sourceUrl: "https://news.example/first" },
+      { title: "Second story", sourceUrl: "https://news.example/second" },
+    ]) });
+    conversation.emitPart("start", "", 1);
+    conversation.emitPart("delta", "There are two today.", 1);
+    conversation.emitPart("stop", "", 1);
+
+    // Two articles and neither named: nothing to cite.
+    expect(client.state.thread[1].citations).toEqual([]);
+
+    client.sendUserMessage("Tell me about the second");
+    conversation.emitPart("start", "", 2);
+    conversation.emitPart("delta", "The Second story has the latest details.", 2);
+    conversation.emitPart("stop", "", 2);
+
+    expect(client.state.thread[3].citations).toEqual([{ title: "Second story", url: "https://news.example/second" }]);
+  });
+
+  it("shows the one article a turn's tools returned under an answer that does not name it", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("Tell me more about the redemption one");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    const article = { title: "CP26/35: FCA proposes minimum redemption terms for NURS funds heavily invested in illiquid assets", url: "https://news.example/cp26-35" };
+
+    // No bridge this time: the waiting bubble is never marked as one.
+    conversation.emitMCPToolCall({ state: "loading", tool_name: "get_article" });
+    expect(client.state.thread[1].bridge).toBeUndefined();
+
+    conversation.emitMCPToolCall({
+      state: "success",
+      tool_name: "get_article",
+      result: [{ type: "text", text: JSON.stringify({ article: { id: "4f41", title: article.title, sourceUrl: article.url, summary: null } }) }],
+    });
+    conversation.emitPart("start", "", 6, "r1");
+    conversation.emitPart("delta", "It sets a notice period before investors can take their money out. Comments are open until January.", 6, "r1");
+    conversation.emitPart("stop", "", 6, "r1");
+
+    const reply = client.state.thread[1];
+    expect(reply.bridge).toBeUndefined();
+    expect(inlineCitations(reply)).toEqual([]);
+    expect(reply.layout.trailing).toEqual([article]);
+    expect(reply.citations).toEqual([article]);
+  });
+
+  it("keeps no citations on a reply cut short", async () => {
+    const { client, calls } = newClient();
+
+    client.sendUserMessage("What are today's top stories?");
+    await settle();
+    const conversation = calls.conversations[0];
+
+    conversation.emitMCPToolCall({ state: "success", result: mcpResult([
+      { title: "First story", sourceUrl: "https://news.example/first" },
+      { title: "Second story", sourceUrl: "https://news.example/second" },
+    ]) });
+    conversation.emitPart("start", "", 5, "r1");
+    conversation.emitPart("delta", "The Second story has ", 5, "r1");
+    client.interrupt();
+
+    expect(client.state.thread[1]).toMatchObject({ text: "The Second story has ", interrupted: true, citations: [] });
+    expect(inlineCitations(client.state.thread[1])).toEqual([]);
+    expect(client.state.thread[1].layout.trailing).toEqual([]);
+
+    // Asking again over a reply cuts it short the same way.
+    client.sendUserMessage("And the first?");
+    conversation.emitPart("start", "", 6, "r2");
+    conversation.emitPart("delta", "The First story was ", 6, "r2");
+    client.sendUserMessage("Never mind");
+
+    expect(client.state.thread[3]).toMatchObject({ text: "The First story was ", interrupted: true, citations: [] });
+    expect(inlineCitations(client.state.thread[3])).toEqual([]);
   });
 
   it("drops an unanswered bubble when the reader asks again mid-turn", async () => {
