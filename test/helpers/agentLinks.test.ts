@@ -1,8 +1,9 @@
 import {
+  agentCitationKey,
   agentCitationsFromText,
   agentCitationsFromToolResult,
   agentTextWithoutLinks,
-  citationsForAgentText,
+  mergeAgentCitations,
 } from "../../src/helpers/agentLinks";
 
 describe("agentLinks", () => {
@@ -109,23 +110,53 @@ describe("agentLinks", () => {
     ]);
   });
 
-  it("selects the cited result when a tool returned several articles", () => {
-    const candidates = [
-      { title: "First story", url: "https://news.example/first" },
-      { title: "Second story", url: "https://news.example/second" },
-    ];
+  it("titles a tool result by the first line of a multi-line title", () => {
+    const result = [{
+      type: "text",
+      text: JSON.stringify({
+        articles: [
+          {
+            title: "Gambling giant blames job cuts on Burnham high street crackdown\nGambling shops part of high street fabric",
+            sourceUrl: "https://www.cityam.com/gambling-giant-blames-job-cuts-on-burnham-high-street-crackdown/",
+          },
+          { title: "\n  Leading blank line\nSubheading", sourceUrl: "https://news.example/blank" },
+          { title: "  ", sourceUrl: "https://news.example/untitled" },
+        ],
+      }),
+    }];
 
-    expect(citationsForAgentText("The Second story has the latest details.", candidates)).toEqual([
-      candidates[1],
-    ]);
-    expect(citationsForAgentText("See https://news.example/first for more.", candidates)).toEqual([
-      candidates[0],
+    expect(agentCitationsFromToolResult(result)).toEqual([
+      { title: "Gambling giant blames job cuts on Burnham high street crackdown", url: "https://www.cityam.com/gambling-giant-blames-job-cuts-on-burnham-high-street-crackdown/" },
+      { title: "Leading blank line", url: "https://news.example/blank" },
+      { title: "news.example", url: "https://news.example/untitled" },
     ]);
   });
 
-  it("uses a sole tool result even when the answer paraphrases its title", () => {
-    const candidate = { title: "A long headline", url: "https://news.example/story" };
-    expect(citationsForAgentText("Here is the article you asked for.", [candidate])).toEqual([candidate]);
+  it("titles a link whose label names nothing from the line it sits on", () => {
+    expect(agentCitationsFromText([
+      "The FCA proposes minimum redemption terms for NURS funds (read it [here](https://news.example/nurs)).",
+      "1. Victoria Beckham owed £350,000 by Harvey Nichols",
+      "[Read more](https://news.example/beckham)",
+      "[The full story](https://news.example/untitled)",
+    ].join("\n"))).toEqual([
+      { title: "The FCA proposes minimum redemption terms for NURS funds", url: "https://news.example/nurs" },
+      { title: "Victoria Beckham owed £350,000 by Harvey Nichols", url: "https://news.example/beckham" },
+      { title: "news.example", url: "https://news.example/untitled" },
+    ]);
   });
 
+  it("knows one article by its link whatever the agent did to it", () => {
+    expect(new Set([
+      "https://news.example/prism/x/",
+      "https://news.example/prism/x",
+      "https://www.news.example/prism/x?utm_source=agent&utm_medium=chat",
+    ].map(agentCitationKey)).size).toEqual(1);
+    expect(agentCitationKey("https://news.example/prism/x?page=2")).not.toEqual(agentCitationKey("https://news.example/prism/x"));
+    expect(agentCitationKey("https://publisher.example/article#segment-3")).not.toEqual(agentCitationKey("https://publisher.example/article#segment-5"));
+
+    expect(mergeAgentCitations(
+      [{ title: "PRISM", url: "https://news.example/prism/x/" }],
+      [{ title: "PRISM again", url: "https://news.example/prism/x" }],
+    )).toEqual([{ title: "PRISM", url: "https://news.example/prism/x/" }]);
+  });
 });
