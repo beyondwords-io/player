@@ -12,11 +12,8 @@ import type {
   AgentSessionOptions,
   AgentState,
 } from "./agentContracts";
-import {
-  agentCitationsFromToolResult,
-  citationsForAgentText,
-  mergeAgentCitations,
-} from "./agentLinks";
+import { layoutAgentReply } from "./agentCitations";
+import { agentCitationsFromToolResult, mergeAgentCitations } from "./agentLinks";
 
 // The live agent client for the default player's Chat/Talk surfaces, backed by
 // the ElevenLabs Agents SDK.
@@ -39,8 +36,34 @@ import {
 // - There is no client-side interrupt in the SDK: in a call the reader speaks
 //   over the agent (server VAD). canInterrupt tells the panel not to offer a
 //   tap-to-interrupt, and interrupt() only stops the local text reveal.
+// - A tool-using turn is a bridge ("Let me have a look"), the tool call, then
+//   the answer, all under one event_id. Each reply has its own response_id,
+//   which the parts carry but SDK 1.17's onMessage drops; a bridge's whole
+//   message also arrives before its own parts. So without a response_id a
+//   whole message matches a streamed reply by its words, never by event_id
+//   alone.
+// - Tool results reach us through onMCPToolCall; onAgentToolResponse carries
+//   them only if the agent sends full tool payloads. They are not tied to a
+//   reply: they pool as sources, and each answer cites the ones it names.
 
 const SILENCE_TIMEOUT_MS = 30_000;
+
+// Plenty for a long session of rundowns and searches.
+const MAX_SOURCES = 200;
+
+// The platform strips Markdown emphasis and headings from a whole
+// agent_response but not from the parts that streamed the same reply.
+const plainAgentText = (text: string): string => (text ?? "").replace(/[*#]/g, "").replace(/\s+/g, " ").trim();
+const sameAgentText = (a: string, b: string): boolean => plainAgentText(a) === plainAgentText(b);
+const agentTextStartsWith = (text: string, start: string): boolean => plainAgentText(text).startsWith(plainAgentText(start));
+
+// A parts stream that, so far, repeats a whole message already on screen.
+interface ShadowStream {
+  reply: AgentReplyMessage;
+  text: string;
+  eventId?: number;
+  responseId?: string;
+}
 
 interface AgentConversation {
   endSession?: () => Promise<void> | void;
@@ -83,11 +106,22 @@ class RealAgentClient implements AgentClient {
   #queued: string[] = [];
   #epoch = 0;
   #partTurnId: number | null = null;
+  #shadow: ShadowStream | null = null;
+  #resentResponseIds = new Set<string>();
   #interruptedTurnIds = new Set<number>();
   #ignoreNextAgentTurn = false;
   #ignoreNextUncorrelatedWholeMessage = false;
   #unanswered: string[] = [];
-  #pendingCitations: AgentCitation[] = [];
+  // Replies that already had their own whole agent_response: another one with
+  // the same words is a new reply, such as a bridge said twice in one turn.
+  #wholeReplies = new WeakSet<AgentReplyMessage>();
+  #sources: AgentCitation[] = [];
+  #turn = 0;
+  #turnSources: AgentCitation[] = [];
+  // The turn each running tool call started in, by tool_call_id.
+  #toolCallTurns = new Map<string, number>();
+  #fallbacks = new WeakMap<AgentReplyMessage, AgentCitation | null>();
+  #fallbackReply: AgentReplyMessage | null = null;
   #greetingOverrideSent = false;
   #greetingOverrideRejected = false;
 
@@ -185,6 +219,14 @@ class RealAgentClient implements AgentClient {
     this.#dropEmptyReply();
     const pending = this.#streamingReply();
     if (pending) { this.#finalizeReply(pending, { interrupted: true }); }
+
+    // A stream still hidden behind an earlier reply belongs to the old turn.
+    if (this.#shadow) {
+      this.#shadow = null;
+      this.#partTurnId = null;
+    }
+
+    this.#startTurn();
 
     const reply: AgentReplyMessage = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
     this.state.thread = [...this.state.thread, { role: "reader", text }, reply];
@@ -304,7 +346,7 @@ class RealAgentClient implements AgentClient {
       ...this.#dynamicVariablesConfig(),
       onStatusChange: guarded(({ status }) => this.#handleStatusChange(status)),
       onModeChange: guarded(({ mode }) => this.#handleModeChange(mode)),
-      onMessage: guarded(({ message, role, source, event_id: eventId }) => this.#handleMessage(message, role || source, eventId)),
+      onMessage: guarded(({ message, role, source, event_id: eventId, response_id: responseId }) => this.#handleMessage(message, role || source, eventId, responseId)),
       onAgentChatResponsePart: guarded((part) => this.#handleResponsePart(part)),
       onMCPToolCall: guarded((event) => this.#handleMCPToolCall(event)),
       onAgentToolResponse: guarded((event) => this.#handleAgentToolResponse(event)),
@@ -379,14 +421,14 @@ class RealAgentClient implements AgentClient {
   // Voice transcripts land per utterance once the reader finishes - there is
   // no word-by-word transcript. Agent turns fill the pending reply if one is
   // on screen, otherwise they append whole.
-  #handleMessage(message, role, eventId) {
+  #handleMessage(message, role, eventId, responseId = undefined) {
     if (role === "user") {
       // A just-typed message echoed back is not a second row.
       const recent = this.state.thread.slice(-2) as { role?: string; text?: string }[];
       if (recent.some((row) => row.role === "reader" && row.text === message)) { return; }
 
       this.state.thread = [...this.state.thread, { role: "reader", text: message }];
-      this.#pendingCitations = [];
+      this.#startTurn();
       this.#notify();
       this.#armSilenceTimer();
       return;
@@ -396,13 +438,11 @@ class RealAgentClient implements AgentClient {
     // is nothing to render, and the pending bubble stays open for the answer.
     if (!message || !message.trim()) { return; }
 
-    // A whole agent_response follows the streamed parts for the same turn.
-    // Correlate it to that turn rather than suppressing all whole messages for
-    // the rest of the session: later turns (and later sessions) may use the
-    // whole-message fallback instead.
-    const replies = this.state.thread.filter((row): row is AgentReplyMessage => (
-      row.role === "agent" && row.sessionEpoch === this.#epoch
-    ));
+    // A whole agent_response repeats a streamed reply - after its parts for an
+    // answer, before them for a bridge. Correlate it to that reply rather than
+    // suppressing all whole messages for the rest of the session: later turns
+    // (and later sessions) may use the whole-message fallback instead.
+    const replies = this.#replies();
 
     if (this.#ignoreNextAgentTurn) {
       this.#ignoreNextAgentTurn = false;
@@ -420,26 +460,24 @@ class RealAgentClient implements AgentClient {
       return;
     }
 
-    const matchingPartsReply = eventId === undefined || eventId === null
+    // A turn cut off locally stays cut off, whatever else arrives for it.
+    const latestPartsReply = eventId === undefined || eventId === null
       ? null
       : [...replies].reverse().find((reply) => reply.fromParts && reply.eventId === eventId);
 
-    if (matchingPartsReply?.interrupted) { return; }
+    if (latestPartsReply?.interrupted) { return; }
 
-    if (matchingPartsReply?.text) {
-      const changed = matchingPartsReply.text !== message || matchingPartsReply.streaming;
-      matchingPartsReply.text = message;
-      this.#finalizeReply(matchingPartsReply);
-      if (changed) { this.#notify(); }
-      return;
-    }
+    // SDK 1.26+ passes the reply's response_id along; 1.17 does not.
+    const sameReply = (responseId ? replies.find((reply) => reply.responseId === responseId) : null)
+      ?? this.#streamedReplyFor(replies, message, eventId, responseId);
 
-    // Older SDK events can omit event_id. Exact text on the most recent
-    // parts-built reply is still enough to identify the duplicate safely.
-    const lastReply = replies[replies.length - 1];
-    if ((eventId === undefined || eventId === null) && lastReply?.fromParts && lastReply.text === message) {
-      const changed = lastReply.streaming;
-      this.#finalizeReply(lastReply);
+    if (sameReply?.interrupted) { return; }
+
+    if (sameReply) {
+      const changed = sameReply.text !== message || sameReply.streaming;
+      sameReply.text = message;
+      this.#wholeReplies.add(sameReply);
+      this.#finalizeReply(sameReply);
       if (changed) { this.#notify(); }
       return;
     }
@@ -447,15 +485,21 @@ class RealAgentClient implements AgentClient {
     const pending = this.#streamingReply();
 
     if (pending && pending.text === "") {
+      // The text is the whole message's now, so its own parts stream - which
+      // may follow - can be recognised as a repeat.
       pending.typing = false;
       pending.text = message;
       pending.eventId = eventId;
+      pending.responseId = responseId;
+      pending.fromParts = false;
+      pending.sessionEpoch = this.#epoch;
+      this.#wholeReplies.add(pending);
       this.#finalizeReply(pending);
     } else if (!pending) {
-      const reply: AgentReplyMessage = { role: "agent", text: message, citations: [], streaming: false, typing: false, spoken: this.state.kind === "voice", eventId, sessionEpoch: this.#epoch };
-      this.#applyPendingCitations(reply);
-      reply.citations = citationsForAgentText(reply.text, reply.citationCandidates || []);
+      const reply: AgentReplyMessage = { role: "agent", text: message, citations: [], streaming: false, typing: false, spoken: this.state.kind === "voice", eventId, responseId, sessionEpoch: this.#epoch };
       this.state.thread = [...this.state.thread, reply];
+      this.#wholeReplies.add(reply);
+      this.#layOut(reply);
       this.state.announced = message;
     } else {
       // A parts-built reply is mid-stream; the whole-message event is the
@@ -468,9 +512,16 @@ class RealAgentClient implements AgentClient {
 
   // Text replies arrive as a start/delta/stop stream, correlated by event_id
   // so a turn we cut off locally cannot leak into the next reply.
-  #handleResponsePart({ text, type, event_id: eventId }) {
+  #handleResponsePart({ text, type, event_id: eventId, response_id: responseId }) {
     if (type === "start") {
+      // A reply already on screen under this response_id: a resend.
+      if (responseId && this.#replies().some((reply) => reply.responseId === responseId && !reply.streaming)) {
+        this.#resentResponseIds.add(responseId);
+        return;
+      }
+
       this.#partTurnId = eventId ?? -1;
+      this.#shadow = null;
 
       if (this.#ignoreNextAgentTurn) {
         this.#ignoreNextAgentTurn = false;
@@ -481,6 +532,16 @@ class RealAgentClient implements AgentClient {
 
       if (eventId !== undefined && eventId !== null && this.#interruptedTurnIds.has(eventId)) { return; }
 
+      // A bridge's whole message lands before its own stream, and SDK 1.17
+      // gives the message no response_id. Follow the stream out of sight
+      // while it repeats that message, rather than show it twice.
+      const turn = this.#turnReplies();
+      const latest = turn[turn.length - 1];
+      if (latest && !latest.streaming && !latest.fromParts && !latest.responseId && latest.text && latest.eventId === eventId) {
+        this.#shadow = { reply: latest, text: "", eventId, responseId };
+        return;
+      }
+
       if (!this.#streamingReply()) {
         const reply: AgentReplyMessage = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken: this.state.kind === "voice", sessionEpoch: this.#epoch };
         this.state.thread = [...this.state.thread, reply];
@@ -489,12 +550,14 @@ class RealAgentClient implements AgentClient {
 
       const pending = this.#streamingReply();
       pending.eventId = eventId;
+      pending.responseId = responseId;
       pending.fromParts = true;
       pending.sessionEpoch = this.#epoch;
-      this.#applyPendingCitations(pending);
 
       return;
     }
+
+    if (responseId && this.#resentResponseIds.has(responseId)) { return; }
 
     if (eventId !== undefined && eventId !== null && this.#interruptedTurnIds.has(eventId)) {
       if (type === "stop") { this.#partTurnId = null; }
@@ -502,6 +565,11 @@ class RealAgentClient implements AgentClient {
     }
 
     if ((eventId ?? -1) !== this.#partTurnId) { return; }
+
+    if (this.#shadow) {
+      this.#handleShadowPart(type, text);
+      return;
+    }
 
     const pending = this.#streamingReply();
     if (!pending) { this.#partTurnId = null; return; }
@@ -523,17 +591,64 @@ class RealAgentClient implements AgentClient {
     }
   }
 
+  // A shadowed stream that ends on the same words is the reply on screen, and
+  // takes nothing else from it. One whose words part ways is a reply of its
+  // own, shown from what it has said so far.
+  #handleShadowPart(type, text) {
+    const shadow = this.#shadow;
+
+    if (type === "delta") {
+      shadow.text += text ?? "";
+      if (agentTextStartsWith(shadow.reply.text, shadow.text)) { return; }
+
+      this.#shadow = null;
+      const reply: AgentReplyMessage = { role: "agent", text: shadow.text, citations: [], streaming: true, typing: false, spoken: this.state.kind === "voice", eventId: shadow.eventId, responseId: shadow.responseId, fromParts: true, sessionEpoch: this.#epoch };
+      this.state.thread = [...this.state.thread, reply];
+      this.#notify();
+      return;
+    }
+
+    if (type === "stop") {
+      this.#shadow = null;
+      this.#partTurnId = null;
+
+      // An empty stream (tools running) says nothing about the reply.
+      if (!plainAgentText(shadow.text)) { return; }
+
+      shadow.reply.responseId = shadow.responseId;
+      shadow.reply.fromParts = true;
+    }
+  }
+
+  // Without a response_id (SDK 1.17), a whole message is a streamed reply of
+  // the same turn only when its words are: a turn's bridge and its answer
+  // share an event_id, and one must never overwrite the other. A reply that
+  // already had its whole message cannot take a second.
+  #streamedReplyFor(replies: AgentReplyMessage[], message: string, eventId, responseId): AgentReplyMessage | null {
+    const unanswered = replies.filter((reply) => reply.fromParts && !this.#wholeReplies.has(reply));
+    const candidates = eventId === undefined || eventId === null
+      // Older SDK events can omit event_id: only the latest reply can match.
+      ? unanswered.filter((reply) => reply === replies[replies.length - 1])
+      : unanswered.filter((reply) => reply.eventId === eventId);
+
+    return [...candidates].reverse().find((reply) => (
+      (!responseId || !reply.responseId)
+      && (sameAgentText(reply.text, message) || (reply.streaming && reply.text && agentTextStartsWith(message, reply.text)))
+    )) ?? null;
+  }
+
   // The agent withdrew part of an answer (usually after an interruption);
   // what is on screen follows suit.
   #handleCorrection({ corrected_agent_response: corrected, original_agent_response: original, event_id: eventId }) {
     if (typeof corrected !== "string") { return; }
 
-    const replies = this.state.thread.filter((row): row is AgentReplyMessage => (
-      row.role === "agent" && row.sessionEpoch === this.#epoch
-    ));
-    const reply = (eventId === undefined || eventId === null
-      ? null
-      : [...replies].reverse().find((row) => row.eventId === eventId))
+    // A bridge and its answer share an event_id, and a spoken answer can land
+    // while the bridge is still being talked over: the correction is for the
+    // reply that said what it corrects.
+    const replies = this.#replies();
+    const sameTurn = eventId === undefined || eventId === null ? [] : replies.filter((row) => row.eventId === eventId);
+    const reply = (typeof original === "string" ? [...sameTurn].reverse().find((row) => sameAgentText(row.text, original)) : null)
+      ?? sameTurn[sameTurn.length - 1]
       ?? (typeof original === "string" ? [...replies].reverse().find((row) => row.text === original) : null);
 
     // A delayed correction must never land in a newer turn's pending bubble.
@@ -541,42 +656,64 @@ class RealAgentClient implements AgentClient {
 
     const announcedReply = [...replies].reverse().find((row) => !row.streaming && row.text === this.state.announced);
     reply.text = corrected;
-    reply.citations = citationsForAgentText(corrected, reply.citationCandidates || []);
+    if (!reply.streaming) { this.#layOut(reply); }
     if (announcedReply === reply) { this.state.announced = corrected; }
     this.#notify();
   }
 
+  // A tool call starting means what the agent just said this turn was a
+  // bridge ("Let me have a look"), not the answer.
   #handleMCPToolCall(event) {
-    if (event?.state !== "success") { return; }
-    this.#handleToolCitations(event.result);
+    const id = event?.tool_call_id;
+
+    if (event?.state === "loading") {
+      if (id) { this.#toolCallTurns.set(id, this.#turn); }
+      this.#markBridge();
+      return;
+    }
+    if (event?.state !== "success" && event?.state !== "failure") { return; }
+
+    const turn = this.#toolCallTurns.get(id) ?? this.#turn;
+    this.#toolCallTurns.delete(id);
+    if (event.state === "success") { this.#addSources(event.result, turn === this.#turn); }
   }
 
+  // Only carries the result when the agent sends full tool payloads.
   #handleAgentToolResponse(event) {
     if (event?.is_error || typeof event?.full_tool_result !== "string") { return; }
-    this.#handleToolCitations(event.full_tool_result, event.event_id);
+    this.#addSources(event.full_tool_result);
   }
 
-  #handleToolCitations(result, eventId = undefined) {
+  // Articles are not tied to the reply in flight: an answer can name one any
+  // earlier tool call found, so they pool for as long as the thread lasts. A
+  // call that finishes after the reader has moved on is no part of the new
+  // question's answer, though.
+  #addSources(result, thisTurn = true) {
     const citations = agentCitationsFromToolResult(result);
     if (citations.length === 0) { return; }
 
-    const replies = this.state.thread.filter((row): row is AgentReplyMessage => (
-      row.role === "agent" && row.sessionEpoch === this.#epoch
-    ));
-    const matching = eventId === undefined || eventId === null
-      ? null
-      : [...replies].reverse().find((reply) => reply.eventId === eventId);
-    const reply = matching || this.#streamingReply();
+    this.#sources = mergeAgentCitations(citations, this.#sources).slice(0, MAX_SOURCES);
+    if (thisTurn) { this.#turnSources = mergeAgentCitations(this.#turnSources, citations); }
+  }
 
-    if (!reply) {
-      this.#pendingCitations = mergeAgentCitations(this.#pendingCitations, citations);
-      return;
-    }
+  // The reader asked something: tool results from here on are this turn's,
+  // and its fallback is free again.
+  #startTurn() {
+    this.#turn += 1;
+    this.#turnSources = [];
+    this.#fallbackReply = null;
+  }
 
-    reply.citationCandidates = mergeAgentCitations(reply.citationCandidates || [], citations);
-    if (!reply.streaming) {
-      reply.citations = citationsForAgentText(reply.text, reply.citationCandidates);
-    }
+  // The turn's latest reply with any text - never the empty bubble still
+  // waiting for the answer.
+  #markBridge() {
+    const bridge = [...this.#turnReplies()].reverse().find((reply) => reply.text);
+    if (!bridge || bridge.bridge) { return; }
+
+    // A bridge cites nothing, so the turn's fallback waits for the answer.
+    if (bridge === this.#fallbackReply) { this.#fallbackReply = null; }
+    bridge.bridge = true;
+    if (!bridge.streaming) { this.#layOut(bridge); }
     this.#notify();
   }
 
@@ -626,6 +763,7 @@ class RealAgentClient implements AgentClient {
     this.#epoch += 1;
     this.#conversation = null;
     this.#partTurnId = null;
+    this.#shadow = null;
     this.state.kind = "none";
     this.state.status = "idle";
 
@@ -636,6 +774,23 @@ class RealAgentClient implements AgentClient {
   #streamingReply(): AgentReplyMessage | null {
     const last = this.state.thread[this.state.thread.length - 1];
     return last?.role === "agent" && last.streaming ? last : null;
+  }
+
+  #replies(): AgentReplyMessage[] {
+    return this.state.thread.filter((row): row is AgentReplyMessage => (
+      row.role === "agent" && row.sessionEpoch === this.#epoch
+    ));
+  }
+
+  // This session's replies since the reader last asked something.
+  #turnReplies(): AgentReplyMessage[] {
+    const thread = this.state.thread;
+    let start = thread.length;
+    while (start > 0 && thread[start - 1].role !== "reader") { start -= 1; }
+
+    return thread.slice(start).filter((row): row is AgentReplyMessage => (
+      row.role === "agent" && row.sessionEpoch === this.#epoch
+    ));
   }
 
   // A reply that never received any text is a blank bubble, not an answer.
@@ -649,14 +804,41 @@ class RealAgentClient implements AgentClient {
   #finalizeReply(reply: AgentReplyMessage | null, { interrupted = false }: { interrupted?: boolean } = {}): void {
     if (!reply) { return; }
 
-    this.#applyPendingCitations(reply);
+    // Re-finalizing a reply that already stopped streaming (its whole message
+    // arriving late) leaves whichever stream is live alone.
+    const wasStreaming = reply.streaming;
     reply.streaming = false;
     reply.typing = false;
     reply.interrupted = interrupted;
-    reply.citations = interrupted ? [] : citationsForAgentText(reply.text, reply.citationCandidates || []);
+    this.#layOut(reply);
     if (!interrupted || reply.text) { this.state.announced = reply.text; }
     if (reply.text) { this.#unanswered = []; }
-    this.#partTurnId = null;
+    if (wasStreaming) { this.#partTurnId = null; }
+  }
+
+  // An answer cites, beside the sentence that names it, any article the tools
+  // returned this session. Bridges and cut-off replies cite no articles, only
+  // links they spelled out.
+  #layOut(reply: AgentReplyMessage) {
+    reply.layout = reply.interrupted || reply.bridge
+      ? layoutAgentReply(reply.text)
+      : layoutAgentReply(reply.text, { sources: this.#sources, fallback: this.#fallbackFor(reply) });
+    reply.citations = [...reply.layout.segments.flatMap(({ citations }) => citations), ...reply.layout.trailing];
+  }
+
+  // The one article a turn's tools returned, for the answer that sums it up
+  // without naming it: the first reply after it arrived, not whatever else
+  // the agent says that turn ("Are you still there?"). Kept per reply, so a
+  // late correction still has it.
+  #fallbackFor(reply: AgentReplyMessage): AgentCitation | null {
+    if (this.#turnReplies().includes(reply)) {
+      const taken = this.#fallbackReply !== null && this.#fallbackReply !== reply;
+      const fallback = !taken && this.#turnSources.length === 1 ? this.#turnSources[0] : null;
+      if (fallback) { this.#fallbackReply = reply; }
+      this.#fallbacks.set(reply, fallback);
+    }
+
+    return this.#fallbacks.get(reply) ?? null;
   }
 
   #resetToIdle() {
@@ -665,10 +847,13 @@ class RealAgentClient implements AgentClient {
     this.#unanswered = [];
     this.#greetingOverrideSent = false;
     this.#partTurnId = null;
+    this.#shadow = null;
+    this.#resentResponseIds.clear();
     this.#interruptedTurnIds.clear();
     this.#ignoreNextAgentTurn = false;
     this.#ignoreNextUncorrelatedWholeMessage = false;
-    this.#pendingCitations = [];
+    this.#startTurn();
+    this.#toolCallTurns.clear();
     this.#disarmSilenceTimer();
 
     const ending = this.#conversation?.endSession?.();
@@ -678,12 +863,6 @@ class RealAgentClient implements AgentClient {
     this.state.kind = "none";
     this.state.status = "idle";
     this.state.muted = false;
-  }
-
-  #applyPendingCitations(reply: AgentReplyMessage) {
-    if (this.#pendingCitations.length === 0) { return; }
-    reply.citationCandidates = mergeAgentCitations(reply.citationCandidates || [], this.#pendingCitations);
-    this.#pendingCitations = [];
   }
 
   #flushQueued() {

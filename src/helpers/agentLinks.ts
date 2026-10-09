@@ -6,7 +6,9 @@ const CLOSING_BRACKETS: Record<string, string> = { ")": "(", "]": "[", "}": "{" 
 const QUOTED_TITLE_PATTERN = /["“]([^"”\n]{2,240})["”]/g;
 const LINK_CLAUSE_PATTERN = /\s*(?:you can (?:find|read) it at|you can find it here|read it at|the link is|link|source)\s*:?\s*(?=[.,!?;:]?(?:\s|$))/gi;
 const REMOVED_LINK_MARKER = "\uE000";
-const GENERIC_LINK_TEXT = /^(?:and|at|or|link|source|url|here(?: it is|'s the link)?|you can (?:find|read) it (?:at|here)|read (?:it|more) (?:at|here)|the (?:link|url)(?: is)?|(?:find|read) it here)$/i;
+const GENERIC_LINK_TEXT = /^(?:and|at|or|this|more|link|source|url|website|here(?: it is|'s the link)?|(?:click|tap) here|you can (?:find|read) it (?:at|here)|read (?:it|more|on)(?: (?:at|here))?|the (?:link|url|source)(?: is)?|(?:find|read) it here|(?:the |this )?(?:full )?(?:article|story|piece|report)(?: here)?)$/i;
+// An unclosed bracket at the end of a line leads into a link: "(read it".
+const OPEN_LINK_LEAD = /\s*\((?![^()]*\))[^()]*$/;
 
 const safeHttpsUrl = (raw: unknown): URL | null => {
   if (typeof raw !== "string") { return null; }
@@ -105,6 +107,7 @@ const plainLineTitle = (text: string): string | null => {
   const title = text
     .trim()
     .replace(/^(?:\d+[.)]|[-*•])\s+/, "")
+    .replace(OPEN_LINK_LEAD, "")
     .replace(/\s*(?:[-–—:|]|\band)\s*$/i, "")
     .trim()
     .replace(/\.$/, "");
@@ -138,8 +141,10 @@ const agentCitationsFromText = (text: string): AgentCitation[] => {
 
     const hostname = new URL(href).hostname.replace(/^www\./, "");
     const prefix = text.slice(0, match.index ?? 0);
+    // "Read it [here](…)" names nothing: title it like a bare URL instead.
+    const label = markdownLabel && !GENERIC_LINK_TEXT.test(markdownLabel) ? markdownLabel : "";
     citations.push({
-      title: markdownLabel || nearbyLineTitle(prefix) || hostname,
+      title: label || nearbyLineTitle(prefix) || hostname,
       url: href,
     });
   }
@@ -147,13 +152,46 @@ const agentCitationsFromText = (text: string): AgentCitation[] => {
   return mergeAgentCitations(citations);
 };
 
+// The reply with each Markdown link's label wrapped in the marks `mark`
+// returns for it (or left alone for null), so where a label lands in
+// agentTextWithoutLinks' copy can be read back from the marks.
+const markAgentLinkLabels = (text: string, mark: (url: string, index: number) => [string, string] | null): string => {
+  let index = -1;
+
+  return text.replace(LINK_PATTERN, (match, markdownLabel, markdownUrl) => {
+    if (!markdownLabel) { return match; }
+
+    const href = allowedHttpsUrl(trimTrailingPunctuation(markdownUrl).url);
+    if (!href) { return match; }
+
+    index += 1;
+    const marks = mark(href, index);
+    return marks ? `[${marks[0]}${markdownLabel}${marks[1]}](${markdownUrl})` : match;
+  });
+};
+
+// One article whatever the agent did to its link: the host without www, no
+// trailing slash and no tracking parameters. The fragment stays, since a
+// citation can point at one segment of an article.
+const agentCitationKey = (href: string): string => {
+  const url = safeHttpsUrl(href);
+  if (!url) { return href; }
+
+  const params = new URLSearchParams(Array.from(url.searchParams).filter(([name]) => !/^utm_/i.test(name)));
+  const search = params.toString();
+  return `${url.host.replace(/^www\./, "")}${url.pathname.replace(/\/+$/, "")}${search ? `?${search}` : ""}${url.hash}`;
+};
+
 const mergeAgentCitations = (...groups: AgentCitation[][]): AgentCitation[] => {
   const citations = new Map<string, AgentCitation>();
 
   groups.flat().forEach((citation) => {
     const url = safeHttpsUrl(citation?.url);
-    if (!url || citations.has(url.href)) { return; }
-    citations.set(url.href, { title: citation.title?.trim() || url.hostname, url: url.href });
+    if (!url) { return; }
+
+    const key = agentCitationKey(url.href);
+    if (citations.has(key)) { return; }
+    citations.set(key, { title: citation.title?.trim() || url.hostname, url: url.href });
   });
 
   return Array.from(citations.values());
@@ -188,8 +226,10 @@ const agentCitationsFromToolResult = (payload: unknown): AgentCitation[] => {
     const sourceUrl = record.sourceUrl ?? record.source_url;
     const url = safeHttpsUrl(sourceUrl);
     if (url) {
-      const title = typeof record.title === "string" && record.title.trim() ? record.title.trim() : url.hostname;
-      citations.push({ title, url: url.href });
+      // A title may arrive as several lines: the headline, then the
+      // article's own subheadings.
+      const headline = typeof record.title === "string" ? record.title.split("\n").map((line) => line.trim()).find(Boolean) : "";
+      citations.push({ title: headline || url.hostname, url: url.href });
     }
 
     Object.values(record).forEach((item) => visit(item, depth + 1));
@@ -199,20 +239,11 @@ const agentCitationsFromToolResult = (payload: unknown): AgentCitation[] => {
   return mergeAgentCitations(citations);
 };
 
-const citationsForAgentText = (text: string, candidates: AgentCitation[]): AgentCitation[] => {
-  const unique = mergeAgentCitations(candidates);
-  if (unique.length <= 1) { return unique; }
-
-  const normalizedText = text.toLowerCase().replace(/\s+/g, " ");
-  return unique.filter(({ title, url }) => (
-    text.includes(url) || normalizedText.includes(title.toLowerCase().replace(/\s+/g, " "))
-  ));
-};
-
 export {
+  agentCitationKey,
   agentCitationsFromText,
   agentCitationsFromToolResult,
   agentTextWithoutLinks,
-  citationsForAgentText,
+  markAgentLinkLabels,
   mergeAgentCitations,
 };
