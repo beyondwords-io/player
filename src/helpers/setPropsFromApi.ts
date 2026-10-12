@@ -56,6 +56,17 @@ const getAccessToken = async (player): Promise<string | null> => {
 };
 
 const appendContinuousPlaybackContentFromApi = async (player) => {
+  if (!player.playerApiUrl || !player.projectId) { return; }
+  if (player.continuousPlaybackMode === "none" || !player.content || player.content.length >= 99 || player.contentIndex !== player.content.length - 1) { return; }
+
+  const contentItem = player.content[player.content.length - 1];
+  if (!contentItem || !contentItem.continuousPlaybackContentId || player.content.some(({ id }) => id === contentItem.continuousPlaybackContentId)) { return; }
+
+  if (player.pendingContinuousPlaybackContentId) { return; }
+  player.pendingContinuousPlaybackContentId = contentItem.continuousPlaybackContentId;
+
+  const identifiers = [{ content_id: contentItem.continuousPlaybackContentId }];
+
   const accessToken = await getAccessToken(player);
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
@@ -73,17 +84,6 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
     continuousPlaybackMode: player.continuousPlaybackMode,
     wordHighlightsEnabled: player.wordHighlightsEnabled,
   });
-  if (!player.playerApiUrl || !player.projectId) { return; }
-  if (player.continuousPlaybackMode === "none" || !player.content || player.content.length >= 99 || player.contentIndex !== player.content.length - 1) { return; }
-
-  const contentItem = player.content[player.content.length - 1];
-  if (!contentItem || !contentItem.continuousPlaybackContentId || player.content.some(({ id }) => id === contentItem.continuousPlaybackContentId)) { return; }
-
-  if (player.pendingContinuousPlaybackContentId) { return; }
-  player.pendingContinuousPlaybackContentId = contentItem.continuousPlaybackContentId;
-
-  const identifiers = [{ content_id: contentItem.continuousPlaybackContentId }];
-
   const data = await fetchData(client, identifiers).catch(() => {});
   delete player.pendingContinuousPlaybackContentId;
 
@@ -96,6 +96,16 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
 };
 
 const setPropsFromApi = async (player) => {
+  if (!player.playerApiUrl || !player.projectId) { return; }
+
+  const identifiers = identifiersArray(player);
+
+  // If no identifiers have been set then identify the content using the page URL.
+  if (identifiers.length === 0) {
+    player.sourceUrl = window.location.href;
+    return;
+  }
+
   const accessToken = await getAccessToken(player);
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
@@ -113,16 +123,6 @@ const setPropsFromApi = async (player) => {
     continuousPlaybackMode: player.continuousPlaybackMode,
     wordHighlightsEnabled: player.wordHighlightsEnabled,
   });
-  if (!player.playerApiUrl || !player.projectId) { return; }
-
-  const identifiers = identifiersArray(player);
-
-  // If no identifiers have been set then identify the content using the page URL.
-  if (identifiers.length === 0) {
-    player.sourceUrl = window.location.href;
-    return;
-  }
-
   const data = await fetchData(client, identifiers).catch(() => {});
 
   // Kept for tooling (see the control panel): the response verbatim, the URL it
