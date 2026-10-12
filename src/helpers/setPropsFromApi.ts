@@ -22,7 +22,7 @@ const isAccessSessionExpired = ({ expires_at }: AccessSession) => expires_at < D
 const getAccessToken = async (player): Promise<string | null> => {
   if (typeof player.authProvider !== "string") return null;
 
-  const authProvider = authProviders[player.authProvider];
+  const authProvider = Object.prototype.hasOwnProperty.call(authProviders, player.authProvider) ? authProviders[player.authProvider] : undefined;
   if (!authProvider) {
     console.warn(
       `BeyondWords.Player: unknown auth provider: ${player.authProvider}`,
