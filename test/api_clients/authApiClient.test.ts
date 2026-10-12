@@ -39,7 +39,7 @@ describe("AuthApiClient", () => {
       null,
     ]) {
       mocks.postJson.mockResolvedValueOnce(json);
-      await expect(client.agentSession("text"), JSON.stringify(json)).rejects.toThrow(/returned no session credential/);
+      await expect(client.agentSession("text"), JSON.stringify(json)).rejects.toThrow(/returned no agent session credentials/);
     }
   });
 });

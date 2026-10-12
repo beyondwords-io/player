@@ -112,15 +112,18 @@ describe("settingOverrides", () => {
     expect(player.radius).toEqual(8);
   });
 
-  it("refetches once for a setting that changes the request", () => {
+  it("refetches once for a setting that changes the request", async () => {
     const player = mockPlayer();
 
+    // The request leaves a tick later: setPropsFromApi first asks the auth
+    // provider for a token, even when there is none to ask.
     setSetting(player, "wordHighlightsEnabled", true);
-    expect(mocks.fetchJson).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => expect(mocks.fetchJson).toHaveBeenCalledTimes(1));
 
     // The player refetches by itself when an identifier changes, so asking for
     // one here would send the request twice.
     setSetting(player, "contentId", "c2");
+    await Promise.resolve();
     expect(mocks.fetchJson).toHaveBeenCalledTimes(1);
   });
 

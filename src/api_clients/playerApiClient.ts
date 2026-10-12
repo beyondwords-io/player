@@ -15,6 +15,7 @@ class PlayerApiClient {
     continuousPlaybackMode,
     wordHighlightsEnabled,
     accessTier,
+    accessToken,
   }: {
     playerApiUrl: string;
     projectId: number;
@@ -29,6 +30,7 @@ class PlayerApiClient {
     continuousPlaybackMode?: string;
     wordHighlightsEnabled?: boolean;
     accessTier?: string;
+    accessToken?: string;
   }) {
     this.baseUrl = playerApiUrl?.replace("{id}", String(projectId));
     this.summary = summary;
@@ -57,7 +59,9 @@ class PlayerApiClient {
       this.params.set("words", "true");
     }
 
-    if (accessTier) {
+    if (accessToken) {
+      this.params.set("access_token", accessToken);
+    } else if (accessTier) {
       this.params.set("access_tier", accessTier);
     }
   }

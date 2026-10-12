@@ -1,13 +1,65 @@
 import PlayerApiClient from "../api_clients/playerApiClient";
+import AuthApiClient, { type AccessSession } from "../api_clients/authApiClient";
 import snakeCaseKeys from "./snakeCaseKeys";
 import resolveTheme from "./resolveTheme";
 import { normalizeThemePreference, palettesFromApi } from "./default_theme/palettes";
 import newEvent from "./newEvent";
 import rewriteMediaUrl from "./rewriteMediaUrl";
 
+const authProviders: Record<string, () => Promise<string>> = {
+  ghost: async () => {
+    const response = await fetch("/members/api/session");
+    if (response.status !== 200) throw new Error(`Failed to fetch session: ${response.status}`);
+    const sessionToken = await response.text();
+    return sessionToken;
+  },
+};
+
+const accessSessionCache = new WeakMap<object, AccessSession & { key: string; }>();
+
+const isAccessSessionExpired = ({ expires_at }: AccessSession) => expires_at < Date.now() / 1000;
+
+const getAccessToken = async (player): Promise<string | null> => {
+  if (typeof player.authProvider !== "string") return null;
+
+  const authProvider = authProviders[player.authProvider];
+  if (!authProvider) {
+    console.warn(
+      `BeyondWords.Player: unknown auth provider: ${player.authProvider}`,
+    );
+    return null;
+  }
+
+  const key = JSON.stringify([player.authProvider, player.authApiUrl, player.projectId]);
+  const cached = accessSessionCache.get(player);
+  if (cached?.key === key && !isAccessSessionExpired(cached)) return cached.token;
+  accessSessionCache.delete(player);
+
+  let sessionToken: string;
+  try {
+    sessionToken = await authProvider();
+  } catch (error) {
+    return null;
+  }
+
+  let accessSession: AccessSession;
+  try {
+    const authClient = new AuthApiClient({ authApiUrl: player.authApiUrl, projectId: player.projectId });
+    accessSession = await authClient.verify({ integrationType: player.authProvider, sessionToken });
+  } catch (error) {
+    console.warn(`BeyondWords.Player: could not verify the ${player.authProvider} session:`, error);
+    return null;
+  }
+
+  accessSessionCache.set(player, { ...accessSession, key });
+  return accessSession.token;
+};
+
 const appendContinuousPlaybackContentFromApi = async (player) => {
+  const accessToken = await getAccessToken(player);
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
+    accessToken: accessToken,
     accessTier: player.accessTier,
     projectId: player.projectId,
     summary: player.summary,
@@ -44,8 +96,10 @@ const appendContinuousPlaybackContentFromApi = async (player) => {
 };
 
 const setPropsFromApi = async (player) => {
+  const accessToken = await getAccessToken(player);
   const client = new PlayerApiClient({
     playerApiUrl: player.playerApiUrl,
+    accessToken: accessToken,
     accessTier: player.accessTier,
     projectId: player.projectId,
     summary: player.summary,
