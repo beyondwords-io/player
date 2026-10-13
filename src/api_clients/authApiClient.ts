@@ -15,6 +15,11 @@ type AgentSession = {
   expires_at: number;
 };
 
+type AccessSession = {
+  access_token: string;
+  expires_at: number;
+};
+
 class AuthApiClient {
   baseUrl: string;
   projectId: number;
@@ -42,7 +47,21 @@ class AuthApiClient {
       : undefined;
 
     if (typeof credential !== "string" || !credential) {
-      throwError(`The auth service returned no session credential for ${this.lastRequestUrl}`, { responseJson: session });
+      throwError(`The auth service returned no agent session credentials`, { responseJson: session });
+    }
+
+    return session;
+  }
+
+  async verify({ integrationType, sessionToken }: { integrationType: string; sessionToken: string }): Promise<AccessSession> {
+    const session = await this.#postJson("verify", {
+      project_id: this.projectId,
+      integration_type: integrationType,
+      session_token: sessionToken,
+    });
+
+    if (typeof session?.access_token !== "string" || !session.access_token) {
+      throwError(`The auth service returned no access session credentials`, { responseJson: session });
     }
 
     return session;
@@ -57,4 +76,4 @@ class AuthApiClient {
 }
 
 export default AuthApiClient;
-export type { AgentSessionMode, AgentSession };
+export type { AgentSessionMode, AgentSession, AccessSession };
