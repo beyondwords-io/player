@@ -30,7 +30,7 @@ class PlayerApiClient {
     continuousPlaybackMode?: string;
     wordHighlightsEnabled?: boolean;
     accessTier?: string;
-    accessToken?: string;
+    accessToken?: string | null;
   }) {
     this.baseUrl = playerApiUrl?.replace("{id}", String(projectId));
     this.summary = summary;

@@ -32,7 +32,7 @@ const getAccessToken = async (player): Promise<string | null> => {
 
   const key = JSON.stringify([player.authProvider, player.authApiUrl, player.projectId]);
   const cached = accessSessionCache.get(player);
-  if (cached?.key === key && !isAccessSessionExpired(cached)) return cached.token;
+  if (cached?.key === key && !isAccessSessionExpired(cached)) return cached.access_token;
   accessSessionCache.delete(player);
 
   let sessionToken: string;
@@ -52,7 +52,7 @@ const getAccessToken = async (player): Promise<string | null> => {
   }
 
   accessSessionCache.set(player, { ...accessSession, key });
-  return accessSession.token;
+  return accessSession.access_token;
 };
 
 const appendContinuousPlaybackContentFromApi = async (player) => {

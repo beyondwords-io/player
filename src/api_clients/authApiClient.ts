@@ -16,7 +16,7 @@ type AgentSession = {
 };
 
 type AccessSession = {
-  token: string;
+  access_token: string;
   expires_at: number;
 };
 
@@ -60,7 +60,7 @@ class AuthApiClient {
       session_token: sessionToken,
     });
 
-    if (typeof session?.token !== "string" || !session.token) {
+    if (typeof session?.access_token !== "string" || !session.access_token) {
       throwError(`The auth service returned no access session credentials`, { responseJson: session });
     }
 
