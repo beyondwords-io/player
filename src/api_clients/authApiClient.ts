@@ -48,8 +48,9 @@ class AuthApiClient {
     const session = await this.#postJson("agent/session", {
       project_id: this.projectId,
       mode,
-      integration_type: integrationType,
-      session_token: sessionToken,
+      ...(integrationType && sessionToken
+        ? { integration_type: integrationType, session_token: sessionToken }
+        : {}),
     });
 
     const credential = session?.connection_type === "webrtc" ? session.conversation_token
