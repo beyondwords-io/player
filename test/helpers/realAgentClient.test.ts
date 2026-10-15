@@ -43,9 +43,10 @@ const fakeSdk = () => {
 // A fake AuthApiClient with the auth service's two answers: a signed websocket
 // url for text, a WebRTC token for voice. Each call returns a distinct
 // credential, as the real one does.
-const fakeAuthClient = (calls = { modes: [] }) => ({
-  agentSession: async ({ mode }) => {
+const fakeAuthClient = (calls = { modes: [], sessions: [] }) => ({
+  agentSession: async ({ mode, ...credentials }) => {
     calls.modes.push(mode);
+    calls.sessions.push(credentials);
     const n = calls.modes.length;
 
     return mode === "voice"
@@ -57,6 +58,7 @@ const fakeAuthClient = (calls = { modes: [] }) => ({
 const newClient = (overrides = {}) => {
   const { sdk, calls } = fakeSdk();
   calls.modes = [];
+  calls.sessions = [];
 
   const client = new RealAgentClient({
     agentId: "agent_123",
@@ -145,6 +147,40 @@ describe("realAgentClient", () => {
       "wss://api.elevenlabs.io/v1/convai/conversation?conversation_signature=sig_1",
       "wss://api.elevenlabs.io/v1/convai/conversation?conversation_signature=sig_2",
     ]);
+  });
+
+  it("asks for an anonymous session when the player has no auth provider", async () => {
+    const { client, calls } = newClient();
+
+    await client.startSession();
+
+    expect(calls.sessions).toEqual([{ integrationType: undefined, sessionToken: undefined }]);
+  });
+
+  it("sends the reader's session token with the auth request, as verify does", async () => {
+    const fetchMock = vi.fn(async () => ({ status: 200, text: async () => "ghost_session_token" }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { client, calls } = newClient({ authProvider: "ghost" });
+    await client.startSession();
+
+    expect(fetchMock).toHaveBeenCalledWith("/members/api/session");
+    expect(calls.sessions).toEqual([{ integrationType: "ghost", sessionToken: "ghost_session_token" }]);
+    expect(calls.configs[0]).toMatchObject({ connectionType: "webrtc", conversationToken: "token_1" });
+
+    vi.unstubAllGlobals();
+  });
+
+  it("falls back to an anonymous session when the provider has no token", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => ({ status: 401, text: async () => "" })));
+
+    const { client, calls } = newClient({ authProvider: "ghost" });
+    await client.startSession();
+
+    expect(calls.sessions).toEqual([{ integrationType: undefined, sessionToken: undefined }]);
+    expect(calls.configs, "the session still opens").toHaveLength(1);
+
+    vi.unstubAllGlobals();
   });
 
   it("treats a refused auth request as a failed connect", async () => {

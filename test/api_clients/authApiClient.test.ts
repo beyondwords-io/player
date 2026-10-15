@@ -14,8 +14,30 @@ describe("AuthApiClient", () => {
     const result = await client.agentSession({ mode: "text" });
 
     expect(result).toEqual(json);
-    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "text", integration_type: undefined, session_token: undefined });
+    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "text" });
+    expect(Object.keys(mocks.postJson.mock.calls[0][1]), "an anonymous reader sends no credential fields").toEqual(["project_id", "mode"]);
     expect(client.lastRequestUrl).toEqual("https://auth.example.com/agent/session");
+  });
+
+  it("sends the reader's credentials with the agent session request", async () => {
+    mocks.postJson.mockResolvedValue({ connection_type: "websocket", signed_url: "wss://example.com/agent", expires_at: 1790597571 });
+    const client = new AuthApiClient({ authApiUrl: "https://auth.example.com", projectId: 2476 });
+
+    await client.agentSession({ mode: "text", integrationType: "ghost", sessionToken: "ghost_session_token" });
+
+    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "text", integration_type: "ghost", session_token: "ghost_session_token" });
+  });
+
+  it("drops the credentials unless both parts are present", async () => {
+    mocks.postJson.mockResolvedValue({ connection_type: "websocket", signed_url: "wss://example.com/agent", expires_at: 1790597571 });
+    const client = new AuthApiClient({ authApiUrl: "https://auth.example.com", projectId: 2476 });
+
+    await client.agentSession({ mode: "text", integrationType: "ghost" });
+    await client.agentSession({ mode: "text", sessionToken: "ghost_session_token" });
+
+    for (const [, body] of mocks.postJson.mock.calls) {
+      expect(Object.keys(body)).toEqual(["project_id", "mode"]);
+    }
   });
 
   it("supports voice sessions", async () => {
@@ -24,7 +46,7 @@ describe("AuthApiClient", () => {
 
     const result = await client.agentSession({ mode: "voice" });
 
-    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "voice", integration_type: undefined, session_token: undefined });
+    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "voice" });
     expect(result).toMatchObject({ connection_type: "webrtc", conversation_token: "eyJ.token" });
   });
 
