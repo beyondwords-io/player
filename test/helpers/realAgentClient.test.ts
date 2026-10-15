@@ -44,7 +44,7 @@ const fakeSdk = () => {
 // url for text, a WebRTC token for voice. Each call returns a distinct
 // credential, as the real one does.
 const fakeAuthClient = (calls = { modes: [] }) => ({
-  agentSession: async (mode) => {
+  agentSession: async ({ mode }) => {
     calls.modes.push(mode);
     const n = calls.modes.length;
 

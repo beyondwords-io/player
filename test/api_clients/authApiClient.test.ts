@@ -11,10 +11,10 @@ describe("AuthApiClient", () => {
     mocks.postJson.mockResolvedValue(json);
     const client = new AuthApiClient({ authApiUrl: "https://auth.example.com", projectId: 2476 });
 
-    const result = await client.agentSession("text");
+    const result = await client.agentSession({ mode: "text" });
 
     expect(result).toEqual(json);
-    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "text" });
+    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "text", integration_type: undefined, session_token: undefined });
     expect(client.lastRequestUrl).toEqual("https://auth.example.com/agent/session");
   });
 
@@ -22,9 +22,9 @@ describe("AuthApiClient", () => {
     mocks.postJson.mockResolvedValue({ connection_type: "webrtc", conversation_token: "eyJ.token", expires_at: 1790606290 });
     const client = new AuthApiClient({ authApiUrl: "https://auth.example.com", projectId: 2476 });
 
-    const result = await client.agentSession("voice");
+    const result = await client.agentSession({ mode: "voice" });
 
-    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "voice" });
+    expect(mocks.postJson).toHaveBeenCalledWith("https://auth.example.com/agent/session", { project_id: 2476, mode: "voice", integration_type: undefined, session_token: undefined });
     expect(result).toMatchObject({ connection_type: "webrtc", conversation_token: "eyJ.token" });
   });
 
@@ -39,7 +39,7 @@ describe("AuthApiClient", () => {
       null,
     ]) {
       mocks.postJson.mockResolvedValueOnce(json);
-      await expect(client.agentSession("text"), JSON.stringify(json)).rejects.toThrow(/returned no agent session credentials/);
+      await expect(client.agentSession({ mode: "text" }), JSON.stringify(json)).rejects.toThrow(/returned no agent session credentials/);
     }
   });
 });

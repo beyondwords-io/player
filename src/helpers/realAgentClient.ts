@@ -2,7 +2,8 @@ import translate from "./translate";
 import { writable } from "svelte/store";
 import type { Subscriber, Writable } from "svelte/store";
 import type AuthApiClient from "../api_clients/authApiClient";
-import type { AgentSession } from "../api_clients/authApiClient";
+import type { AgentSession, AgentSessionMode } from "../api_clients/authApiClient";
+import getUserSession from "./getUserSession";
 import type {
   AgentCitation,
   AgentClient,
@@ -32,6 +33,10 @@ import {
 // url for text, a WebRTC conversation token for voice. The agent id only says
 // that the project has an agent; it is never sent to the SDK.
 //
+// When the player has an auth provider, the reader's session token goes with
+// that request, the same way setPropsFromApi sends it to verify, so the auth
+// service can tie the agent session to the reader's access tier.
+//
 // SDK -> thread mapping notes:
 // - Text replies stream through onAgentChatResponsePart (start/delta/stop,
 //   correlated by event_id). Voice replies usually land whole through
@@ -58,6 +63,7 @@ interface ElevenLabsAgentSdk {
 interface RealAgentClientOptions {
   agentId?: string;
   authClient?: AuthApiClient;
+  authProvider?: string;
   sessionConfig?: AgentSessionConfig;
   dynamicVariables?: () => Record<string, unknown>;
   loadSdk?: () => Promise<ElevenLabsAgentSdk>;
@@ -67,6 +73,7 @@ interface RealAgentClientOptions {
 class RealAgentClient implements AgentClient {
   agentId: string | undefined;
   authClient: AuthApiClient | undefined;
+  authProvider: string | undefined;
   agentSessionConfig: AgentSessionConfig;
   sessionConfigKey: string;
   dynamicVariables: (() => Record<string, unknown>) | undefined;
@@ -91,9 +98,10 @@ class RealAgentClient implements AgentClient {
   #greetingOverrideSent = false;
   #greetingOverrideRejected = false;
 
-  constructor({ agentId, authClient, sessionConfig, dynamicVariables, loadSdk, silenceTimeoutMs }: RealAgentClientOptions = {}) {
+  constructor({ agentId, authClient, authProvider, sessionConfig, dynamicVariables, loadSdk, silenceTimeoutMs }: RealAgentClientOptions = {}) {
     this.agentId = agentId;
     this.authClient = authClient;
+    this.authProvider = authProvider;
     this.agentSessionConfig = sessionConfig || {};
     this.sessionConfigKey = JSON.stringify(this.agentSessionConfig);
     this.dynamicVariables = dynamicVariables;
@@ -142,7 +150,7 @@ class RealAgentClient implements AgentClient {
     this.#notify();
 
     try {
-      const [{ Conversation }, session] = await Promise.all([this.loadSdk(), this.authClient.agentSession(kind)]);
+      const [{ Conversation }, session] = await Promise.all([this.loadSdk(), this.#agentSession(kind)]);
       if (epoch !== this.#epoch) { return; }
 
       const conversation = await Conversation.startSession(this.#sessionConfig(epoch, textOnly, session));
@@ -167,6 +175,21 @@ class RealAgentClient implements AgentClient {
       this.#dropEmptyReply();
       this.#notify();
     }
+  }
+
+  // The reader's credentials are read fresh for every session: the session
+  // token can change between sessions (sign in, sign out) and the credential
+  // the auth service hands back is single-use anyway.
+  async #agentSession(mode: AgentSessionMode): Promise<AgentSession> {
+    if (!this.authClient)
+      throw new Error("no auth client to start an agent session with");
+
+    const userSession = this.authProvider ? await getUserSession(this.authProvider) : null;
+    return this.authClient.agentSession({
+      mode,
+      integrationType: userSession?.authProvider,
+      sessionToken: userSession?.sessionToken,
+    });
   }
 
   // Typed asks work inside a voice call - same conversation, replies stay
