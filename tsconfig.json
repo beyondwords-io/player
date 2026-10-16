@@ -25,6 +25,7 @@
     "src/helpers/agentLimits.ts",
     "src/helpers/defaultPlayerLayout.ts",
     "src/helpers/defaultWidgetGeometry.ts",
+    "src/helpers/fetchJson.ts",
     "src/helpers/mediaQuery.ts",
     "src/helpers/realAgentClient.ts",
     "src/helpers/throwError.ts",

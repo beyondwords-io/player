@@ -2,7 +2,7 @@ import { name } from "../../package.json";
 
 type ErrorMessage = string | string[];
 
-const throwError = (message: ErrorMessage, context?: Record<string, unknown>): never => {
+const formatErrorMessage = (message: ErrorMessage, context?: Record<string, unknown>): string => {
   message = [message].flat().join("\n");
 
   let error = `${name}:\n\n${message}`;
@@ -17,7 +17,12 @@ const throwError = (message: ErrorMessage, context?: Record<string, unknown>): n
     error += "\n";
   }
 
-  throw new Error(error);
+  return error;
+};
+
+const throwError = (message: ErrorMessage, context?: Record<string, unknown>): never => {
+  throw new Error(formatErrorMessage(message, context));
 };
 
 export default throwError;
+export { formatErrorMessage };

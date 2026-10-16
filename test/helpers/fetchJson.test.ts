@@ -24,6 +24,8 @@ describe("fetchJson", () => {
     fetchMock.mockResolvedValue({ status: 403, json: async () => ({ error: "Forbidden" }) });
     await expect(postJson("https://example.com/agent/session", { project_id: undefined, mode: "text" }))
       .rejects.toThrow("responseStatus: 403");
+    await expect(postJson("https://example.com/agent/session", { project_id: undefined, mode: "text" }))
+      .rejects.toMatchObject({ status: 403, responseStatus: 403, json: { error: "Forbidden" } });
     expect(fetchMock).toHaveBeenCalledWith("https://example.com/agent/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
