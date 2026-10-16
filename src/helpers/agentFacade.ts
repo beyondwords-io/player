@@ -295,14 +295,20 @@ class AgentFacade implements Readable<AgentSnapshot> {
     };
 
     if (!trimmed) { return rejected("empty"); }
-    // No agent: no thread row, no metering (a dead composer stays honest).
-    if (!this.#context.configured) { return rejected("not_configured"); }
 
+    // Locked consumption before the configured gate: appendLocked is purely
+    // local, so the tease (question kept on screen + the publisher's offer)
+    // never needs an agentId - publishers lock the agent as a subscription
+    // tease without wiring one.
     const policy = this.getState().policy;
     if (policy.locked) {
       this.#client.appendLocked(trimmed);
       return rejected("locked");
     }
+
+    // No agent: no thread row, no metering (a dead composer stays honest).
+    if (!this.#context.configured) { return rejected("not_configured"); }
+
     if (policy.budgetSpent) { return rejected("budget_spent"); }
     if (!policy.textAvailable) { return rejected("no_questions_remaining"); }
 
