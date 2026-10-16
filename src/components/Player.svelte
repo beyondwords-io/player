@@ -216,21 +216,22 @@
   let agentClient = new RealAgentClient();
   let pausedForAgentCall = false;
 
-  $: syncAgentClient(agentId, agentSessionConfig, authApiUrl, projectId);
+  $: syncAgentClient(agentId, agentSessionConfig, authApiUrl, authProvider, projectId);
 
-  const syncAgentClient = (id, sessionConfig, authApiUrl, projectId) => {
+  const syncAgentClient = (id, sessionConfig, authApiUrl, authProvider, projectId) => {
     const wantedId = typeof id === "string" && id.trim().length > 0 ? id.trim() : null;
     const currentId = agentClient.agentId?.trim() || null;
     const wantedConfigKey = JSON.stringify(sessionConfig || {});
     const currentConfigKey = agentClient.sessionConfigKey;
-    const wantedAuthKey = JSON.stringify([authApiUrl, projectId]);
-    const currentAuthKey = JSON.stringify([agentClient.authClient?.baseUrl, agentClient.authClient?.projectId]);
+    const wantedAuthKey = JSON.stringify([authApiUrl, authProvider, projectId]);
+    const currentAuthKey = JSON.stringify([agentClient.authClient?.baseUrl, agentClient.authProvider, agentClient.authClient?.projectId]);
     if (wantedId === currentId && wantedConfigKey === currentConfigKey && wantedAuthKey === currentAuthKey) { return; }
 
     agentClient.endSession();
     agentClient = new RealAgentClient({
       agentId: wantedId || undefined,
       authClient: new AuthApiClient({ authApiUrl, projectId }),
+      authProvider,
       sessionConfig,
       dynamicVariables: agentDynamicVariables,
     });
