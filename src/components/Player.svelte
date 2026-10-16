@@ -17,6 +17,7 @@
   import identifiersEvent from "../helpers/identifiersEvent";
   import newEvent from "../helpers/newEvent";
   import RealAgentClient from "../helpers/realAgentClient";
+  import AgentFacade from "../helpers/agentFacade";
   import sectionEnabled from "../helpers/sectionEnabled";
   import { findByQuery }  from "../helpers/resolveTarget";
   import { knownPlayerStyle } from "../helpers/playerStyles";
@@ -235,6 +236,11 @@
       sessionConfig,
       dynamicVariables: agentDynamicVariables,
     });
+
+    // The old client's endSession above already flushed its end (and any
+    // queue drop) through the facade's still-attached subscription, so the
+    // swap itself never emits a session event.
+    agent.setClient(agentClient);
   };
 
   // MCP routing plus per-page prompt context, read at session start so the
@@ -278,6 +284,38 @@
 
   const useAgentQuestion = () => agentAllowance.useQuestion();
 
+  // The public player.agent surface: one stable facade per player (it follows
+  // client swaps via setClient above), merging client state, the allowance and
+  // the access policy into immutable, reference-stable snapshots, and owning
+  // policy and metering enforcement for every caller. Placed after the
+  // addEventListener region so the settings manifest's export-let scan never
+  // sees it; it is also ignored by properties() via playerPropsToIgnore.
+  export const agent = new AgentFacade({
+    client: agentClient,
+    allowance: agentAllowance,
+    emit: (props) => onEvent(newEvent(props)),
+  });
+
+  // The first run happens during component init and primes the facade, so
+  // construction emits no Agent* events.
+  $: agent.updateContext({
+    configured: typeof agentId === "string" && agentId.trim().length > 0,
+    embedMode,
+    widgetEmbedMode: effectiveWidgetEmbedMode,
+    // || not ?? - DefaultInterface parity: an explicitly blanked ("") agent
+    // CTA still inherits the access CTA, and the chat-button aria-label keeps
+    // using the same || locally, so the two surfaces agree.
+    cta: { text: agentCtaText || accessCtaText, url: agentCtaUrl || accessCtaUrl },
+    config: {
+      name: agentName,
+      placeholder: agentPlaceholder,
+      shortcuts: Array.isArray(shortcuts) ? shortcuts : [],
+      avatar: agentAvatar,
+      color: agentColor,
+      voiceEnabled: !!agentVoice,
+    },
+  });
+
   const syncAgentCallPlayback = (live, state) => {
     // The transport stays visible beside Chat. If it is pressed during a call,
     // immediately restore the call's pause instead of letting both audio
@@ -288,7 +326,7 @@
       onEvent(newEvent({
         type: "PressedPause",
         description: "The pause button was pressed.",
-        initiatedBy: "user",
+        initiatedBy: "player",
       }));
     }
 
@@ -298,7 +336,7 @@
       onEvent(newEvent({
         type: "PressedPlay",
         description: "The play button was pressed.",
-        initiatedBy: "user",
+        initiatedBy: "player",
       }));
     }
   };
@@ -492,6 +530,8 @@
   $: segmentHighlights.update("hovered", hoveredSegment, { sections: [highlightSections, clickableSections], background: activeHighlightColor, wordHighlightColor: activeWordHighlightColor, currentTime, activeMarker: currentActiveMarker, wordHighlightsEnabled: wordHighlightsActive });
 
   onDestroy(() => {
+    // The facade detaches its hooks first, so teardown emits nothing.
+    agent.destroy();
     unsubscribeAgentAllowance();
     agentAllowance.destroy();
     agentClient.endSession();

@@ -5,6 +5,9 @@ const playerPropsToIgnore = new Set([
   "userInterface",
   "widgetInterface",
   "controller",
+  // The public agent facade: its snapshots must never enter an event's
+  // changedProps diff or reach analytics.
+  "agent",
   "videoPlayerStyleAlias",
 
   // Debugging aids, and a fresh object on every response, so they would add
