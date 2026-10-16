@@ -83,6 +83,22 @@ class AgentAllowanceState implements Readable<AgentAllowanceSnapshot> {
     this.#notify();
   }
 
+  // Gives back a question whose message never reached the server (the facade
+  // calls this when queued messages are dropped). No-op for unlimited budgets
+  // and when nothing was used.
+  refundQuestion(): void {
+    const { questionsLimit, questionsUsed } = this.#snapshot;
+    if (questionsLimit === null || questionsUsed === 0) { return; }
+
+    const nextUsed = questionsUsed - 1;
+    this.#snapshot = {
+      ...this.#snapshot,
+      questionsUsed: nextUsed,
+      questionsRemaining: remainingAgentLimit(questionsLimit, nextUsed),
+    };
+    this.#notify();
+  }
+
   setVoiceLive(live: boolean): void {
     if (live === this.#voiceLive) { return; }
     this.#voiceLive = live;
