@@ -656,11 +656,14 @@ class AgentFacade implements Readable<AgentSnapshot> {
     }
 
     if (snapshot.status !== prevStatus) {
+      // Not "status": every event carries its own lifecycle status field
+      // ("pending" until processed), and validateEventBeforeProcessing
+      // rejects anything else, so the payload would make the event undeliverable.
       this.#emit({
         type: "AgentStatusChanged",
         description: "The agent session status changed.",
         initiatedBy: "agent",
-        status: snapshot.status,
+        sessionStatus: snapshot.status,
       });
     }
 
