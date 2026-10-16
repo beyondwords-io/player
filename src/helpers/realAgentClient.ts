@@ -7,7 +7,11 @@ import getUserSession from "./getUserSession";
 import type {
   AgentCitation,
   AgentClient,
+  AgentDelivery,
   AgentEndReason,
+  AgentErrorCode,
+  AgentMessage,
+  AgentOpResult,
   AgentReplyMessage,
   AgentSessionConfig,
   AgentSessionOptions,
@@ -18,6 +22,7 @@ import {
   citationsForAgentText,
   mergeAgentCitations,
 } from "./agentLinks";
+import { HttpError } from "./fetchJson";
 
 // The live agent client for the default player's Chat/Talk surfaces, backed by
 // the ElevenLabs Agents SDK.
@@ -46,6 +51,11 @@ import {
 //   tap-to-interrupt, and interrupt() only stops the local text reveal.
 
 const SILENCE_TIMEOUT_MS = 30_000;
+
+// Tags a start-session leg whose outcome is not yet known, so a fail-fast
+// rejection can still be classified against the sibling that failed in the
+// same tick.
+const UNSETTLED = Symbol("unsettled");
 
 interface AgentConversation {
   endSession?: () => Promise<void> | void;
@@ -86,7 +96,12 @@ class RealAgentClient implements AgentClient {
   store: Writable<AgentState>;
   silenceTimer: ReturnType<typeof setTimeout> | null;
 
+  // Facade hook: queued (undelivered) messages were flushed or discarded.
+  onQueueSettled: ((outcome: "delivered" | "dropped", count: number) => void) | null = null;
+
   #conversation: AgentConversation | null = null;
+  #lastFailedAttempt: { textOnly: boolean } | null = null;
+  #awaitingDisconnectDetails = false;
   #queued: string[] = [];
   #epoch = 0;
   #partTurnId: number | null = null;
@@ -111,7 +126,7 @@ class RealAgentClient implements AgentClient {
       ?? (typeof window !== "undefined" && (window as { __agentSilenceTimeoutMs?: number }).__agentSilenceTimeoutMs)
       ?? SILENCE_TIMEOUT_MS;
 
-    this.state = { kind: "none", status: "idle", muted: false, thread: [], announced: "" };
+    this.state = { kind: "none", status: "idle", muted: false, thread: [], announced: "", error: null, lastEnd: null };
     this.store = writable(this.state);
     this.silenceTimer = null;
   }
@@ -147,34 +162,80 @@ class RealAgentClient implements AgentClient {
       this.state.muted = false;
     }
 
+    // Published with the optimistic state: subscribers see the error drop the
+    // moment a retry starts, and a repeat failure with the same code reads as
+    // a change again (null -> code).
+    this.state.error = null;
+
     this.#notify();
 
+    // Each leg records its own outcome so a fail-fast rejection can still be
+    // classified against the sibling that failed in the same tick.
+    let sdkFailure: unknown = UNSETTLED;
+    let sessionFailure: unknown = UNSETTLED;
+    const sdkPromise = this.loadSdk().then(
+      (sdk) => { sdkFailure = null; return sdk; },
+      (error) => { sdkFailure = error ?? new Error("sdk load failed"); throw error; });
+    const sessionPromise = this.#agentSession(kind).then(
+      (session) => { sessionFailure = null; return session; },
+      (error) => { sessionFailure = error ?? new Error("agent session failed"); throw error; });
+
+    // The leg that loses the race must not surface as an unhandled rejection.
+    sdkPromise.catch(() => {});
+    sessionPromise.catch(() => {});
+
+    let Conversation: ElevenLabsAgentSdk["Conversation"];
+    let session: AgentSession;
     try {
-      const [{ Conversation }, session] = await Promise.all([this.loadSdk(), this.#agentSession(kind)]);
+      [{ Conversation }, session] = await Promise.all([sdkPromise, sessionPromise]);
+    } catch (raceError) {
+      if (epoch !== this.#epoch) { return; }
+      // One microtask of grace: a sibling that failed in the same tick is now
+      // tagged, so the original classification priority applies to it too.
+      await Promise.resolve();
       if (epoch !== this.#epoch) { return; }
 
-      const conversation = await Conversation.startSession(this.#sessionConfig(epoch, textOnly, session));
+      const sessionKnown = sessionFailure !== UNSETTLED && sessionFailure !== null;
+      const sdkKnown = sdkFailure !== UNSETTLED && sdkFailure !== null;
 
-      // Ended or cancelled while connecting: the session opened, so close it.
-      if (epoch !== this.#epoch) {
-        const ending = conversation.endSession?.();
-        if (ending instanceof Promise) { ending.catch(() => {}); }
+      // A definite server answer outranks a load failure (both usually fail
+      // together offline, and then neither has a numeric status).
+      if (sessionKnown && sessionFailure instanceof HttpError && typeof sessionFailure.status === "number") {
+        this.#failStart(textOnly, this.#sessionErrorCode(sessionFailure), sessionFailure);
         return;
       }
-
-      this.#conversation = conversation;
-      this.#flushQueued();
-    } catch (error) {
-      if (epoch !== this.#epoch) { return; }
-
-      console.warn(`BeyondWords.Player agent session failed: ${error}`);
-      this.#resetToIdle();
-
-      // A failed connect never started, so like Cancel it leaves no mark; a
-      // reply bubble that never got any text goes with it.
-      this.#dropEmptyReply();
-      this.#notify();
+      if (sdkKnown) {
+        this.#failStart(textOnly, "sdk_load_failed", sdkFailure);
+        return;
+      }
+      this.#failStart(textOnly, this.#sessionErrorCode(sessionKnown ? sessionFailure : raceError),
+        sessionKnown ? sessionFailure : raceError);
+      return;
     }
+    if (epoch !== this.#epoch) { return; }
+
+    let conversation: AgentConversation;
+    try {
+      conversation = await Conversation.startSession(this.#sessionConfig(epoch, textOnly, session));
+    } catch (error) {
+      // A voice connect failure fires a details-less "disconnected" status
+      // first; #handleStatusChange ignores it while connecting, so the epoch
+      // is still intact here and the failure gets classified.
+      if (epoch !== this.#epoch) { return; }
+      this.#failStart(textOnly, this.#connectErrorCode(textOnly, error), error);
+      return;
+    }
+
+    // Ended or cancelled while connecting: the session opened, so close it.
+    if (epoch !== this.#epoch) {
+      const ending = conversation.endSession?.();
+      if (ending instanceof Promise) { ending.catch(() => {}); }
+      return;
+    }
+
+    this.#conversation = conversation;
+    this.#lastFailedAttempt = null;
+    this.#flushQueued();
   }
 
   // The reader's credentials are read fresh for every session: the session
@@ -192,13 +253,49 @@ class RealAgentClient implements AgentClient {
     });
   }
 
+  #failStart(textOnly: boolean, code: AgentErrorCode, error: unknown): void {
+    console.warn(`BeyondWords.Player agent session failed: ${error}`);
+
+    this.#lastFailedAttempt = { textOnly };
+    this.#resetToIdle();
+    this.state.lastEnd = "failed";
+    this.state.error = {
+      code,
+      mode: textOnly ? "text" : "voice",
+      message: error instanceof Error ? error.message : String(error ?? ""),
+    };
+
+    // A failed connect never started, so like Cancel it leaves no mark; a
+    // reply bubble that never got any text goes with it.
+    this.#dropEmptyReply();
+    this.#notify();
+  }
+
+  // The auth service answered: classify by its HTTP status.
+  #sessionErrorCode(error: unknown): AgentErrorCode {
+    if (!(error instanceof HttpError)) { return "network"; }
+    if (error.status === 404) { return "not_configured"; }
+    if (error.status === 503) { return "agent_unavailable"; }
+    if (error.status === 400) { return "invalid_request"; }
+    if (error.status === undefined) { return "network"; } // fetch TypeError path
+    return error.status >= 500 ? "agent_unavailable" : "invalid_request"; // unmapped statuses
+  }
+
+  // The SDK's connect failed; the mic only exists for voice sessions.
+  #connectErrorCode(textOnly: boolean, error: unknown): AgentErrorCode {
+    const name = (error as { name?: string } | null)?.name;
+    if (!textOnly && name === "NotAllowedError") { return "mic_denied"; }
+    if (!textOnly && name === "NotFoundError") { return "mic_unavailable"; }
+    return "connection_failed";
+  }
+
   // Typed asks work inside a voice call - same conversation, replies stay
   // spoken. Sending over a reply starts a new turn; the server interrupts the
   // agent for us, we just close the on-screen reveal.
-  sendUserMessage(text: string): void {
+  sendUserMessage(text: string): AgentDelivery {
     if (!this.agentId) {
       console.warn("BeyondWords.Player cannot send an agent message without an agentId.");
-      return;
+      return "dropped";
     }
 
     if (this.state.kind === "none") { this.startSession({ textOnly: true }); }
@@ -219,9 +316,11 @@ class RealAgentClient implements AgentClient {
 
     if (this.#conversation) {
       this.#conversation.sendUserMessage(text);
-    } else {
-      this.#queued.push(text);
+      return "sent";
     }
+
+    this.#queued.push(text);
+    return "queued";
   }
 
   // Keystrokes: the agent holds instead of talking over you.
@@ -275,6 +374,7 @@ class RealAgentClient implements AgentClient {
 
     this.#finalizeReply(this.#streamingReply(), { interrupted: true });
     this.#resetToIdle();
+    this.state.lastEnd = reason;
 
     if (wasVoice && reason !== "switched") {
       this.state.thread = [...this.state.thread, { role: "divider", text: translate("chatEnded") }];
@@ -290,7 +390,27 @@ class RealAgentClient implements AgentClient {
     if (this.state.status !== "connecting") { return; }
 
     this.#resetToIdle();
+    this.state.lastEnd = "cancelled";
     this.#notify();
+  }
+
+  // Re-attempt the last failed startSession. This is the low-level hook: the
+  // public path is the facade's retry(), which re-gates policy first.
+  retry(): AgentOpResult {
+    if (!this.state.error || !this.#lastFailedAttempt) { return { ok: false, reason: "nothing_to_retry" }; }
+
+    const { textOnly } = this.#lastFailedAttempt;
+    // Entry clears state.error (published before the optimistic notify).
+    this.startSession({ textOnly });
+    return { ok: true };
+  }
+
+  clearError(): AgentOpResult {
+    if (this.state.error) {
+      this.state.error = null;
+      this.#notify();
+    }
+    return { ok: true };
   }
 
   // A locked agent takes the question without a session and answers with the
@@ -387,7 +507,28 @@ class RealAgentClient implements AgentClient {
       this.#armSilenceTimer();
     }
 
-    if (status === "disconnected") { this.#handleDisconnected(); }
+    if (status === "disconnected") {
+      // A voice CONNECT failure fires this status synchronously inside the
+      // SDK's catch and then rethrows (VoiceConversation setupStrategy). The
+      // startSession rejection catch owns that classification, so a
+      // details-less disconnect while we are still connecting is ignored here
+      // - otherwise its handling (sync before this fix, deferred below) would
+      // reset the epoch first and the catch would be silently skipped:
+      // mic_denied/mic_unavailable/connection_failed, retry and AgentErrored
+      // would all be dead for voice.
+      if (this.state.status === "connecting") { return; }
+
+      // Mid-call: the SDK fires this status synchronously BEFORE
+      // onDisconnect(details) in the same frame (BaseConversation's
+      // endSessionWithDetails), so one microtask is enough for the details to
+      // win; the fallback covers stubs that only emit a status.
+      const epoch = this.#epoch; // not yet reset at this point
+      this.#awaitingDisconnectDetails = true;
+      queueMicrotask(() => {
+        if (!this.#awaitingDisconnectDetails || epoch !== this.#epoch) { return; }
+        this.#handleDisconnected();
+      });
+    }
   }
 
   #handleModeChange(mode) {
@@ -451,8 +592,7 @@ class RealAgentClient implements AgentClient {
 
     if (matchingPartsReply?.text) {
       const changed = matchingPartsReply.text !== message || matchingPartsReply.streaming;
-      matchingPartsReply.text = message;
-      this.#finalizeReply(matchingPartsReply);
+      this.#finalizeReply(this.#patchRow(matchingPartsReply, { text: message }));
       if (changed) { this.#notify(); }
       return;
     }
@@ -470,14 +610,20 @@ class RealAgentClient implements AgentClient {
     const pending = this.#streamingReply();
 
     if (pending && pending.text === "") {
-      pending.typing = false;
-      pending.text = message;
-      pending.eventId = eventId;
-      this.#finalizeReply(pending);
+      this.#finalizeReply(this.#patchRow(pending, { typing: false, text: message, eventId }));
     } else if (!pending) {
-      const reply: AgentReplyMessage = { role: "agent", text: message, citations: [], streaming: false, typing: false, spoken: this.state.kind === "voice", eventId, sessionEpoch: this.#epoch };
-      this.#applyPendingCitations(reply);
-      reply.citations = citationsForAgentText(reply.text, reply.citationCandidates || []);
+      const citationCandidates = this.#takePendingCitations();
+      const reply: AgentReplyMessage = {
+        role: "agent",
+        text: message,
+        citations: citationsForAgentText(message, citationCandidates || []),
+        streaming: false,
+        typing: false,
+        spoken: this.state.kind === "voice",
+        eventId,
+        sessionEpoch: this.#epoch,
+        ...(citationCandidates ? { citationCandidates } : {}),
+      };
       this.state.thread = [...this.state.thread, reply];
       this.state.announced = message;
     } else {
@@ -511,10 +657,13 @@ class RealAgentClient implements AgentClient {
       }
 
       const pending = this.#streamingReply();
-      pending.eventId = eventId;
-      pending.fromParts = true;
-      pending.sessionEpoch = this.#epoch;
-      this.#applyPendingCitations(pending);
+      const citationCandidates = this.#takePendingCitations(pending.citationCandidates);
+      this.#patchRow(pending, {
+        eventId,
+        fromParts: true,
+        sessionEpoch: this.#epoch,
+        ...(citationCandidates ? { citationCandidates } : {}),
+      });
 
       return;
     }
@@ -530,8 +679,7 @@ class RealAgentClient implements AgentClient {
     if (!pending) { this.#partTurnId = null; return; }
 
     if (type === "delta") {
-      pending.typing = false;
-      pending.text += text ?? "";
+      this.#patchRow(pending, { typing: false, text: pending.text + (text ?? "") });
       this.#notify();
     }
 
@@ -563,8 +711,10 @@ class RealAgentClient implements AgentClient {
     if (!reply || reply.interrupted) { return; }
 
     const announcedReply = [...replies].reverse().find((row) => !row.streaming && row.text === this.state.announced);
-    reply.text = corrected;
-    reply.citations = citationsForAgentText(corrected, reply.citationCandidates || []);
+    this.#patchRow(reply, {
+      text: corrected,
+      citations: citationsForAgentText(corrected, reply.citationCandidates || []),
+    });
     if (announcedReply === reply) { this.state.announced = corrected; }
     this.#notify();
   }
@@ -596,16 +746,19 @@ class RealAgentClient implements AgentClient {
       return;
     }
 
-    reply.citationCandidates = mergeAgentCitations(reply.citationCandidates || [], citations);
-    if (!reply.streaming) {
-      reply.citations = citationsForAgentText(reply.text, reply.citationCandidates);
-    }
+    const citationCandidates = mergeAgentCitations(reply.citationCandidates || [], citations);
+    this.#patchRow(reply, {
+      citationCandidates,
+      ...(!reply.streaming ? { citations: citationsForAgentText(reply.text, citationCandidates) } : {}),
+    });
     this.#notify();
   }
 
   // The server ended it: the agent hung up, the connection dropped, or the
   // platform turned the session away.
-  #handleDisconnected(details = undefined) {
+  #handleDisconnected(details: { reason?: string; message?: unknown } | undefined = undefined) {
+    this.#awaitingDisconnectDetails = false;
+
     if (this.state.kind === "none") { return; }
 
     if (this.#isGreetingOverrideRejection(details)) { this.#retryWithoutGreetingOverride(); return; }
@@ -615,6 +768,12 @@ class RealAgentClient implements AgentClient {
     this.#dropEmptyReply();
     this.#finalizeReply(this.#streamingReply(), { interrupted: true });
     this.#resetToIdle();
+
+    this.state.lastEnd = "disconnected";
+    if (details?.reason === "error") {
+      // No mode: a dropped session is not retriable through retry().
+      this.state.error = { code: "disconnected", message: String(details?.message ?? "") };
+    }
 
     if (wasVoice) {
       this.state.thread = [...this.state.thread, { role: "divider", text: translate("chatEnded") }];
@@ -661,6 +820,30 @@ class RealAgentClient implements AgentClient {
     return last?.role === "agent" && last.streaming ? last : null;
   }
 
+  // Copy-on-write: every row mutation replaces the row object AND the thread
+  // array, so subscribers comparing by reference (React selectors, the facade
+  // row cache) see every change. Callers must use the returned row afterwards
+  // and re-fetch #streamingReply() after a patch.
+  #patchRow<T extends AgentMessage>(row: T, patch: Partial<T>): T {
+    const index = this.state.thread.indexOf(row);
+    if (index === -1) { return row; } // stale reference: ignore
+
+    const next = { ...row, ...patch } as T;
+    const thread = this.state.thread.slice();
+    thread[index] = next;
+    this.state.thread = thread;
+    return next;
+  }
+
+  // Citations gathered before their reply existed, merged in once it does.
+  #takePendingCitations(existing?: AgentCitation[]): AgentCitation[] | undefined {
+    if (this.#pendingCitations.length === 0) { return existing; }
+
+    const merged = mergeAgentCitations(existing || [], this.#pendingCitations);
+    this.#pendingCitations = [];
+    return merged;
+  }
+
   // A reply that never received any text is a blank bubble, not an answer.
   #dropEmptyReply() {
     const pending = this.#streamingReply();
@@ -669,20 +852,27 @@ class RealAgentClient implements AgentClient {
     this.state.thread = this.state.thread.slice(0, -1);
   }
 
-  #finalizeReply(reply: AgentReplyMessage | null, { interrupted = false }: { interrupted?: boolean } = {}): void {
-    if (!reply) { return; }
+  #finalizeReply(reply: AgentReplyMessage | null, { interrupted = false }: { interrupted?: boolean } = {}): AgentReplyMessage | null {
+    if (!reply) { return null; }
 
-    this.#applyPendingCitations(reply);
-    reply.streaming = false;
-    reply.typing = false;
-    reply.interrupted = interrupted;
-    reply.citations = interrupted ? [] : citationsForAgentText(reply.text, reply.citationCandidates || []);
-    if (!interrupted || reply.text) { this.state.announced = reply.text; }
-    if (reply.text) { this.#unanswered = []; }
+    const citationCandidates = this.#takePendingCitations(reply.citationCandidates);
+    const next = this.#patchRow(reply, {
+      streaming: false,
+      typing: false,
+      interrupted,
+      citations: interrupted ? [] : citationsForAgentText(reply.text, citationCandidates || []),
+      ...(citationCandidates ? { citationCandidates } : {}),
+    });
+    if (!interrupted || next.text) { this.state.announced = next.text; }
+    if (next.text) { this.#unanswered = []; }
     this.#partTurnId = null;
+    return next;
   }
 
   #resetToIdle() {
+    // Messages still queued never reached the server; the facade refunds them.
+    const dropped = this.#queued.length;
+
     this.#epoch += 1;
     this.#queued = [];
     this.#unanswered = [];
@@ -692,6 +882,7 @@ class RealAgentClient implements AgentClient {
     this.#ignoreNextAgentTurn = false;
     this.#ignoreNextUncorrelatedWholeMessage = false;
     this.#pendingCitations = [];
+    this.#awaitingDisconnectDetails = false;
     this.#disarmSilenceTimer();
 
     const ending = this.#conversation?.endSession?.();
@@ -701,18 +892,15 @@ class RealAgentClient implements AgentClient {
     this.state.kind = "none";
     this.state.status = "idle";
     this.state.muted = false;
-  }
 
-  #applyPendingCitations(reply: AgentReplyMessage) {
-    if (this.#pendingCitations.length === 0) { return; }
-    reply.citationCandidates = mergeAgentCitations(reply.citationCandidates || [], this.#pendingCitations);
-    this.#pendingCitations = [];
+    if (dropped > 0) { this.onQueueSettled?.("dropped", dropped); }
   }
 
   #flushQueued() {
     const queued = this.#queued;
     this.#queued = [];
     queued.forEach((text) => this.#conversation.sendUserMessage(text));
+    if (queued.length > 0) { this.onQueueSettled?.("delivered", queued.length); }
   }
 
   #conversationRows() {

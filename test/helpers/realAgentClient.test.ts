@@ -78,7 +78,7 @@ describe("realAgentClient", () => {
     const real = new RealAgentClient({ agentId: "agent_123" });
     const mock = new MockAgentClient();
 
-    for (const method of ["subscribe", "startSession", "sendUserMessage", "sendUserActivity", "setMicMuted", "interrupt", "endSession", "cancelConnect", "appendLocked"]) {
+    for (const method of ["subscribe", "startSession", "sendUserMessage", "sendUserActivity", "setMicMuted", "interrupt", "endSession", "cancelConnect", "appendLocked", "retry", "clearError"]) {
       expect(typeof real[method], method).toEqual("function");
       expect(typeof mock[method], method).toEqual("function");
     }

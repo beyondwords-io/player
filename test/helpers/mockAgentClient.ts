@@ -3,7 +3,10 @@ import { writable } from "svelte/store";
 import type { Subscriber, Writable } from "svelte/store";
 import type {
   AgentClient,
+  AgentDelivery,
   AgentEndReason,
+  AgentMessage,
+  AgentOpResult,
   AgentReplyMessage,
   AgentSessionOptions,
   AgentState,
@@ -80,6 +83,9 @@ class MockAgentClient implements AgentClient {
   // sessions show no connection state at all, so theirs stays "idle".
   state: AgentState;
 
+  // Facade hook: the mock delivers synchronously, so nothing ever queues.
+  onQueueSettled: ((outcome: "delivered" | "dropped", count: number) => void) | null = null;
+
   store: Writable<AgentState>;
   timers: Set<ReturnType<typeof setTimeout>>;
   silenceTimer: ReturnType<typeof setTimeout> | null;
@@ -93,7 +99,7 @@ class MockAgentClient implements AgentClient {
     this.silenceTimeoutMs = silenceTimeoutMs
       ?? (typeof window !== "undefined" && (window as { __agentSilenceTimeoutMs?: number }).__agentSilenceTimeoutMs)
       ?? SILENCE_TIMEOUT_MS;
-    this.state = { kind: "none", status: "idle", muted: false, thread: [], announced: "" };
+    this.state = { kind: "none", status: "idle", muted: false, thread: [], announced: "", error: null, lastEnd: null };
     this.store = writable(this.state);
     this.timers = new Set();
     this.silenceTimer = null;
@@ -150,11 +156,12 @@ class MockAgentClient implements AgentClient {
   // Typed asks work inside a voice call - same conversation, replies stay
   // spoken. A typed send while the agent is talking interrupts it, exactly
   // like speaking over it.
-  sendUserMessage(text: string): void {
+  sendUserMessage(text: string): AgentDelivery {
     if (this.state.kind === "none") { this.startSession({ textOnly: true }); }
     if (this.state.status === "talking") { this.interrupt(); }
 
     this.#ask(text, { spoken: this.state.kind === "voice" });
+    return "sent";
   }
 
   // Keystrokes: the agent holds instead of talking over you.
@@ -191,6 +198,7 @@ class MockAgentClient implements AgentClient {
     this.state.kind = "none";
     this.state.status = "idle";
     this.state.muted = false;
+    this.state.lastEnd = reason;
 
     if (wasVoice && reason !== "switched") {
       this.state.thread = [...this.state.thread, { role: "divider", text: translate("chatEnded") }];
@@ -206,7 +214,21 @@ class MockAgentClient implements AgentClient {
     this.#clearTimers();
     this.state.kind = "none";
     this.state.status = "idle";
+    this.state.lastEnd = "cancelled";
     this.#notify();
+  }
+
+  // The mock never fails to start, so there is never anything to retry.
+  retry(): AgentOpResult {
+    return { ok: false, reason: "nothing_to_retry" };
+  }
+
+  clearError(): AgentOpResult {
+    if (this.state.error) {
+      this.state.error = null;
+      this.#notify();
+    }
+    return { ok: true };
   }
 
   // What the reader said, delivered per utterance once they finish - there is
@@ -228,7 +250,10 @@ class MockAgentClient implements AgentClient {
   // private
 
   #ask(text: string, { spoken = false }: { spoken?: boolean } = {}): void {
-    const reply: AgentReplyMessage = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken };
+    // Copy-on-write, like the real client: every change to the reply replaces
+    // the row object and the thread array, so the local reference is
+    // reassigned from each patch.
+    let reply: AgentReplyMessage = { role: "agent", text: "", citations: [], streaming: true, typing: true, spoken };
 
     this.state.thread = [...this.state.thread, { role: "reader", text }, reply];
     if (spoken && this.state.kind === "voice") { this.state.status = "talking"; }
@@ -244,9 +269,7 @@ class MockAgentClient implements AgentClient {
     const deltas = answer.text.match(/\S+\s*/g) || [];
 
     const finish = (interrupted: boolean): void => {
-      reply.streaming = false;
-      reply.typing = false;
-      reply.citations = interrupted ? [] : answer.citations;
+      reply = this.#patchRow(reply, { streaming: false, typing: false, citations: interrupted ? [] : answer.citations });
       this.replying = false;
       this.stopReply = null;
       this.state.announced = reply.text;
@@ -267,8 +290,7 @@ class MockAgentClient implements AgentClient {
     const deliver = () => {
       if (index >= deltas.length) { finish(false); return; }
 
-      reply.typing = false;
-      reply.text += deltas[index];
+      reply = this.#patchRow(reply, { typing: false, text: reply.text + deltas[index] });
       index += 1;
       this.#notify();
 
@@ -282,7 +304,7 @@ class MockAgentClient implements AgentClient {
     };
 
     if (this.#instant()) {
-      deltas.forEach((delta) => { reply.text += delta; });
+      reply = this.#patchRow(reply, { text: reply.text + deltas.join("") });
       index = deltas.length;
       finish(false);
     } else {
@@ -291,6 +313,18 @@ class MockAgentClient implements AgentClient {
   }
 
   stopReply: (() => void) | null = null;
+
+  // Copy-on-write row replacement, mirroring the real client's helper.
+  #patchRow<T extends AgentMessage>(row: T, patch: Partial<T>): T {
+    const index = this.state.thread.indexOf(row);
+    if (index === -1) { return row; } // stale reference: ignore
+
+    const next = { ...row, ...patch } as T;
+    const thread = this.state.thread.slice();
+    thread[index] = next;
+    this.state.thread = thread;
+    return next;
+  }
 
   #conversationRows(): number {
     return this.state.thread.filter((row) => row.role !== "divider").length;
