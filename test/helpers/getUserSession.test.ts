@@ -25,4 +25,51 @@ describe("getUserSession", () => {
     expect(await getUserSession("substack")).toBeNull();
     expect(warn).toHaveBeenCalledWith("BeyondWords.Player: unknown auth provider: substack");
   });
+
+  describe("piano", () => {
+    const initPiano = (tp) => {
+      (window as { tp?: unknown }).tp = { ...tp, push: ([command, callback]) => command === "init" && callback() };
+    };
+    const user = (loggedIn, token) => ({ isUserValid: () => loggedIn, getToken: () => token });
+    const piano = (sessionToken) => ({ authProvider: "piano", sessionToken });
+
+    afterEach(() => delete (window as { tp?: unknown }).tp);
+
+    it("sends the refreshed __tac cookie as is", async () => {
+      let tac = "stale";
+      initPiano({
+        pianoId: user(true, "id-token"),
+        user: { refreshAccessToken: (_, callback) => { tac = "fresh"; callback(); } },
+        util: { getTacCookie: () => tac },
+      });
+
+      expect(await getUserSession("piano")).toEqual(piano("fresh"));
+    });
+
+    it("falls back to the logged-in SDK's token, prefixed with its user provider", async () => {
+      const refresh = { refreshAccessToken: (_, callback) => callback() };
+      const noTac = { getTacCookie: () => undefined };
+
+      initPiano({ pianoId: user(true, "id-token"), user: refresh, util: noTac });
+      expect(await getUserSession("piano")).toEqual(piano("piano_id:id-token"));
+
+      initPiano({ pianoId: user(false, null), pianoIdLite: user(true, "lite-token"), user: refresh, util: noTac });
+      expect(await getUserSession("piano")).toEqual(piano("piano_id_lite:lite-token"));
+    });
+
+    it("returns null when no Piano user is logged in", async () => {
+      initPiano({ pianoId: user(false, null) });
+
+      expect(await getUserSession("piano")).toBeNull();
+    });
+
+    it("returns null when Piano never initialises", async () => {
+      vi.useFakeTimers();
+      const session = getUserSession("piano");
+      vi.advanceTimersByTime(3000);
+
+      expect(await session).toBeNull();
+      vi.useRealTimers();
+    });
+  });
 });
