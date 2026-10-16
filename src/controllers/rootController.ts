@@ -104,6 +104,35 @@ class RootController {
   handlePressedBeyondWords()            { /* Do nothing */ }
   handlePressedSourceUrl()              { /* Do nothing */ }
 
+  // Agent surface: presses delegate to the public player.agent facade, so
+  // quota, lock and error policy live in one place. D13 (privacy):
+  // PressedAgentSend carries no question text - the text travels only through
+  // agent.sendMessage, which links back via pressedEventId. EVERY rejected
+  // send emits AgentMessageRejected with that id and a reason; composers
+  // restore their input for every reason EXCEPT "locked" (the question was
+  // consumed into the thread and rendered with the publisher's offer).
+  handlePressedAgentSend()              { /* Do nothing - see agent.sendMessage */ }
+  handlePressedAgentStartCall()         { this.player.agent.startSession({ mode: "voice" }); }
+  handlePressedAgentEndCall()           { this.player.agent.endSession(); }
+  handlePressedAgentCancelConnect()     { this.player.agent.cancelConnect(); }
+  handlePressedAgentMute({ muted })     { this.player.agent.setMicMuted(muted !== false); }
+  handlePressedAgentStop()              { this.player.agent.interrupt(); }
+  // The facade re-gates policy, so a retry never mic-prompts or opens an
+  // unmetered call once voice is no longer available.
+  handlePressedAgentRetry()             { this.player.agent.retry(); }
+
+  // Emitted by the facade (initiatedBy "agent"); handlers exist so that
+  // processEvent routes them and addEventListener accepts the types.
+  handleAgentSessionStarted()           { /* Do nothing */ }
+  handleAgentStatusChanged()            { /* Do nothing */ }
+  handleAgentMessageSent()              { /* Do nothing */ }
+  handleAgentMessageRejected()          { /* Do nothing */ }
+  handleAgentReplyCompleted()           { /* Do nothing */ }
+  handleAgentSessionEnded()             { /* Do nothing */ }
+  handleAgentAllowanceChanged()         { /* Do nothing */ }
+  handleAgentErrored()                  { /* Do nothing */ }
+  handleAgentAvailabilityChanged()      { /* Do nothing */ }
+
   handleContentAvailable()              { /* Do nothing. */ }
   handleDurationUpdated()               { /* Do nothing */ }
   handleMetadataLoaded({ loadedMedia }) { this.player.loadedMedia = loadedMedia; }
