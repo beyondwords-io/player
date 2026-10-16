@@ -22,6 +22,7 @@
     "src/helpers/agentAllowanceState.ts",
     "src/helpers/agentClient.ts",
     "src/helpers/agentContracts.ts",
+    "src/helpers/agentFacade.ts",
     "src/helpers/agentLimits.ts",
     "src/helpers/defaultPlayerLayout.ts",
     "src/helpers/defaultWidgetGeometry.ts",
