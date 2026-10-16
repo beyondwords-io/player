@@ -353,8 +353,10 @@ test("default player clips its fill to the progress track shape", async ({ page 
 
   await page.evaluate(() => BeyondWords.Player.instances()[0].currentTime = 0.5);
   await expect(track).toHaveAttribute("aria-valuenow", "0");
-  await expect(track).toHaveCSS("overflow", "hidden");
-  await expect(track.locator(".fill")).toHaveCSS("border-radius", "0px");
+  // The fill clips to the track shape with its own radius, not overflow:
+  // hidden on the track, which would clip the ::before hit-area extender.
+  await expect(track).toHaveCSS("overflow", "visible");
+  await expect(track.locator(".fill")).toHaveCSS("border-radius", "4px");
   await expect(track.locator(".fill")).toHaveAttribute("style", /width: 0\.8333/);
 
   await page.evaluate(() => BeyondWords.Player.instances()[0].currentTime = 30);

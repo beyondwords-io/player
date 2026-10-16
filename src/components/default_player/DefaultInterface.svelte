@@ -17,6 +17,7 @@
   import chooseAdvertText from "../../helpers/chooseAdvertText";
   import ensureProtocol from "../../helpers/ensureProtocol";
   import formatTime from "../../helpers/formatTime";
+  import mediaDuration from "../../helpers/mediaDuration";
   import planDefaultPlayerLayout, { DEFAULT_PLAYER_LAYOUT_MEASUREMENTS } from "../../helpers/defaultPlayerLayout";
   import { resolveFixedWidgetGeometry } from "../../helpers/defaultWidgetGeometry";
   import { mediaQueryMatches, subscribeMediaQuery } from "../../helpers/mediaQuery";
@@ -288,7 +289,9 @@
   // variants restricts what the Version group offers; unset means every
   // variant the content actually has.
   $: offeredVariants = variants.length ? variants : ["article", "summary"];
-  $: hasSummaryVariant = !!contentItem.summarization && offeredVariants.includes("summary");
+  // mapContentProp always builds a summarization object, so test for actual
+  // summary media rather than the object's presence.
+  $: hasSummaryVariant = !!(contentItem.summarization?.audio?.length || contentItem.summarization?.video?.length) && offeredVariants.includes("summary");
   $: hasVariants = hasSummaryVariant && offeredVariants.includes("article");
   // Name the version when the reader can switch, since the menu carries the
   // durations; otherwise say how long the one they are getting is.
@@ -336,17 +339,6 @@
     ...(offeredVariants.includes("article") ? [{ value: "article", label: translate("full"), secondary: formatMins(mediaDuration(contentItem)), selected: !summary }] : []),
     ...(hasSummaryVariant ? [{ value: "summary", label: translate("summary"), secondary: formatMins(mediaDuration(contentItem.summarization)), selected: summary }] : []),
   ];
-
-  // The API doesn't yet serialize a top-level duration on summarization (and
-  // sometimes content), so fall back to the first media variant's duration,
-  // which is in milliseconds. See S-8883.
-  const mediaDuration = (object) => {
-    if (!object) { return 0; }
-    if (object.duration) { return object.duration; }
-
-    const media = object.audio?.[0] || object.video?.[0];
-    return media?.duration ? media.duration / 1000 : 0;
-  };
 
   $: speedItems = [{ value: "speed", label: translate("speed"), secondary: `${playbackRate}×`, selected: false, keepOpen: true }];
 
@@ -439,6 +431,16 @@
     }
 
     return [-1, -1];
+  };
+
+  // D9: the post-ad chip emits too, even though no advert is active by then,
+  // so the click carries no ad id (accepted misattribution).
+  const handleAdvertLink = () => {
+    onEvent(newEvent({
+      type: "PressedAdvertLink",
+      description: "The advert link was pressed to open the click-through URL in a new tab.",
+      initiatedBy: "user",
+    }));
   };
 
   const handleDownload = () => {
@@ -679,7 +681,7 @@
       {versionLabel} />
 
     {#if showPersistentChip}
-      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.link}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
+      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.link}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}" on:click={handleAdvertLink}>
         {persistentText}
         <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.subtle}">{translate("advertisementAbbreviation")}</span>
       </a>
@@ -804,7 +806,8 @@
     {disclosureLink}
     {disclosureText}
     hoverColor={tokens.text}
-    {logoIconEnabled} />
+    {logoIconEnabled}
+    {onEvent} />
 {/if}
 </div>
 

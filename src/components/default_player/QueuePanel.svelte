@@ -1,5 +1,6 @@
 <script>
   import formatTime from "../../helpers/formatTime";
+  import mediaDuration from "../../helpers/mediaDuration";
   import newEvent from "../../helpers/newEvent";
   import blurElement from "../../helpers/blurElement";
   import NowPlayingMarker from "../svg_icons/default_player/NowPlayingMarker.svelte";
@@ -27,7 +28,7 @@
   };
 
   const durationFor = (item) => (
-    formatTime((summary ? item.summarization?.duration : item.duration) || 0)
+    formatTime(mediaDuration(summary ? item.summarization : item))
   );
 
   const handleClick = (index) => () => {

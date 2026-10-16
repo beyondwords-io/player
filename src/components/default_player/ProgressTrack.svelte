@@ -104,7 +104,6 @@
     position: relative;
     height: 3px;
     cursor: pointer;
-    overflow: hidden;
   }
 
   .progress-track::before {
@@ -119,12 +118,16 @@
     outline-offset: 4px;
   }
 
+  /* Clip the fill to the rounded track with its own radius rather than
+     overflow: hidden on the track, which would also clip the ::before
+     extender and shrink the real hit target to the 3px bar. */
   .fill {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     pointer-events: none;
+    border-radius: inherit;
   }
 
 

@@ -3,6 +3,7 @@
   import ContentTitle from "./titles/ContentTitle.svelte";
   import DownloadButton from "./buttons/DownloadButton.svelte";
   import DurationInMins from "./time_indicators/DurationInMins.svelte";
+  import mediaDuration from "../helpers/mediaDuration";
   import newEvent from "../helpers/newEvent";
   import blurElement from "../helpers/blurElement";
 
@@ -62,7 +63,7 @@
 <div class="playlist" class:mobile={isMobile} class:larger style="--desktop-rows: {desktopRows}; --mobile-rows: {mobileRows}; background: {backgroundColor}">
   <div class="scrollable" tabindex="-1">
     {#each content as item, i (i)}
-      {@const duration = (summary ? item.summarization.duration : item.duration) || 0}
+      {@const duration = mediaDuration(summary ? item.summarization : item)}
       {@const downloadAudio = (summary ? item.summarization.audio : item.audio) || []}
       {@const downloadVideo = (summary ? item.summarization.video : item.video) || []}
 
