@@ -36,8 +36,10 @@
   import Visibility from "../helpers/Visibility.svelte";
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
 
+  import type AgentFacade from "../../helpers/agentFacade";
+
   export let onEvent: (event?: unknown) => void = () => {};
-  export let agentClient;
+  export let agent: AgentFacade;
   export let embedMode = "audio";
   export let theme = "light";
   export let systemDark = false;
@@ -72,15 +74,7 @@
   export let agentAvatar = undefined;
   export let accentColor = undefined;
   export let accentTextColor = undefined;
-  export let agentQuestionsLimit = null;
-  export let agentVoiceSecondsLimit = null;
-  export let agentQuestionsRemaining = null;
-  export let agentVoiceSecondsRemaining = null;
-  export let onAgentQuestion = () => {};
-  export let agentVoice = true;
-  export let agentPlaceholder = undefined;
   export let agentName = undefined;
-  export let shortcuts = [];
   export let infoText = undefined;
   export let disclosureText = undefined;
   export let disclosureLink = undefined;
@@ -102,7 +96,6 @@
   export let accessCtaText = undefined;
   export let accessCtaUrl = undefined;
   export let agentCtaText = undefined;
-  export let agentCtaUrl = undefined;
   export let videoIsBehind = false;
   export let aspectRatio = 16 / 9;
 
@@ -128,7 +121,7 @@
   let pageBackground = "#ffffff";
 
   // A collapsed panel does not end a call - the bar says one is running.
-  $: callLive = $agentClient.kind === "voice";
+  $: callLive = $agent.kind === "voice";
 
   const reduceMotion = mediaQueryMatches("(prefers-reduced-motion: reduce)");
   const animationWindow = typeof window === "undefined"
@@ -207,8 +200,9 @@
 
   // The agent's own CTA, inheriting the content one when the publisher sells
   // both together. Nothing here is invented: with no copy there is no pitch.
+  // Only the chat-button aria-label needs it here - the panel reads the CTA
+  // from the facade snapshot, which Player.svelte builds with the same ||.
   $: agentCta = agentCtaText || accessCtaText;
-  $: agentCtaHref = agentCtaUrl || accessCtaUrl;
 
   // The queue is an inline affordance - the widget stays the bar plus x.
   $: playlistVisibility = playlistStyle.split("-")[0];
@@ -320,8 +314,8 @@
   $: attributionHref = typeof window === "undefined" ? "https://beyondwords.io" :
     `https://beyondwords.io/?utm_source=${encodeURIComponent(window.location.origin)}&utm_medium=player&utm_campaign=${analyticsId || ""}`;
 
-  $: agentTextAvailable = agentQuestionsRemaining === null || agentQuestionsRemaining > 0;
-  $: agentVoiceAvailable = agentVoice && (agentVoiceSecondsRemaining === null || agentVoiceSecondsRemaining > 0);
+  $: agentTextAvailable = $agent.policy.textAvailable;
+  $: agentVoiceAvailable = $agent.policy.voiceAvailable;
   $: showChat = embedMode !== "audio" && !isAdvert;
   $: isAdvert && (chatOpen = false);
   $: chatDisabled = !agentTextAvailable && !agentVoiceAvailable;
@@ -459,7 +453,7 @@
   };
 
   const handleCloseWidget = () => {
-    agentClient.endSession();
+    agent.endSession();
 
     onEvent(newEvent({
       type: "PressedCloseWidget",
@@ -611,19 +605,7 @@
         on:outrostart={() => transitionsRunning += 1}
         on:outroend={() => transitionsRunning -= 1}
       >
-        <ChatPanel
-          {tokens}
-          {agentClient}
-          {agentPlaceholder}
-          {agentVoice}
-          {agentQuestionsLimit}
-          {agentVoiceSecondsLimit}
-          {agentQuestionsRemaining}
-          {agentVoiceSecondsRemaining}
-          {onAgentQuestion}
-          {shortcuts}
-          ctaText={agentCta}
-          ctaUrl={agentCtaHref} />
+        <ChatPanel {tokens} {agent} {onEvent} />
       </div>
     {/if}
   {:else if agentOnly}
@@ -635,20 +617,7 @@
 
     <!-- Locked is handled inside the panel: the reader can still ask, and the
          answer is the publisher's offer with their question above it. -->
-    <ChatPanel
-      {tokens}
-      {agentClient}
-      {agentPlaceholder}
-      {agentVoice}
-      {agentQuestionsLimit}
-      {agentVoiceSecondsLimit}
-      {agentQuestionsRemaining}
-      {agentVoiceSecondsRemaining}
-      {onAgentQuestion}
-      {shortcuts}
-      ctaText={agentCta}
-      ctaUrl={agentCtaHref}
-      showSlashButton={false} />
+    <ChatPanel {tokens} {agent} {onEvent} showSlashButton={false} />
   {:else}
   <div class="bar" class:compact={foldSkips}>
     <Visibility {onEvent} enabled={!isWidget} bind:isVisible bind:relativeY bind:absoluteY>
@@ -773,19 +742,7 @@
   {#if chatOpen && showChat}
     <div class="chat-unfold" class:animating={transitionsRunning > 0} transition:slide|local={{ duration: chatOpen ? unfoldMs : collapseMs, easing: cubicOut }} on:introstart={() => transitionsRunning += 1} on:introend={() => transitionsRunning -= 1} on:outrostart={() => transitionsRunning += 1} on:outroend={() => transitionsRunning -= 1}>
       <div class="hairline" style="background: {tokens.divider}"></div>
-      <ChatPanel
-        {tokens}
-        {agentClient}
-        {agentPlaceholder}
-        {agentVoice}
-        {agentQuestionsLimit}
-        {agentVoiceSecondsLimit}
-        {agentQuestionsRemaining}
-        {agentVoiceSecondsRemaining}
-        {onAgentQuestion}
-        ctaText={agentCta}
-        ctaUrl={agentCtaHref}
-        {shortcuts} />
+      <ChatPanel {tokens} {agent} {onEvent} />
     </div>
   {/if}
 

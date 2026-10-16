@@ -262,16 +262,6 @@
     onVoiceExhausted: () => agentClient.endSession("budget"),
   });
 
-  let normalizedAgentQuestionsLimit = null;
-  let agentQuestionsRemaining = null;
-  let normalizedAgentVoiceSecondsLimit = null;
-  let agentVoiceSecondsRemaining = null;
-  const unsubscribeAgentAllowance = agentAllowance.subscribe((allowance) => {
-    normalizedAgentQuestionsLimit = allowance.questionsLimit;
-    agentQuestionsRemaining = allowance.questionsRemaining;
-    normalizedAgentVoiceSecondsLimit = allowance.voiceSecondsLimit;
-    agentVoiceSecondsRemaining = allowance.voiceSecondsRemaining;
-  });
   $: agentAllowance.configure({
     identity: JSON.stringify([
       projectId, contentId, playlistId, sourceId, sourceUrl, accessTier, apiPayload?.access_tier?.slug,
@@ -281,8 +271,6 @@
     voiceSecondsLimit: agentVoiceSecondsLimit,
   });
   $: agentAllowance.setVoiceLive(agentVoiceSessionLive);
-
-  const useAgentQuestion = () => agentAllowance.useQuestion();
 
   // The public player.agent surface: one stable facade per player (it follows
   // client swaps via setClient above), merging client state, the allowance and
@@ -532,7 +520,6 @@
   onDestroy(() => {
     // The facade detaches its hooks first, so teardown emits nothing.
     agent.destroy();
-    unsubscribeAgentAllowance();
     agentAllowance.destroy();
     agentClient.endSession();
     segmentContainers.reset();
@@ -588,7 +575,7 @@
     <DefaultInterface
       bind:this={userInterface}
       {onEvent}
-      {agentClient}
+      {agent}
       {embedMode}
       {analyticsId}
       theme={resolvedTheme}
@@ -614,15 +601,7 @@
       {callToAction}
       {variants}
       {agentAvatar}
-      agentQuestionsLimit={normalizedAgentQuestionsLimit}
-      agentVoiceSecondsLimit={normalizedAgentVoiceSecondsLimit}
-      {agentQuestionsRemaining}
-      {agentVoiceSecondsRemaining}
-      onAgentQuestion={useAgentQuestion}
-      {agentVoice}
-      {agentPlaceholder}
       {agentName}
-      {shortcuts}
       {infoText}
       {disclosureText}
       {disclosureLink}
@@ -636,8 +615,7 @@
       {segmentLimitReached}
       {accessCtaText}
       {accessCtaUrl}
-      {agentCtaText}
-      {agentCtaUrl} />
+      {agentCtaText} />
   {/key}
 {:else if showStaticInterface}
   {#key playerLanguage}
@@ -689,7 +667,7 @@
       <DefaultInterface
         bind:this={widgetInterface}
         {onEvent}
-        {agentClient}
+        {agent}
         embedMode={effectiveWidgetEmbedMode}
         {analyticsId}
         theme={resolvedTheme}
@@ -720,15 +698,7 @@
         {callToAction}
         {variants}
         {agentAvatar}
-        agentQuestionsLimit={normalizedAgentQuestionsLimit}
-        agentVoiceSecondsLimit={normalizedAgentVoiceSecondsLimit}
-        {agentQuestionsRemaining}
-        {agentVoiceSecondsRemaining}
-        onAgentQuestion={useAgentQuestion}
-        {agentVoice}
-        {agentPlaceholder}
         {agentName}
-        {shortcuts}
         {infoText}
         {disclosureText}
         {disclosureLink}
@@ -740,8 +710,7 @@
         {segmentLimitReached}
         {accessCtaText}
         {accessCtaUrl}
-        {agentCtaText}
-        {agentCtaUrl} />
+        {agentCtaText} />
     {/key}
   </ExternalWidget>
 {:else if showWidgetInterface}

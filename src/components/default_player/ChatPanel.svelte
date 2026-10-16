@@ -1,11 +1,10 @@
 <script lang="ts">
   import formatTime from "../../helpers/formatTime";
-  import deriveAgentAccessPolicy from "../../helpers/agentAccessPolicy";
-  import type { AgentLimit } from "../../helpers/agentAccessPolicy";
-  import type { AgentClient } from "../../helpers/agentContracts";
+  import type AgentFacade from "../../helpers/agentFacade";
   import type { DefaultPlayerTokens } from "../../helpers/defaultPlayerTokens";
   import { tick } from "svelte";
   import blurElement from "../../helpers/blurElement";
+  import newEvent from "../../helpers/newEvent";
   import translate from "../../helpers/translate";
   import Orb from "./Orb.svelte";
   import ChatShortcuts from "./ChatShortcuts.svelte";
@@ -15,57 +14,41 @@
   import LockSimple from "../svg_icons/default_player/LockSimple.svelte";
 
   export let tokens: DefaultPlayerTokens;
-  export let agentClient: AgentClient;
-  export let agentPlaceholder: string | undefined = undefined;
-  export let agentVoice = true;
-  export let agentQuestionsLimit: AgentLimit = null;
-  export let agentVoiceSecondsLimit: AgentLimit = null;
-  export let agentQuestionsRemaining: AgentLimit = null;
-  export let agentVoiceSecondsRemaining: AgentLimit = null;
-  export let onAgentQuestion: () => void = () => {};
-  // The publisher's own words for the upgrade, or nothing at all.
-  export let ctaText: string | undefined = undefined;
-  export let ctaUrl: string | undefined = undefined;
-  export let shortcuts: string[] = [];
+  export let agent: AgentFacade;
+  export let onEvent: (event?: unknown) => void = () => {};
   export let showSlashButton = true;
 
   let input = "";
   let threadElement: HTMLDivElement | undefined;
   let shortcutsOpen = false;
 
-  // The client is the store: thread rows, the conversation kind, and the voice
-  // call's state all live there, because they outlive this component.
-  $: thread = $agentClient.thread;
-  $: kind = $agentClient.kind;
-  $: status = $agentClient.status;
-  $: announced = $agentClient.announced;
-  $: lastRow = thread[thread.length - 1];
-  $: streaming = !!(lastRow?.role === "agent" && lastRow.streaming);
+  // The facade is the store: thread rows, the conversation kind, the voice
+  // call's state, the allowance and the access policy all live there, because
+  // they outlive this component and every consumer must agree on them.
+  $: snapshot = $agent;
+  $: thread = snapshot.thread;
+  $: kind = snapshot.kind;
+  $: status = snapshot.status;
+  $: announced = snapshot.announcement?.text ?? "";
+  $: streaming = snapshot.streaming;
   $: inCall = kind === "voice" && status !== "connecting";
 
-  $: placeholder = agentPlaceholder || `${translate("askAboutThisArticle")}…`;
+  $: placeholder = snapshot.config.placeholder || `${translate("askAboutThisArticle")}…`;
+  $: shortcuts = snapshot.config.shortcuts;
 
   // The two allowances are independent. null is unlimited, zero disables that
-  // mode, and only both modes being unavailable locks the whole agent.
-  $: questionBudget = agentQuestionsLimit;
-  $: voiceBudget = agentVoiceSecondsLimit;
-  $: questionsLeft = agentQuestionsRemaining;
-  $: secondsLeft = agentVoiceSecondsRemaining;
-  $: accessPolicy = deriveAgentAccessPolicy({
-    questionsLimit: questionBudget,
-    questionsRemaining: questionsLeft,
-    voiceSecondsLimit: voiceBudget,
-    voiceSecondsRemaining: secondsLeft,
-    voiceEnabled: agentVoice,
-    thread,
-  });
-  $: budgetSpent = accessPolicy.budgetSpent;
-  $: locked = accessPolicy.locked;
-  $: lockedAsked = accessPolicy.lockedAsked;
-  $: showCounter = accessPolicy.showQuestionCounter;
-  $: spentReason = accessPolicy.spentReason;
-  $: textAvailable = accessPolicy.textAvailable;
-  $: voiceAvailable = accessPolicy.voiceAvailable;
+  // mode, and only both modes being unavailable locks the whole agent. The
+  // facade enforces all of it; these reads only drive the rendering.
+  $: ({ budgetSpent, locked, lockedAsked, showQuestionCounter: showCounter,
+        spentReason, textAvailable, voiceAvailable } = snapshot.policy);
+  $: questionBudget = snapshot.allowance.questionsLimit;
+  $: questionsLeft = snapshot.allowance.questionsRemaining;
+  $: voiceBudget = snapshot.allowance.voiceSecondsLimit;
+  $: secondsLeft = snapshot.allowance.voiceSecondsRemaining;
+
+  // The publisher's own words for the upgrade, or nothing at all.
+  $: ctaText = snapshot.cta?.text;
+  $: ctaUrl = snapshot.cta?.url;
 
   $: formattedSecondsLeft = formatTime(secondsLeft || 0);
 
@@ -88,41 +71,70 @@
 
   const send = (question = ""): void => {
     const text = (question || input).trim();
-    if (!text || budgetSpent || (!locked && !textAvailable)) { return; }
+    if (!text) { return; }
 
     // A text reply finishes before the next ask; in a call, sending over the
-    // agent interrupts it, exactly like speaking over it.
+    // agent interrupts it, exactly like speaking over it. UX guard only - the
+    // facade re-enforces it as "busy".
     if (streaming && kind !== "voice") { return; }
 
-    input = "";
-    shortcutsOpen = false;
+    // D13: the press carries no question text; the text travels only through
+    // agent.sendMessage, linked back by the pressed event's id.
+    const pressed = newEvent({
+      type: "PressedAgentSend",
+      description: "The agent send button was pressed.",
+      initiatedBy: "user",
+    });
+    onEvent(pressed);
 
-    // Locked: the question is worth asking for, so keep it on screen and answer
-    // with the publisher's offer rather than pretending to think.
-    if (locked) {
-      agentClient.appendLocked(text);
+    const result = agent.sendMessage(text, {
+      source: question ? "shortcut" : "composer",
+      pressedEventId: pressed.id,
+    });
+
+    // Locked: the question was consumed into the thread and answered with the
+    // publisher's offer, so it must not be restored. Every other rejection
+    // keeps the input for another try.
+    const consumed = result.ok === false ? result.reason === "locked" : true;
+    if (consumed) {
+      input = "";
+      shortcutsOpen = false;
       scrollToEnd();
-      return;
     }
-
-    agentClient.sendUserMessage(text);
-    onAgentQuestion();
-    scrollToEnd();
   };
 
-  const stop = () => agentClient.interrupt();
+  const stop = () => onEvent(newEvent({
+    type: "PressedAgentStop",
+    description: "The agent stop button was pressed.",
+    initiatedBy: "user",
+  }));
 
   // The waveform starts a call; the composer becomes the strip in place.
   const startCall = () => {
+    // The button is hidden anyway; no dead event.
     if (budgetSpent || locked || !voiceAvailable) { return; }
 
-    agentClient.startSession();
+    onEvent(newEvent({
+      type: "PressedAgentStartCall",
+      description: "The agent voice call button was pressed.",
+      initiatedBy: "user",
+    }));
   };
 
-  const endCall = () => agentClient.endSession();
+  const endCall = () => onEvent(newEvent({
+    type: "PressedAgentEndCall",
+    description: "The agent end call button was pressed.",
+    initiatedBy: "user",
+  }));
+
+  const cancel = () => onEvent(newEvent({
+    type: "PressedAgentCancelConnect",
+    description: "The agent cancel connect button was pressed.",
+    initiatedBy: "user",
+  }));
 
   const handleKeydown = (event: KeyboardEvent): void => {
-    agentClient.sendUserActivity();
+    agent.notifyActivity();
 
     if (event.key === "Enter") {
       event.preventDefault();
@@ -171,13 +183,13 @@
       <Orb size={24} orb={tokens.orb} avatarUrl={tokens.avatarUrl} generating={true} />
       <span class="strip-label" style="color: {tokens.text}">{translate("connecting")}</span>
       <span class="strip-grow"></span>
-      <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={() => agentClient.cancelConnect()} on:mouseup={blurElement}>{translate("cancel")}</button>
+      <button type="button" class="pill" style="border-color: {tokens.divider}; color: {tokens.text}; --hover-bg: {tokens.hover}; outline-color: {tokens.text}" on:click={cancel} on:mouseup={blurElement}>{translate("cancel")}</button>
     </div>
   {:else}
     {#if inCall}
       <div class="composer strip" style="border-top-color: {tokens.divider}">
         <Orb size={24} orb={tokens.orb} avatarUrl={tokens.avatarUrl} generating={status === "talking"} />
-        {#if status === "talking" && agentClient.canInterrupt}
+        {#if status === "talking" && snapshot.canInterrupt}
           <!-- The whole label is the interrupt: speak over it, or tap. -->
           <button type="button" class="strip-interrupt" style="color: {tokens.text}; outline-color: {tokens.text}" on:click={stop} on:mouseup={blurElement}>
             {translate("talkingSpeakOverOrTap")}

@@ -10,7 +10,9 @@
   export let announced = "";
   export let ctaText: string | undefined = undefined;
   export let ctaUrl: string | undefined = undefined;
-  export let thread: AgentMessage[] = [];
+  // Readonly so the facade's frozen snapshot thread assigns; the template only
+  // reads, and a mutable array still assigns to a readonly one.
+  export let thread: readonly AgentMessage[] = [];
   export let threadElement: HTMLDivElement | undefined = undefined;
   export let tokens: DefaultPlayerTokens;
 
