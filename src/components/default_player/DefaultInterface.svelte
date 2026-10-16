@@ -403,7 +403,12 @@
 
   const handleMenuSelect = (item) => {
     if (item.value === "article" || item.value === "summary") {
-      summary = item.value === "summary";
+      onEvent(newEvent({
+        type: "PressedChangeVersion",
+        description: "A version was selected from the version menu.",
+        initiatedBy: "user",
+        summary: item.value === "summary",
+      }));
     } else if (item.value === "speed") {
       onEvent(newEvent({
         type: "PressedChangeRate",
