@@ -6,6 +6,7 @@ import listenToSegments from "./helpers/listenToSegments";
 import resolveTarget from "./helpers/resolveTarget";
 import sendToAnalytics from "./helpers/sendToAnalytics";
 import renameProp from "./helpers/renameProp";
+import { parseIdentifier } from "./helpers/settingUrl";
 import propertyValues from "./helpers/propertyValues";
 import playerPropsToIgnore from "./helpers/playerPropsToIgnore";
 import { version } from "../package.json";
@@ -65,6 +66,27 @@ const makeObjectMutationsReactive = (player, key, resolvedKey) => {
   });
 };
 
+// Embed attributes and publisher configs commonly pass numeric ids as strings,
+// but the auth service decodes project_id as an int64, so agent sessions and
+// tier verification break for string ids. Coerce them at the public boundary
+// with parseIdentifier's rule: numeric strings become numbers, everything else
+// passes through unchanged.
+const coerceIdentifier = (key, value) => (
+  typeof value === "string" ? parseIdentifier(key, value) : value
+);
+
+const coerceIdentifierAssignments = (player, key) => {
+  const descriptor = propertyDescriptor(player, key);
+  if (!descriptor?.get || !descriptor?.set) { return; }
+
+  Object.defineProperty(player, key, {
+    get: () => descriptor.get.call(player),
+    set: (value) => descriptor.set.call(player, coerceIdentifier(key, value)),
+    enumerable: true,
+    configurable: true,
+  });
+};
+
 const exposeResolvedTheme = (player) => {
   const overrideDescriptor = propertyDescriptor(player, "theme");
   const resolvedDescriptor = propertyDescriptor(player, "resolvedThemePreference");
@@ -97,6 +119,8 @@ class Player extends PlayerComponent {
     renameProp("xdv3rts", "adverts", props);
     renameProp("xdv3rtIndex", "advertIndex", props);
     renameProp("loadContentAs", "summary", props, value => value?.[0] === "summary");
+    if ("projectId" in props) { props.projectId = coerceIdentifier("projectId", props.projectId); }
+    if ("playlistId" in props) { props.playlistId = coerceIdentifier("playlistId", props.playlistId); }
     const initialVideo = props.video;
     const playerStyleWasProvided = typeof props.playerStyle !== "undefined";
 
@@ -131,6 +155,8 @@ class Player extends PlayerComponent {
     makeObjectMutationsReactive(this, "darkTheme", "resolvedDarkTheme");
     makeObjectMutationsReactive(this, "videoTheme", "resolvedVideoTheme");
     exposeResolvedTheme(this);
+    coerceIdentifierAssignments(this, "projectId");
+    coerceIdentifierAssignments(this, "playlistId");
 
     Object.defineProperty(this, "accessTier", {
       get: () => this.getAccessTier?.(),
