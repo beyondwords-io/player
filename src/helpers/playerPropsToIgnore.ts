@@ -6,6 +6,8 @@ const playerPropsToIgnore = new Set([
   "widgetInterface",
   "controller",
   "videoPlayerStyleAlias",
+  "agentClient",
+  "agentAllowance",
 
   // Debugging aids, and a fresh object on every response, so they would add
   // noise to every event's changedProps and to analytics.

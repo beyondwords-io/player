@@ -109,6 +109,7 @@ class RootController {
   handlePressedSourceUrl()              { /* Do nothing */ }
 
   handleContentAvailable()              { /* Do nothing. */ }
+  handleAgentClientChanged()            { /* Do nothing */ }
   handleDurationUpdated()               { /* Do nothing */ }
   handleMetadataLoaded({ loadedMedia }) { this.player.loadedMedia = loadedMedia; }
   handleMediaLoaded({ loadedMedia })    { this.player.loadedMedia = loadedMedia; }

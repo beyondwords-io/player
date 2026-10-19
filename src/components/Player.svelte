@@ -213,8 +213,16 @@
   // An agent id can arrive after mount, and so can the project the auth
   // service is asked about, so swapping the live client ends whatever the old
   // client had open.
-  let agentClient = new RealAgentClient();
+  //
+  // Public, but replaced on every swap: AgentClientChanged fires after each
+  // one, and subscribers must resubscribe to the new player.agentClient.
+  export let agentClient = new RealAgentClient();
   let pausedForAgentCall = false;
+
+  // The first swap happens while the component initialises, before anyone can
+  // listen and before emittedFrom is computed, so it is not announced.
+  let announceAgentClientChanges = false;
+  onMount(() => { announceAgentClientChanges = true; });
 
   $: syncAgentClient(agentId, agentSessionConfig, authApiUrl, authProvider, projectId);
 
@@ -235,6 +243,14 @@
       sessionConfig,
       dynamicVariables: agentDynamicVariables,
     });
+
+    if (!announceAgentClientChanges) { return; }
+
+    onEvent(newEvent({
+      type: "AgentClientChanged",
+      description: "The agent client was replaced, so subscribers must resubscribe to the new one.",
+      initiatedBy: "browser",
+    }));
   };
 
   // MCP routing plus per-page prompt context, read at session start so the
@@ -252,7 +268,7 @@
   $: agentVoiceSessionLive = agentCallLive && $agentClient.status !== "connecting";
   $: syncAgentCallPlayback(agentCallLive, playbackState);
 
-  const agentAllowance = new AgentAllowanceState({
+  export const agentAllowance = new AgentAllowanceState({
     onVoiceExhausted: () => agentClient.endSession("budget"),
   });
 
