@@ -438,16 +438,6 @@
     return [-1, -1];
   };
 
-  // D9: the post-ad chip emits too, even though no advert is active by then,
-  // so the click carries no ad id (accepted misattribution).
-  const handleAdvertLink = () => {
-    onEvent(newEvent({
-      type: "PressedAdvertLink",
-      description: "The advert link was pressed to open the click-through URL in a new tab.",
-      initiatedBy: "user",
-    }));
-  };
-
   const handleDownload = () => {
     onEvent(newEvent({
       type: "PressedDownload",
@@ -686,7 +676,7 @@
       {versionLabel} />
 
     {#if showPersistentChip}
-      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.link}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}" on:click={handleAdvertLink}>
+      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.link}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
         {persistentText}
         <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.subtle}">{translate("advertisementAbbreviation")}</span>
       </a>
@@ -811,8 +801,7 @@
     {disclosureLink}
     {disclosureText}
     hoverColor={tokens.text}
-    {logoIconEnabled}
-    {onEvent} />
+    {logoIconEnabled} />
 {/if}
 </div>
 

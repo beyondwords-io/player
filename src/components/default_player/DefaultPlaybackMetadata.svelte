@@ -1,6 +1,5 @@
 <script lang="ts">
   import formatTime from "../../helpers/formatTime";
-  import newEvent from "../../helpers/newEvent";
   import translate from "../../helpers/translate";
   import type { DefaultPlayerTokens } from "../../helpers/defaultPlayerTokens";
   import WifiSlash from "../svg_icons/default_player/WifiSlash.svelte";
@@ -27,14 +26,6 @@
   export let timeLabel = "";
   export let tokens: DefaultPlayerTokens;
   export let versionLabel = "";
-
-  const handleAdvertLink = () => {
-    onEvent(newEvent({
-      type: "PressedAdvertLink",
-      description: "The advert link was pressed to open the click-through URL in a new tab.",
-      initiatedBy: "user",
-    }));
-  };
 </script>
 
 <div class="title-col" class:playing={!isStopped}>
@@ -56,7 +47,7 @@
   {:else if isAdvert}
     <div class="title-row">
       {#if advertHref && advertText}
-        <a class="advert-link" href={advertHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; outline-color: {tokens.text}" on:click={handleAdvertLink}>{advertText}</a>
+        <a class="advert-link" href={advertHref} target="_blank" rel="noopener noreferrer" style="color: {tokens.link}; outline-color: {tokens.text}">{advertText}</a>
       {:else}
         <span class="title playing" style="color: {tokens.text}">{playingTitle}</span>
       {/if}
