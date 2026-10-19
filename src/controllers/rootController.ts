@@ -1,5 +1,5 @@
 import { validateEventBeforeProcessing, validateEventAfterProcessing } from "../helpers/eventValidation";
-import { canFullScreen, requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
+import { requestFullScreen, exitFullScreen, fullScreenElement } from "../helpers/fullScreen";
 import { v4 as randomUuid } from "uuid";
 import { EPSILON } from "../helpers/timeFragment";
 import waitUntil from "../helpers/waitUntil";
@@ -88,12 +88,6 @@ class RootController {
   handlePressedRightOnChangeRate()      { this.#setRate(i => i + 1); }
   handlePressedDownOnChangeRate()       { this.#setRate(i => i - 1); }
   handlePressedLeftOnChangeRate()       { this.#setRate(i => i - 1); }
-
-  // Sets the exact rate rather than stepping, for scripts and custom UIs.
-  handlePressedPlaybackRate({ rate }) {
-    if (!this.player.playbackRates.includes(rate)) { return; }
-    this.player.playbackRate = rate;
-  }
 
   handlePressedChangeVersion({ summary }) {
     this.player.summary = summary;
@@ -266,13 +260,11 @@ class RootController {
     this.player.companionAdvert = { clickThroughUrl, imageUrl };
   }
 
-  handlePressedMaximize({ element }) {
+  handlePressedMaximize() {
     if (fullScreenElement()) {
       exitFullScreen();
-    } else if (!element) {
+    } else {
       requestFullScreen(this.player.target);
-    } else if (canFullScreen()) {
-      requestFullScreen(element);
     }
   }
 
@@ -361,7 +353,6 @@ class RootController {
   #ignoreDueToAdvert({ type }) {
     return this.#isAdvert() && (
       type.includes("ChangeRate") ||
-      type.includes("PressedPlaybackRate") ||
       type.includes("PrevSegment") ||
       type.includes("NextSegment") ||
       type.includes("SeekBack") ||
@@ -373,7 +364,6 @@ class RootController {
   #ignoreDueToIntroOutro({ type }) {
     return (this.#isIntro() || this.#isOutro()) && (
       type.includes("ChangeRate") ||
-      type.includes("PressedPlaybackRate") ||
       type.includes("SeekBack") ||
       type.includes("SeekAhead") ||
       type.includes("Progress") && !type.includes("Space") && !type.includes("Enter")
