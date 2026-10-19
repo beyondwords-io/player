@@ -438,6 +438,16 @@
     return [-1, -1];
   };
 
+  // The chip only shows while no advert is playing, so ad_link_click carries
+  // no ad_id, the same as the legacy styles' persistent advert image.
+  const handleAdvertLink = () => {
+    onEvent(newEvent({
+      type: "PressedAdvertLink",
+      description: "The advert link was pressed to open the click-through URL in a new tab.",
+      initiatedBy: "user",
+    }));
+  };
+
   const handleDownload = () => {
     onEvent(newEvent({
       type: "PressedDownload",
@@ -676,7 +686,7 @@
       {versionLabel} />
 
     {#if showPersistentChip}
-      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.link}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}">
+      <a class="persistent-chip" href={persistentHref} target="_blank" rel="noopener noreferrer" style="--hover-bg: {tokens.hover}; color: {tokens.link}; border-radius: {tokens.radius.control}; outline-color: {tokens.text}" on:click={handleAdvertLink}>
         {persistentText}
         <span class="ad-badge" style="color: {tokens.muted}; border-color: {tokens.subtle}">{translate("advertisementAbbreviation")}</span>
       </a>
@@ -801,7 +811,8 @@
     {disclosureLink}
     {disclosureText}
     hoverColor={tokens.text}
-    {logoIconEnabled} />
+    {logoIconEnabled}
+    {onEvent} />
 {/if}
 </div>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import newEvent from "../../helpers/newEvent";
   import translate from "../../helpers/translate";
 
   export let attributionHref: string;
@@ -8,6 +9,16 @@
   export let disclosureText: string | undefined = undefined;
   export let hoverColor: string;
   export let logoIconEnabled = true;
+  export let onEvent: (event?: unknown) => void = () => {};
+
+  // The same event the other styles' attribution emits, see BeyondWords.svelte.
+  const handleAttributionClick = () => {
+    onEvent(newEvent({
+      type: "PressedBeyondWords",
+      description: "The BeyondWords attribution was pressed to open the BeyondWords website in a new tab.",
+      initiatedBy: "user",
+    }));
+  };
 </script>
 
 <div class="caption outside">
@@ -19,7 +30,7 @@
     {/if}
   </span>
   {#if logoIconEnabled}
-    <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {color}; border-bottom-color: {color}; outline-color: {color}; --hover-color: {hoverColor}" aria-label={translate("visitBeyondWords")}>{translate("poweredByBeyondWords")}</a>
+    <a class="caption-link" href={attributionHref} target="_blank" rel="noopener" style="color: {color}; border-bottom-color: {color}; outline-color: {color}; --hover-color: {hoverColor}" on:click={handleAttributionClick} aria-label={translate("visitBeyondWords")}>{translate("poweredByBeyondWords")}</a>
   {/if}
 </div>
 
