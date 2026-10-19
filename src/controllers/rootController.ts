@@ -89,6 +89,10 @@ class RootController {
   handlePressedDownOnChangeRate()       { this.#setRate(i => i - 1); }
   handlePressedLeftOnChangeRate()       { this.#setRate(i => i - 1); }
 
+  handlePressedChangeVersion({ summary }) {
+    this.player.summary = summary;
+  }
+
   handlePressedPrevSegment()            { this.#setSegment(i => i - 1); }
   handlePressedNextSegment()            { this.#setSegment(i => i + 1); }
 
