@@ -814,7 +814,8 @@
     {disclosureLink}
     {disclosureText}
     hoverColor={tokens.text}
-    {logoIconEnabled} />
+    {logoIconEnabled}
+    {onEvent} />
 {/if}
 </div>
 
