@@ -441,8 +441,8 @@
     return [-1, -1];
   };
 
-  // The post-ad chip links to the persistent advert after advertIndex resets,
-  // so ad_link_click carries no ad_id, the same as the legacy styles' image.
+  // The chip only shows while no advert is playing, so ad_link_click carries
+  // no ad_id, the same as the legacy styles' persistent advert image.
   const handleAdvertLink = () => {
     onEvent(newEvent({
       type: "PressedAdvertLink",
