@@ -219,13 +219,6 @@
   export let agentClient = new RealAgentClient();
   let pausedForAgentCall = false;
 
-  // The first swap happens while the component initialises, before anyone can
-  // listen and before emittedFrom is computed, so it is not announced.
-  let announceAgentClientChanges = false;
-  onMount(() => { announceAgentClientChanges = true; });
-
-  $: syncAgentClient(agentId, agentSessionConfig, authApiUrl, authProvider, projectId);
-
   const syncAgentClient = (id, sessionConfig, authApiUrl, authProvider, projectId) => {
     const wantedId = typeof id === "string" && id.trim().length > 0 ? id.trim() : null;
     const currentId = agentClient.agentId?.trim() || null;
@@ -243,8 +236,6 @@
       sessionConfig,
       dynamicVariables: agentDynamicVariables,
     });
-
-    if (!announceAgentClientChanges) { return; }
 
     onEvent(newEvent({
       type: "AgentClientChanged",
@@ -465,6 +456,10 @@
 
   $: showClose = showCloseWidget && effectiveWidgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
+
+  // Must stay below emittedFrom: the swap during initialisation emits
+  // AgentClientChanged, and the event is invalid until emittedFrom is set.
+  $: syncAgentClient(agentId, agentSessionConfig, authApiUrl, authProvider, projectId);
 
   $: currentVideoContent = summary ? contentItem?.summarization?.video : contentItem?.video;
   $: hasVideoContent = (currentVideoContent || []).length > 0;
