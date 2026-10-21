@@ -213,10 +213,11 @@
   // An agent id can arrive after mount, and so can the project the auth
   // service is asked about, so swapping the live client ends whatever the old
   // client had open.
-  let agentClient = new RealAgentClient();
+  //
+  // Public, but replaced on every swap: AgentClientChanged fires after each
+  // one, and subscribers must resubscribe to the new player.agentClient.
+  export let agentClient = new RealAgentClient();
   let pausedForAgentCall = false;
-
-  $: syncAgentClient(agentId, agentSessionConfig, authApiUrl, authProvider, projectId);
 
   const syncAgentClient = (id, sessionConfig, authApiUrl, authProvider, projectId) => {
     const wantedId = typeof id === "string" && id.trim().length > 0 ? id.trim() : null;
@@ -235,6 +236,12 @@
       sessionConfig,
       dynamicVariables: agentDynamicVariables,
     });
+
+    onEvent(newEvent({
+      type: "AgentClientChanged",
+      description: "The agent client was replaced, so subscribers must resubscribe to the new one.",
+      initiatedBy: "browser",
+    }));
   };
 
   // MCP routing plus per-page prompt context, read at session start so the
@@ -252,7 +259,7 @@
   $: agentVoiceSessionLive = agentCallLive && $agentClient.status !== "connecting";
   $: syncAgentCallPlayback(agentCallLive, playbackState);
 
-  const agentAllowance = new AgentAllowanceState({
+  export const agentAllowance = new AgentAllowanceState({
     onVoiceExhausted: () => agentClient.endSession("budget"),
   });
 
@@ -449,6 +456,10 @@
 
   $: showClose = showCloseWidget && effectiveWidgetStyle !== "small" && !isAdvert;
   $: emittedFrom = videoBehindWidget ? "bottom-widget" : "inline-player";
+
+  // Must stay below emittedFrom: the swap during initialisation emits
+  // AgentClientChanged, and the event is invalid until emittedFrom is set.
+  $: syncAgentClient(agentId, agentSessionConfig, authApiUrl, authProvider, projectId);
 
   $: currentVideoContent = summary ? contentItem?.summarization?.video : contentItem?.video;
   $: hasVideoContent = (currentVideoContent || []).length > 0;
