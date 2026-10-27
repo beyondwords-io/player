@@ -62,6 +62,7 @@ class RootController {
       // that the user interface shows the content rather than the interstitial.
       this.#playDeferredIntroOutro();
       this.#playDeferredAdvert();
+      this.#skipContentWithNoSources();
 
       event.status = "handled";
     } else {
@@ -149,6 +150,8 @@ class RootController {
 
   handleIdentifiersChanged() {
     setPropsFromApi(this.player).then(() => {
+      delete this.nextIntroOutro;
+      delete this.nextAdvert;
       this.#chooseAndSetIntroOutro({ atTheStart: true });
       this.#chooseAndSetAdvert({ atTheStart: true });
     });
@@ -495,8 +498,12 @@ class RootController {
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.content.length;
 
     if (outOfBounds) {
+      delete this.nextIntroOutro;
+      delete this.nextAdvert;
       this.player.playbackState = "stopped";
       this.#setTime(() => 0);
+      this.#chooseAndSetIntroOutro({ atTheStart: true });
+      this.#chooseAndSetAdvert({ atTheStart: true });
     } else {
       this.player.contentIndex = tryIndex;
 
@@ -575,6 +582,12 @@ class RootController {
 
     this.#setAdvert(this.nextAdvert);
     delete this.nextAdvert;
+  }
+
+  #skipContentWithNoSources() {
+    if (this.player.playbackState === "playing" && this.#isContent() && this.player.mediaElement?.hasNoSources()) {
+      this.handlePlaybackEnded();
+    }
   }
 
   #setIntroOutro(index) {

@@ -58,10 +58,12 @@
   let initialTime = currentTime;
   let loadedMedia;
   let timeUpdateTimeout;
+  let noSourcesTimeout;
 
   const setTime = (t) => time = t;
   const preferVideo = () => videoMightBeShown;
   const hasVideo = () => sources.some(s => s.format === "video");
+  export const hasNoSources = () => !!mediaObject && sources.length === 0 && !vastUrl;
 
   const play = () => {
     if (video?.paused) {
@@ -135,7 +137,7 @@
 
   $: videoBehindSlidingWidget && animate();
 
-  $: mediaObject && sources.length === 0 && !vastUrl && handleNoSourcesError();
+  $: mediaObject, sources, vastUrl, playbackState, checkForNoSources();
 
   const animate = () => {
     if (timeout) { clearTimeout(timeout); }
@@ -279,6 +281,15 @@
     }));
   };
 
+  const checkForNoSources = () => {
+    clearTimeout(noSourcesTimeout);
+    if (playbackState === "playing" && hasNoSources()) {
+      noSourcesTimeout = setTimeout(() => {
+        playbackState === "playing" && hasNoSources() && handleNoSourcesError();
+      })
+    }
+  };
+
   const handleNoSourcesError = () => {
     console.warn("BeyondWords.Player: error while loading media");
 
@@ -337,6 +348,7 @@
     const listener2 = addEventListener("webkitfullscreenchange", handleFullScreenChange);
 
     return () => {
+      clearTimeout(noSourcesTimeout);
       removeEventListener("fullscreenchange", listener1);
       removeEventListener("fullscreenchange", listener2);
     };
