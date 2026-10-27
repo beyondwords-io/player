@@ -295,8 +295,10 @@
     await tick();
     if (sources.length > 0 || vastUrl || !video?.currentSrc) { return; }
     duration = 0;
+    const prevRate = video.playbackRate;
     video.removeAttribute("src");
     video.load();
+    video.playbackRate = prevRate;
   };
 
   const handleNoSourcesError = () => {
