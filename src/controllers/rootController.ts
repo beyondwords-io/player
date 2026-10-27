@@ -249,6 +249,8 @@ class RootController {
       this.#chooseAndSetAdvert({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else if (preloading && mediaType === "VAST") {
       this.#chooseAndSetAdvert({ preloadingErrored: true }); // TODO: how to pass atTheStart, atTheEnd?
+    } else if (this.#hasDeferred() && this.player.playbackState === "playing") {
+      // Do nothing. The deferred intro/outro/advert is applied after this handler and replaces this media.
     } else {
       this.handlePlaybackEnded();
     }
@@ -420,6 +422,10 @@ class RootController {
 
   #isContent() {
     return !this.#isIntro() && !this.#isOutro() && !this.#isAdvert();
+  }
+
+  #hasDeferred() {
+    return typeof this.nextIntroOutro !== "undefined" || typeof this.nextAdvert !== "undefined";
   }
 
   #playOrPause() {
