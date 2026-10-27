@@ -591,9 +591,14 @@ class RootController {
   }
 
   #skipContentWithNoSources() {
-    if (this.player.playbackState === "playing" && this.#isContent() && this.player.mediaElement?.hasNoSources()) {
+    for (let i = 0; i <= this.player.content?.length; i += 1) {
+      if (!this.#isPlayingContentWithNoSources()) { return; }
       this.handlePlaybackEnded();
     }
+  }
+
+  #isPlayingContentWithNoSources() {
+    return this.player.playbackState === "playing" && this.#isContent() && this.player.mediaElement?.hasNoSources();
   }
 
   #setIntroOutro(index) {
