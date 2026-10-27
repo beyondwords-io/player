@@ -138,6 +138,7 @@
   $: videoBehindSlidingWidget && animate();
 
   $: mediaObject, sources, vastUrl, playbackState, checkForNoSources();
+  $: sources.length === 0 && !vastUrl && unloadPreviousMedia();
 
   const animate = () => {
     if (timeout) { clearTimeout(timeout); }
@@ -288,6 +289,14 @@
         playbackState === "playing" && hasNoSources() && handleNoSourcesError();
       })
     }
+  };
+
+  const unloadPreviousMedia = async () => {
+    await tick();
+    if (sources.length > 0 || vastUrl || !video?.currentSrc) { return; }
+    duration = 0;
+    video.removeAttribute("src");
+    video.load();
   };
 
   const handleNoSourcesError = () => {
