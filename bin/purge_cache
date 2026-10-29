@@ -2,6 +2,9 @@
 
 set -e
 
+purge_azure=false
+[ "$1" == "--azure" ] && purge_azure=true
+
 echo -e "Note: This script requires that you publish the package to NPM first (see cd.yml)."
 echo -e "If this script isn't called, the player@latest URLs should expire after 12 hours.\n"
 
@@ -38,7 +41,7 @@ if [ "$jsdelivr_version" != "$package_version" ]; then
   done
 fi
 
-if [ "$azure_version" != "$package_version" ]; then
+if [ "$purge_azure" == true ] && [ "$azure_version" != "$package_version" ]; then
   echo -e "\nPurging Azure..."
 
   az afd endpoint purge \
