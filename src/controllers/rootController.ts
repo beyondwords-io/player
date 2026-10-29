@@ -509,7 +509,6 @@ class RootController {
       this.player.playbackState = "stopped";
       this.#setTime(() => 0);
       this.#chooseAndSetIntroOutro({ atTheStart: true });
-      this.#chooseAndSetAdvert({ atTheStart: true });
     } else {
       this.player.contentIndex = tryIndex;
 
