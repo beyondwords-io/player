@@ -65,7 +65,7 @@ to GitHub.
 4. Add a tag with the version: `git tag <version>`
 5. Push the tag with `git push --tags`
 6. Create a GitHub Release from the tag and wait for CD to pass
-7. Run `./bin/purge_cache` or wait ~24 hours for the cache to expire.
+7. Run `./bin/purge_cache` (add `--azure` to also purge Azure Front Door) or wait ~24 hours for the cache to expire.
 
    Wait 15 minutes after the npm publish completes before using the purge script.
 
