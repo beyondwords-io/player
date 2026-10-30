@@ -27,6 +27,8 @@ describe("mediaDuration", () => {
     expect(mediaDuration(undefined)).toEqual(0);
     expect(mediaDuration(null)).toEqual(0);
     expect(mediaDuration({})).toEqual(0);
+    expect(mediaDuration({ duration: null })).toEqual(0);
+    expect(mediaDuration({ duration: null, audio: [{ duration: null }], video: [] })).toEqual(0);
     expect(mediaDuration({ audio: [], video: [] })).toEqual(0);
     expect(mediaDuration({ audio: [{ url: "a.mp3" }], video: [] })).toEqual(0);
   });
