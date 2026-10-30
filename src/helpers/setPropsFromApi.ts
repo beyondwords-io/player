@@ -6,6 +6,7 @@ import resolveTheme from "./resolveTheme";
 import { normalizeThemePreference, palettesFromApi } from "./default_theme/palettes";
 import newEvent from "./newEvent";
 import rewriteMediaUrl from "./rewriteMediaUrl";
+import mediaDuration from "./mediaDuration";
 
 const accessSessionCache = new WeakMap<object, AccessSession & { key: string; }>();
 
@@ -199,7 +200,7 @@ const setProps = (player, data) => {
   set(player, "introsOutros", rewriteIntrosOutrosUrls(settings.intros_outros, player.mediaCustomUrl));
   set(player, "outroPlaybackMode", settings.outro_playback_mode);
   set(player, "persistentAdImage", settings.persistent_ad_image);
-  set(player, "duration", player.summary ? content?.summarization?.audio?.[0]?.duration : content?.audio?.[0]?.duration);
+  set(player, "duration", mediaDuration(player.summary ? content?.summarization : content));
   set(player, "widgetStyle", settings.widget_style);
   set(player, "widgetPosition", settings.widget_position);
   set(player, "projectTheme", normalizeThemePreference(settings.theme));
@@ -300,7 +301,7 @@ const mapContentProp = (player, data) => {
     sourceId: item.source_id,
     sourceUrl: item.source_url,
     adsEnabled: item.ads_enabled,
-    duration: item.audio[0] ? item.audio[0].duration / 1000 : 0,
+    duration: mediaDuration(item) / 1000,
     audio: item.audio.map((audio) => ({
       id: audio.id,
       url: localOrRemoteUrl(rewriteMediaUrl(audio.url, mediaCustomUrl), audio.base64_file, audio.content_type),
@@ -315,6 +316,7 @@ const mapContentProp = (player, data) => {
       videoSize: video.video_size,
     })),
     summarization: {
+      duration: mediaDuration(item.summarization) / 1000,
       audio: (item.summarization?.audio || []).map((audio) => ({
         id: audio.id,
         url: localOrRemoteUrl(rewriteMediaUrl(audio.url, mediaCustomUrl), audio.base64_file, audio.content_type),
