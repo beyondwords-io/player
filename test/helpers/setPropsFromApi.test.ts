@@ -404,5 +404,123 @@ describe("setPropsFromApi", () => {
         videoTheme: { ...VIDEO_COLOR_PRESET, backgroundColor: "ad-video" },
       });
     });
+
+    describe("durations", () => {
+      // No access to the media: the API still sends the durations (in ms).
+      const withoutMedia = {
+        ...payload,
+        content: [{
+          id: "c1",
+          title: "A title",
+          duration: 120000,
+          audio: [],
+          video: [],
+          summarization: { duration: 45000, audio: [], video: [] },
+          segments: [],
+        }],
+      };
+
+      const withMedia = {
+        ...payload,
+        content: [{
+          ...payload.content[0],
+          summarization: {
+            audio: [{ id: 2, url: "https://example.com/s.mp3", content_type: "audio/mpeg", duration: 15000 }],
+            video: [],
+          },
+        }],
+      };
+
+      it("maps the top-level durations to seconds when there is no media", async () => {
+        mocks.fetchJson.mockResolvedValueOnce(withoutMedia);
+
+        const player = mockPlayer();
+        await setPropsFromApi(player);
+
+        expect(player.content[0].audio).toEqual([]);
+        expect(player.content[0].video).toEqual([]);
+        expect(player.content[0].duration).toEqual(120);
+        expect(player.content[0].summarization.duration).toEqual(45);
+      });
+
+      it("sets the duration of the article when there is no media", async () => {
+        mocks.fetchJson.mockResolvedValueOnce(withoutMedia);
+
+        const player = mockPlayer();
+        await setPropsFromApi(player);
+
+        expect(player.duration).toEqual(120);
+      });
+
+      it("sets the duration of the summary when it is selected", async () => {
+        mocks.fetchJson.mockResolvedValueOnce(withoutMedia);
+
+        const player = mockPlayer({ summary: true });
+        await setPropsFromApi(player);
+
+        expect(player.duration).toEqual(45);
+      });
+
+      it("falls back to the first media's duration without a top-level duration", async () => {
+        mocks.fetchJson.mockResolvedValue(withMedia);
+
+        const article = mockPlayer();
+        await setPropsFromApi(article);
+
+        expect(article.content[0].duration).toEqual(30);
+        expect(article.content[0].summarization.duration).toEqual(15);
+        expect(article.duration).toEqual(30);
+
+        const summary = mockPlayer({ summary: true });
+        await setPropsFromApi(summary);
+
+        expect(summary.duration).toEqual(15);
+      });
+
+      // The API sends null for a duration it does not know yet.
+      it("falls back to the first media's duration when the top-level durations are null", async () => {
+        const content = withMedia.content[0];
+        const withNullDurations = {
+          ...withMedia,
+          content: [{ ...content, duration: null, summarization: { ...content.summarization, duration: null } }],
+        };
+
+        mocks.fetchJson.mockResolvedValue(withNullDurations);
+
+        const article = mockPlayer();
+        await setPropsFromApi(article);
+
+        expect(article.content[0].duration).toEqual(30);
+        expect(article.content[0].summarization.duration).toEqual(15);
+        expect(article.duration).toEqual(30);
+
+        const summary = mockPlayer({ summary: true });
+        await setPropsFromApi(summary);
+
+        expect(summary.duration).toEqual(15);
+      });
+
+      it("sets the durations to 0 when they are null and there is no media", async () => {
+        const content = withoutMedia.content[0];
+        const withNullDurations = {
+          ...withoutMedia,
+          content: [{ ...content, duration: null, summarization: { ...content.summarization, duration: null } }],
+        };
+
+        mocks.fetchJson.mockResolvedValue(withNullDurations);
+
+        const article = mockPlayer();
+        await setPropsFromApi(article);
+
+        expect(article.content[0].duration).toEqual(0);
+        expect(article.content[0].summarization.duration).toEqual(0);
+        expect(article.duration).toEqual(0);
+
+        const summary = mockPlayer({ summary: true });
+        await setPropsFromApi(summary);
+
+        expect(summary.duration).toEqual(0);
+      });
+    });
   });
 });

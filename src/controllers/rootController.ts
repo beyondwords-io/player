@@ -62,6 +62,7 @@ class RootController {
       // that the user interface shows the content rather than the interstitial.
       this.#playDeferredIntroOutro();
       this.#playDeferredAdvert();
+      this.#skipContentWithNoSources();
 
       event.status = "handled";
     } else {
@@ -149,6 +150,8 @@ class RootController {
 
   handleIdentifiersChanged() {
     setPropsFromApi(this.player).then(() => {
+      delete this.nextIntroOutro;
+      delete this.nextAdvert;
       this.#chooseAndSetIntroOutro({ atTheStart: true });
       this.#chooseAndSetAdvert({ atTheStart: true });
     });
@@ -246,6 +249,8 @@ class RootController {
       this.#chooseAndSetAdvert({ errored: true }); // TODO: how to pass atTheStart, atTheEnd?
     } else if (preloading && mediaType === "VAST") {
       this.#chooseAndSetAdvert({ preloadingErrored: true }); // TODO: how to pass atTheStart, atTheEnd?
+    } else if (this.#hasDeferred() && this.player.playbackState === "playing") {
+      // Do nothing. The deferred intro/outro/advert is applied after this handler and replaces this media.
     } else {
       this.handlePlaybackEnded();
     }
@@ -419,6 +424,10 @@ class RootController {
     return !this.#isIntro() && !this.#isOutro() && !this.#isAdvert();
   }
 
+  #hasDeferred() {
+    return typeof this.nextIntroOutro !== "undefined" || typeof this.nextAdvert !== "undefined";
+  }
+
   #playOrPause() {
     if (this.player.playbackState === "playing") {
       this.player.playbackState = "paused";
@@ -495,8 +504,11 @@ class RootController {
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.content.length;
 
     if (outOfBounds) {
+      delete this.nextIntroOutro;
+      delete this.nextAdvert;
       this.player.playbackState = "stopped";
       this.#setTime(() => 0);
+      this.#chooseAndSetIntroOutro({ atTheStart: true });
     } else {
       this.player.contentIndex = tryIndex;
 
@@ -575,6 +587,17 @@ class RootController {
 
     this.#setAdvert(this.nextAdvert);
     delete this.nextAdvert;
+  }
+
+  #skipContentWithNoSources() {
+    for (let i = 0; i <= this.player.content?.length; i += 1) {
+      if (!this.#isPlayingContentWithNoSources()) { return; }
+      this.handlePlaybackEnded();
+    }
+  }
+
+  #isPlayingContentWithNoSources() {
+    return this.player.playbackState === "playing" && this.#isContent() && this.player.mediaElement?.hasNoSources();
   }
 
   #setIntroOutro(index) {
