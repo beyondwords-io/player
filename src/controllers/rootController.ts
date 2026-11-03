@@ -180,7 +180,10 @@ class RootController {
     playingPlayers.forEach(p => p.playbackState = "paused");
     chooseMediaSession(this.PlayerClass);
 
-    if (typeof this.player.segmentLimit !== 'number') { appendContinuousPlaybackContentFromApi(this.player); }
+    // Only once content plays: an item without media only plays its intro and
+    // outro, which would otherwise append the next item and play the outro again.
+    // A tier doesn't continue to new items, whichever variant is playing.
+    if (this.#isContent() && typeof this.player.segmentLimit !== 'number') { appendContinuousPlaybackContentFromApi(this.player); }
   }
 
   handlePlaybackPaused() {
