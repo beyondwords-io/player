@@ -233,8 +233,7 @@ class RootController {
     if (this.#isOutro() || this.#isAdvert()) { return; } // Don't skip track until post-roll has played.
 
     if (endsPlayback) {
-      this.player.playbackState = "stopped";
-      this.#setTime(() => 0);
+      this.#stopPlayback();
     } else {
       this.#setTrack(i => i + 1);
     }
