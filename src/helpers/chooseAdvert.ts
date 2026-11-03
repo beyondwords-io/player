@@ -2,7 +2,7 @@ import findSegmentIndex from "./findSegmentIndex";
 import { updateErroredAdverts, resultedInAPlaybackError } from "./erroredAdverts";
 import { updatePlayedAdvertMedia, alreadyPlayedAdvertMedia } from "./playedAdvertMedia";
 
-const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, errored, minTimeUntilEndForMidroll, minDurationForMidroll, videoMightBeShown, summary } = {}) => {
+const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex, content = [], contentIndex, currentTime, atTheStart, atTheEnd, endsPlayback, errored, minTimeUntilEndForMidroll, minDurationForMidroll, videoMightBeShown, summary } = {}) => {
   const currentAdvert = adverts && adverts[advertIndex];
 
   x: if (currentAdvert) {
@@ -14,7 +14,7 @@ const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIn
   if (!content[contentIndex]?.adsEnabled) { return -1; }
   if (introsOutrosIndex !== -1) { return -1; } // Wait until the intro/outro has finished.
 
-  const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd, minTimeUntilEndForMidroll, minDurationForMidroll, summary });
+  const placements = placementsThatCanPlay({ content, contentIndex, currentTime, atTheStart, atTheEnd, endsPlayback, minTimeUntilEndForMidroll, minDurationForMidroll, summary });
 
   let bestSoFar = -1;
   let bestType = -Infinity;
@@ -43,9 +43,9 @@ const chooseAdvert = ({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIn
 
 const typeScores = { vast: 1, custom: 0 };
 
-const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart, atTheEnd, minTimeUntilEndForMidroll, minDurationForMidroll, summary }) => {
+const placementsThatCanPlay = ({ content, contentIndex, currentTime, atTheStart, atTheEnd, endsPlayback, minTimeUntilEndForMidroll, minDurationForMidroll, summary }) => {
   const isFirstItem = contentIndex === 0;
-  const isLastItem = contentIndex === content.length - 1;
+  const isLastItem = endsPlayback || contentIndex === content.length - 1;
 
   const isPlaylist = content.length > 1;
   const isBetweenPlaylistItems = isPlaylist && atTheStart && !isFirstItem;

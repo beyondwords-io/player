@@ -219,7 +219,12 @@ class RootController {
     const wasIntro = this.#isIntro();
     const wasAdvert = this.#isAdvert();
 
-    this.#chooseAndSetAdvert({ atTheEnd: true, wasIntro });
+    // A tier's segment limit applies to the article, so playback stops after each
+    // one instead of moving on, and the post-roll plays there as it would after
+    // the last. The summary isn't limited.
+    const endsPlayback = event?.type === "SegmentLimitReached" || (typeof this.player.segmentLimit === 'number' && !this.player.summary);
+
+    this.#chooseAndSetAdvert({ atTheEnd: true, wasIntro, endsPlayback });
     if (wasAdvert) { return; } // Don't skip track because the content hasn't played yet.
 
     this.#chooseAndSetIntroOutro({ atTheEnd: true });
@@ -227,7 +232,7 @@ class RootController {
 
     if (this.#isOutro() || this.#isAdvert()) { return; } // Don't skip track until post-roll has played.
 
-    if (event?.type === "SegmentLimitReached" || typeof this.player.segmentLimit === 'number') {
+    if (endsPlayback) {
       this.player.playbackState = "stopped";
       this.#setTime(() => 0);
     } else {
@@ -507,11 +512,7 @@ class RootController {
     const outOfBounds = tryIndex < 0 || tryIndex >= this.player.content.length;
 
     if (outOfBounds) {
-      delete this.nextIntroOutro;
-      delete this.nextAdvert;
-      this.player.playbackState = "stopped";
-      this.#setTime(() => 0);
-      this.#chooseAndSetIntroOutro({ atTheStart: true });
+      this.#stopPlayback();
     } else {
       this.player.contentIndex = tryIndex;
 
@@ -526,6 +527,14 @@ class RootController {
     if (!outOfBounds) {
       this.#chooseAndSetAdvert({ atTheStart: true });
     }
+  }
+
+  #stopPlayback() {
+    delete this.nextIntroOutro;
+    delete this.nextAdvert;
+    this.player.playbackState = "stopped";
+    this.#setTime(() => 0);
+    this.#chooseAndSetIntroOutro({ atTheStart: true });
   }
 
   #setTime(timeFn, contentIndex) {
@@ -548,7 +557,7 @@ class RootController {
     this.#setIntroOutro(chooseIntroOutro({ introsOutros, introsOutrosIndex, advertIndex, content, contentIndex, currentTime, outroPlaybackMode, atTheStart, atTheEnd, errored }));
   }
 
-  #chooseAndSetAdvert({ atTheStart, atTheEnd, wasIntro, errored, preloadingErrored } = {}) {
+  #chooseAndSetAdvert({ atTheStart, atTheEnd, endsPlayback, wasIntro, errored, preloadingErrored } = {}) {
     const { adverts, content, currentTime, minDurationForMidroll, minTimeUntilEndForMidroll } = this.player;
 
     let introsOutrosIndex = typeof this.nextIntroOutro !== "undefined" ? this.nextIntroOutro : this.player.introsOutrosIndex;
@@ -557,9 +566,9 @@ class RootController {
     const videoMightBeShown = this.player.playerStyle === "video" || this.player.widgetStyle === "video";
 
     if (wasIntro) { atTheStart = true; atTheEnd = false; introsOutrosIndex = -1; } // Choose from pre-roll advert placements after the intro.
-    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll, videoMightBeShown, summary: this.player.summary }));
+    this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, endsPlayback, errored, minDurationForMidroll, minTimeUntilEndForMidroll, videoMightBeShown, summary: this.player.summary }));
     if (!this.#isAdvert()) {
-      const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll, videoMightBeShown, summary: this.player.summary });
+      const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, endsPlayback, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll, videoMightBeShown, summary: this.player.summary });
       const preloadAdvert = this.player.adverts?.[preloadAdvertIndex];
       if (preloadAdvert?.vastUrl && ["mid-roll", "post-roll"].includes(preloadAdvert?.placement)) {
         this.player.preloadAdvertIndex = preloadAdvertIndex;
