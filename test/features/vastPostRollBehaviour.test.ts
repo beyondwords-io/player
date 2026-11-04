@@ -3,8 +3,9 @@ import { test, expect } from "@playwright/test";
 // The content is restored after a post-roll and ends again, so the same advert
 // mustn't be chosen there twice. VAST adverts aren't skipped as played media,
 // so a post-roll used to play again and again. Google IMA is stubbed: each VAST
-// advert plays for 300ms, or fails like a no-fill when its URL says so. The
-// Player API is mocked and every clip is generated silence.
+// advert plays for 300ms, or fails like a no-fill when its URL says so, and
+// window.whileVastPlays runs 100ms in. The Player API is mocked and every clip
+// is generated silence.
 
 const imaStub = `(() => {
   const T = { ADS_MANAGER_LOADED: "loaded", AD_ERROR: "error", STARTED: "started", AD_PROGRESS: "progress", CLICK: "click", PAUSED: "paused", CONTENT_RESUME_REQUESTED: "resume" };
@@ -16,6 +17,7 @@ const imaStub = `(() => {
     start() {
       window.played.push("vast:" + new URL(this.url).pathname.split("/").pop());
       setTimeout(() => this.destroyed || this.emit(T.STARTED, { getAd: () => ({ getCompanionAds: () => [] }) }), 20);
+      setTimeout(() => this.destroyed || window.whileVastPlays?.(), 100);
       setTimeout(() => this.destroyed || this.emit(T.CONTENT_RESUME_REQUESTED, {}), 300);
     }
   }
@@ -93,6 +95,34 @@ test("vast post-roll behaviour: a title-only tier plays the post-roll once", asy
 
   await pressPlay(page);
   await expectPlayed(page, ["vast:post-roll"]);
+});
+
+test("vast post-roll behaviour: an article picked during the post-roll gets its own post-roll", async ({ page }) => {
+  await loadPlayer(page, { content: 3, long: true, ads: ["vast:post-roll"], accessTier: tier(1), playlist: true });
+  await pressWhileVastPlays(page, { type: "PressedPlaylistItem", index: 1 });
+
+  await pressPlay(page);
+  await expectPlayed(page, ["content#0", "vast:post-roll", "content#1", "vast:post-roll"]);
+  expect(await page.evaluate(() => [player.contentIndex, player.currentTime])).toEqual([1, 0]);
+});
+
+test("vast post-roll behaviour: pressing the article during its post-roll doesn't play the post-roll again", async ({ page }) => {
+  // The advert restores the article to where the limit cut it off.
+  await loadPlayer(page, { content: 3, long: true, ads: ["vast:post-roll"], accessTier: tier(1), playlist: true });
+  await pressWhileVastPlays(page, { type: "PressedPlaylistItem", index: 0 });
+
+  await pressPlay(page);
+  await expectPlayed(page, ["content#0", "vast:post-roll"]);
+  expect(await pressed(page, "PressedPlaylistItem")).toBe(1);
+});
+
+test("vast post-roll behaviour: going back to the article during its post-roll doesn't play the post-roll again", async ({ page }) => {
+  await loadPlayer(page, { content: 3, long: true, ads: ["vast:post-roll"], accessTier: tier(1), playlist: true });
+  await pressWhileVastPlays(page, { type: "PressedPlaylistItem", index: 1 }, { type: "PressedPlaylistItem", index: 0 });
+
+  await pressPlay(page);
+  await expectPlayed(page, ["content#0", "vast:post-roll"]);
+  expect(await pressed(page, "PressedPlaylistItem")).toBe(2);
 });
 
 test("vast post-roll behaviour: a custom post-roll still plays when the VAST post-roll has no fill", async ({ page }) => {
@@ -188,6 +218,18 @@ const pressPlay = async (page) => {
   await page.evaluate(() => window.resetPlayed());
   await page.locator(".beyondwords-player .play-pause-button").first().click();
 };
+
+// The first VAST advert to play sends these user events, in order, while it plays.
+const pressWhileVastPlays = (page, ...events) => page.evaluate((events) => {
+  window.whileVastPlays = async () => {
+    delete window.whileVastPlays;
+    for (const event of events) {
+      await player.onEvent({ id: crypto.randomUUID(), createdAt: new Date().toISOString(), status: "pending", description: "Pressed during the advert.", initiatedBy: "user", ...event });
+    }
+  };
+}, events);
+
+const pressed = (page, type) => page.evaluate((type) => window.events.filter(t => t === type).length, type);
 
 const state = (page) => page.evaluate(() => ({ played: window.played, playbackState: player.playbackState }));
 

@@ -547,6 +547,7 @@ class RootController {
     if (this.#isAdvert() || this.#isIntro()) {
       this.prevTime = timeFn();
       this.prevContent = contentIndex;
+      delete this.playedAtTheEnd; // The content won't resume where it ended.
     } else {
       const duration = this.player.duration || 0;
       this.player.currentTime = timeFn(this.player.currentTime, duration);
@@ -670,6 +671,7 @@ class RootController {
 
     const trackChanged = this.player.contentIndex !== this.prevContent;
     if (!trackChanged || mediaRestarted) { this.player.currentTime = this.prevTime; }
+    if (trackChanged && !mediaRestarted) { delete this.playedAtTheEnd; } // The new track plays from the start.
 
     if (mediaRestarted) {
       delete this.prevTime;
