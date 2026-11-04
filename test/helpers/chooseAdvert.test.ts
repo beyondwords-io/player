@@ -26,4 +26,14 @@ describe("chooseAdvert", () => {
     expect(choose({ contentIndex: 0, endsPlayback: true })).toEqual(-1);
     expect(choose({ contentIndex: 0, atTheStart: true, currentTime: 0, endsPlayback: true })).toEqual(0);
   });
+
+  // The content ends again after the post-roll. Custom adverts are skipped as
+  // played media by then, but VAST adverts aren't, so playedAtTheEnd skips them.
+  it("doesn't choose an advert that already played at the end, but another one can play", () => {
+    const vast = { type: "vast", placement: "post-roll", vastUrl: "https://example.com/vast.xml", audio: [], video: [] };
+
+    expect(choose({ adverts: [vast], contentIndex: 2, atTheEnd: true })).toEqual(0);
+    expect(choose({ adverts: [vast], contentIndex: 2, atTheEnd: true, playedAtTheEnd: [0] })).toEqual(-1);
+    expect(choose({ adverts: [vast, advert("post-roll")], contentIndex: 2, atTheEnd: true, playedAtTheEnd: [0] })).toEqual(1);
+  });
 });
