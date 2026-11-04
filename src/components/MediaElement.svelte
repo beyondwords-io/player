@@ -272,7 +272,7 @@
 
   const handlePlayError = (error) => {
     if (error?.name === "NotSupportedError") { video.src = null; }
-    if (error?.name === "AbortError") { play(); return; }
+    if (error?.name === "AbortError") { playbackState === "playing" && play(); return; } // Unless it was stopped or paused since.
     if (error?.name !== "NotAllowedError") { throw error; }
 
     onEvent(newEvent({
