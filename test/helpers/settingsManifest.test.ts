@@ -60,7 +60,7 @@ describe("settingsManifest", () => {
   it("covers every documented setting in Player.svelte", () => {
     // Not settings: an error callback, a host-supplied auth provider, internal
     // transition state, and the panel's own host element.
-    const notASetting = ["onError", "authProvider", "transitions", "controlPanel"];
+    const notASetting = ["onError", "authProvider", "authToken", "transitions", "controlPanel"];
 
     const source = fs.readFileSync("src/components/Player.svelte", "utf8");
     const documented = source

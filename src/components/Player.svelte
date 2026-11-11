@@ -39,6 +39,7 @@
   export let playerApiUrl = "https://api.beyondwords.io/v1/projects/{id}/player";
   export let authApiUrl = "https://auth.beyondwords.io";
   export let authProvider = undefined;
+  export let authToken = undefined;
   export let projectId = undefined;
   export let contentId = undefined;
   export let playlistId = undefined;
@@ -470,7 +471,7 @@
   $: showVideoPoster = isAudio && videoMightBeShown && metadataLoaded;
   $: videoPosterImage = showVideoPoster ? (isAdvert && activeAdvert?.imageUrl || contentItem?.imageUrl) : "";
 
-  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, accessTierRevision, onEvent(identifiersEvent());
+  $: projectId, contentId, playlistId, sourceId, sourceUrl, playlist, previewToken, authToken, accessTierRevision, onEvent(identifiersEvent());
 
   $: lastHovered = hoveredSegment || lastHovered;
   $: currentSegment, currentAllowedInWidget && resetHovered();
