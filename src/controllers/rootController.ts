@@ -423,8 +423,8 @@ class RootController {
     return this.player.advertIndex !== -1;
   }
 
-  #isMidrollAdvert() {
-    return this.player.adverts[this.player.advertIndex]?.placement === "mid-roll";
+  #isMidrollAdvert(index = this.player.advertIndex) {
+    return this.player.adverts[index]?.placement === "mid-roll";
   }
 
   #isVastAdvert() {
@@ -576,6 +576,9 @@ class RootController {
     this.#setAdvert(chooseAdvert({ introsOutrosIndex, adverts, advertIndex, preloadAdvertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime, atTheStart, atTheEnd, endsPlayback, playedAtTheEnd: this.playedAtTheEnd, errored, minDurationForMidroll, minTimeUntilEndForMidroll, videoMightBeShown, summary: this.player.summary }));
     if (!this.#isAdvert()) {
       const preloadAdvertIndex = chooseAdvert({ introsOutrosIndex, adverts, advertIndex: this.player.preloadAdvertIndex, content, contentIndex, currentTime: currentTime + 5, atTheStart, atTheEnd, endsPlayback, playedAtTheEnd: this.playedAtTheEnd, errored: preloadingErrored, minDurationForMidroll, minTimeUntilEndForMidroll, videoMightBeShown, summary: this.player.summary });
+      // As when an active mid-roll errors. Otherwise it's retried once its ban expires, wherever the content is by then.
+      // Nothing played, so there's no position to go back to: drop any stale one, which the Safari restart fix would jump to.
+      if (preloadingErrored && preloadAdvertIndex === -1 && this.#isMidrollAdvert(this.player.preloadAdvertIndex)) { this.midrollPlayed = true; delete this.prevTime; }
       const preloadAdvert = this.player.adverts?.[preloadAdvertIndex];
       if (preloadAdvert?.vastUrl && ["mid-roll", "post-roll"].includes(preloadAdvert?.placement)) {
         this.player.preloadAdvertIndex = preloadAdvertIndex;

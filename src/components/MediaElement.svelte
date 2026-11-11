@@ -116,6 +116,7 @@
 
   $: controlPlayback = !vastUrl && (metadataLoaded || isIosSafari());
   $: controlPlayback && (playbackState === "playing" ? play() : pause());
+  $: vastUrl && pause(); // The content mustn't play while a VAST advert loads.
 
   $: videoBehindStaticWidget = videoBehindWidget && widgetTarget;
   $: videoBehindSlidingWidget = videoBehindWidget && !widgetTarget;
@@ -158,6 +159,7 @@
   };
 
   const handlePause = () => {
+    if (vastUrl) { return; } // The content was paused for the VAST advert, not by the user.
     onEvent(newEvent({
       type: "PlaybackPaused",
       description: "The media became paused at its current playback time.",
@@ -272,7 +274,7 @@
 
   const handlePlayError = (error) => {
     if (error?.name === "NotSupportedError") { video.src = null; }
-    if (error?.name === "AbortError") { playbackState === "playing" && play(); return; } // Unless it was stopped or paused since.
+    if (error?.name === "AbortError") { controlPlayback && playbackState === "playing" && play(); return; } // Unless it was stopped or paused since, or a VAST advert took over.
     if (error?.name !== "NotAllowedError") { throw error; }
 
     onEvent(newEvent({
