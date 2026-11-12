@@ -15,12 +15,12 @@ const isAccessSessionExpired = ({ expires_at }: AccessSession) => expires_at < D
 const getAccessToken = async (player): Promise<string | null> => {
   if (typeof player.authProvider !== "string") return null;
 
-  const key = JSON.stringify([player.authProvider, player.authApiUrl, player.projectId]);
+  const key = JSON.stringify([player.authProvider, player.authApiUrl, player.projectId, player.authToken]);
   const cached = accessSessionCache.get(player);
   if (cached?.key === key && !isAccessSessionExpired(cached)) return cached.access_token;
   accessSessionCache.delete(player);
 
-  const userSession = await getUserSession(player.authProvider);
+  const userSession = await getUserSession(player.authProvider, player.authToken);
   if (!userSession) return null;
 
   let accessSession: AccessSession;

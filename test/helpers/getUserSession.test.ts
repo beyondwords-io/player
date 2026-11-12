@@ -19,6 +19,11 @@ describe("getUserSession", () => {
     expect(await getUserSession("ghost")).toBeNull();
   });
 
+  it("passes the dn_media token through, or null without one", async () => {
+    expect(await getUserSession("dn_media", "dn_token")).toEqual({ authProvider: "dn_media", sessionToken: "dn_token" });
+    expect(await getUserSession("dn_media", null)).toBeNull();
+  });
+
   it("warns and returns null for an unknown provider", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 

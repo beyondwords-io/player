@@ -37,14 +37,17 @@ function getPianoSessionToken(): Promise<string> {
 }
 
 export type UserSession = {
-  authProvider: "ghost" | "piano";
+  authProvider: "ghost" | "piano" | "dn_media";
   sessionToken: string;
 };
 
 export default async function getUserSession(
   authProvider: string,
+  authToken?: string | null,
 ): Promise<UserSession | null> {
   switch (authProvider) {
+    case "dn_media":
+      return authToken ? { authProvider: "dn_media", sessionToken: authToken } : null;
     case "ghost": {
       let sessionToken: string;
       try {
