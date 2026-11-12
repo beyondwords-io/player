@@ -7,6 +7,10 @@ import UserInterface from "../../src/components/UserInterface.svelte";
 // so a default-style embed first renders the standard interface and swaps.
 // The old interface is destroyed after its outro, so every assertion waits
 // until only the expected number of interfaces is left in the DOM.
+//
+// jsdom's requestAnimationFrame passes timestamps from a different clock than
+// performance.now(), which Svelte uses to end transitions. Outros then last as
+// long as the test process has been running, so use one clock for both.
 describe("the player's userInterface", () => {
   const content = [{ title: "Something", audio: [{ id: 1, url: "http://example.com/audio.mp3", contentType: "audio/mpeg", duration: 30 }] }];
 
@@ -20,7 +24,7 @@ describe("the player's userInterface", () => {
   const settle = async (player, count = 1) => {
     await vi.waitFor(() => {
       expect(player.target.querySelectorAll(".user-interface, .default-player").length).toEqual(count);
-    }, { timeout: 5000 });
+    }, { timeout: 2000 });
     await new Promise((resolve) => setTimeout(resolve, 50));
   };
 
@@ -28,8 +32,15 @@ describe("the player's userInterface", () => {
     HTMLMediaElement.prototype.pause = () => {};
     HTMLMediaElement.prototype.load = () => {};
     window.matchMedia ||= () => ({ matches: false, addEventListener: () => {}, removeEventListener: () => {} });
+    vi.stubGlobal("requestAnimationFrame", (callback) => setTimeout(() => callback(performance.now()), 16));
+    vi.stubGlobal("cancelAnimationFrame", (id) => clearTimeout(id));
 
     BeyondWords.Player.destroyAll();
+  });
+
+  afterEach(() => {
+    BeyondWords.Player.destroyAll();
+    vi.unstubAllGlobals();
   });
 
   it("is the standard interface when the player has content", async () => {
