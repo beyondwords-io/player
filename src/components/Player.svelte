@@ -417,6 +417,16 @@
   $: maxImageSize = isScreen ? 120 : isLarge ? 80 : 0;
 
   $: showStaticInterface = showUserInterface && knownPlayerStyle(interfaceStyle) && content.length > 0;
+
+  // Svelte sets bind:this to null when a component is destroyed. A swapped
+  // interface is destroyed after its outro, so that null arrives after the new
+  // interface has bound and would clear it (e.g. the API sets playerStyle to
+  // "default" after content). Keep the latest interface and ignore the null.
+  let boundInterface = undefined;
+  let latestInterface = undefined;
+  $: if (boundInterface) { latestInterface = boundInterface; }
+  $: userInterface = showStaticInterface ? latestInterface : undefined;
+
   // The widget is the same bar recomposed, so the default style always carries
   // into it. "none" and the closed-by-user sentinel still switch it off.
   $: widgetIsOff = widgetStyle === "none" || widgetStyle === "closed-by-user";
@@ -557,7 +567,7 @@
 {#if showStaticInterface && interfaceStyle === "default"}
   {#key playerLanguage}
     <DefaultInterface
-      bind:this={userInterface}
+      bind:this={boundInterface}
       {onEvent}
       {agentClient}
       {embedMode}
@@ -613,7 +623,7 @@
 {:else if showStaticInterface}
   {#key playerLanguage}
     <UserInterface
-      bind:this={userInterface}
+      bind:this={boundInterface}
       {onEvent}
       playerStyle={interfaceStyle}
       {callToAction}
