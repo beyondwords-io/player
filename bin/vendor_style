@@ -35,6 +35,6 @@ EOF
 rm dist/style.css
 
 # Replace with a path specifier of equal length to keep the sourcemap intact.
-sed -i.backup 's:"./helpers/loadTheStyles.ts":"./././././././././style.js":' dist/es.js
-sed -i.backup 's:"./helpers/loadTheStyles.ts":BeyondWords.Player.styleSrc :' dist/umd.js
+sed -i.backup 's:"./helpers/loadTheStyles.ts":"./././././././././style.js":g' dist/es.js
+sed -i.backup 's:"./helpers/loadTheStyles.ts":BeyondWords.Player.styleSrc :g' dist/umd.js
 rm dist/*.backup
