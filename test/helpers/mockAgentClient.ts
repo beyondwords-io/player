@@ -34,27 +34,31 @@ import type {
 // invented typing speed, and onAgentResponseCorrection may replace text that
 // is already on screen.
 
+// The thread only shows HTTPS citations. Replies carry no layout, so the
+// thread places each beside the sentence that names it, or under the reply.
+const ARTICLE_URL = "https://publisher.example/article";
+
 const SCRIPTED_ANSWERS = [
   {
     text: "This article covers the launch of a new audio platform, " +
       "which converts written journalism into listenable formats. " +
       "The publisher reports early engagement well above their expectations.",
-    citations: [{ title: "From the article", url: "#segment-3" }],
+    citations: [{ title: "From the article", url: `${ARTICLE_URL}#segment-3` }],
   },
   {
     text: "The main points are the partnership announcement, " +
       "the rollout timeline for later this year, " +
       "and the early results from the pilot programme.",
     citations: [
-      { title: "Partnership details", url: "#segment-5" },
-      { title: "Pilot results", url: "#segment-9" },
+      { title: "Partnership details", url: `${ARTICLE_URL}#segment-5` },
+      { title: "Pilot results", url: `${ARTICLE_URL}#segment-9` },
     ],
   },
   {
     text: "Yes - the publication has covered this topic before. " +
       "The most recent related piece looked at how newsrooms adopt audio, " +
       "and there is a longer background explainer from earlier this year.",
-    citations: [{ title: "Related coverage", url: "#related" }],
+    citations: [{ title: "Related coverage", url: "https://publisher.example/related" }],
   },
 ];
 

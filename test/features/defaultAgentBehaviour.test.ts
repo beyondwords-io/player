@@ -369,6 +369,32 @@ test("default player translation behaviour localizes the agent copy", async ({ p
   await expect(root.locator(".slash")).toHaveAttribute("aria-label", "Raccourcis");
 });
 
+// Article cards as the publisher's MCP tools return them.
+const HEADLINES = [
+  {
+    id: "4f411cad",
+    title: "CP26/35: FCA proposes minimum redemption terms for NURS funds heavily invested in illiquid assets",
+    sourceUrl: "https://publisher.example/cp26-35-nurs-redemption-terms",
+  },
+  {
+    id: "8b2e90d1",
+    title: "FCA's PRISM Taskforce sets out what open finance actually needs to work",
+    sourceUrl: "https://publisher.example/prism-taskforce-open-finance",
+  },
+  {
+    id: "c3d71a55",
+    title: "FCA maps three open finance infrastructure models but stops short of picking one",
+    sourceUrl: "https://publisher.example/open-finance-infrastructure-models",
+  },
+].map((article) => ({ ...article, summary: null, topics: [], author: "Eleanor Vance", publishedAt: "2026-10-08T10:11:04Z" }));
+
+const HEADLINES_BRIDGE = "I'll pull up the latest stories for you.";
+const HEADLINES_ANSWER = [
+  "Here are the latest headlines:",
+  ...HEADLINES.map((article) => article.title),
+  "Want me to read one of them?",
+].join("\n\n");
+
 // The live client drives the panel through the ElevenLabs SDK's callbacks. The SDK is
 // stubbed at its loader seam, so this exercises everything but the network.
 test("default player live agent behaviour", async ({ page }) => {
@@ -376,8 +402,33 @@ test("default player live agent behaviour", async ({ page }) => {
   await page.goto("http://localhost:8000");
   await waitForStylesToLoad(page);
 
-  await page.evaluate(() => {
+  await page.evaluate(({ articles, bridge, answer }) => {
     window.__sdkLog = [];
+
+    // A tool-using text turn in the order SDK 1.17 delivers it: the bridge
+    // whole first, then again as parts around the tool call, then the answer
+    // as parts and whole. Only parts carry a response_id.
+    const playHeadlinesTurn = (config) => {
+      const eventId = 2;
+      const tool = { tool_call_id: "tlcal_headlines", tool_name: "get_latest", parameters: { limit: 3 } };
+      const part = (responseId, type, text = "") => () => config.onAgentChatResponsePart?.({ type, text, event_id: eventId, response_id: responseId });
+
+      const frames = [
+        () => config.onMessage?.({ message: bridge, role: "agent", source: "ai", event_id: eventId }),
+        () => config.onMCPToolCall?.({ ...tool, state: "loading" }),
+        part("response-bridge", "start"),
+        part("response-bridge", "delta", bridge),
+        part("response-bridge", "stop"),
+        () => config.onMCPToolCall?.({ ...tool, state: "success", result: [{ type: "text", text: JSON.stringify({ articles }) }] }),
+        () => config.onAgentToolResponse?.({ tool_name: "get_latest", tool_call_id: "toolu_headlines", tool_type: "mcp", is_error: false, event_id: eventId, status: "success" }),
+        part("response-answer", "start"),
+        ...answer.match(/[^\n]+\n*/g).map((delta) => part("response-answer", "delta", delta)),
+        part("response-answer", "stop"),
+        () => config.onMessage?.({ message: answer, role: "agent", source: "ai", event_id: eventId }),
+      ];
+
+      frames.forEach((frame, index) => setTimeout(frame, 50 + index * 20));
+    };
 
     window.__elevenLabsClientStub = {
       Conversation: {
@@ -400,6 +451,7 @@ test("default player live agent behaviour", async ({ page }) => {
           return {
             sendUserMessage: (text) => {
               window.__sdkLog.push({ event: "message", text });
+              if (text === "What are the headlines?") { playHeadlinesTurn(config); return; }
 
               setTimeout(() => {
                 config.onMCPToolCall?.({
@@ -422,7 +474,7 @@ test("default player live agent behaviour", async ({ page }) => {
         },
       },
     };
-  });
+  }, { articles: HEADLINES, bridge: HEADLINES_BRIDGE, answer: HEADLINES_ANSWER });
 
   // Without an agentId the player does not invent a local conversation or
   // touch the SDK.
@@ -469,7 +521,49 @@ test("default player live agent behaviour", async ({ page }) => {
 
   const answered = await panelState(page);
   expect(answered.thread, "the reply streamed in from response parts").toEqual(["What happened?", "A live answer."]);
-  expect(await page.locator(".default-player .citation").getAttribute("href"), "the MCP article became a citation").toEqual("https://publisher.example/a-live-answer");
+  expect(await page.locator(".default-player .inline-citation").getAttribute("href"), "the MCP article it names became a citation").toEqual("https://publisher.example/a-live-answer");
+
+  // A rundown cites each story beside the paragraph that names it, and the
+  // bridge before the tool call shows once, without citations.
+  await wiredInput.click();
+  await wiredInput.type("What are the headlines?");
+  await wiredInput.press("Enter");
+  await page.waitForFunction(() => (
+    document.querySelectorAll(".default-player .thread > div:last-child .inline-citation").length > 0
+  ), null, { timeout: 3000 });
+  await page.waitForTimeout(300);
+
+  const rundown = await panelState(page);
+  expect(rundown.thread.slice(2), "one bridge row and one answer row").toEqual([
+    "What are the headlines?",
+    HEADLINES_BRIDGE,
+    HEADLINES_ANSWER,
+  ]);
+
+  const cited = await page.evaluate(() => [...document.querySelectorAll(".default-player .thread > div")].slice(-2).map((row) => ({
+    pills: row.querySelectorAll(".citation").length,
+    links: [...row.querySelectorAll(".answer .inline-citation")].map((link) => {
+      const range = document.createRange();
+      range.setStart(link.closest(".answer"), 0);
+      range.setEndBefore(link);
+
+      return {
+        href: link.getAttribute("href"),
+        label: link.getAttribute("aria-label"),
+        target: link.getAttribute("target"),
+        line: range.toString().split("\n").at(-1),
+      };
+    }),
+  })));
+
+  expect(cited[0], "the bridge cites nothing").toEqual({ pills: 0, links: [] });
+  expect(cited[1].pills, "nothing trails the answer").toEqual(0);
+  expect(cited[1].links, "each story paragraph ends in its own citation").toEqual(HEADLINES.map((article) => ({
+    href: article.sourceUrl,
+    label: article.title,
+    target: "_blank",
+    line: article.title,
+  })));
 
   // A voice call runs on the SDK's status and mode: connecting, listening,
   // talking - and the strip never promises a tap the SDK cannot deliver.
